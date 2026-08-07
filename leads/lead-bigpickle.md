@@ -28,3 +28,4 @@ evidence_needed: bundled lib manifest + upstream version comparison
 verify_steps: PASSIVE: build inventory from extracted binary, compare versions to upstream known-CVE tables
 impact: outdated lib with public exploit → local/remote compromise; Medium-High
 testability: PASSIVE
+## 2026-08-07 18:49:48 UTC [sync] (model bigpickle)
