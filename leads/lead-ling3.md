@@ -46,3 +46,4 @@ impact: potential zero-day in bundled library, upgrade risk
 testability: PASSIVE
 [PARKED] Whale-only bundled libs: version drift vs upstream with known CVEs — limited static analysis availability (no bundled library manifests in whale-browser-developers repo); weak evidence_needed for verification
 [FINAL]
+## 2026-08-07 20:02:38 UTC [sync] (model ling3)

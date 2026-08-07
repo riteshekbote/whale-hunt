@@ -383,3 +383,773 @@ STEP 7 — RISK SCORE
 - [RISK] sync: 52 — sync client source absent; newest account/shared-data features (Multiplay, Scrapbook invite-share) add eligible authorization surface with unknown invite-token design; passphrase/KDF design unverifiable statically without the binary
 - [RISK] browser: 78 — 6 sidebar/dual-tab CVEs plus new 4.38 code (Side Panel spec, DevTools-in-sidebar) on the same surface; latest ships Chromium 148 (inherits CVE-2026-11645 V8 RCE, KEV, actively exploited — patched in 4.38.386.12 but not reportable); download-warning bypass just patched signals active hardening
 - [RISK] libs: 32 — no Whale-only bundled-lib manifest exists; installer DLL family recurring but local+old; billboard.js/lucy-xss-filter out of scope
+===== ANALYST bigpickle 2026-08-07 20:10:31 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && ls -la reports/ 2>/dev/null; ls -la knowledge/ 2>/dev/null
+total 120
+drwxr-xr-x 11 runner runner  4096 Aug  7 20:02 .
+drwxr-xr-x  3 runner runner  4096 Aug  7 20:02 ..
+drwxr-xr-x  7 runner runner  4096 Aug  7 20:02 .git
+drwxr-xr-x  3 runner runner  4096 Aug  7 20:02 .github
+-rw-r--r--  1 runner runner  1057 Aug  7 20:02 README.md
+-rw-r--r--  1 runner runner    32 Aug  7 20:02 analyst-out.txt
+-rw-r--r--  1 runner runner 21440 Aug  7 20:02 analyst-prompt.txt
+-rw-r--r--  1 runner runner 18468 Aug  7 20:02 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  7 20:02 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  7 20:02 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  7 20:02 leads
+drwxr-xr-x  2 runner runner  4096 Aug  7 20:02 reports
+drwxr-xr-x  2 runner runner  4096 Aug  7 20:02 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  7 20:02 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  7 20:02 scripts
+-rw-r--r--  1 runner runner    34 Aug  7 20:02 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  7 20:02 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  7 20:02 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  7 20:02 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  7 20:02 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  7 20:02 triage
+total 360
+drwxr-xr-x  2 runner runner   4096 Aug  7 20:02 .
+drwxr-xr-x 11 runner runner   4096 Aug  7 20:02 ..
+-rw-r--r--  1 runner runner  30633 Aug  7 20:02 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 251720 Aug  7 20:02 analyst-laguna.log
+-rw-r--r--  1 runner runner   7405 Aug  7 20:02 analyst-ling3.log
+-rw-r--r--  1 runner runner    270 Aug  7 20:02 analyst-longcat.log
+-rw-r--r--  1 runner runner  12119 Aug  7 20:02 analyst-nemotron3.log
+-rw-r--r--  1 runner runner     52 Aug  7 20:02 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner   9957 Aug  7 20:02 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner   4936 Aug  7 20:02 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner     50 Aug  7 20:02 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner   7373 Aug  7 20:02 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner   6281 Aug  7 20:02 hypotheses.md
+-rw-r--r--  1 runner runner    136 Aug  7 20:02 valid-bugs.md
+total 12
+drwxr-xr-x  2 runner runner 4096 Aug  7 20:02 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 20:02 ..
+-rw-r--r--  1 runner runner 2874 Aug  7 20:02 index.md
+[0m
+[0m$ [0mgit log --oneline -5 2>/dev/null; ls -la scope.yml 2>/dev/null && cat scope.yml 2>/dev/null | head -50
+ea3c4c4 reposcan 2026-08-07-19-28
+-rw-r--r-- 1 runner runner 1513 Aug  7 20:02 scope.yml
+programs:
+  whale:
+    name: Naver Whale Browser
+    disclosure_policy: TBD - operator-provided program scope (update once public channel confirmed)
+    assets:
+      - name: "Whale browser - latest version (reproducible at time of reporting)"
+        priority: In
+      - name: "Third-party libraries used ONLY by Whale (not Chromium)"
+        priority: In
+      - name: "Synchronization"
+        priority: In
+    out_of_scope:
+      - "All Naver web services (*.naver.com, *.navercorp.com)"
+      - "Web servers of built-in extensions (Papago, Belli)"
+      - "URL preview spoofing in status bar"
+      - "Bypassing XSS Auditor"
+      - "IETab extension"
+      - "SafeBrowsing false positives / false negatives"
+    github_orgs:
+      - naver
+
+rules:
+  passive_first: true          # GET/HEAD reads first; client-side scope: static analysis + repro-first
+  max_requests_per_second: 1   # never hammer
+  no_doom: true                # no DoS/DDoS
+  no_account_creation: true
+  no_data_modification: true
+  no_pre_disclosure: true
+  latest_version_required: true  # bug must reproduce on the LATEST Whale version at report time
+  redact_secrets_in_commits: true
+
+# Multi-model ensemble: every hunt run picks a rotation of the 5 models.
+models:
+  - { id: opencode/big-pickle, name: bigpickle }
+  - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+  - { id: opencode/longcat-2.0-free, name: longcat }
+  - { id: opencode/ling-3.0-flash-free, name: ling3 }
+  - { id: opencode/laguna-s-2.1-free, name: laguna }
+[0m
+[0m$ [0mls -la leads/ inventory/ knowledge/ scripts/ triage/ 2>/dev/null; cat state_bigpickle.json
+inventory/:
+total 16
+drwxr-xr-x  2 runner runner 4096 Aug  7 20:02 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 20:02 ..
+-rw-r--r--  1 runner runner 6543 Aug  7 20:02 whale.md
+
+knowledge/:
+total 12
+drwxr-xr-x  2 runner runner 4096 Aug  7 20:02 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 20:02 ..
+-rw-r--r--  1 runner runner 2874 Aug  7 20:02 index.md
+
+leads/:
+total 80
+drwxr-xr-x  2 runner runner  4096 Aug  7 20:02 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 20:02 ..
+-rw-r--r--  1 runner runner  3362 Aug  7 20:02 lead-bigpickle.md
+-rw-r--r--  1 runner runner 17334 Aug  7 20:02 lead-laguna.md
+-rw-r--r--  1 runner runner  5112 Aug  7 20:02 lead-ling3.md
+-rw-r--r--  1 runner runner   232 Aug  7 20:02 lead-longcat.md
+-rw-r--r--  1 runner runner  7512 Aug  7 20:02 lead-nemotron3.md
+-rw-r--r--  1 runner runner  2883 Aug  7 20:02 reposcan-2026-08-07-18-44.md
+-rw-r--r--  1 runner runner  1240 Aug  7 20:02 reposcan-2026-08-07-18-59.md
+-rw-r--r--  1 runner runner  6783 Aug  7 20:02 reposcan-2026-08-07-19-19.md
+-rw-r--r--  1 runner runner  2370 Aug  7 20:02 reposcan-2026-08-07-19-22.md
+-rw-r--r--  1 runner runner   366 Aug  7 20:02 reposcan-2026-08-07-19-28.md
+-rw-r--r--  1 runner runner   366 Aug  7 20:02 reposcan-latest.md
+
+scripts/:
+total 16
+drwxr-xr-x  2 runner runner 4096 Aug  7 20:02 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 20:02 ..
+-rw-r--r--  1 runner runner 7506 Aug  7 20:02 sync-issues.py
+
+triage/:
+total 20
+drwxr-xr-x  2 runner runner 4096 Aug  7 20:02 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 20:02 ..
+-rw-r--r--  1 runner runner 8463 Aug  7 20:02 run-2026-08-07-19-23.md
+{"phase": "POC", "target": "sync"}
+[0m
+[0m$ [0mcat reports/hypotheses-bigpickle.txt; echo "=== valid-bugs ==="; cat reports/valid-bugs.md; echo "=== knowledge index ==="; cat knowledge/index.md
+## 2026-08-07 18:49:48 UTC [sync] (model bigpickle)
+=== valid-bugs ===
+# Validated Bugs
+
+- 2026-08-07 ~18:00 UTC - SEED STATE: 0 valid bugs. Pipeline not yet run; hypotheses are recon-based and UNVALIDATED.
+=== knowledge index ===
+# Knowledge Base (seed)
+
+## Program rules (from scope.yml)
+- Eligible: latest-version Whale browser bugs (must reproduce on latest at report time); third-party libraries used ONLY by Whale (not Chromium); synchronization bugs
+- NOT eligible: all Naver web services (*.naver.com, *.navercorp.com), web servers of built-in extensions (Papago, Belli), URL preview spoofing in status bar, bypassing XSS Auditor, IETab extension, SafeBrowsing FP/FN
+- Client-side software: static source analysis + repro-first validation; no server probing
+- Secrets in commits: sha256 only, never raw
+
+## Baseline surface (2026-08-07 passive recon)
+- Official GitHub repo: naver/whale-browser-developers (no public releases API; repo is developers channel)
+- Naver org is HUGE: reposcan clones ONLY whale-name repos
+- Known excluded classes to never report: XSS Auditor bypass, status-bar URL preview spoofing, SafeBrowsing FP/FN, anything in IETab
+
+## Rejected / parked
+- (none yet)
+- 2026-08-07 REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- 2026-08-07 REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+- 2026-08-07 REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CVEs published
+- 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+- 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+[0m
+[0m$ [0mcat leads/lead-bigpickle.md; echo "=== reposcan-latest ==="; cat leads/reposcan-latest.md; echo "=== reposcan 19:28 ==="; cat leads/reposcan-2026-08-07-19-28.md
+# LEADS bigpickle (seed)
+- SEED: no model output yet; pipeline starts on first run.
+## 2026-08-07 18:31:54 UTC [sync] (model bigpickle)
+[HYP] Whale sync passphrase/key-derivation & local key-storage design (desktop + Android 3.9.14.9)
+class: AUTH
+asset: Whale sync client (whale://settings/syncSetup desktop; com.naver.whale Android) — backend is naver infra, static analysis only
+confidence: 58
+reasoning: Vendor help center states passphrase is never sent to/stored on the Naver server and must be re-entered on every new device → client-side key derivation + local key store. Android only added sync encryption in 3.8.6.2 (2025-04); prior sync was TLS-only. No public client code exists (org scan), so binary must be analyzed statically.
+evidence_needed: KDF algorithm + iteration counts, per-OS storage of derived key/passphrase (Preferences/Local State/OS keychain/EncryptedSharedPreferences), whether key/passphrase ever leaves device (reset/recovery flows), sync auth token storage/scope
+verify_steps: PASSIVE: acquire latest desktop installer and Android XAPK 3.9.14.9 (apkpure blocked curl 403; try APKMirror or JS-resolved official link), extract/decompile, grep sync module for passphrase/scrypt/PBKDF2 constants, key-store paths, sync hostnames, bearer/OAuth token handling. AUTH_HELPED: authorized test login to observe token/key lifecycle in filesystem. Zero requests to naver sync infra.
+impact: Weak KDF or plaintext-adjacent key/passphrase storage → local attacker or infostealer decrypts synced bookmarks+site passwords → PII cascade; High
+testability: AUTH_HELPED
+[HYP] Security-boundary enforcement in Whale-only sidebar/dual-tab environments on latest desktop (variant hunting)
+class: OTHER
+asset: Latest desktop Whale (>=4.35.351.12) sidebar and dual-tab web panels
+confidence: 45
+reasoning: 2025-26 CVE family shows sidebar/dual-tab (Whale-only) repeatedly broke SOP, iframe sandbox, CSP (CVE-2025-69234/5, 62583/4/5, 53600), each fixed a release later; recurrence across 3 releases signals a systemic boundary weak spot; adjacent features (mobile window, quicksearch, scrapbook) may carry variants.
+evidence_needed: crafted HTML that escapes iframe sandbox or bypasses SOP/CSP inside sidebar/dual-tab web panel on the LATEST build
+verify_steps: AUTH_HELPED: install latest desktop Whale, open crafted HTML in sidebar and dual-tab web panels, test sandbox escape / cross-origin read / CSP bypass; repro-first on latest build; no server interaction.
+impact: sandbox escape / SOP bypass from a webpage → arbitrary script execution or cross-origin data theft in browser UI; Critical if escalates to renderer code execution
+testability: AUTH_HELPED
+[HYP] Whale-only bundled third-party libs: version drift vs upstream with known CVEs
+class: MISCONFIG
+asset: Whale desktop/mobile bundled third-party libs (inventory not yet built)
+confidence: 35
+reasoning: historical installers/extension-store bugs (CVE-2018-12449, CVE-2022-2407x); no current inventory; only generic diff-against-upstream verify path
+evidence_needed: bundled lib manifest + upstream version comparison
+verify_steps: PASSIVE: build inventory from extracted binary, compare versions to upstream known-CVE tables
+impact: outdated lib with public exploit → local/remote compromise; Medium-High
+testability: PASSIVE
+## 2026-08-07 18:49:48 UTC [sync] (model bigpickle)
+=== reposcan-latest ===
+
+===== REPOSCAN 2026-08-07 19:28:07 UTC =====
+## Grep hits:
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+
+## Model analysis:
+[0m
+> build · nemotron-3-ultra-free
+[0m
+No findings to triage — the scan scanned 0 files and produced 0 hits across all categories (REAL_SECRET, TEST_OR_EXAMPLE, ENDPOINT_LEAK, INTERESTING).
+
+**Verdict:** No reportable candidates.
+=== reposcan 19:28 ===
+
+===== REPOSCAN 2026-08-07 19:28:07 UTC =====
+## Grep hits:
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+
+## Model analysis:
+[0m
+> build · nemotron-3-ultra-free
+[0m
+No findings to triage — the scan scanned 0 files and produced 0 hits across all categories (REAL_SECRET, TEST_OR_EXAMPLE, ENDPOINT_LEAK, INTERESTING).
+
+**Verdict:** No reportable candidates.
+[0m
+[0m$ [0mcat inventory/whale.md
+# Inventory: whale
+
+## Seed 2026-08-07 (passive recon)
+
+### Code surface
+- github.com/naver/whale-browser-developers — official developer repo (only confirmed whale repo so far)
+- More whale repos exist inside naver org (reposcan filters by 'whale' in name)
+
+### Eligible focus areas
+- Sync flow (Whale account sync: how it authenticates, stores, encrypts data)
+- Whale-only third-party libraries (bundled, not part of Chromium)
+- Browser core on latest version: crash/UXSS/URL handling in Whale-specific code
+
+### Open questions
+- Latest Whale version number (determine at report time)
+- Which third-party libs are bundled ONLY in Whale (vs stock Chromium)
+- Sync endpoint/host (expect naver infra — do NOT probe; static analysis only)
+
+## 2026-08-07 18:43:32 UTC
+- NEW Only 1 whale-named repo in entire `naver` GitHub org: `naver/whale-browser-developers` (seed assumed "more exist")
+- NEW Repo is documentation-only — no browser source code, sync implementation, or bundled library manifests publicly available
+- NEW 4 branches: `master` (Chromium cc docs only), `translate` (extension API docs + sample), `v2` (devcenter pointer), `jdkim/update_documents` (Chromium LUCI/Mojo docs)
+- NEW Extension API surface documented: `whale.runtime`, `whale.storage`, `whale.sidebarAction`, `whale.windows`, `whale.tabs`, `whale.bookmarks`, `whale.browserAction` (from `translate` branch README.ko.md
+- NEW Sample sidebar extension (`translate/src/sidebar-sample/`) uses `navigator.userAgent.includes('sidebar')` for context detection; content_scripts match ALL origins (`http://*/*`, `https://*/*`)
+- NEW Issue #23 (open, 2025-03-30): "Ignore valid BCP47 Language tags in the Naver Whale Extensions store" → maps to `store.whale.naver.com`
+- NEW NVD query reveals 21 known Whale CVEs; 6 CVEs in 2025 target sidebar + dual-tab environment (SOP bypass, iframe sandbox escape, CSP bypass)
+- NEW Latest known affected version from CVEs: 4.35.351.12 (CVE-2025-69234/69235, Dec 2025); no 2026 CVEs published yet
+- NEW `v2` branch README references `developers.whale.naver.com` and `lab.whale.naver.com` (Naver web services)
+- CHANGED Repo metadata last updated 2025-10-22
+
+## 2026-08-07 18:58:13 UTC
+- NEW No new surface items since last aggregated hypotheses (2026-08-07 18:43:32 UTC) — inventory, knowledge, and leads unchanged
+- NEW Latest stable Whale desktop version: v4.38.386.14 (June 25 2026) per Wikipedia infobox — 3 minor version bumps ahead of last CVE-fix version v4.35.351.12 (Dec 30 2025), ~6 months of undisclosed change
+- NEW Wiki `whale.sidebarAction` docs reveal `show()` accepts a `url` parameter: "url to load in extension panel, if not defined loads the default page"
+- NEW Wiki `whale.sidebarAction` docs warn: `use_navigation_bar` defaults true; when false "your extension page may be navigated to other websites from drag events"
+- NEW Wiki page "How to avoid my extension from changing urls" confirms drag-drop navigation exposure is a documented security concern for sidebar extensions, provides mitigation code
+- NEW NVD 2026 CVE query (pubStartDate=2026-01-01) returns zero results — no public CVEs exist for versions 4.35.352 through 4.38.386
+- CHANGED Repo activity confirmed: last commit 2019-09-23 on both master and jdkim/update_documents; "updated" 2025-10-22 is metadata-only, no new code pushed
+
+## 2026-08-07 19:17:01 UTC
+- NEW No new surface items since last aggregated hypotheses (2026-08-07 18:43:32 UTC) — inventory, knowledge, and leads unchanged
+- NEW Latest stable Whale desktop version: v4.38.386.14 (June 25 2026) per Wikipedia infobox — 3 minor version bumps ahead of last CVE-fix version v4.35.351.12 (Dec 30 2025), ~6 months of undisclosed change
+- NEW Wiki `whale.sidebarAction` docs reveal `show()` accepts a `url` parameter: "url to load in extension panel, if not defined loads the default page"
+- NEW Wiki `whale.sidebarAction` docs warn: `use_navigation_bar` defaults true; when false "your extension page may be navigated to other websites from drag events"
+- NEW Wiki page "How to avoid my extension from changing urls" confirms drag-drop navigation exposure is a documented security concern for sidebar extensions, provides mitigation code
+- NEW NVD 2026 CVE query (pubStartDate=2026-01-01) returns zero results — no public CVEs exist for versions 4.35.352 through 4.38.386
+- CHANGED Repo activity confirmed: last commit 2019-09-23 on both master and jdkim/update_documents; "updated" 2025-10-22 is metadata-only, no new code pushed
+- NEW 2026-08-07 REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- NEW 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- NEW 2026-08-07 REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+- NEW 2026-08-07 REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 mi
+- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CV
+- NEW 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+- NEW 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vu
+- CHANGED 2026-08-07 Latest known affected version from CVEs: 4.35.351.12 (CVE-2025-69234/69235, Dec 2025); no 2026 CVEs published yet — version increment to v4.38.386.14; 3 minor version bumps since last CVE-f
+[0m
+[0m$ [0mcat leads/lead-ling3.md; echo "=== nemotron3 ==="; cat leads/lead-nemotron3.md | head -60
+# LEADS ling3 (seed)
+- SEED: no model output yet; pipeline starts on first run.
+## 2026-08-07 18:28:53 UTC [sync] (model ling3)
+## 2026-08-07 18:46:46 UTC [sync] (model ling3)
+## 2026-08-07 19:15:06 UTC [sync] (model ling3)
+[NEW] 2026-08-07 REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+[NEW] 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+[NEW] 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+[NEW] 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+[NEW] 2026-08-07 REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+[NEW] 2026-08-07 REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+[NEW] 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+[NEW] 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CVEs published
+[NEW] 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+[NEW] 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+[CHANGED] 2026-08-07 Latest known affected version from CVEs: 4.35.351.12 (CVE-2025-69234/69235, Dec 2025); no 2026 CVEs published yet — version increment to v4.38.386.14; 3 minor version bumps since last CVE-fix version
+[PRIO] Sidebar context SOP bypass — new variant post-CVE-2025-69235 on v4.38.386.14, score: 6.8 (attack_surface:8, business_value:9, tech_exposure:7, gate_ease:2, cloud_surface:3, freshness:9)
+[PRIO] Whale sync passphrase/key-derivation & local key-storage design (desktop + Android 3.9.14.9), score: 6.1 (attack_surface:6, business_value:8, tech_exposure:7, gate_ease:3, cloud_surface:4, freshness:7)
+[PRIO] Whale-only bundled libs: version drift vs upstream with known CVEs, score: 5.85 (attack_surface:7, business_value:4, tech_exposure:8, gate_ease:6, cloud_surface:2, freshness:8)
+[HYP] Sidebar context SOP bypass — new variant post-CVE-2025-69235 on v4.38.386.14
+class: XSS
+asset: sidebarAction.show URL loading
+confidence: 60
+reasoning: Wiki whale.sidebarAction docs reveal `show()` accepts a `url` parameter; `use_navigation_bar` defaults true but when false drag events navigate to other websites; CVE-2025-69235 confirmed SOP bypass, new variant post-CVE-2025-69235 on v4.38.386.14 (3 minor version bumps, zero published CVEs)
+evidence_needed: sidebarAction.show URL loading, use_navigation_bar behavior, extension API docs
+verify_steps: PASSIVE: Inspect sidebarAction.show URL loading in extension manifest; check `use_navigation_bar` defaults
+impact: context isolation bypass, user tracking via drag events, privacy violation
+testability: PASSIVE
+[HYP] Whale sync passphrase/key-derivation & local key-storage design (desktop + Android 3.9.14.9)
+class: AUTH
+asset: whale-sync client (internal sync endpoint)
+confidence: 55
+reasoning: Reports/hypotheses-bigpickle.txt detail passphrase/key-derivation and local key-storage design for desktop and Android 3.9.14.9; static analysis of whale-sync client code available
+evidence_needed: whale-sync client source code, key storage mechanisms
+verify_steps: AUTH_HELPED: Inspect whale-sync client for key derivation functions
+impact: credential exposure, account compromise
+testability: AUTH_HELPED
+[HYP] Whale-only bundled libs: version drift vs upstream with known CVEs
+class: MISCONFIG
+asset: whale-only third-party libraries
+confidence: 45
+reasoning: Inventory confirms bundled third-party libs; diff against upstream reveals version drift; no published CVEs in latest version v4.38.386.14 but gaps in 2026
+evidence_needed: bundled library manifests, upstream comparison results
+verify_steps: PASSIVE: Diff bundled library versions against upstream
+impact: potential zero-day in bundled library, upgrade risk
+testability: PASSIVE
+[PARKED] Whale-only bundled libs: version drift vs upstream with known CVEs — limited static analysis availability (no bundled library manifests in whale-browser-developers repo); weak evidence_needed for verification
+[FINAL]
+=== nemotron3 ===
+# LEADS nemotron3 (seed)
+- SEED: no model output yet; pipeline starts on first run.
+## 2026-08-07 18:30:06 UTC [browser] (model nemotron3)
+## 2026-08-07 18:49:54 UTC [browser] (model nemotron3)
+[NEW] No new surface items since last aggregated hypotheses (2026-08-07 18:43:32 UTC) — inventory, knowledge, and leads unchanged
+[PRIO] Whale browser sidebar environment, 7.15, atk=9 biz=9 tech=7 gate=2 cloud=4 fresh=9 — Whale-specific feature; 3 CVEs in Dec 2025 (CVE-2025-69234/69235 SOP/sandbox); sample code confirms sidebar context detection via userAgent; 8+ months since fix
+[PRIO] whale.* extension API surface (runtime/storage/sidebarAction), 6.70, atk=8 biz=8 tech=7 gate=3 cloud=6 fresh=6 — CVE-2022-24072 (devtools JS injection), CVE-2024-40618 (built-in extension XSS); content_scripts match all origins; whale.storage may sync via Whale account
+[PRIO] Whale browser dual-tab environment, 6.30, atk=8 biz=8 tech=6 gate=2 cloud=3 fresh=8 — 4 CVEs Jul–Oct 2025 (CVE-2025-53600, 62583, 62584, 62585) for SOP/sandbox/CSP bypass; Whale-specific feature not in Chromium; fixed v4.33.325.17
+[PRIO] Whale sync passphrase/key-derivation & local key-storage (desktop + Android 3.9.14.9), 5.80, atk=7 biz=9 tech=6 gate=4 cloud=5 fresh=5 — Vendor docs: passphrase never sent to server; Android sync encryption added 2025-04; no public client code; binary static analysis required
+[PRIO] Whale-only bundled third-party libraries, 3.50, atk=5 biz=6 tech=4 gate=5 cloud=2 fresh=3 — No public manifest; historical installer/extension-store CVEs (CVE-2018-12449, CVE-2022-2407x); inventory requires binary extraction
+[HYP] Sidebar context SOP bypass — new variant post-CVE-2025-69235
+class: OTHER
+asset: Whale browser sidebar context (browser-internal, not a Naver web service)
+confidence: 45
+reasoning: CVE-2025-69235 (CWE-346) fixed in v4.35.351.12 (Dec 2025). Sample extension at translate/src/sidebar-sample/js/contentscript.js confirms sidebar context detection via `navigator.userAgent.includes('sidebar')`. 8+ months since fix; Whale-specific sidebar isolation has recurring SOP issues (3 CVEs in 2025).
+evidence_needed: Running browser binary ≥4.35.352 demonstrating cross-origin data access from sidebar context
+verify_steps: HUMAN_ONLY: Install latest Whale → open sidebar extension → attempt cross-origin fetch/XMLHttpRequest from sidebar content script to arbitrary origin → confirm if SOP enforced
+impact: Cross-origin data theft from sidebar context → credential/CSRF-token exfiltration (High)
+testability: HUMAN_ONLY
+[HYP] Extension API message handling / origin validation bypass
+class: XSS
+asset: whale.* extension API surface (whale.runtime.onMessage, whale.storage, content_scripts matching http://*/*, https://*/*)
+confidence: 40
+reasoning: CVE-2022-24072 (CWE-79, devtools API JS injection) and CVE-2024-40618 (improper sanitization in built-in extension) show recurring XSS/injection in extension API. Sample manifest.json declares content_scripts matching ALL origins.
+evidence_needed: Extension API documentation or binary analysis revealing unsafe message handling or missing origin validation in whale.runtime
+verify_steps: HUMAN_ONLY: Install latest Whale → load test extension with onMessage listener → test message payload with origin-spoofing → check if whale.storage.sync accepts unvalidated input → test content script injection vector
+impact: Arbitrary JavaScript execution in extension context → cross-site data access, session theft (High)
+testability: HUMAN_ONLY
+[HYP] Whale sync passphrase KDF weakness / plaintext-adjacent key storage
+class: AUTH
+asset: Whale sync client (whale://settings/syncSetup desktop; com.naver.whale Android 3.9.14.9) — backend is naver infra, static analysis only
+confidence: 58
+reasoning: Vendor help center states passphrase never sent to/stored on Naver server; must be re-entered on every new device → client-side key derivation + local key store. Android sync encryption added in 3.8.6.2 (2025-04); prior sync was TLS-only. No public client code exists.
+evidence_needed: KDF algorithm + iteration counts, per-OS storage of derived key/passphrase (Preferences/Local State/OS keychain/EncryptedSharedPreferences), whether key/passphrase ever leaves device (reset/recovery flows), sync auth token storage/scope
+verify_steps: PASSIVE: acquire latest desktop installer and Android XAPK 3.9.14.9, extract/decompile, grep sync module for passphrase/scrypt/PBKDF2 constants, key-store paths, sync hostnames, bearer/OAuth token handling. AUTH_HELPED: authorized test login to observe token/key lifecycle in filesystem. Zero requests to naver sync infra.
+impact: Weak KDF or plaintext-adjacent key/passphrase storage → local attacker or infostealer decrypts synced bookmarks+site passwords → PII cascade (High)
+testability: AUTH_HELPED
+[PARKED] Extension API message handling / origin validation bypass: confidence 40 meets threshold but verify_steps are HUMAN_ONLY with no passive-first path; requires binary install + extension load which is not passive — deferred until binary available
+[FINAL] 1. Whale sync passphrase KDF weakness / plaintext-adjacent key storage (confidence 58, class AUTH, testability AUTH_HELPED) 2. Sidebar context SOP bypass — new variant post-CVE-2025-69235 (confidence 45, class OTHER, testability HUMAN_ONLY)
+[NEXT] PROBE: Acquire latest Whale desktop installer (non-Naver mirror) and Android XAPK 3.9.14.9; extract and decompile; static grep for sync module strings: "passphrase", "PBKDF2", "scrypt", "sync", "key", "token", "EncryptedSharedPreferences", "Local State", "Preferences" — zero network requests to naver infra
+[LEARN] REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+[LEARN] ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+[LEARN] ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+[LEARN] ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+[LEARN] REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+[LEARN] REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+[RISK] sync: 55 — whale.storage extension API exists and may sync via Whale account; passphrase KDF/key-storage design entirely client-side with no public code; Android sync encryption added 2025-04 (late); moderate-high exposure due to source-unavailable constraint
+[RISK] browser: 75 — sidebar + dual-tab environments have 7 confirmed CVEs in 2025 (SOP bypass, iframe sandbox escape, CSP bypass); these are Whale-specific features not inherited from Chromium; active and recently vulnerable attack surface with 8+ months since last fixes; high priority for new variant discovery
+[RISK] libs: 30 — Whale bundles Chromium (inherits all Chromium CVEs), but no Whale-only third-party library manifests or version lists are publicly available; the repo contains only translated documentation; library-level version drift cannot be assessed without binary access; low visibility, moderate inherent risk
+[0m
+[0m$ [0mtail -80 reports/analyst-bigpickle.log
+scripts/:
+total 16
+drwxr-xr-x  2 runner runner 4096 Aug  7 18:46 .
+drwxr-xr-x 10 runner runner 4096 Aug  7 18:46 ..
+-rw-r--r--  1 runner runner 7506 Aug  7 18:46 sync-issues.py
+---git log---
+a541acf fix: reposcan cands syntax + race-safe commit steps (retry w/ visible errors)
+[0m
+[0m% [0mWebFetch https://cve.naver.com/advisory
+[0m✗ [0mWebFetch https://cve.naver.com/detail/cve-2026-11645.html failed
+[91m[1mError: [0mStatusCode: non 2xx status code (404 GET https://cve.naver.com/detail/cve-2026-11645.html)
+[0m% [0mWebFetch https://www.opencve.io/cve/CVE-2026-11645
+[0m% [0mWebFetch https://changelog.whale.naver.com/
+[0m◈ [0mExa Web Search "웨일 v4.38 업데이트 7월 2026 OR v4.39 업데이트 whale browser"
+STEP 1 — DELTA
+- [CHANGED] Latest desktop Whale = **v4.38.386.14** (2026-06-25, Stable/Beta, Chromium 148); supersedes KB anchor "4.35.351.12" — all hypotheses' repro baseline is now ≥4.38.386.14
+- [NEW] **CVE-2026-11645** (Chromium V8 OOB read/write RCE, CVSS 8.8, CISA KEV added 2026-06-09, Chrome <149.0.7827.103) fixed in 4.38.386.12 — KB claim "no 2026 CVEs published" is FALSE; but it is Chromium-inherited → **not reportable** per scope (Whale-only libs only)
+- [NEW] v4.38.386.12 fixed a Whale-specific **"download security warning bypass"** (no CVE yet) — fresh active hardening in the download flow
+- [NEW] **Multiplay GA** (v4.37.378.6, 2026-04-23): real-time tab sharing, invite links, follow tab/scroll, voice/chat — new Whale-only collaboration surface; 4.38 adds "copy invite link without joining"
+- [NEW] v4.38 sidebar changes: **Chrome Side Panel spec support + DevTools-in-sidebar** (2026-06-18) — new code paths on the exact recurring CVE-2025-69234/5 sidebar surface
+- [NEW] **Scrapbook shared categories via invitation link** (v4.38, "coming soon") — new account/shared-data authorization surface, sync-adjacent
+- [NEW] Advisory adds CVE-2024-50583 (Whale Installer <3.1.0.0, improper permission → malicious DLL) — extends installer DLL family (CVE-2018-12449/15913)
+- [NEW] CVE-2025-53599 (Whale iOS <3.9.1.4206, crafted `javascript:` scheme script execution) — mobile UXSS class, unassessed on latest iOS
+- [NEW] CVE-2026-1513 (billboard.js) + CVE-2026-23768/23769 (lucy-xss-filter) are Naver libs for **web services**, not bundled in the Whale browser → out of scope
+
+STEP 2 — PRIORITIZE
+- [PRIO] Sidebar env incl. new DevTools-in-sidebar + Chrome Side Panel (≥4.38.386.14), 7.30, atk=9 biz=9 tech=7 gate=3 cloud=4 fresh=9 — 6 recurring 2025 boundary CVEs; June 2026 added brand-new code on the same surface
+- [PRIO] Multiplay real-time tab sharing (GA 4.37), 7.25, atk=8 biz=8 tech=7 gate=4 cloud=7 fresh=9 — invite links + follow tab/scroll + voice; new Whale-only authz surface
+- [PRIO] Sync shared-data authorization (Scrapbook invite-share, sync storage), 6.85, atk=6 biz=9 tech=5 gate=5 cloud=8 fresh=8 — sync is explicit eligible focus; invite-link token design unknown
+- [PRIO] Whale Installer DLL/permission family, 5.00, atk=5 biz=6 tech=4 gate=7 cloud=1 fresh=5 — 3-CVE recurring class (2018/2018/2024) but local-only and old
+
+STEP 3 — HYPOTHESES
+- [HYP] Sidebar boundary enforcement on latest (≥4.38.386.14) — variant hunting incl. new DevTools-in-sidebar
+  class: OTHER
+  asset: Whale sidebar web-panel + devtools-in-sidebar window (browser-internal, v4.38.386.14)
+  confidence: 50
+  reasoning: 6 Whale-only sidebar/dual-tab CVEs in 2025 (SOP, iframe-sandbox, CSP); v4.38.386.12 (2026-06-18) added Chrome Side Panel spec + DevTools-in-sidebar onto that exact surface; CVE-2022-24072 shows devtools API is an injection vector.
+  evidence_needed: crafted HTML/webpanel that escapes sidebar sandbox or reads cross-origin data, or injects via the devtools-in-sidebar window, on the LATEST build
+  verify_steps: AUTH_HELPED: install v4.38.386.14, load crafted extension/page into sidebar web panel + devtools-in-sidebar; test sandbox escape / cross-origin XHR-fetch / CSP bypass; repro-first on latest; zero server interaction
+  impact: cross-origin data theft or script execution in browser UI; High-Critical
+  testability: AUTH_HELPED
+- [HYP] Multiplay invite-link/session authorization and tab-boundary scoping
+  class: AUTH
+  asset: Multiplay session (invite link, real-time tab/scroll/DOM sharing) in v4.38.386.14
+  confidence: 45
+  reasoning: GA 2026-04-23; anyone with invite link can open tabs and "anyone can open tabs, all users see them together"; 4.38 allows copying invite link without joining; host's already-open logged-in tab URLs/content exposure to invitees is an unverified authorization boundary; invite-token entropy/revocation unknown.
+  evidence_needed: on latest, a second authorized account joining via invite link reading host's other open tab URLs/DOM; invite link replay/revocation behavior
+  verify_steps: AUTH_HELPED: two-account session on v4.38.386.14; join via invite link, enumerate what a joiner can observe (host tab URLs, scroll, DOM, page content); test link reuse after host revokes/leaves; capture session payloads file-local only; zero naver sync infra requests
+  impact: cross-session disclosure of host's sensitive open-tab data (PII/tokens) or session takeover; High
+  testability: AUTH_HELPED
+- [HYP] Sync data-plane authorization + client key-storage (Scrapbook invite-share, passphrase/KDF)
+  class: AUTH
+  asset: Whale sync client + Scrapbook shared-category invite links (desktop v4.38.386.14, Android 3.9.14.9)
+  confidence: 42
+  reasoning: help center: passphrase never sent/stored server-side, re-entered per device → client-side KDF + local key store; Android added sync encryption only 3.8.6.2 (2025-04); 4.38 Scrapbook shared categories via invite links adds a new sync-adjacent authorization path; no client source public (org scan = docs only), so binary must be statically analyzed.
+  evidence_needed: KDF algorithm/iterations, per-OS key/passphrase storage paths, invite-link token format/scope, whether token or key ever leaves device
+  verify_steps: AUTH_HELPED: acquire v4.38.386.14 + Android APK 3.9.14.9, decompile, grep sync module for passphrase/scrypt/PBKDF2 constants and key-store paths; authorized two-account login to observe token/key/scrapbook-invite lifecycle in filesystem; zero requests to naver sync infra
+  impact: weak KDF or plaintext-adjacent key storage → local attacker decrypts synced bookmarks+site passwords; invite-link authz flaw → shared-data theft; High
+  testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] Whale-only bundled third-party libs version drift (conf 35 < 40): no bundled-lib manifest exists publicly; billboard.js/lucy-xss-filter CVEs are web-service libs, out of scope; installer DLL family is pre-3.1.0.0, not latest
+- [PARKED] Whale iOS `javascript:` scheme UXSS (CVE-2025-53599 class): latest iOS version unverifiable from here, HUMAN_ONLY, weak delta over the two-account desktop leads
+- All three emitted hypotheses survive: classes AUTH/OTHER (not on REJECTED list), all ≥40, all with concrete verify_steps
+- [FINAL] 1) Sidebar boundary + DevTools-in-sidebar (OTHER, 50) 2) Multiplay invite-link/session authz (AUTH, 45) 3) Sync data-plane authz + key storage (AUTH, 42)
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: Acquire latest Whale v4.38.386.14 binary (official download) and run an authorized two-account test: (a) Multiplay — join via copied invite link, enumerate what a joiner can read of the host's open tabs (URLs/scroll/DOM) and test invite-link revocation/reuse; (b) Scrapbook — share a category, test link scope/replay; capture session/invite payloads and sync module artifacts file-local only, zero requests to naver sync infra. (Laguna already owns the sidebar HUMAN repro; this advances the sync target with the freshest surfaces.)
+
+STEP 6 — LEARNING
+- [LEARN] REJECTED OTHER(latest) @ Whale desktop: CVE-2026-11645 is a Chromium V8 OOB RCE (inherited, KEV) — not a Whale-only lib bug, not reportable per scope; also proves "no 2026 CVEs" KB claim stale
+- [LEARN] ACCEPTED OTHER @ sidebar environment: recurring Whale-only boundary class re-confirmed — 4.38 shipped Chrome Side Panel + DevTools-in-sidebar onto the same surface as the 2025 CVE family
+- [LEARN] ACCEPTED AUTH @ sync: new shared-data features (Multiplay 4.37, Scrapbook invite-share 4.38) expand the eligible sync/account-authorization surface
+- [LEARN] REJECTED libs @ billboard.js / lucy-xss-filter: CVE-2026-1513/23768/23769 target Naver web-service libraries, not bundled in the Whale browser → out of scope
+- [LEARN] ACCEPTED MISCONFIG @ installer: CVE-2024-50583 confirms the Whale installer DLL/permission family is recurring (2018/2018/2024) but pre-3.1.0.0, not latest
+
+STEP 7 — RISK SCORE
+- [RISK] sync: 52 — sync client source absent; newest account/shared-data features (Multiplay, Scrapbook invite-share) add eligible authorization surface with unknown invite-token design; passphrase/KDF design unverifiable statically without the binary
+- [RISK] browser: 78 — 6 sidebar/dual-tab CVEs plus new 4.38 code (Side Panel spec, DevTools-in-sidebar) on the same surface; latest ships Chromium 148 (inherits CVE-2026-11645 V8 RCE, KEV, actively exploited — patched in 4.38.386.12 but not reportable); download-warning bypass just patched signals active hardening
+- [RISK] libs: 32 — no Whale-only bundled-lib manifest exists; installer DLL family recurring but local+old; billboard.js/lucy-xss-filter out of scope
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Whale%20browser&resultsPerPage=40" -o /tmp/opencode/nvd.json 2>&1; echo "exit: $?"; ls -la /tmp/opencode/nvd.json 2>/dev/null
+exit: 0
+-rw-r--r-- 1 runner runner 47332 Aug  7 20:03 /tmp/opencode/nvd.json
+[0m
+[0m$ [0mcurl -s --max-time 20 -A "Mozilla/5.0" "https://changelog.whale.naver.com/" -o /tmp/opencode/changelog.html 2>&1; echo "exit: $?"; wc -c /tmp/opencode/changelog.html 2>/dev/null
+exit: 0
+882 /tmp/opencode/changelog.html
+[0m
+[0m$ [0mpython3 -c "
+import json
+d=json.load(open('/tmp/opencode/nvd.json'))
+vulns=d.get('vulnerabilities',[])
+print('total:',d.get('totalResults'))
+for v in vulns:
+    c=v['cve']
+    cid=c['id']
+    desc=' '.join(x['value'] for x in c['descriptions'] if x['lang']=='en')[:200]
+    pub=c.get('published')
+    print(cid, '|', pub, '|', desc)
+"
+total: 21
+CVE-2018-7635 | 2018-07-03T15:29:00.220 | Whale Browser before 1.0.41.8 displays no URL information but only a title of a web page on the browser's address bar when visiting a blank page, which allows an attacker to display a malicious web pa
+CVE-2018-12448 | 2018-08-02T13:29:00.267 | Whale Browser before 1.3.48.4 displays no URL information but only a title of a web page on the browser's address bar when visiting a non-http page, which allows an attacker to display a malicious web
+CVE-2018-12449 | 2018-10-11T13:29:00.297 | The Whale browser installer 0.4.3.0 and earlier versions allows DLL hijacking.
+CVE-2020-9753 | 2020-05-20T03:15:10.070 | Whale Browser Installer before 1.2.0.5 versions don't support signature verification for Flash installer.
+CVE-2021-33593 | 2021-11-02T07:15:07.220 | Whale browser for iOS before 1.14.0 has an inconsistent user interface issue that allows an attacker to obfuscate the address bar which may lead to address bar spoofing.
+CVE-2022-24071 | 2022-01-28T11:15:08.290 | A Built-in extension in Whale browser before 3.12.129.46 allows attackers to compromise the rendering process which could lead to controlling browser internal APIs.
+CVE-2022-24072 | 2022-03-17T06:15:06.627 | The devtools API in Whale browser before 3.12.129.18 allowed extension developers to inject arbitrary JavaScript into the extension store web page via devtools.inspectedWindow, leading to extensions d
+CVE-2022-24073 | 2022-03-17T06:15:06.827 | The Web Request API in Whale browser before 3.12.129.18 allowed to deny access to the extension store or redirect to any URL when users access the store.
+CVE-2022-24074 | 2022-03-17T06:15:06.887 | Whale Bridge, a default extension in Whale browser before 3.12.129.18, allowed to receive any SendMessage request from the content script itself that could lead to controlling Whale Bridge if the rend
+CVE-2022-24075 | 2022-03-17T06:15:06.950 | Whale browser before 3.12.129.18 allowed extensions to replace JavaScript files of the HWP viewer website which could access to local HWP files. When the HWP files were opened, the replaced script cou
+CVE-2020-9754 | 2022-06-27T02:15:06.977 | NAVER Whale browser mobile app before 1.10.6.2 allows the attacker to bypass its browser unlock function via incognito mode.
+CVE-2023-25632 | 2023-11-27T07:15:43.397 | The Android Mobile Whale browser app before 3.0.1.2 allows the attacker to bypass its browser unlock function via 'Open in Whale' feature.
+CVE-2024-40618 | 2024-07-11T02:15:01.680 | Whale browser before 3.26.244.21 allows an attacker to execute malicious JavaScript due to improper sanitization when processing a built-in extension.
+CVE-2024-50583 | 2024-10-25T07:15:05.063 | Whale browser Installer before 3.1.0.0 allows an attacker to execute a malicious DLL in the user environment due to improper permission settings.
+CVE-2025-53599 | 2025-07-04T08:15:25.687 | Whale browser for iOS before 3.9.1.4206 allow an attacker to execute malicious scripts in the browser via a crafted javascript scheme.
+CVE-2025-53600 | 2025-07-04T08:15:25.823 | Whale browser before 4.32.315.22 allow an attacker to bypass the Same-Origin Policy in a dual-tab environment.
+CVE-2025-62583 | 2025-10-16T07:15:33.683 | Whale Browser before 4.33.325.17 allows an attacker to escape the iframe sandbox in a dual-tab environment.
+CVE-2025-62584 | 2025-10-16T07:15:33.833 | Whale browser before 4.33.325.17 allows an attacker to bypass the Same-Origin Policy in a dual-tab environment.
+CVE-2025-62585 | 2025-10-16T07:15:33.963 | Whale browser before 4.33.325.17 allows an attacker to bypass the Content Security Policy via a specific scheme in a dual-tab environment.
+CVE-2025-69234 | 2025-12-30T02:16:16.810 | Whale browser before 4.35.351.12 allows an attacker to escape the iframe sandbox in a sidebar environment.
+CVE-2025-69235 | 2025-12-30T02:16:16.930 | Whale browser before 4.35.351.12 allows an attacker to bypass the Same-Origin Policy in a sidebar environment.
+[0m
+[0m→ [0mRead /tmp/opencode/changelog.html
+[0m
+[0m$ [0mcurl -s --max-time 20 -A "Mozilla/5.0" "https://changelog.whale.naver.com/static/js/main.1187cf5a.js" -o /tmp/opencode/main.js; wc -c /tmp/opencode/main.js; grep -oE 'https?://[a-zA-Z0-9./_-]+' /tmp/opencode/main.js | sort -u | head -20; echo "---API strings---"; grep -oE '"[^"]*(api|Api)[^"]*"' /tmp/opencode/main.js | sort -u | head -20
+664992 /tmp/opencode/main.js
+http://fb.me/use-check-prop-types
+http://meyerweb.com/eric/tools/css/reset/
+http://www.w3.org/1998/Math/MathML
+http://www.w3.org/1999/xhtml
+http://www.w3.org/1999/xlink
+http://www.w3.org/2000/svg
+http://www.w3.org/XML/1998/namespace
+https://blog.naver.com/whaleteam
+https://bugbounty.whale.naver.com/
+https://class.whalespace.io/
+https://forum.whale.naver.com/
+https://git.io/JUIaE
+https://help.naver.com/alias/contents2/whale/whale_new1.naver
+https://help.whale.naver.com/
+https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+https://m.help.naver.com/alias/contents2/whale/whale_new1.naver
+https://myactivity.whale.naver.com/
+https://policy.naver.com/policy/privacy.html
+https://reactjs.org/docs/error-decoder.html
+https://static-whale.pstatic.net/og/homepage.png
+---API strings---
+"!==typeof s.count,f=d&&!s.ordinal&&0===s.count&&a.pluralResolver.shouldUseIntlApi(),p=void 0!==s.context&&("
+",e)}function Gi(e,t){return e[t]||e.default||e}const Yi={waapi:()=>Object.hasOwnProperty.call(Element.prototype,"
+",keyframes:[g,0],velocity:n,timeConstant:a,power:o,restDelta:u,modifyTarget:c,onUpdate:v(e)?d:void 0})}return{stop:()=>null===m||void 0===m?void 0:m.stop()}}(p);return()=>e.stop()}(function(e){let{when:t,delay:n,delayChildren:r,staggerChildren:i,staggerDirection:o,repeat:a,repeatType:s,repeatDelay:l,from:u,...c}=e;return!!Object.keys(c).length})(o)||(p={...p,...$i(e,p)}),p.duration&&(p.duration=Dr(p.duration)),p.repeatDelay&&(p.repeatDelay=Dr(p.repeatDelay));const h=t.owner,g=h&&h.current;if(Xi.waapi()&&Ji.has(e)&&!p.repeatDelay&&"
+",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},n=this.getRule(e,t);return this.shouldUseIntlApi()?n&&n.resolvedOptions().pluralCategories.length>1:n&&n.numbers.length>1}},{key:"
+",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};if(this.shouldUseIntlApi())try{return new Intl.PluralRules(e,{type:t.ordinal?"
+",value:function(e){var t=this,n=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},r=this.getRule(e,n);return r?this.shouldUseIntlApi()?r.resolvedOptions().pluralCategories.sort((function(e,t){return lx[e]-lx[t]})).map((function(e){return"
+",value:function(e,t){var n=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{},r=this.getRule(e,n);return r?this.shouldUseIntlApi()?"
+"===typeof t)for(var n=0,r=t.length;n<r;++n)e(t[n]);else N=0|!!t}return e},u.set=l,void 0!==e&&l(e),u};const l={animationIterationCount:1,borderImageOutset:1,borderImageSlice:1,borderImageWidth:1,boxFlex:1,boxFlexGroup:1,boxOrdinalGroup:1,columnCount:1,columns:1,flex:1,flexGrow:1,flexPositive:1,flexShrink:1,flexNegative:1,flexOrder:1,gridRow:1,gridRowEnd:1,gridRowSpan:1,gridRowStart:1,gridColumn:1,gridColumnEnd:1,gridColumnSpan:1,gridColumnStart:1,msGridRow:1,msGridRowSpan:1,msGridColumn:1,msGridColumnSpan:1,fontWeight:1,lineHeight:1,opacity:1,order:1,orphans:1,tabSize:1,widows:1,zIndex:1,zoom:1,WebkitLineClamp:1,fillOpacity:1,floodOpacity:1,stopOpacity:1,strokeDasharray:1,strokeDashoffset:1,strokeMiterlimit:1,strokeOpacity:1,strokeWidth:1};function u(e){var t=Object.create(null);return function(n){return void 0===t[n]&&(t[n]=e(n)),t[n]}}var c=/^((children|dangerouslySetInnerHTML|key|ref|autoFocus|defaultValue|defaultChecked|innerHTML|suppressContentEditableWarning|suppressHydrationWarning|valueLink|abbr|accept|acceptCharset|accessKey|action|allow|allowUserMedia|allowPaymentRequest|allowFullScreen|allowTransparency|alt|async|autoComplete|autoPlay|capture|cellPadding|cellSpacing|challenge|charSet|checked|cite|classID|className|cols|colSpan|content|contentEditable|contextMenu|controls|controlsList|coords|crossOrigin|data|dateTime|decoding|default|defer|dir|disabled|disablePictureInPicture|disableRemotePlayback|download|draggable|encType|enterKeyHint|form|formAction|formEncType|formMethod|formNoValidate|formTarget|frameBorder|headers|height|hidden|high|href|hrefLang|htmlFor|httpEquiv|id|inputMode|integrity|is|keyParams|keyType|kind|label|lang|list|loading|loop|low|marginHeight|marginWidth|max|maxLength|media|mediaGroup|method|min|minLength|multiple|muted|name|nonce|noValidate|open|optimum|pattern|placeholder|playsInline|poster|preload|profile|radioGroup|readOnly|referrerPolicy|rel|required|reversed|role|rows|rowSpan|sandbox|scope|scoped|scrolling|seamless|selected|shape|size|sizes|slot|span|spellCheck|src|srcDoc|srcLang|srcSet|start|step|style|summary|tabIndex|target|title|translate|type|useMap|value|width|wmode|wrap|about|datatype|inlist|prefix|property|resource|typeof|vocab|autoCapitalize|autoCorrect|autoSave|color|incremental|fallback|inert|itemProp|itemScope|itemType|itemID|itemRef|on|option|results|security|unselectable|accentHeight|accumulate|additive|alignmentBaseline|allowReorder|alphabetic|amplitude|arabicForm|ascent|attributeName|attributeType|autoReverse|azimuth|baseFrequency|baselineShift|baseProfile|bbox|begin|bias|by|calcMode|capHeight|clip|clipPathUnits|clipPath|clipRule|colorInterpolation|colorInterpolationFilters|colorProfile|colorRendering|contentScriptType|contentStyleType|cursor|cx|cy|d|decelerate|descent|diffuseConstant|direction|display|divisor|dominantBaseline|dur|dx|dy|edgeMode|elevation|enableBackground|end|exponent|externalResourcesRequired|fill|fillOpacity|fillRule|filter|filterRes|filterUnits|floodColor|floodOpacity|focusable|fontFamily|fontSize|fontSizeAdjust|fontStretch|fontStyle|fontVariant|fontWeight|format|from|fr|fx|fy|g1|g2|glyphName|glyphOrientationHorizontal|glyphOrientationVertical|glyphRef|gradientTransform|gradientUnits|hanging|horizAdvX|horizOriginX|ideographic|imageRendering|in|in2|intercept|k|k1|k2|k3|k4|kernelMatrix|kernelUnitLength|kerning|keyPoints|keySplines|keyTimes|lengthAdjust|letterSpacing|lightingColor|limitingConeAngle|local|markerEnd|markerMid|markerStart|markerHeight|markerUnits|markerWidth|mask|maskContentUnits|maskUnits|mathematical|mode|numOctaves|offset|opacity|operator|order|orient|orientation|origin|overflow|overlinePosition|overlineThickness|panose1|paintOrder|pathLength|patternContentUnits|patternTransform|patternUnits|pointerEvents|points|pointsAtX|pointsAtY|pointsAtZ|preserveAlpha|preserveAspectRatio|primitiveUnits|r|radius|refX|refY|renderingIntent|repeatCount|repeatDur|requiredExtensions|requiredFeatures|restart|result|rotate|rx|ry|scale|seed|shapeRendering|slope|spacing|specularConstant|specularExponent|speed|spreadMethod|startOffset|stdDeviation|stemh|stemv|stitchTiles|stopColor|stopOpacity|strikethroughPosition|strikethroughThickness|string|stroke|strokeDasharray|strokeDashoffset|strokeLinecap|strokeLinejoin|strokeMiterlimit|strokeOpacity|strokeWidth|surfaceScale|systemLanguage|tableValues|targetX|targetY|textAnchor|textDecoration|textRendering|textLength|to|transform|u1|u2|underlinePosition|underlineThickness|unicode|unicodeBidi|unicodeRange|unitsPerEm|vAlphabetic|vHanging|vIdeographic|vMathematical|values|vectorEffect|version|vertAdvY|vertOriginX|vertOriginY|viewBox|viewTarget|visibility|widths|wordSpacing|writingMode|x|xHeight|x1|x2|xChannelSelector|xlinkActuate|xlinkArcrole|xlinkHref|xlinkRole|xlinkShow|xlinkTitle|xlinkType|xmlBase|xmlns|xmlnsXlink|xmlLang|xmlSpace|y|y1|y2|yChannelSelector|z|zoomAndPan|for|class|autofocus)|(([Dd][Aa][Tt][Aa]|[Aa][Rr][Ii][Aa]|x)-.*))$/,d=u((function(e){return c.test(e)||111===e.charCodeAt(0)&&110===e.charCodeAt(1)&&e.charCodeAt(2)<91})),f=n(8461),p=n.n(f);function h(){return(h=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(e[r]=n[r])}return e}).apply(this,arguments)}var g=function(e,t){for(var n=[e[0]],r=0,i=t.length;r<i;r+=1)n.push(t[r],e[r+1]);return n},m=function(e){return null!==e&&"
+"shouldUseIntlApi"
+[0m
+[0m$ [0mgrep -oE '"/[a-zA-Z0-9./_-]{3,60}"' /tmp/opencode/main.js | sort -u | grep -viE '\.(js|css|png|jpg|svg|gif|woff|ico)"' | head -40
+"/412"
+"/416"
+"/417"
+"/419"
+[0m
+[0m$ [0mgrep -oE 'baseURL[^,;]{0,80}' /tmp/opencode/main.js | sort -u | head; grep -oE 'blog\.naver\.com[^"]*' /tmp/opencode/main.js | sort -u | head; grep -oE 'apollo|graphql' /tmp/opencode/main.js | sort | uniq -c
+blog.naver.com/whaleteam
+[0m
+[0m$ [0mgrep -oE '(axios|fetch|request)\("[^"]+"' /tmp/opencode/main.js | sort -u | head -30; echo "---"; grep -oE 'concat\("[^"]+"[^)]{0,60}' /tmp/opencode/main.js | sort -u | head -30; echo "--- post get ---"; grep -oE '"(GET|POST|PUT|DELETE)"[^)]{0,10}' /tmp/opencode/main.js | sort -u | head
+---
+concat("x"===e.drag?"y":"x"
+--- post get ---
+[0m
+[0m$ [0mgrep -oE '"\/([a-zA-Z0-9]{1,3}\/)+[a-zA-Z0-9?=&_.-]+"' /tmp/opencode/main.js | sort -u | head -40; echo "---whale paths---"; grep -oE 'whale[a-zA-Z0-9./_-]*' /tmp/opencode/main.js | sort -u | grep -viE 'whale_browser|whale-v0|whaleteam|\.naver|whale-new1' | head -40
+"/img/ic_help.png"
+"/img/ic_whale.png"
+"/img/ic_whale_class.png"
+"/img/ic_whale_dev.png"
+"/img/ic_whale_lab.png"
+"/img/ic_whale_store.png"
+"/img/ic_whalebook.png"
+"/img/ic_whaleon.png"
+"/img/ic_whaleon_study.png"
+"/img/ic_whalespace.png"
+"/img/img_update_260.png"
+"/img/img_update_470.png"
+---whale paths---
+whale
+whale-L-1B
+whale-L-2B
+whale-L-2R
+whale-L-3B
+whale-L-4B
+whale-L-5B
+whale-L-5R
+whale-M-1B
+whale-M-1R
+whale-M-2B
+whale-M-2R
+whale-M-3B
+whale-M-3R
+whale-M-4B
+whale-M-4R
+whale-S-1B
+whale-S-1R
+whale-S-2R
+whale-XL-1B
+whale-XL-2B
+whale-XL-3B
+whale-XL-4B
+whale-XL-5B
+whale-XL-6B
+whale-bg-dualtab
+whale-bg-floating
+whale-bg-hover-1
+whale-bg-hover-2
+whale-bg-layer
+whale-bg-ministore
+whale-bg-noti
+whale-bg-omnibox
+whale-bg-omnibox-editing
+whale-bg-omnibox-focus
+whale-bg-omnibox-hover
+whale-bg-press
+whale-bg-secretmode
+whale-bg-sidebar
+whale-bg-tabbar
+[0m
+[0m$ [0mcurl -s --max-time 20 -A "Mozilla/5.0 (X11; Linux x86_64)" "https://www.apkmirror.com/?post_type=app_release&searchtype=apk&s=com.naver.whale" -o /tmp/opencode/apkmirror.html; wc -c /tmp/opencode/apkmirror.html; grep -oE 'href="[^"]*com.naver.whale[^"]*"' /tmp/opencode/apkmirror.html | sort -u | head -10
+5681 /tmp/opencode/apkmirror.html
+[0m
+[0m$ [0mcurl -s --max-time 20 -A "Mozilla/5.0 (X11; Linux x86_64)" "https://bugbounty.whale.naver.com/" -o /tmp/opencode/bugbounty.html; wc -c /tmp/opencode/bugbounty.html; python3 -c "
+import re
+h=open('/tmp/opencode/bugbounty.html',encoding='utf-8',errors='ignore').read()
+t=re.sub(r'<[^>]+>',' ',h)
+t=re.sub(r'\s+',' ',t)
+print(t[:1500])
+"
+1062 /tmp/opencode/bugbounty.html
+ Whale bug bounty var lang = navigator.language || navigator.browserLanguage; if (lang == 'ko' || lang == 'ko-KR') location.replace('/ko/'); else location.replace('/en/');
+[0m
+[0m$ [0mcurl -s --max-time 20 -A "Mozilla/5.0 (X11; Linux x86_64)" "https://bugbounty.whale.naver.com/en/" -o /tmp/opencode/bugbounty_en.html; wc -c /tmp/opencode/bugbounty_en.html; python3 -c "
+import re
+h=open('/tmp/opencode/bugbounty_en.html',encoding='utf-8',errors='ignore').read()
+t=re.sub(r'<script[^>]*>.*?</script>',' ',h,flags=re.S)
+t=re.sub(r'<[^>]+>',' ',t)
+t=re.sub(r'\s+',' ',t)
+print(t[:4000])
+"
+12736 /tmp/opencode/bugbounty_en.html
+ Whale bug bounty WHALE Home Reporting Terms of Use ENG Open Language Selection ENG KOR Whale Security Bug Bounty Program Naver Corporation launches the Whale Security Bug Bounty Program to encourage security researchers to help us find and fix security vulnerabilities on Whale and to reward their efforts spent to make our product secure. Whale Security Bug Bounty Program ※ As of November 14, 2025, Whale Bug Bounty submissions have moved to the NAVER Bug Bounty platform. Please submit Security bugs via the NAVER Bug Bounty platform. 1. Introduction Naver Corporation launches the Whale Security Bug Bounty Program to encourage security researchers in helping us to find and fix security vulnerabilities on Whale and to reward their efforts spent to make our product secure. 2. Scope We focus on bugs in the latest version of Whale browser. - The bugs must be reproducible on the latest version in the time of reporting - Bugs in third party libraries used by only Whale (not Chromium) are eligible - Bugs in synchronization are eligible Vulnerabilities in other applications or services, including the followings, are NOT eligible. - All of Naver web services are out-of-scope (e.g. &ast;.naver.com, &ast;.navercorp.com) - Web servers communicating with built-in extensions (e.g. Papago, Belli) are out-of-scope - URL preview spoofing in status bar is out-of-scope - Bypassing XSS Auditor is out-of-scope - Vulnerabilities In "IETab" extension - False positive and False negative of the SafeBrowsing feature are out-of-scope 3. Reward Amounts Reward Amounts Vulnerability Examples Maximum Rewards Sandbox Escape File system access, Arbitrary external program execution USD &dollar;7,500 Remote Code Execution Arbitrary code execution using memory corruption bugs without sandbox escape USD &dollar;5,000 Same Origin Policy Violation Universal XSS USD &dollar;4,000 Information Leak Arbitrary memory read USD &dollar;2,000 Protection Bypass Bypassing malicious program download protection, Bypassing malicious page blocks USD &dollar;750 Spoofing on desktop Address bar spoofing, Referer spoofing USD &dollar;500 Others XSS in built-in extensions, other vulnerabilities USD &dollar;500 - We decide the final reward amount based on quality of the report and severity of the vulnerability - We may pay reduced reward amounts if the vulnerability requires complex user interactions - We may pay reduced reward amounts if the vulnerability is introduced by a third party - We can pay higher reward amounts for new class of vulnerability types or clever exploitation techniques 4. Ineligible Submissions We do not pay cash rewards for the following cases - Any bugs reproducible in other Chromium-based browsers which use the same release - Any bugs in operating systems or hardwares - Bugs not reproducible on the latest version - Bugs that are already reported by other participant, or aware by internal reviews - Public bugs - Theoretical vulnerabilities without proof of concept - Simple crash by an assertion or Denial-of-Service (DoS) attack - Requiring too much complex user interactions - Vulnerabilities occured when manually disabling security features - Bugs in experimental features (whale://flags) - Bugs that are already reported to third parties - Bugs that require a user device takeover - Bugs that require downloading or installing a malicious binary file on the device - Bugs that cause a temporary spoofing of the address bar during page loading - Bugs that enable spoofing of UI elements other than the address bar - Bugs that allow spoofing in mobile environments 5. Restrictions and Disclosure Policy - Do not disclose the details of the vulnerability until we fix the vulnerability and the fix is released to most users - Do not engage in any activity that would be disruptive or damaging to other users - Naver employees cannot participate this program 6. Reporting Bugs Please submit your report via this form . Please give us the following information if available: - Summa
+[0m
+[0m$ [0mls reposcan-raw/ 2>/dev/null; grep -rl "storage" reposcan-raw/ 2>/dev/null | head; echo "---"; curl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" -o /tmp/opencode/tree.json; python3 -c "
+import json
+d=json.load(open('/tmp/opencode/tree.json'))
+paths=[t['path'] for t in d.get('tree',[])]
+for p in paths:
+    if 'storage' in p.lower() or 'sync' in p.lower(): print(p)
+" 2>/dev/null | head -20
+analysis.txt
+grep-delta.txt
+grep-hits.prev.txt
+grep-hits.txt
+rag.txt
+reposcan-raw/rag.txt
+---
+[0m
+[0m$ [0mpython3 -c "
+import json
+d=json.load(open('/tmp/opencode/tree.json'))
+print('keys:',list(d.keys()))
+print('msg:',d.get('message'))
+trunc=d.get('truncated')
+print('truncated:',trunc)
+paths=[t['path'] for t in d.get('tree',[])]
+print('paths:',len(paths))
+import re
+for p in paths:
+    if re.search(r'storage|sync', p, re.I): print(p)
+" 2>&1 | head -30
+keys: ['sha', 'url', 'tree', 'truncated']
+msg: None
+truncated: False
+paths: 46
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/master?recursive=1" -o /tmp/opencode/tree2.json; python3 -c "
+import json,re
+d=json.load(open('/tmp/opencode/tree2.json'))
+paths=[t['path'] for t in d.get('tree',[])]
+print('total paths:',len(paths))
+for p in paths:
+    if re.search(r'sync|storage|passphrase|encrypt', p, re.I): print(p)
+print('---sidebar/dual---')
+for p in paths:
+    if re.search(r'sidebar|dual|multiplay|scrapbook', p, re.I): print(p)
+"
+total paths: 8
+---sidebar/dual---
+[0m
+[0m$ [0mgrep -oE 'https?://[a-zA-Z0-9./_-]*pstatic\.net[a-zA-Z0-9./_-]*' /tmp/opencode/main.js | sort -u; echo "---updates---"; grep -oE '(updates|update|latest|version)[^"]{0,40}' /tmp/opencode/main.js | grep -iE 'http|\.json|/v|whale' | sort -u | head
+https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+https://static-whale.pstatic.net/og/homepage.png
+---updates---
+[0m
+[0m$ [0mpython3 -c "
+import re
+h=open('/tmp/opencode/apkmirror.html',encoding='utf-8',errors='ignore').read()
+t=re.sub(r'<script[^>]*>.*?</script>',' ',h,flags=re.S)
+t=re.sub(r'<[^>]+>',' ',t); t=re.sub(r'\s+',' ',t)
+print(t[:800])
+"
+Just a moment... *{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width Enable JavaScript and cookies to continue
+[0m
+[0m$ [0mcurl -sI --max-time 15 "https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe" | grep -iE 'HTTP|content-length|last-modified|etag' ; echo "--- beta ---"; curl -sI --max-time 15 "https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe" | grep -iE 'HTTP|content-length|last-modified'
+HTTP/2 200 
+content-length: 11678736
+last-modified: Tue, 28 Apr 2026 13:12:52 GMT
+--- beta ---
+HTTP/2 200 
+content-length: 11162128
+last-modified: Tue, 28 Apr 2026 11:23:11 GMT
+[0m
+STEP 1 — DELTA
+- [NEW] Program scope/rules page surfaced at bugbounty.whale.naver.com/en/: submissions moved to the NAVER Bug Bounty platform effective 2025-11-14; reward tiers confirmed (SOP/UXSS $4,000; Sandbox Escape $7,500; Protection Bypass $750; Spoofing $500) — resolves scope.yml `disclosure_policy: TBD`
+- [NEW] Program adds explicit ineligibilities not in scope.yml: bugs in `whale://flags` experimental features; bugs requiring user-device takeover or malicious-binary install; temporary address-bar spoofing during page load; spoofing in mobile environments; any bug reproducible in other Chromium browsers on same release
+- [NEW] Desktop stable installer `installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe` reachable (HTTP 200, 11.6MB stub, last-modified 2026-04-28); beta variant likewise 200 — desktop static-analysis path viable, but installer is a stub (no browser DLLs/sync module inside)
+- [NEW] Android XAPK 3.9.14.9 acquisition via APKMirror still Cloudflare-blocked (challenge page) — Android sync binary analysis not feasible from here
+- [NEW] Repo git trees re-checked: `master`=8 files, `translate`=46 files; zero sync/storage/passphrase/sidebar source or API docs in-repo — sync client code is definitively closed-source
+- [NEW] NVD keyword re-query: still 21 Whale CVEs, no new Whale-specific 2026 CVE since last run
+- [CHANGED] Reporting channel: `TBD` → NAVER Bug Bounty platform (bugbounty.whale.naver.com → /en/ program page)
+
+STEP 2 — PRIORITIZE
+- [PRIO] Sync data-plane authorization — Scrapbook invite-share + Multiplay session (desktop v4.38.386.14), score: 7.35 (attack:7, business:9, tech:6, gate:5, cloud:8, fresh:9) — sync is the explicit eligible focus; two brand-new shared-data features (Multiplay GA 4.37, Scrapbook shared-categories 4.38) with unknown invite-link token design
+- [PRIO] Sidebar environment incl. DevTools-in-sidebar + Chrome Side Panel (v4.38.386.14), score: 6.85 (attack:9, business:8, tech:7, gate:3, cloud:2, fresh:9) — 6 recurring 2025 boundary CVEs; 4.38.386.12 shipped new code on the same surface; $4k SOP/UXSS tier
+- [PRIO] Whale sync client passphrase/KDF + local key-storage (desktop + Android), score: 5.90 (attack:6, business:8, tech:6, gate:4, cloud:3, fresh:6) — passphrase never stored server-side (vendor doc) → client-side KDF; desktop stub reachable but contains no sync module; Android blocked
+
+STEP 3 — HYPOTHESES
+[HYP] Scrapbook shared-category invite-link authorization + Multiplay session scoping
+class: AUTH
+asset: Whale sync data-plane — Scrapbook shared categories via invitation link; Multiplay real-time tab/scroll sharing (desktop v4.38.386.14)
+confidence: 46
+reasoning: v4.38 added "copy invite link without joining" (Multiplay) and Scrapbook shared categories "coming soon"; host's already-open logged-in tabs (URLs/DOM) are shared in real time; invite-token entropy/scope/revocation is undocumented and the browser is closed-source; program rewards sync bugs.
+evidence_needed: on latest build, a second authorized account joining via invite link enumerates host's other open tab URLs/DOM or shares beyond the invited category; invite link replay/reuse after revocation
+verify_steps: AUTH_HELPED: two-account session on v4.38.386.14; join via copied invite link; record what a joiner can observe (host tab URL list, scroll, DOM, page content) and whether links work after host revokes/leaves; capture session payloads file-local only; zero requests to naver sync infra
+impact: cross-session disclosure of host's sensitive open-tab data (PII/session tokens) or shared-data theft beyond intended category; High
+testability: AUTH_HELPED
+[HYP] Sidebar boundary enforcement on latest — variant incl. DevTools-in-sidebar window
+class: OTHER
+asset: Whale sidebar web-panel + devtools-in-sidebar window (v4.38.386.14)
+confidence: 50
+reasoning: 6 Whale-only sidebar/dual-tab CVEs in 2025 (SOP, iframe-sandbox, CSP); 4.38.386.12 (2026-06-18) added Chrome Side Panel spec + DevTools-in-sidebar onto that exact surface; CVE-2022-24072 shows the devtools API is a past injection vector; $4k SOP reward tier.
+evidence_needed: crafted HTML/web-panel escaping sidebar iframe sandbox or reading cross-origin data, or JS injection via the devtools-in-sidebar window, on LATEST build
+verify_steps: AUTH_HELPED: install v4.38.386.14, load crafted extension/page into sidebar web-panel and devtools-in-sidebar; test sandbox escape / cross-origin XHR-fetch / CSP bypass; repro-first on latest; zero server interaction
+impact: cross-origin data theft or script execution in browser UI; High–Critical (escalation to renderer)
+testability: AUTH_HELPED
+[HYP] Sync passphrase KDF / client key-storage design (desktop stub + Android)
+class: AUTH
+asset: Whale sync client key-derivation and local key-store (desktop; com.naver.whale Android 3.9.14.9) — naver infra, static analysis only
+confidence: 42
+reasoning: vendor help center: passphrase never sent/stored server-side, re-entered per device → client-side KDF + local key store; Android sync encryption added only 3.8.6.2 (2025-04); desktop installer is a 11.6MB stub (browser package fetched at install), Android APK blocked → full binary static analysis not yet possible.
+evidence_needed: KDF algorithm + iteration counts, per-OS key/passphrase storage paths, whether key/token ever leaves device in reset/recovery flows
+verify_steps: PASSIVE: download WhaleSetup.exe + beta, extract stub, inventory sync module strings/URLs; then acquire the versioned browser package the stub fetches at install time (same pstatic.net CDN, no naver web-service probing); grep for passphrase/PBKDF2/scrypt/sync/token constants. AUTH_HELPED: authorized test login to observe token/key filesystem lifecycle
+impact: weak KDF or plaintext-adjacent key storage → local attacker/infostealer decrypts synced bookmarks+site passwords → PII cascade; High
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] Whale-only bundled third-party libs version drift: confidence 35 < 40; no bundled-lib manifest exists; installer is a stub; billboard.js/lucy-xss-filter CVEs are web-service libs (out of scope)
+- [PARKED] Whale iOS `javascript:` scheme UXSS (CVE-2025-53599 class): latest iOS version unverifiable, HUMAN_ONLY, mobile spoofing/UXSS partially excluded by new ineligibility text
+- All three emitted hypotheses survive: classes AUTH/OTHER (not on REJECTED list), all ≥40, concrete verify_steps
+- [FINAL] 1) Sync data-plane authorization — Scrapbook invite-share + Multiplay (AUTH, 46) 2) Sidebar boundary incl. DevTools-in-sidebar (OTHER, 50 → ranked 1 for severity/freshness, kept top) — re-ranked: Sidebar 50, Scrapbook/Multiplay 46, sync KDF 42
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: On latest v4.38.386.14, run an authorized two-account test against the sync data-plane: (a) Multiplay — copy invite link, join, enumerate what a joiner observes of host open tabs (URLs/scroll/DOM); test link reuse/revocation after host leaves; (b) Scrapbook — share a category, test link scope and replay; record invite-link token format/entropy file-local only; zero requests to naver sync infra. Simultaneously download WhaleSetup.exe (pstatic.net CDN, confirmed 200) and extract the stub to map the package URL the installer fetches, enabling later sync-module static grep.
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED AUTH @ sync: program explicitly rewards synchronization bugs; new shared-data features (Multiplay 4.37, Scrapbook invite-share 4.38) expand the eligible sync/account-authorization surface
+- [LEARN] REJECTED AUTH @ browser-source: naver/whale-browser-developers contains zero sync/storage source or API docs (master 8 files, translate 46 files) — sync client is definitively closed-source
+- [LEARN] ACCEPTED OTHER @ sidebar: recurring boundary class re-confirmed — 4.38 shipped Chrome Side Panel + DevTools-in-sidebar onto the 2025 CVE-69234/5 surface
+- [LEARN] REJECTED OTHER(latest) @ Whale desktop: CVE-2026-11645 is Chromium V8-inherited (not a Whale-only lib), not reportable per scope
+- [LEARN] REJECTED libs @ billboard.js / lucy-xss-filter: CVE-2026-1513/23768/23769 target Naver web-service libraries, not bundled in Whale → out of scope
+- [LEARN] REJECTED MISCONFIG @ whale://flags: program explicitly ineligible for experimental-feature bugs
+
+STEP 7 — RISK SCORE
+- [RISK] sync: 55 — sync client source absent (closed-source confirmed); newest shared-data features (Multiplay, Scrapbook invite-share) add eligible authorization surface with unknown invite-token design; passphrase/KDF unverifiable without the browser package (stub reachable, Android blocked)
+- [RISK] browser: 76 — 6 sidebar/dual-tab CVEs plus new 4.38 code (Side Panel spec, DevTools-in-sidebar) on the same surface; latest ships Chromium 148 (inherits actively-exploited V8 RCE, patched in 4.38.386.12, not reportable); fresh download-warning bypass patch signals active hardening
+- [RISK] libs: 30 — no Whale-only bundled-lib manifest exists; installer is a stub with no DLL inventory; known installer DLL family (CVE-2018-12449/15913, 2024-50583) is pre-3.1.0.0 and local-only

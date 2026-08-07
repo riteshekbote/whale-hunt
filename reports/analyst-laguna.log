@@ -4074,3 +4074,73 @@ All three hypotheses survive self-critique:
 [RISK] sync: 45 — whale.storage extension API exists and may sync via Whale account (eligible focus area); however, no sync flow code or endpoints are available for static analysis; historical CVEs targeted extension API and built-in extensions (CVE-2022-24072, CVE-2024-40618), not sync specifically; bigpickle model already prioritized sync passphrase/key-derivation design at confidence 58; moderate uncertainty due to source-unavailable constraint
 [RISK] browser: 78 — sidebar + dual-tab environments have 6 confirmed CVEs in 2025 (SOP bypass CWE-346, iframe sandbox escape CWE-358, CSP bypass CWE-358); these are Whale-specific features not inherited from Chromium; latest stable v4.38.386.14 is 3 minor version bumps ahead of last CVE fix (Dec 2025) with ZERO published CVEs in between, creating a 6-month vulnerability disclosure gap; wiki docs confirm additional attack surface (show() URL loading, drag-navigation exposure); high priority for new variant discovery
 [RISK] libs: 30 — Whale bundles Chromium (inherits all Chromium CVEs), but no Whale-only third-party library manifests or version lists are publicly available; the repo contains only translated documentation from 2019; the extension API surface (whale.*) uses CWE-79-inherited patterns but library-level version drift cannot be assessed without binary access; low visibility, moderate inherent risk
+===== ANALYST laguna 2026-08-07 20:10:31 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+## STEP 1 — DELTA
+
+[NEW] hypotheses-ling3.txt ranks sidebarAction.show SOP bypass at confidence 60 (vs 55 from hypotheses-laguna.txt)
+[CHANGED] Browser risk score increased 75→78 (3 minor-version bumps since CVE-fix v4.35.351.12, 0 published CVEs in 6-month gap)
+
+## STEP 2 — PRIORITIZE
+
+[PRIO] Whale browser sidebar environment on v4.38.386.14 — score 7.4, atk=9 biz=10 tech=7 gate=2 cloud=4 fresh=9
+[PRIO] whale.* extension API surface (runtime/storage/sidebarAction) on v4.38.386.14 — score 6.45, atk=8 biz=7 tech=7 gate=3 cloud=6 fresh=6
+[PRIO] Whale browser dual-tab environment on v4.38.386.14 — score 6.3, atk=8 biz=8 tech=6 gate=2 cloud=3 fresh=8
+
+## STEP 3 — HYPOTHESES
+
+[HYP] Sidebar context SOP bypass — new variant post-CVE-2025-69235
+class: OTHER
+asset: Whale browser v4.38.386.14, sidebarAction.show({url}) loading cross-origin page into sidebar panel
+confidence: 58
+reasoning: CVE-2025-69235 (CWE-346) and CVE-2025-69234 (CWE-358) fixed in v4.35.351.12 (Dec 2025); current v4.38.386.14 is 3 minor bumps ahead with 0 CVEs published. Wiki confirms show() accepts url param to "load in extension panel" and use_navigation_bar=false exposes drag-navigation vector. 6 sidebar/dual-tab CVEs in 2025 show recurring boundary weakness.
+evidence_needed: Running v4.38.386.14 demonstrating cross-origin data access from sidebar panel content script
+verify_steps: HUMAN_ONLY — load sidebar-sample extension in Whale v4.38.386.14 → call whale.sidebarAction.show({url:'https://victim.test'}) → inject fetch('https://other.test/data') from panel content script → observe if SOP enforced
+impact: Cross-origin data theft from sidebar context (credentials, CSRF tokens); privilege escalation from extension to web context (Critical)
+testability: HUMAN_ONLY
+
+[HYP] Extension content script / API message injection via whale.runtime.onMessage
+class: XSS
+asset: whale.runtime.onMessage + content_scripts matching http://*/*, https://*/* (sidebar-sample manifest)
+confidence: 48
+reasoning: CVE-2022-24072 (CWE-79, devtools JS injection) and CVE-2024-40618 (CWE-79, unsanitized built-in extension processing) confirm recurring injection issues in whale.* API. Sample manifest declares content_scripts matching ALL origins with run_at=document_end. Background script processes whale.runtime.sendMessage without documented origin validation.
+evidence_needed: Extension API behavior showing unvalidated message processing or missing origin checks
+verify_steps: HUMAN_ONLY — load test extension with onMessage listener in v4.38.386.14 → send spoofed-origin messages via whale.runtime.sendMessage → test if content script injects into extension context → check whale.storage.sync origin validation
+impact: Arbitrary JS execution in extension context → session theft, privilege escalation to browser-level APIs (High)
+testability: HUMAN_ONLY
+
+[HYP] Dual-tab environment SOP/CSP bypass — new variant post-CVE-2025-62585
+class: OTHER
+asset: Whale browser v4.38.386.14, dual-tab context (Whale-specific feature)
+confidence: 45
+reasoning: 4 CVEs (CVE-2025-53600 SOP, 62583 sandbox, 62584 SOP, 62585 CSP-via-scheme) fixed in v4.33.325.17 (Oct 2025). Current v4.38.386.14 is ~8 months ahead with 0 CVEs published. Dual-tab is Whale-specific with no Chromium equivalent, recurring boundary issues.
+evidence_needed: v4.38.386.14 demonstrating SOP/CSP bypass in dual-tab mode
+verify_steps: HUMAN_ONLY — open dual-tab in v4.38.386.14 → load cross-origin iframes in each panel → test cross-origin read between panels → test javascript:/data: scheme CSP bypass
+impact: Same-origin policy bypass → credential theft, CSRF exfiltration, potential sandbox escape (Critical)
+testability: HUMAN_ONLY
+
+## STEP 4 — SELF-CRITIQUE
+
+[FINAL]
+[HYP] Sidebar context SOP bypass — confidence 58 (rank 1)
+[HYP] Extension content script / API message injection — confidence 48 (rank 2)
+[HYP] Dual-tab environment SOP/CSP bypass — confidence 45 (rank 3)
+
+All three hypotheses survive: confidence ≥40, class not on REJECTED list, concrete verify_steps present.
+
+## STEP 5 — NEXT ACTION
+
+[NEXT] [HUMAN]: Obtain Whale browser v4.38.386.14 binary from a non-naver.com mirror or local source. Install and load the sidebar-sample extension from the `translate` branch. Reproduce CVE-2025-69235 test case: call `whale.sidebarAction.show({url:'https://httpbin.org/headers'})` then attempt `fetch('https://victim.example.com/cookie')` from the sidebar panel's content script. Test both the show()-loaded cross-origin page vector and the drag-drop navigation vector with `use_navigation_bar:false`. Document whether SOP is enforced between the sidebar panel and background extension context on v4.38.386.14.
+
+## STEP 6 — LEARNING
+
+[LEARN] CONFIRMED @ GitHub: naver/whale-browser-developers repo remains documentation-only (last commit 2019-09-23; 2025-10-22 metadata-only refresh) — no source code, sync implementation, or library manifests available for static analysis
+[LEARN] CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability disclosure gap
+
+## STEP 7 — RISK SCORE
+
+[RISK] sync: 45 — whale.storage extension API may sync via Whale account (eligible focus area); but no sync flow code/endpoints available for static analysis; historical CVEs targeted extension API and built-in extensions, not sync specifically; moderate uncertainty due to source-unavailable constraint
+[RISK] browser: 78 — sidebar + dual-tab environments have 6 confirmed CVEs in 2025; latest v4.38.386.14 is 3 minor version bumps ahead of last CVE fix (Dec 2025) with ZERO published CVEs in between — 6-month disclosure gap; wiki docs confirm additional attack surface (show() URL loading, drag-navigation exposure); high priority for new variant discovery
+[RISK] libs: 30 — Whale bundles Chromium (inherits all Chromium CVEs); but no Whale-only third-party library manifests or version lists publicly available; repo contains only translated documentation from 2019; library-level version drift cannot be assessed without binary access; low visibility, moderate inherent risk
