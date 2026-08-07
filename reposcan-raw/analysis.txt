@@ -1,18 +1,126 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-Based on the provided data:
-
-**Scan Results:** 0 code/config files scanned, 0 hits — nothing to triage.
-
-**Knowledge Base Mismatch:** The RAG knowledge base contains only Naver Whale browser intelligence (naver/whale-browser-developers repo, CVEs, version history, excluded classes). It has **zero information** about `gladiaio/` GitHub org or `@gladiaio/sdk` npm package.
-
-**Verdict:**
-| Category | Count |
-|----------|-------|
-| REAL_SECRET | 0 |
-| TEST_OR_EXAMPLE | 0 |
-| ENDPOINT_LEAK | 0 |
-| INTERESTING | 0 |
-
-**REPORT_CANDIDATE: no** — no scan data exists for Gladia repos. The knowledge base appears to be for a different target (Whale browser). To proceed, you'd need to run the actual static scan against `gladiaio/` repos and `@gladiaio/sdk` package metadata.
+The knowledge base you provided appears to be for Naver Whale browser, not Gladia. Let me actually scan the gladiaio GitHub org to perform the triage.
+[0m$ [0mgh repo list gladiaio --limit 50 --json name,description,visibility,updatedAt,primaryLanguage
+gh: To use GitHub CLI in a GitHub Actions workflow, set the GH_TOKEN environment variable. Example:
+  env:
+    GH_TOKEN: ${{ github.token }}
+[0m
+[0m$ [0mcurl -s "https://api.github.com/orgs/gladiaio/repos?per_page=100" | jq -r '.[] | "\(.name)\t\(.description // "no description")\t\(.visibility)\t\(.updated_at)\t\(.language // "none")"'
+gladia-cli	no description	public	2026-07-27T03:25:24Z	Go
+gladia-samples	no description	public	2026-07-28T14:02:30Z	Python
+triton-inference-memory-allocation	no description	public	2026-05-04T10:31:55Z	Python
+gunicorn-fix-sigabort	gunicorn 'Green Unicorn' is a WSGI HTTP Server for UNIX, fast clients and sleepy applications.	public	2025-08-12T07:11:26Z	Python
+uvicorn-fix-sigabort	An ASGI web server, for Python. 🦄	public	2025-09-03T19:38:24Z	Python
+docs	no description	public	2026-07-29T18:22:34Z	MDX
+1password-scim	1Password SCIM Bridge deployment examples	public	2024-02-01T14:16:13Z	HCL
+sdk	no description	public	2026-07-23T20:34:01Z	Python
+gladia-quiz-app	no description	public	2025-11-28T16:04:27Z	TypeScript
+normalization	A lightweight library for normalizing speech transcripts before computing WER	public	2026-07-22T04:16:54Z	Python
+vllm_backend	no description	public	2026-03-04T13:15:26Z	Python
+transformers	🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. 	public	2026-03-11T14:38:15Z	none
+compare-stt	Blind comparison of speech-to-text providers.	public	2026-08-04T12:20:14Z	TypeScript
+n8n-nodes-gladia	no description	public	2026-07-23T15:57:27Z	TypeScript
+cloudnative-pg	CloudNativePG is a comprehensive platform designed to seamlessly manage PostgreSQL databases within Kubernetes environments, covering the entire operational lifecycle from initial deployment to ongoing maintenance	public	2026-04-23T15:06:27Z	none
+skills	Official AI agent skills from Gladia for integrating speech-to-text transcription into your applications	public	2026-08-07T06:45:59Z	none
+realtime-multilingual-asr-router	no description	public	2026-07-29T22:42:30Z	Python
+vercel-ai	The AI Toolkit for TypeScript. From the creators of Next.js, the AI SDK is a free open-source library for building AI-powered applications and agents 	public	2026-06-12T06:46:36Z	none
+gladiaflow	A desktop app for real-time voice dictation powered by Gladia's realtime transcription	public	2026-08-07T20:38:38Z	Rust
+[0m
+[0m$ [0mcurl -s "https://registry.npmjs.org/@gladiaio/sdk" | jq -r '{name: .name, version: .version, description: .description, homepage: .homepage, repository: .repository, bugs: .bugs, versions: (.versions | keys | length), latest: .dist-tags.latest, time: .time[.dist-tags.latest], maintainers: .maintainers}'
+jq: error: syntax error, unexpected '-', expecting '}' (Unix shell quoting issues?) at <top-level>, line 1:
+{name: .name, version: .version, description: .description, homepage: .homepage, repository: .repository, bugs: .bugs, versions: (.versions | keys | length), latest: .dist-tags.latest, time: .time[.dist-tags.latest], maintainers: .maintainers}                                                                                                                                                                           
+jq: 1 compile error
+[0m
+[0m$ [0mcurl -s "https://registry.npmjs.org/@gladiaio/sdk" | jq -r '. | {name, version, description, homepage, repository, bugs, versionCount: (.versions | length), latest: ."dist-tags".latest, publishedAt: .time[."dist-tags".latest], maintainers}'
+{
+  "name": "@gladiaio/sdk",
+  "version": null,
+  "description": "Gladia JavaScript/TypeScript SDK",
+  "homepage": "https://github.com/gladiaio/sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gladiaio/sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gladiaio/sdk/issues"
+  },
+  "versionCount": 22,
+  "latest": "1.1.0",
+  "publishedAt": "2026-07-23T20:48:35.560Z",
+  "maintainers": [
+    {
+      "name": "clement-gladia",
+      "email": "ccharmet@gladia.io"
+    },
+    {
+      "name": "gladia-admin",
+      "email": "tech-certified@gladia.io"
+    },
+    {
+      "name": "commarla",
+      "email": "lcommarieu@gladia.io"
+    },
+    {
+      "name": "hugo_gladia",
+      "email": "himbert@gladia.io"
+    },
+    {
+      "name": "tnesztler",
+      "email": "picobuntu@gmail.com"
+    },
+    {
+      "name": "amorin_gladia",
+      "email": "amorin@gladia.io"
+    },
+    {
+      "name": "thibautlb",
+      "email": "ecouprie@gladia.io"
+    },
+    {
+      "name": "remigladia",
+      "email": "rlejeune@gladia.io"
+    },
+    {
+      "name": "acorbeau-gladia",
+      "email": "acorbeau@gladia.io"
+    },
+    {
+      "name": "jqueguiner",
+      "email": "jlqueguiner@gladia.io"
+    },
+    {
+      "name": "hpapier.ext.gladia",
+      "email": "hpapier.ext@gladia.io"
+    },
+    {
+      "name": "clafaye",
+      "email": "clafaye@gladia.io"
+    },
+    {
+      "name": "opopops",
+      "email": "ggueutier@gladia.io"
+    },
+    {
+      "name": "bot-npmjs-gladiaio",
+      "email": "bot-npmjs@gladia.io"
+    },
+    {
+      "name": "rpiotaix",
+      "email": "rpiotaix@gladia.io"
+    },
+    {
+      "name": "yoannkygladia",
+      "email": "ykeoxay@gladia.io"
+    },
+    {
+      "name": "cpire",
+      "email": "cpire@gladia.io"
+    }
+  ]
+}
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mmkdir -p /tmp/gladia-scan && cd /tmp/gladia-scan && for repo in sdk gladia-cli gladia-samples skills gladiaflow; do echo "=== Cloning $repo ===" && git clone --depth 1 "https://github.com/gladiaio/$repo.git" 2>/dev/null || echo "Failed to clone $repo"; done failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
