@@ -172,3 +172,126 @@ evidence_needed: KDF algorithm + iteration counts, per-OS key/passphrase storage
 verify_steps: PASSIVE: download WhaleSetup.exe + beta, extract stub, inventory sync module strings/URLs; then acquire the versioned browser package the stub fetches at install time (same pstatic.net CDN, no naver web-service probing); grep for passphrase/PBKDF2/scrypt/sync/token constants. AUTH_HELPED: authorized test login to observe token/key filesystem lifecycle
 impact: weak KDF or plaintext-adjacent key storage → local attacker/infostealer decrypts synced bookmarks+site passwords → PII cascade; High
 testability: AUTH_HELPED
+## 2026-08-07 20:57:31 UTC [sync] (model bigpickle)
+[HYP] Whale sync passphrase/key-derivation & local key-storage design (desktop + Android 3.9.14.9)
+class: AUTH
+asset: Whale sync client (whale://settings/syncSetup desktop; com.naver.whale Android) — backend is naver infra, static analysis only
+confidence: 58
+reasoning: Vendor help center states passphrase is never sent to/stored on the Naver server and must be re-entered on every new device → client-side key derivation + local key store. Android only added sync encryption in 3.8.6.2 (2025-04); prior sync was TLS-only. No public client code exists (org scan), so binary must be analyzed statically.
+evidence_needed: KDF algorithm + iteration counts, per-OS storage of derived key/passphrase (Preferences/Local State/OS keychain/EncryptedSharedPreferences), whether key/passphrase ever leaves device (reset/recovery flows), sync auth token storage/scope
+verify_steps: PASSIVE: acquire latest desktop installer and Android XAPK 3.9.14.9 (apkpure blocked curl 403; try APKMirror or JS-resolved official link), extract/decompile, grep sync module for passphrase/scrypt/PBKDF2 constants, key-store paths, sync hostnames, bearer/OAuth token handling. AUTH_HELPED: authorized test login to observe token/key lifecycle in filesystem. Zero requests to naver sync infra.
+impact: Weak KDF or plaintext-adjacent key/passphrase storage → local attacker or infostealer decrypts synced bookmarks+site passwords → PII cascade; High
+testability: AUTH_HELPED
+[HYP] Security-boundary enforcement in Whale-only sidebar/dual-tab environments on latest desktop (variant hunting)
+class: OTHER
+asset: Latest desktop Whale (>=4.35.351.12) sidebar and dual-tab web panels
+confidence: 45
+reasoning: 2025-26 CVE family shows sidebar/dual-tab (Whale-only) repeatedly broke SOP, iframe sandbox, CSP (CVE-2025-69234/5, 62583/4/5, 53600), each fixed a release later; recurrence across 3 releases signals a systemic boundary weak spot; adjacent features (mobile window, quicksearch, scrapbook) may carry variants.
+evidence_needed: crafted HTML that escapes iframe sandbox or bypasses SOP/CSP inside sidebar/dual-tab web panel on the LATEST build
+verify_steps: AUTH_HELPED: install latest desktop Whale, open crafted HTML in sidebar and dual-tab web panels, test sandbox escape / cross-origin read / CSP bypass; repro-first on latest build; no server interaction.
+impact: sandbox escape / SOP bypass from a webpage → arbitrary script execution or cross-origin data theft in browser UI; Critical if escalates to renderer code execution
+testability: AUTH_HELPED
+[HYP] Whale-only bundled third-party libs: version drift vs upstream with known CVEs
+class: MISCONFIG
+asset: Whale desktop/mobile bundled third-party libs (inventory not yet built)
+confidence: 35
+reasoning: historical installers/extension-store bugs (CVE-2018-12449, CVE-2022-2407x); no current inventory; only generic diff-against-upstream verify path
+evidence_needed: bundled lib manifest + upstream version comparison
+verify_steps: PASSIVE: build inventory from extracted binary, compare versions to upstream known-CVE tables
+impact: outdated lib with public exploit → local/remote compromise; Medium-High
+testability: PASSIVE
+[HYP] Whale sync passphrase/key-derivation & local key-storage design (desktop + Android 3.9.14.9)
+class: AUTH
+asset: Whale sync client (whale://settings/syncSetup desktop; com.naver.whale Android) — backend is naver infra, static analysis only
+confidence: 58
+reasoning: Vendor help center states passphrase is never sent to/stored on the Naver server and must be re-entered on every new device → client-side key derivation + local key store. Android only added sync encryption in 3.8.6.2 (2025-04); prior sync was TLS-only. No public client code exists (org scan), so binary must be analyzed statically.
+evidence_needed: KDF algorithm + iteration counts, per-OS storage of derived key/passphrase (Preferences/Local State/OS keychain/EncryptedSharedPreferences), whether key/passphrase ever leaves device (reset/recovery flows), sync auth token storage/scope
+verify_steps: PASSIVE: acquire latest desktop installer and Android XAPK 3.9.14.9 (apkpure blocked curl 403; try APKMirror or JS-resolved official link), extract/decompile, grep sync module for passphrase/scrypt/PBKDF2 constants, key-store paths, sync hostnames, bearer/OAuth token handling. AUTH_HELPED: authorized test login to observe token/key lifecycle in filesystem. Zero requests to naver sync infra.
+impact: Weak KDF or plaintext-adjacent key/passphrase storage → local attacker or infostealer decrypts synced bookmarks+site passwords → PII cascade; High
+testability: AUTH_HELPED
+[HYP] Security-boundary enforcement in Whale-only sidebar/dual-tab environments on latest desktop (variant hunting)
+class: OTHER
+asset: Latest desktop Whale (>=4.35.351.12) sidebar and dual-tab web panels
+confidence: 45
+reasoning: 2025-26 CVE family shows sidebar/dual-tab (Whale-only) repeatedly broke SOP, iframe sandbox, CSP (CVE-2025-69234/5, 62583/4/5, 53600), each fixed a release later; recurrence across 3 releases signals a systemic boundary weak spot; adjacent features (mobile window, quicksearch, scrapbook) may carry variants.
+evidence_needed: crafted HTML that escapes iframe sandbox or bypasses SOP/CSP inside sidebar/dual-tab web panel on the LATEST build
+verify_steps: AUTH_HELPED: install latest desktop Whale, open crafted HTML in sidebar and dual-tab web panels, test sandbox escape / cross-origin read / CSP bypass; repro-first on latest build; no server interaction.
+impact: sandbox escape / SOP bypass from a webpage → arbitrary script execution or cross-origin data theft in browser UI; Critical if escalates to renderer code execution
+testability: AUTH_HELPED
+[HYP] Whale-only bundled third-party libs: version drift vs upstream with known CVEs
+class: MISCONFIG
+asset: Whale desktop/mobile bundled third-party libs (inventory not yet built)
+confidence: 35
+reasoning: historical installers/extension-store bugs (CVE-2018-12449, CVE-2022-2407x); no current inventory; only generic diff-against-upstream verify path
+evidence_needed: bundled lib manifest + upstream version comparison
+verify_steps: PASSIVE: build inventory from extracted binary, compare versions to upstream known-CVE tables
+impact: outdated lib with public exploit → local/remote compromise; Medium-High
+testability: PASSIVE
+[NEW] 2026-08-07 REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+[NEW] 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+[NEW] 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+[NEW] 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+[NEW] 2026-08-07 REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+[NEW] 2026-08-07 REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+[NEW] 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+[NEW] 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CVEs published
+[NEW] 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+[NEW] 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+[CHANGED] 2026-08-07 Latest known affected version from CVEs: 4.35.351.12 (CVE-2025-69234/69235, Dec 2025); no 2026 CVEs published yet — version increment to v4.38.386.14; 3 minor version bumps since last CVE-fix version
+[PRIO] Sidebar context SOP bypass — new variant post-CVE-2025-69235 on v4.38.386.14, score: 6.8 (attack_surface:8, business_value:9, tech_exposure:7, gate_ease:2, cloud_surface:3, freshness:9)
+[PRIO] Whale sync passphrase/key-derivation & local key-storage design (desktop + Android 3.9.14.9), score: 6.1 (attack_surface:6, business_value:8, tech_exposure:7, gate_ease:3, cloud_surface:4, freshness:7)
+[PRIO] Whale-only bundled libs: version drift vs upstream with known CVEs, score: 5.85 (attack_surface:7, business_value:4, tech_exposure:8, gate_ease:6, cloud_surface:2, freshness:8)
+[HYP] Sidebar context SOP bypass — new variant post-CVE-2025-69235 on v4.38.386.14
+class: XSS
+asset: sidebarAction.show URL loading
+confidence: 60
+reasoning: Wiki whale.sidebarAction docs reveal `show()` accepts a `url` parameter; `use_navigation_bar` defaults true but when false drag events navigate to other websites; CVE-2025-69235 confirmed SOP bypass, new variant post-CVE-2025-69235 on v4.38.386.14 (3 minor version bumps, zero published CVEs)
+evidence_needed: sidebarAction.show URL loading, use_navigation_bar behavior, extension API docs
+verify_steps: PASSIVE: Inspect sidebarAction.show URL loading in extension manifest; check `use_navigation_bar` defaults
+impact: context isolation bypass, user tracking via drag events, privacy violation
+testability: PASSIVE
+[HYP] Whale sync passphrase/key-derivation & local key-storage design (desktop + Android 3.9.14.9)
+class: AUTH
+asset: whale-sync client (internal sync endpoint)
+confidence: 55
+reasoning: Reports/hypotheses-bigpickle.txt detail passphrase/key-derivation and local key-storage design for desktop and Android 3.9.14.9; static analysis of whale-sync client code available
+evidence_needed: whale-sync client source code, key storage mechanisms
+verify_steps: AUTH_HELPED: Inspect whale-sync client for key derivation functions
+impact: credential exposure, account compromise
+testability: AUTH_HELPED
+[HYP] Whale-only bundled libs: version drift vs upstream with known CVEs
+class: MISCONFIG
+asset: whale-only third-party libraries
+confidence: 45
+reasoning: Inventory confirms bundled third-party libs; diff against upstream reveals version drift; no published CVEs in latest version v4.38.386.14 but gaps in 2026
+evidence_needed: bundled library manifests, upstream comparison results
+verify_steps: PASSIVE: Diff bundled library versions against upstream
+impact: potential zero-day in bundled library, upgrade risk
+testability: PASSIVE
+[HYP] Multiplay session scoping — URL-only sharing boundary bypass (login-page exclusion, token-bearing URL sync)
+class: AUTH
+asset: Whale Multiplay session (invite link, real-time tab/URL/scroll sync, v4.38.386.14; help.whale.naver.com/ko/desktop/multiplay)
+confidence: 50
+reasoning: Vendor now documents the boundary: only URLs sync, participants render their own account's screen, login pages are auto-detected and excluded. The exclusion is a client-side heuristic and URLs are synced verbatim (incl. query strings); any participant can navigate a shared tab. Boundary is falsifiable on latest; invite-link scope/expiry still undocumented.
+evidence_needed: on latest, whether a joiner receives host's excluded login-page URLs or token-bearing query strings (via tab list, URL sync, or "공유 받은 탭을 벗어났습니다" notifications); whether login-page exclusion is evadable by non-login pages carrying session params
+verify_steps: AUTH_HELPED: two authorized accounts on v4.38.386.14; host opens a login-gated page and a page with a token in the query string; joiner joins via copied invite link; capture file-local what the joiner observes (tab URLs, scroll, DOM, notifications); test link reuse after host leaves space (auto-delete); zero requests to naver sync infra beyond the client's own session
+impact: cross-session disclosure of host's open-tab URLs incl. token-bearing query strings / session identifiers; Medium-High
+testability: AUTH_HELPED
+[HYP] Sync passphrase KDF / client key-storage — Android-specific weakness (custom mobile impl)
+class: AUTH
+asset: Whale sync client key-derivation and local key-store (desktop; com.naver.whale Android 3.9.14.9) — naver infra, static analysis only
+confidence: 55
+reasoning: Primary sources (help.whale.naver.com ko/en): passphrase "will neither be sent to NAVER nor saved on its server", required per new device, reset flow deletes server data + logs out all devices → client-side KDF confirmed. Desktop likely inherits Chromium's audited sync-passphrase scrypt (fork), but Android only added "synchronization encryption" in 3.8.6.2 (2025-04) — a late, possibly custom mobile impl worth static analysis.
+evidence_needed: KDF algorithm + iteration counts (esp. Android dex), per-OS key/passphrase storage (Preferences/Local State/OS keychain/EncryptedSharedPreferences), whether key ever leaves device in reset/recovery flows
+verify_steps: AUTH_HELPED: acquire Android XAPK 3.9.14.9 (apkpure/APKMirror both 403 to curl — needs alternate mirror) + desktop package; decompile; grep sync module for passphrase/scrypt/PBKDF2 constants and key-store paths; authorized login to observe token/key filesystem lifecycle; zero requests to naver sync infra
+impact: weak KDF or plaintext-adjacent key storage → local attacker/infostealer decrypts synced bookmarks+site passwords → PII cascade; High
+testability: AUTH_HELPED
+[HYP] Sidebar boundary on latest — variant incl. DevTools-in-sidebar window
+class: OTHER
+asset: Whale sidebar web-panel + devtools-in-sidebar window (v4.38.386.14)
+confidence: 50
+reasoning: 6 Whale-only sidebar/dual-tab CVEs in 2025 (SOP, iframe-sandbox, CSP); v4.38.386.12 changelog confirms Chrome Side Panel spec + DevTools-in-sidebar shipped onto that exact surface; CVE-2022-24072 shows the devtools API is a past injection vector.
+evidence_needed: crafted HTML/web-panel escaping sidebar iframe sandbox or reading cross-origin data, or JS injection via the devtools-in-sidebar window, on LATEST build
+verify_steps: AUTH_HELPED: install v4.38.386.14, load crafted extension/page into sidebar web-panel and devtools-in-sidebar; test sandbox escape / cross-origin XHR-fetch / CSP bypass; repro-first on latest; zero server interaction
+impact: cross-origin data theft or script execution in browser UI; High–Critical (escalation to renderer)
+testability: AUTH_HELPED
