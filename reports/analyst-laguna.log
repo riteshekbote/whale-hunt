@@ -6627,3 +6627,1021 @@ testability: PASSIVE
 [RISK] browser: 78 — sidebar + dual-tab environments have 6 confirmed CVEs in 2025 (SOP bypass CWE-346, iframe sandbox escape CWE-358, CSP bypass CWE-358); these are Whale-specific features not inherited from Chromium; latest stable v4.38.386.14 is 3 minor version bumps ahead of last CVE fix (Dec 2025 v4.35.351.12) with ZERO published CVEs in between — 6-month disclosure gap; wiki docs confirm additional attack surface (sidebarAction.show() URL loading, drag-navigation exposure); $4k SOP reward tier; high priority for new variant discovery
 
 [RISK] libs: 30 — Whale bundles Chromium (inherits all Chromium CVEs), but no Whale-only third-party library manifests or version lists are publicly available; repo contains only translated documentation from 2019; library-level version drift cannot be assessed without binary access; low visibility, moderate inherent risk
+===== ANALYST laguna 2026-08-07 23:49:41 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/
+total 140
+drwxr-xr-x 11 runner runner  4096 Aug  7 23:41 .
+drwxr-xr-x  3 runner runner  4096 Aug  7 23:40 ..
+drwxr-xr-x  7 runner runner  4096 Aug  7 23:41 .git
+drwxr-xr-x  3 runner runner  4096 Aug  7 23:40 .github
+-rw-r--r--  1 runner runner  1057 Aug  7 23:40 README.md
+-rw-r--r--  1 runner runner    39 Aug  7 23:41 analyst-out.txt
+-rw-r--r--  1 runner runner 32728 Aug  7 23:41 analyst-prompt.txt
+-rw-r--r--  1 runner runner 29756 Aug  7 23:41 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 leads
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 reports
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  7 23:40 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 scripts
+-rw-r--r--  1 runner runner    34 Aug  7 23:40 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  7 23:40 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  7 23:40 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  7 23:40 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  7 23:40 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 triage
+[0m
+[0m$ [0mfind /home/runner/work/whale-hunt/whale-hunt -maxdepth 2 -type f -name "*.txt" -o -name "*.yml" -o -name "*.yaml" -o -name "*.md" 2>/dev/null | head -30
+/home/runner/work/whale-hunt/whale-hunt/analyst-out.txt
+/home/runner/work/whale-hunt/whale-hunt/reposcan-raw/grep-delta.txt
+/home/runner/work/whale-hunt/whale-hunt/reposcan-raw/grep-hits.prev.txt
+/home/runner/work/whale-hunt/whale-hunt/reposcan-raw/rag.txt
+/home/runner/work/whale-hunt/whale-hunt/reposcan-raw/grep-hits.txt
+/home/runner/work/whale-hunt/whale-hunt/reposcan-raw/analysis.txt
+/home/runner/work/whale-hunt/whale-hunt/knowledge/index.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-19-19.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-18-44.md
+/home/runner/work/whale-hunt/whale-hunt/leads/lead-bigpickle.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-20-11.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-19-28.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-23-08.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-20-59.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-latest.md
+/home/runner/work/whale-hunt/whale-hunt/leads/lead-laguna.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-19-22.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-18-59.md
+/home/runner/work/whale-hunt/whale-hunt/leads/lead-ling3.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-20-06.md
+/home/runner/work/whale-hunt/whale-hunt/leads/lead-longcat.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-21-58.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-22-05.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-21-09.md
+/home/runner/work/whale-hunt/whale-hunt/leads/lead-nemotron3.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-23-05.md
+/home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-07-22-23.md
+/home/runner/work/whale-hunt/whale-hunt/reports/valid-bugs.md
+/home/runner/work/whale-hunt/whale-hunt/reports/hypotheses-nemotron3.txt
+/home/runner/work/whale-hunt/whale-hunt/reports/hypotheses-bigpickle.txt
+[0m
+I'll analyze the knowledge base and perform the 8-step analysis. Let me start by examining the current state.
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/inventory/ /home/runner/work/whale-hunt/whale-hunt/knowledge/ /home/runner/work/whale-hunt/whale-hunt/leads/ /home/runner/work/whale-hunt/whale-hunt/reports/ /home/runner/work/whale-hunt/whale-hunt/reposcan-raw/ /home/runner/work/whale-hunt/whale-hunt/triage/ /home/runner/work/whale-hunt/whale-hunt/scripts/
+/home/runner/work/whale-hunt/whale-hunt/inventory/:
+total 20
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 23:41 ..
+-rw-r--r--  1 runner runner 11679 Aug  7 23:40 whale.md
+
+/home/runner/work/whale-hunt/whale-hunt/knowledge/:
+total 16
+drwxr-xr-x  2 runner runner 4096 Aug  7 23:40 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 23:41 ..
+-rw-r--r--  1 runner runner 4580 Aug  7 23:40 index.md
+
+/home/runner/work/whale-hunt/whale-hunt/leads/:
+total 248
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 23:41 ..
+-rw-r--r--  1 runner runner 55241 Aug  7 23:40 lead-bigpickle.md
+-rw-r--r--  1 runner runner 38347 Aug  7 23:40 lead-laguna.md
+-rw-r--r--  1 runner runner  5352 Aug  7 23:40 lead-ling3.md
+-rw-r--r--  1 runner runner   482 Aug  7 23:40 lead-longcat.md
+-rw-r--r--  1 runner runner 60080 Aug  7 23:40 lead-nemotron3.md
+-rw-r--r--  1 runner runner  2883 Aug  7 23:40 reposcan-2026-08-07-18-44.md
+-rw-r--r--  1 runner runner  1240 Aug  7 23:40 reposcan-2026-08-07-18-59.md
+-rw-r--r--  1 runner runner  6783 Aug  7 23:40 reposcan-2026-08-07-19-19.md
+-rw-r--r--  1 runner runner  2370 Aug  7 23:40 reposcan-2026-08-07-19-22.md
+-rw-r--r--  1 runner runner   366 Aug  7 23:40 reposcan-2026-08-07-19-28.md
+-rw-r--r--  1 runner runner   466 Aug  7 23:40 reposcan-2026-08-07-20-06.md
+-rw-r--r--  1 runner runner   617 Aug  7 23:40 reposcan-2026-08-07-20-11.md
+-rw-r--r--  1 runner runner   948 Aug  7 23:40 reposcan-2026-08-07-20-59.md
+-rw-r--r--  1 runner runner  5763 Aug  7 23:40 reposcan-2026-08-07-21-09.md
+-rw-r--r--  1 runner runner  4346 Aug  7 23:40 reposcan-2026-08-07-21-58.md
+-rw-r--r--  1 runner runner  3025 Aug  7 23:40 reposcan-2026-08-07-22-05.md
+-rw-r--r--  1 runner runner  2764 Aug  7 23:40 reposcan-2026-08-07-22-23.md
+-rw-r--r--  1 runner runner  3238 Aug  7 23:40 reposcan-2026-08-07-23-05.md
+-rw-r--r--  1 runner runner   631 Aug  7 23:40 reposcan-2026-08-07-23-08.md
+-rw-r--r--  1 runner runner   631 Aug  7 23:40 reposcan-latest.md
+
+/home/runner/work/whale-hunt/whale-hunt/reports/:
+total 1012
+drwxr-xr-x  2 runner runner   4096 Aug  7 23:40 .
+drwxr-xr-x 11 runner runner   4096 Aug  7 23:41 ..
+-rw-r--r--  1 runner runner 351712 Aug  7 23:40 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 584961 Aug  7 23:40 analyst-laguna.log
+-rw-r--r--  1 runner runner   8485 Aug  7 23:40 analyst-ling3.log
+-rw-r--r--  1 runner runner    720 Aug  7 23:40 analyst-longcat.log
+-rw-r--r--  1 runner runner  70272 Aug  7 23:40 analyst-nemotron3.log
+-rw-r--r--  1 runner runner  14463 Aug  7 23:40 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner   9029 Aug  7 23:40 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner     48 Aug  7 23:40 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner     50 Aug  7 23:40 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner  15334 Aug  7 23:40 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  21254 Aug  7 23:40 hypotheses.md
+-rw-r--r--  1 runner runner    136 Aug  7 23:40 valid-bugs.md
+
+/home/runner/work/whale-hunt/whale-hunt/reposcan-raw/:
+total 32
+drwxr-xr-x  2 runner runner 4096 Aug  7 23:40 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 23:41 ..
+-rw-r--r--  1 runner runner  501 Aug  7 23:40 analysis.txt
+-rw-r--r--  1 runner runner   40 Aug  7 23:40 grep-delta.txt
+-rw-r--r--  1 runner runner   50 Aug  7 23:40 grep-hits.prev.txt
+-rw-r--r--  1 runner runner   50 Aug  7 23:40 grep-hits.txt
+-rw-r--r--  1 runner runner 7995 Aug  7 23:40 rag.txt
+
+/home/runner/work/whale-hunt/whale-hunt/scripts/:
+total 16
+drwxr-xr-x  2 runner runner 4096 Aug  7 23:40 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 23:41 ..
+-rw-r--r--  1 runner runner 7506 Aug  7 23:40 sync-issues.py
+
+/home/runner/work/whale-hunt/whale-hunt/triage/:
+total 132
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 23:41 ..
+-rw-r--r--  1 runner runner  8463 Aug  7 23:40 run-2026-08-07-19-23.md
+-rw-r--r--  1 runner runner 14983 Aug  7 23:40 run-2026-08-07-21-01.md
+-rw-r--r--  1 runner runner  7882 Aug  7 23:40 run-2026-08-07-21-04.md
+-rw-r--r--  1 runner runner 20203 Aug  7 23:40 run-2026-08-07-21-57.md
+-rw-r--r--  1 runner runner 14629 Aug  7 23:40 run-2026-08-07-22-02.md
+-rw-r--r--  1 runner runner 21701 Aug  7 23:40 run-2026-08-07-22-57.md
+-rw-r--r--  1 runner runner 25767 Aug  7 23:40 run-2026-08-07-23-03.md
+[0m
+[0m$ [0mcat /home/runner/work/whale-hunt/whale-hunt/state_laguna.json /home/runner/work/whale-hunt/whale-hunt/state_bigpickle.json /home/runner/work/whale-hunt/whale-hunt/state_ling3.json /home/runner/work/whale-hunt/whale-hunt/state_longcat.json /home/runner/work/whale-hunt/whale-hunt/state_nemotron3.json
+{"phase": "POC", "target": "browser"}{"phase": "POC", "target": "sync"}{"phase": "POC", "target": "sync"}{"phase": "POC", "target": "libs"}{"phase": "POC", "target": "browser"}
+[0m
+[0m→ [0mRead inventory/whale.md
+[0m→ [0mRead knowledge/index.md
+[0m→ [0mRead scope.yml
+[0m→ [0mRead reports/hypotheses-nemotron3.txt
+[0m→ [0mRead reports/hypotheses-bigpickle.txt
+[0m→ [0mRead analyst-out.txt
+[0m→ [0mRead reports/hypotheses.md
+[0m→ [0mRead reports/valid-bugs.md
+[0m→ [0mRead leads/reposcan-latest.md
+[0m→ [0mRead reports/hypotheses-ling3.txt
+[0m→ [0mRead reports/hypotheses-longcat.txt
+[0m→ [0mRead scripts/sync-issues.py
+[0m
+[0m$ [0mls -la /tmp/opencode/ 2>/dev/null || echo "No /tmp/opencode directory"
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:41 .
+drwxrwxrwt 15 root   root   12288 Aug  7 23:41 ..
+[0m
+[0m$ [0mgetenforce 2>/dev/null || echo "SELinux not applicable"; which 7z unzip strings file 2>/dev/null || echo "Tools check complete"
+SELinux not applicable
+/usr/bin/7z
+/usr/bin/unzip
+/usr/bin/strings
+/usr/bin/file
+[0m
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m→ [0mRead leads/lead-laguna.md
+[0m→ [0mRead leads/lead-ling3.md
+[0m→ [0mRead leads/lead-longcat.md
+[0m→ [0mRead reposcan-raw/rag.txt
+Now let me check the most recent leads and the reposcan raw files to get the current state.
+[0m→ [0mRead reposcan-raw/analysis.txt
+[0m→ [0mRead README.md
+[0m✗ [0mRead reports/hypotheses-bigpickle.txt failed[90m [offset=391][0m
+[91m[1mError: [0mOffset 391 is out of range for this file (88 lines)
+[0m
+[0m$ [0mcat /home/runner/work/whale-hunt/whale-hunt/.github/workflows/*.yml 2>/dev/null || echo "No workflow files found"
+name: Senior Hunter - Analyst Pipeline (whale)
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  analyst:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    concurrency:
+      group: hunt-${{ matrix.model.name }}
+      cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      matrix:
+        model:
+          - { id: opencode/big-pickle, name: bigpickle }
+          - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+          - { id: opencode/longcat-2.0-free, name: longcat }
+          - { id: opencode/ling-3.0-flash-free, name: ling3 }
+          - { id: opencode/laguna-s-2.1-free, name: laguna }
+
+    env:
+      MODEL_ID: ${{ matrix.model.id }}
+      MODEL_NAME: ${{ matrix.model.name }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install OpenCode
+        run: |
+          export PATH="$HOME/.opencode/bin:$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+          if command -v opencode >/dev/null 2>&1; then
+            opencode --version
+            exit 0
+          fi
+          npm install -g opencode-ai 2>/dev/null || npm install -g --prefix "$HOME/.npm-global" opencode-ai 2>/dev/null || true
+          if ! command -v opencode >/dev/null 2>&1; then
+            for i in 1 2 3; do
+              curl -fsSL https://opencode.ai/install | bash && break
+              echo "opencode.ai installer attempt $i failed, retrying in 15s..."
+              sleep 15
+            done
+          fi
+          export PATH="$HOME/.opencode/bin:$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+          opencode --version
+
+
+      - name: Prepare context (RAG + state + inventory + last cycle)
+        run: |
+          mkdir -p knowledge inventory leads reports
+          [ -f knowledge/index.md ] || echo "# Knowledge Base (seed)" > knowledge/index.md
+          [ -f state_${MODEL_NAME}.json ] || echo '{"phase":"RECON","target":"api"}' > state_${MODEL_NAME}.json
+          TARGET=$(python3 -c "import json;print(json.load(open('state_${MODEL_NAME}.json')).get('target','sync'))")
+          echo "TARGET=$TARGET" >> $GITHUB_ENV
+          echo "TARGET_NEXT=$(python3 -c "import json;t=json.load(open('state_${MODEL_NAME}.json')).get('target','sync');print({'sync': 'browser', 'browser': 'libs', 'libs': 'sync'}[t])")" >> $GITHUB_ENV
+          {
+            echo "=== KNOWLEDGE BASE ==="
+            cat knowledge/index.md
+            echo "=== MY STATE ==="
+            cat state_${MODEL_NAME}.json
+            echo "=== MY LAST LEADS (tail) ==="
+            tail -60 leads/lead-${MODEL_NAME}.md 2>/dev/null || echo none
+            echo "=== AGGREGATED HYPOTHESES (tail) ==="
+            tail -40 reports/hypotheses.md 2>/dev/null || echo none
+            echo "=== INVENTORY gladia ==="
+            tail -50 inventory/whale.md 2>/dev/null || echo none
+          } > ctx.txt
+
+      - name: Analyst run (8-step methodology)
+        run: |
+          cat ctx.txt > analyst-prompt.txt
+          cat >> analyst-prompt.txt << 'PROMPT_EOF'
+                    You are a senior bug bounty hunter ANALYST for the Naver Whale browser
+          program. Eligibility: bugs in the LATEST version of Whale browser (must be
+          reproducible on the latest version at time of reporting), bugs in third-party
+          libraries used ONLY by Whale (not Chromium), and bugs in synchronization.
+          NOT ELIGIBLE: all Naver web services (*.naver.com, *.navercorp.com), web
+          servers of built-in extensions (Papago, Belli), URL preview spoofing in the
+          status bar, bypassing XSS Auditor, the IETab extension, and SafeBrowsing
+          false-positive/false-negative issues. Focus: sync flow, Whale-only libraries,
+          browser core on latest version. Your job is NOT to invent vulnerabilities.
+          Run these 8 steps and output ONLY the structured blocks.
+
+          STEP 1 — DELTA: Compare the inventory + knowledge + your last leads against the current known surface. List only NEW or CHANGED surface items as [NEW]/[CHANGED] (one line each). If nothing is new, state "NO_DELTA".
+
+          STEP 2 — PRIORITIZE: Score the top new assets (or top existing if no delta) on 6 axes 0-10: attack_surface, business_value, tech_exposure (GraphQL/OAuth/JWT/upload/admin/uncommon stacks), gate_ease (10 = no auth needed), cloud_surface (cloud APIs/storage/metadata), freshness. priority = 0.25*attack + 0.25*business + 0.15*tech + 0.15*gate + 0.10*cloud + 0.10*fresh. Emit [PRIO] lines: asset, score, axis breakdown.
+
+          STEP 3 — HYPOTHESES: For the top 3 prioritized assets emit max 1 hypothesis each, strictly this schema:
+          [HYP] <title>
+          class: <IDOR|SSRF|AUTH|XSS|BUSLOGIC|MISCONFIG|OATH|OTHER>
+          asset: <host/endpoint>
+          confidence: <0-100>
+          reasoning: <facts only, 2-3 lines>
+          evidence_needed: <what proves it>
+          verify_steps: <passive-first concrete HTTP requests, or AUTH_HELPED:...>
+          impact: <what attacker gets + severity>
+          testability: <PASSIVE|AUTH_HELPED|HUMAN_ONLY>
+
+          STEP 4 — SELF-CRITIQUE: Re-read your own hypotheses. Drop any that: confidence < 40, or class on the knowledge REJECTED list, or no concrete verify_steps. For dropped ones emit [PARKED] <title>: <why dropped>. Emit [FINAL] with the surviving hypotheses re-ranked (top first).
+
+          STEP 5 — NEXT ACTION: Choose exactly one and emit [NEXT] <PROBE|SCAN|RAG|HUMAN>: <one concrete action, with the exact endpoint/request if PROBE, or the authorized-token test if HUMAN>.
+
+          STEP 6 — LEARNING: Emit [LEARN] lines for any class newly proven dead or alive (one line each, format: REJECTED/ACCEPTED <class> @ <asset>: <reason>).
+
+          STEP 7 — RISK SCORE: Emit [RISK] sync: <0-100> reason | browser: <0-100> reason | libs: <0-100> reason (overall exposure of the program surface, not exploit status).
+
+          RULES: facts vs hypotheses strictly separated; no endpoint-map-only output; no class on the REJECTED list; never mention secrets in full (hash them with sha256sum); all claims must trace to the context provided or your own read-only probes; passive-first only (≤1 rps, GET/HEAD); any scanner output requires manual validation before it becomes a lead.
+          PROMPT_EOF
+          export PATH="$HOME/.opencode/bin:$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+          timeout 18m opencode run --model "$MODEL_ID" < analyst-prompt.txt > analyst-out.txt 2>&1 || true
+          cp analyst-out.txt analyst-${MODEL_NAME}.out
+          grep -E '^\[(NEW|CHANGED|PRIO|HYP|PARKED|FINAL|NEXT|LEARN|RISK)\]|^class:|^confidence:|^asset:|^impact:|^testability:|^verify_steps:|^reasoning:|^evidence_needed:' analyst-out.txt > lead.txt || true
+          {
+            echo "## $(date -u +'%Y-%m-%d %H:%M:%S UTC') [$TARGET] (model ${MODEL_NAME})"
+            cat lead.txt
+          } > lead_${MODEL_NAME}.txt
+          echo "lead bytes: $(wc -c < lead.txt) | raw bytes: $(wc -c < analyst-out.txt)"
+
+      - name: Upload model artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: analyst-${{ matrix.model.name }}
+          path: |
+            lead_${{ matrix.model.name }}.txt
+            analyst-${{ matrix.model.name }}.out
+            ctx.txt
+          if-no-files-found: warn
+
+  aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: analyst
+    if: always()
+    concurrency:
+      group: hunt-aggregate
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all model artifacts
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          path: art
+          merge-multiple: true
+
+      - name: Merge + rank + inventory + knowledge update (single committer)
+        run: |
+          mkdir -p leads reports knowledge inventory
+          for f in art/lead_*.txt; do
+            [ -f "$f" ] || continue
+            cat "$f" >> leads/lead-$(basename "$f" | sed -E 's/lead_([a-z0-9]+)\.txt/\1/').md
+          done
+          python3 << 'PY_EOF'
+          import re, glob, json, os, datetime
+          stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+          # per-model structured files for the aggregator
+          for f in glob.glob('art/lead_*.txt'):
+              base = os.path.basename(f)
+              model = re.sub(r'^lead_([a-z0-9]+)\.txt$', r'\1', base)
+              open(f'reports/hypotheses-{model}.txt', 'w').write(open(f).read())
+          all_h = []
+          for f in glob.glob('reports/hypotheses-*.txt'):
+              text = open(f).read()
+              m = re.search(r'^\[HYP\] (.*)$', text, re.M)
+              if not m: continue
+              title = m.group(1).strip()
+              c = re.search(r'^confidence:\s*(\d+)', text, re.M)
+              a = re.search(r'^asset:\s*(\S+)', text, re.M)
+              all_h.append((int(c.group(1)) if c else 0, a.group(1) if a else '?', title, f))
+          all_h.sort(reverse=True)
+          with open('reports/hypotheses.md', 'a') as out:
+              out.write(f"\n## RANKED HYPOTHESES {stamp}\n")
+              seen = set()
+              for conf, asset, title, f in all_h[:8]:
+                  key = title.lower()[:60]
+                  if key in seen: continue
+                  seen.add(key)
+                  out.write(f"- [{conf}] {asset}: {title} (from {f})\n")
+              for f in glob.glob('reports/hypotheses-*.txt'):
+                  n = re.search(r'^\[NEXT\] (.*)$', open(f).read(), re.M)
+                  if n: out.write(f"- NEXT({os.path.basename(f)}): {n.group(1).strip()[:160]}\n")
+              for f in glob.glob('reports/hypotheses-*.txt'):
+                  for l in re.findall(r'^\[LEARN\] (.*)$', open(f).read(), re.M):
+                      out.write(f"- LEARN: {l.strip()[:160]}\n")
+          # knowledge append (dedupe)
+          kpath = 'knowledge/index.md'
+          os.makedirs('knowledge', exist_ok=True)
+          ktext = open(kpath).read() if os.path.exists(kpath) else ''
+          with open(kpath, 'a') as k:
+              for f in glob.glob('reports/hypotheses-*.txt'):
+                  for l in re.findall(r'^\[LEARN\] (.*)$', open(f).read(), re.M):
+                      line = f"- {stamp[:10]} {l.strip()}"
+                      if line not in ktext:
+                          k.write(line + "\n")
+          # inventory update
+          inv = 'inventory/whale.md'
+          with open(inv, 'a') as io:
+              io.write(f"\n## {stamp}\n")
+              for f in glob.glob('reports/hypotheses-*.txt'):
+                  for l in re.findall(r'^\[(NEW|CHANGED)\] (.*)$', open(f).read(), re.M):
+                      io.write(f"- {l[0]} {l[1].strip()[:200]}\n")
+          # state advance per model (approximate: each model got its own target)
+          for sp in glob.glob('state_*.json'):
+              try:
+                  st = json.load(open(sp))
+              except Exception:
+                  st = {}
+              phases = ['RECON','SURFACE','HYPOTHESIS','POC']
+              if st.get('phase') in phases:
+                  st['phase'] = phases[min(phases.index(st['phase'])+1, 3)]
+              json.dump(st, open(sp, 'w'))
+          # archive raw logs
+          for f in glob.glob('art/analyst-*.out'):
+              model = re.search(r'art/analyst-([a-z0-9]+)\.out$', f)
+              if model:
+                  with open(f'reports/analyst-{model.group(1)}.log', 'a') as lg:
+                      lg.write(f"===== ANALYST {model.group(1)} {stamp} =====\n")
+                      lg.write(open(f, errors='ignore').read())
+          print('merged', len(all_h), 'hypotheses')
+          PY_EOF
+
+      - name: Commit (single push, no race)
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add leads reports knowledge inventory state_*.json || true
+          if ! git diff --cached --quiet; then
+            git commit -m "analyst cycle $(date -u +'%Y-%m-%d-%H-%M')"
+          fi
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin main && break
+            echo "commit push attempt $i failed, retrying in 20s..."
+            sleep 20
+          done
+          git log --oneline -1
+
+      - name: Dispatch reposcan (once per cycle)
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/reposcan.yml/dispatches" \
+            -d '{"ref":"main"}' || true
+name: Public Repo Deep Scan (whale)
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  reposcan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    concurrency:
+      group: reposcan
+      cancel-in-progress: true
+    env:
+      MODEL_ID: opencode/nemotron-3-ultra-free
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install OpenCode
+        run: |
+          export PATH="$HOME/.opencode/bin:$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+          if command -v opencode >/dev/null 2>&1; then
+            opencode --version
+            exit 0
+          fi
+          npm install -g opencode-ai 2>/dev/null || npm install -g --prefix "$HOME/.npm-global" opencode-ai 2>/dev/null || true
+          if ! command -v opencode >/dev/null 2>&1; then
+            for i in 1 2 3; do
+              curl -fsSL https://opencode.ai/install | bash && break
+              echo "opencode.ai installer attempt $i failed, retrying in 15s..."
+              sleep 15
+            done
+          fi
+          export PATH="$HOME/.opencode/bin:$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+          opencode --version
+
+
+      - name: Enumerate org repos + clone top candidates
+        run: |
+          mkdir -p reposcan-raw
+          for ORG in naver; do
+            echo "== $ORG =="
+            curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/orgs/$ORG/repos?per_page=100&sort=updated" -o repos-$ORG.json
+            ORG_NAME=$ORG python3 - << 'PY'
+          import json, os
+          org = os.environ["ORG_NAME"]
+          try:
+              repos = json.load(open(f"repos-{org}.json"))
+              if not isinstance(repos, list):
+                  open(f"cands-{org}.txt", "w").write("")  # API error response
+                  print("API error:", str(repos)[:200])
+                  exit(0)
+          except Exception as ex:
+              print("parse error:", ex)
+              exit(0)
+          # naver org is huge: ONLY whale-related repos (filter by name).
+          whale_names = {'whale-browser-developers'}
+          whale_urls = []
+          for r in repos:
+              if 'whale' in r['name'].lower() or r['name'] in whale_names:
+                  whale_urls.append(f"https://github.com/{org}/{r['name']}.git")
+          for r in repos[:10]:
+              if 'whale' in r['name'].lower():
+                  print(f"{org}/{r['name']} stars={r['stargazers_count']} lang={r['language']}")
+          with open(f"cands-{org}.txt", "w") as f:
+              for u in whale_urls:
+                  f.write(u + "\n")
+          PY
+            if [ -f cands-$ORG.txt ]; then
+              mkdir -p reposcan-raw/$ORG
+              cd reposcan-raw/$ORG
+              xargs -n1 -P3 git clone -q --depth 1 < ../../cands-$ORG.txt 2>&1 | head -5 || true
+              cd ../..
+            fi
+          done
+          ls reposcan-raw/*/ 2>/dev/null | wc -l
+
+      - name: Secret + endpoint grep sweep (python, 50 patterns)
+        run: |
+          OUT=reposcan-raw/grep-hits.txt
+          [ -f $OUT ] && cp $OUT reposcan-raw/grep-hits.prev.txt
+          : > $OUT
+          python3 << 'PY'
+          import os, re, json
+          ROOT = "reposcan-raw"
+          PATTERNS = [
+              re.compile(r'AKIA[0-9A-Z]{16}'),
+              re.compile(r'AIza[0-9A-Za-z_-]{35}'),
+              re.compile(r'ya29\.[0-9A-Za-z_-]+'),
+              re.compile(r'gh[pousr]_[0-9A-Za-z]{20,}'),
+              re.compile(r'xox[baprs]-[0-9A-Za-z-]{10,}'),
+              re.compile(r'sk-[0-9A-Za-z]{20,}'),
+              re.compile(r'eyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}'),
+              re.compile(r'BEGIN (RSA|EC|OPENSSH|PGP) PRIVATE KEY'),
+              re.compile(r'(client_secret|clientSecret|app_secret|app_secret|secret_key|private_key)\s*[:=]\s*["\'\'\'][^"\'\'\']{10,}["\'\'\']'),
+              re.compile(r'(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|GOOGLE_API_KEY|GCP_SA|AZURE_SUBSCRIPTION|SLACK_TOKEN|DISCORD_TOKEN|TELEGRAM_BOT)\s*[:=]\s*\S{10,}'),
+              re.compile(r'(Authorization|Bearer)\s*[:=]\s*eyJ[a-zA-Z0-9_-]{20,}'),
+              re.compile(r'gladia|gladiaio'),  # any reference that might leak internal endpoints/keys
+              re.compile(r'api\.gladia\.io|app\.gladia\.io'),
+              re.compile(r'[a-z0-9-]-(dev|staging|stg|test|qa|prod|internal|corp)\.(gladia|gladiaio)\.[a-z]+'),
+              re.compile(r'metadata\.google\.internal|169\.254\.169\.254|100\.100\.100\.200'),
+              re.compile(r'kind:\s*Config|kubeconfig|service-account\.json'),
+              re.compile(r'https?://(?:[a-z0-9-]+\.)*(?:dev|staging|stg|test|qa|internal|corp|intranet|sandbox|preprod)\.(?:[a-z0-9-]+\.)+[a-z]{2,}'),
+              re.compile(r'(password|passwd|secret|token|apikey|api_key)\s*[:=]\s*["\'\'\'][^"\'\'\']{8,}["\'\'\']', re.I),
+          ]
+          EXTS = {'.py','.js','.ts','.go','.java','.rb','.php','.c','.cpp','.h','.cs','.sh','.yml','.yaml','.json','.toml','.ini','.conf','.env','.tf','.tfvars','.tsx','.jsx','.kt','.swift'}
+          BANNED = re.compile(r'(node_modules|/vendor/|dist/|/build/|/out/|/bin/|/obj/|/tests?/|/testdata/|/fixtures/|cassettes|/test/|test_|_test|\.min\.|\.map$|\.lock$|\.png|\.jpg|\.zip|\.jar|\.pdf)', re.I)
+          hits, n_files = [], 0
+          for d, _, files in os.walk(ROOT):
+              for fn in files:
+                  ext = os.path.splitext(fn)[1].lower()
+                  path = os.path.join(d, fn)
+                  if ext not in EXTS or BANNED.search(path):
+                      continue
+                  try:
+                      with open(path, 'rb') as f:
+                          raw = f.read(200000)
+                      if b'\x00' in raw:
+                          continue
+                      text = raw.decode('utf-8', errors='ignore')
+                  except Exception:
+                      continue
+                  n_files += 1
+                  file_hits = 0
+                  for i, line in enumerate(text.split('\n'), 1):
+                      if file_hits >= 3:
+                          break
+                      for p in PATTERNS:
+                          if p.search(line):
+                              hits.append(f"{path}:{i}: {line.strip()[:220]}")
+                              file_hits += 1
+                              break
+                  if n_files % 2000 == 0:
+                      print(f"  scanned {n_files} files, {len(hits)} hits")
+          print(f"SCANDED {n_files} FILES, {len(hits)} MATCHES")
+          with open("reposcan-raw/grep-hits.txt", "w") as f:
+              f.write(f"SCAN SUMMARY: {n_files} code/config files scanned, {len(hits)} hits\n")
+              keep = 0
+              for h in hits:
+                  low = h.lower()
+                  if any(k in low for k in ('example','placeholder','dumm','localhost','sample','demo','fake','test-key','your_api_key')):
+                      continue
+                  f.write(h + "\n")
+                  keep += 1
+                  if keep >= 60:
+                      break
+          print(f"written {keep} candidate hits")
+          PY
+          wc -l $OUT
+
+      - name: Delta vs previous scan + RAG knowledge prep
+        run: |
+          python3 << 'PY'
+          import os, hashlib, re
+          def norm(path):
+              out = []
+              try:
+                  for line in open(path, errors='ignore'):
+                      l = line.strip()
+                      if l and not l.startswith('SCAN SUMMARY'):
+                          out.append(l)
+              except FileNotFoundError:
+                  pass
+              return set(out)
+          cur = norm('reposcan-raw/grep-hits.txt')
+          prev = norm('reposcan-raw/grep-hits.prev.txt')
+          new = sorted(cur - prev)
+          with open('reposcan-raw/grep-delta.txt', 'w') as f:
+              f.write(f"DELTA: {len(new)} new hit lines vs previous scan\n")
+              for l in new[:40]:
+                  f.write(l + "\n")
+          # hash any secret-looking material for the model (never raw)
+          out = []
+          for l in new:
+              m = re.search(r'[A-Za-z0-9_\-\.]{20,}', l)
+              if m:
+                  out.append((l[:120], hashlib.sha256(m.group(0).encode()).hexdigest()[:16]))
+          with open('reposcan-raw/grep-delta.txt', 'a') as f:
+              if out:
+                  f.write("HASHED MATERIAL:\n")
+                  for l, h in out[:20]:
+                      f.write(f"{h}  {l}\n")
+          print(f"delta lines: {len(new)}")
+          PY
+          {
+            echo "=== KNOWLEDGE BASE (RAG) ==="
+            cat knowledge/index.md 2>/dev/null || echo none
+            echo "=== INVENTORY gladia ==="
+            cat inventory/whale.md 2>/dev/null | head -40 || echo none
+          } > reposcan-raw/rag.txt
+          wc -l reposcan-raw/rag.txt reposcan-raw/grep-delta.txt
+
+      - name: Model deep-dive on hits
+        run: |
+          export PATH="$HOME/.opencode/bin:$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+          cat > scan-prompt.txt << 'PROMPT_START'
+          You are triaging a static scan of public repos from the gladiaio/ GitHub
+          org (official Gladia org - SDK repos are MEDIUM priority in the program
+          scope as public source code) plus npm package metadata for @gladiaio/sdk.
+
+          KNOWLEDGE (from our RAG base, respected as proven facts):
+          PROMPT_START
+          cat reposcan-raw/rag.txt >> scan-prompt.txt
+          cat >> scan-prompt.txt << 'PROMPT_MID'
+          Above knowledge lists REJECTED classes (do NOT re-report these as
+          candidates), KNOWN DUPLICATES (skip them), and alive surfaces.
+
+          NEW HITS SINCE LAST SCAN (delta - focus here first):
+          PROMPT_MID
+          cat reposcan-raw/grep-delta.txt >> scan-prompt.txt
+          cat >> scan-prompt.txt << 'PROMPT_MID2'
+          FULL GREP HITS (for context):
+          PROMPT_MID2
+          cat reposcan-raw/grep-hits.txt >> scan-prompt.txt
+          cat >> scan-prompt.txt << 'PROMPT_END'
+          For EACH hit classify:
+          - REAL_SECRET: hardcoded credential/API key/token with signs of life
+            (reportable via the program's disclosure channel after triage)
+          - TEST_OR_EXAMPLE: sample/test/fixture data (not reportable)
+          - ENDPOINT_LEAK: internal/dev/staging URLs, API endpoints
+          - INTERESTING: anything unusual (debug flags, keys, cloud configs,
+            references to non-*.gladia.io services, outdated/misleading SDK
+            packages pointing at personal repos)
+          NEVER print a full secret value - only the file, line, and a sha256 of
+          the secret material.
+          Output: a table per category, then a SHORT verdict list with
+          "REPORT_CANDIDATE: yes/no" per real candidate.
+          PROMPT_END
+          timeout 15m opencode run --model "$MODEL_ID" < scan-prompt.txt > reposcan-raw/analysis.txt 2>&1 || true
+          echo "=== analysis preview ==="; head -30 reposcan-raw/analysis.txt
+
+      - name: Store leads
+        run: |
+          mkdir -p leads
+          {
+            echo ""
+            echo "===== REPOSCAN $(date -u +'%Y-%m-%d %H:%M:%S UTC') ====="
+            echo "## Grep hits:"
+            cat reposcan-raw/grep-hits.txt 2>/dev/null | head -40
+            echo ""
+            echo "## Model analysis:"
+            cat reposcan-raw/analysis.txt 2>/dev/null | head -120
+          } > leads/reposcan-latest.md
+          cp leads/reposcan-latest.md leads/reposcan-$(date -u +'%Y-%m-%d-%H-%M').md 2>/dev/null || true
+
+      - name: Commit
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add leads reposcan-raw || true
+          if ! git diff --cached --quiet; then
+            git commit -m "reposcan $(date -u +'%Y-%m-%d-%H-%M')"
+          fi
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin main && break
+            echo "reposcan push attempt $i failed, retrying in 20s..."
+            sleep 20
+          done
+name: Sync Leads to GitHub Issues
+
+on:
+  workflow_run:
+    workflows: ["Senior Hunter - Analyst Pipeline (whale)"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  group: sync-issues
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyGithub
+        run: pip install PyGithub
+
+      - name: Sync leads to issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          LEAD_GLOB: "leads/lead-*.md"
+          TARGET_NAME: whale
+        run: python scripts/sync-issues.py
+
+      - name: Summary
+        run: |
+          echo "### Issue Sync" >> $GITHUB_STEP_SUMMARY
+          echo "- Repo: ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+name: Triager - Validate Leads
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    concurrency:
+      group: triage
+      cancel-in-progress: true
+    env:
+      MODEL_ID: opencode/longcat-2.0-free
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install OpenCode
+        run: |
+          export PATH="$HOME/.opencode/bin:$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+          if command -v opencode >/dev/null 2>&1; then
+            opencode --version
+            exit 0
+          fi
+          npm install -g opencode-ai 2>/dev/null || npm install -g --prefix "$HOME/.npm-global" opencode-ai 2>/dev/null || true
+          if ! command -v opencode >/dev/null 2>&1; then
+            for i in 1 2 3; do
+              curl -fsSL https://opencode.ai/install | bash && break
+              echo "opencode.ai installer attempt $i failed, retrying in 15s..."
+              sleep 15
+            done
+          fi
+          export PATH="$HOME/.opencode/bin:$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+          opencode --version
+
+
+      - name: Collect UNVALIDATED leads
+        run: |
+          mkdir -p triage reports
+          grep -h "\[UNVALIDATED\]" leads/lead-*.md leads/reposcan-*.md 2>/dev/null | sort -u | head -25 > new-leads.txt
+          wc -l new-leads.txt
+
+      - name: Passive live probe of endpoint leads
+        run: |
+          : > probe-results.txt
+          grep -oE 'https?://[a-zA-Z0-9._/-]+' new-leads.txt | sort -u | head -20 | while read -r url; do
+            host=$(echo "$url" | sed -E 's|https?://([^/]+).*|\1|')
+            case "$host" in
+              none.in-scope-http-host)
+                :  # client-side software scope: no live HTTP probing; static/repro-based validation only
+                ;;
+            esac
+          done
+          cat probe-results.txt
+
+      - name: Validate with second model (7-Question Gate)
+        run: |
+          export PATH="$HOME/.opencode/bin:$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+          cat > triage-prompt.txt << 'PROMPT_START'
+          You are a strict triager for the Whale program. A hunt bot produced the leads below. Your job: validate each against the 7-Question Gate. Answer all 7 for each lead:
+          Q1 Is it in the program scope (asset from scope.yml)?
+          Q2 Can an attacker reach it (public, unauthenticated or low-priv)?
+          Q3 Is there real security impact (not just weirdness)?
+          Q4 Can you prove it without invasive testing (GET/HEAD only)?
+          Q5 Is it genuinely novel/unreported (no duplicates)?
+          Q6 Is it not on the always-rejected list (info disclosure of public data,
+              best practice, rate limit absence alone, self-XSS, etc.)?
+          Q7 Would a reasonable triager accept it as a real vulnerability?
+
+          Verdict per lead: VALID / INVALID / HOLD (with one-line reason).
+          For VALID: state the minimal read-only proof steps, impact, CVSS 3.1,
+          and the correct reporting channel (Naver Whale security channel per scope.yml).
+
+          PROBE RESULTS (passive GET/HEAD, http_code per url):
+          PROMPT_START
+          cat probe-results.txt >> triage-prompt.txt
+          echo "" >> triage-prompt.txt
+          echo "LEADS:" >> triage-prompt.txt
+          cat new-leads.txt >> triage-prompt.txt
+          timeout 15m opencode run --model "$MODEL_ID" < triage-prompt.txt > triage-output.txt 2>&1 || true
+          echo "=== triage preview ==="; head -40 triage-output.txt
+
+      - name: Update valid-bugs counter
+        run: |
+          mkdir -p triage reports
+          {
+            echo ""
+            echo "===== TRIAGE $(date -u +'%Y-%m-%d %H:%M:%S UTC') ====="
+            cat triage-output.txt
+          } >> triage/run-$(date -u +'%Y-%m-%d-%H-%M').md
+          python3 << 'PY'
+          import re
+          try:
+              txt = open('triage-output.txt', errors='ignore').read()
+          except Exception:
+              txt = ''
+          verdict_lines = [l.strip() for l in txt.split('\n')
+                           if re.search(r'(?<!IN)\bVALID\b', l, re.I)
+                           and not re.search(r'\bINVALID\b', l, re.I)
+                           and re.search(r'verdict|^\||^\s*\*\*VALID|^\s*VALID', l, re.I)]
+          if verdict_lines:
+              with open('reports/valid-bugs.md', 'a') as f:
+                  stamp = __import__('datetime').datetime.now(__import__('datetime').timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+                  f.write(f"\n- {len(verdict_lines)} lead(s) marked VALID at {stamp}\n")
+                  for vl in verdict_lines[:20]:
+                      f.write(f"  - {vl[:200]}\n")
+              total = open('reports/valid-bugs.md').read().count('lead(s) marked VALID')
+              print(f"RUNNING VALID COUNT: {total}")
+          else:
+              print('no VALID verdicts this cycle')
+          PY
+
+      - name: Append learnings to knowledge base
+        run: |
+          python3 << 'PY'
+          import re, os, datetime, glob
+          stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+          kpath = 'knowledge/index.md'
+          os.makedirs('knowledge', exist_ok=True)
+          if not os.path.exists(kpath):
+              open(kpath, 'w').write('# Knowledge Base (seed)\n')
+          ktext = open(kpath).read()
+          learnings = []
+          try:
+              txt = open('triage-output.txt', errors='ignore').read()
+          except Exception:
+              txt = ''
+          for m in re.finditer(r'(?im)^\s*(INVALID|HOLD|VALID)\b.*?[-:]\s*(.{10,220})', txt):
+              verdict, why = m.group(1).upper(), m.group(2).strip()
+              if verdict in ('INVALID', 'HOLD'):
+                  line = f"- {stamp[:10]} REJECTED class @ lead: {why}"
+                  if line not in ktext:
+                      learnings.append(line)
+          with open(kpath, 'a') as k:
+              for line in learnings:
+                  k.write(line + '\n')
+          print(f'appended {len(learnings)} learnings to knowledge/index.md')
+          PY
+
+      - name: Commit
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add triage reports leads knowledge || true
+          if ! git diff --cached --quiet; then
+            git commit -m "triage $(date -u +'%Y-%m-%d-%H-%M')"
+          fi
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break
+            echo "triage push attempt $i failed, retrying in 15s..."
+            sleep 15
+          done
+[0m
+Now I have a comprehensive view of the knowledge base, inventory, and leads. Let me check the most recent state files and reports to understand the latest findings.
+[0m→ [0mRead triage/run-2026-08-07-23-03.md
+Now I have a comprehensive picture. Let me check the triage runs and the existing hypotheses files for additional context, then I can perform the 8-step analysis.
+[0m→ [0mRead ctx.txt
+Now I have comprehensive context. Let me also read the analyst prompt to understand the exact format required, and check the ctx.txt file for the model prompt context.
+[0m→ [0mRead analyst-prompt.txt
+Now I have a comprehensive understanding of the knowledge base. Let me also read the analyst prompt file that was generated for context.
+Now I have a complete picture. Let me perform the 8-step analyst methodology as required. Based on my reading of the entire knowledge base, inventory, all hypothesis files, and triage records, I can now produce the analysis.
+
+## STEP 1 — DELTA
+
+NO_DELTA — No new surface items since last aggregated hypotheses (2026-08-07 23:07:05 UTC). The inventory, knowledge base, and all 5 model leads are identical to the last cycle:
+- `naver/whale-browser-developers` repo remains documentation-only (last commit 2019-09-23; 2025-10-22 metadata-only refresh)
+- Latest stable version: v4.38.386.14 (June 25 2026), 3 minor version bumps since CVE-fix v4.35.351.12 (Dec 2025)
+- 0 CVEs published for Whale in 2026 (6-month disclosure gap for versions 4.35.352–4.38.386)
+- Same 7 distinct hypotheses recycled across all 5 models (bigpickle, laguna, ling3, longcat, nemotron3)
+- Same triage verdicts: 0 VALID, all actionable leads are HOLD (Q4 passive proof failure)
+
+## STEP 2 — PRIORITIZE
+
+The top 3 highest-priority assets based on the aggregated hypotheses:
+
+**[PRIO] Whale browser sidebar environment (sidebarAction.show URL loading) on v4.38.386.14**
+- Score: 7.55 (atk=9, biz=10, tech=7, gate=2, cloud=4, fresh=9)
+- Whale-specific feature with 6 CVEs in 2025 (CVE-2025-69234/69235); 3 minor version bumps with 0 CVEs; wiki confirms show() loads arbitrary URL + drag-navigation exposure; $4k SOP reward tier
+
+**[PRIO] Whale sync passphrase/key-derivation & local key-storage (desktop + Android 3.9.14.9)**
+- Score: 6.10 (atk=6, biz=8, tech=7, gate=3, cloud=4, fresh=7)
+- Sync explicitly in scope; vendor docs confirm client-side KDF + local key store; Android sync encryption added only 2025-04 (late); no public client code; binary strings show Whale-only prefs deviations
+
+**[PRIO] Whale browser dual-tab environment on v4.38.386.14**
+- Score: 6.30 (atk=8, biz=8, tech=6, gate=2, cloud=3, fresh=8)
+- 4 CVEs Jul–Oct 2025 (CVE-2025-53600, 62583, 62584, 62585); Whale-specific feature not in Chromium; ~8 months since fix; 0 CVEs published
+
+## STEP 3 — HYPOTHESES
+
+**[HYP] Sidebar SOP bypass via sidebarAction.show cross-origin URL loading on v4.38.386.14**
+class: OTHER
+asset: Whale browser v4.38.386.14 — `whale.sidebarAction.show({url})` loading cross-origin page into sidebar panel
+confidence: 60
+reasoning: CVE-2025-69235 (CWE-346 SOP bypass) and CVE-2025-69234 (CWE-358 iframe sandbox escape) were fixed in v4.35.351.12 (Dec 2025). Current stable v4.38.386.14 is 3 minor version bumps ahead with 0 published CVEs. Wiki docs confirm `show()` accepts `url` parameter to load arbitrary URL in sidebar panel; `use_navigation_bar=false` creates drag-navigation exposure. Recurring pattern: 6 sidebar/dual-tab CVEs in 2025.
+evidence_needed: Running browser binary v4.38.386.14 demonstrating cross-origin data access from sidebar panel content script via `show({url:'https://victim.com'})` or drag-drop navigation with `use_navigation_bar:false`
+verify_steps: PASSIVE: Review `translate` branch sidebar-sample extension manifest and wiki sidebarAction docs for gaps in cross-origin isolation when `show()` loads external URL. HUMAN_ONLY: Install Whale v4.38.386.14 → load sidebar-sample extension → call `whale.sidebarAction.show({url:'https://httpbin.org/headers'})` → attempt cross-origin fetch from panel content script → test drag-drop navigation with `use_navigation_bar:false`
+impact: Cross-origin data theft from sidebar context → credential/CSRF-token exfiltration; privilege escalation from extension to web context; Critical if renderer compromise
+testability: HUMAN_ONLY
+
+**[HYP] Sync passphrase KDF weakness / plaintext-adjacent key storage on v4.38.386.14**
+class: AUTH
+asset: Whale sync client (whale://settings/syncSetup desktop; com.naver.whale Android 3.9.14.9) — backend naver infra, static analysis only
+confidence: 58
+reasoning: Vendor help center states passphrase never sent to/stored on Naver server; must be re-entered on every new device → client-side key derivation + local key store. Android sync encryption added only in 3.8.6.2 (2025-04); prior sync was TLS-only. No public client code exists for desktop or Android. Binary strings show Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`) absent from upstream Chromium.
+evidence_needed: KDF algorithm + iteration counts, per-OS storage paths (Preferences/Local State/OS keychain/EncryptedSharedPreferences), whether key/passphrase ever leaves device in reset/recovery flows
+verify_steps: PASSIVE: Download Whale desktop installer stub from pstatic.net CDN (11.6MB); extract with 7z; grep sync module strings for "passphrase", "PBKDF2", "scrypt", "nigori", "bootstrap_token", "NEO_SES", "sync.encryption". AUTH_HELPED: Authorized test login to observe token/key lifecycle in filesystem. Zero network requests to naver sync infra.
+impact: Weak KDF or plaintext-adjacent key storage → local attacker or infostealer decrypts synced bookmarks+site passwords → PII cascade (High)
+testability: AUTH_HELPED
+
+**[HYP] Sync bootstrap-token storage — Whale-only prefs deviation**
+class: AUTH
+asset: whalesync client engine (`https://api.whale.naver.com/whalesync`) + profile prefs `sync.encryption_bootstrap_token_per_account`
+confidence: 55
+reasoning: Binary v4.38.386.14 strings show Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_per_account_migration_done`, `whale_need_encryption_key_forced_time`) absent from upstream Chromium; encryption uses `nigori-key` + `sync_pb.EncryptionKeys`; `whale_need_encryption_key_forced_time` is a Whale-only rekey gate with undocumented downgrade semantics
+evidence_needed: Whether per-account bootstrap token is stored plaintext vs OSCrypt (`v10`/`v11` prefix) in `Preferences`; scrypt N/r/p constants in `whale_sync_util`; whether `forced_time` weakens key freshness
+verify_steps: PASSIVE: objdump/strings on `whale_sync_util.cc`/`whale_sync_auth_manager.cc` call sites for `/whalesync/reset` (method+body) and bootstrap-token envelope; compare prefs key set against upstream Chromium `sync.encryption_bootstrap_token` handling — zero network requests
+impact: Local attacker/infostealer with profile access decrypts synced passwords, cookies, bookmarks → full-account compromise (High)
+testability: PASSIVE
+
+## STEP 4 — SELF-CRITIQUE
+
+All 3 hypotheses pass the self-critique gate: confidence ≥ 40, class not on the REJECTED list (BCP47, browser source, Naver web services), and all have concrete verify_steps.
+
+**[PARKED] Dual-tab environment SOP/CSP bypass — new variant post-CVE-2025-62585 on v4.38.386.14**: Confidence 45 meets threshold, but verify_steps are HUMAN_ONLY with no passive-first path; requires binary install + dual-tab testing which is not passive. Deferred until binary available.
+
+**[PARKED] whale_sync_push socket.io push channel — unsanitized event → engine mutation**: Confidence 45 meets threshold, but verify_steps require extracting resources.pak from installed binary (PASSIVE step blocked on binary availability). Deferred.
+
+**[PARKED] `/whalesync/reset` trigger — auth binding/confirmation weakness**: Confidence 40, server probing explicitly out of scope per program rules; cannot verify client request shape without binary extraction.
+
+**[PARKED] Multiplay session scoping / invite-link authorization bypass**: Confidence ~46, but verification requires two authorized accounts + account creation (violates `no_account_creation` rule).
+
+**[PARKED] Sidebar boundary enforcement including DevTools-in-sidebar window**: Confidence 50, but verify_steps are AUTH_HELPED only; requires binary install + active testing.
+
+**[PARKED] Extension API message injection via whale.runtime.onMessage**: Confidence 48, but verify_steps are HUMAN_ONLY; requires live browser install + extension load.
+
+**[FINAL] 1. Sidebar SOP bypass via sidebarAction.show cross-origin URL loading on v4.38.386.14** (confidence 60, class OTHER, testability HUMAN_ONLY)
+
+**[FINAL] 2. Sync passphrase KDF weakness / plaintext-adjacent key storage on v4.38.386.14** (confidence 58, class AUTH, testability AUTH_HELPED)
+
+**[FINAL] 3. Sync bootstrap-token storage — Whale-only prefs deviation** (confidence 55, class AUTH, testability PASSIVE)
+
+## STEP 5 — NEXT ACTION
+
+**[NEXT] PROBE**: Download the latest Whale desktop installer stub (~11.6MB) from the pstatic.net CDN (identified by bigpickle recon as the browser package source). Extract the embedded Whale browser binary using 7z. Grep sync module strings for: "passphrase", "PBKDF2", "scrypt", "nigori", "bootstrap_token", "NEO_SES", "sync.encryption_bootstrap_token_per_account", "whale_need_encryption_key_forced_time", "sync.encryption". This is purely static binary extraction with zero network requests to Naver sync infrastructure. If KDF constants/iteration counts are weak or plaintext key storage paths are found in `Preferences`/`Local State`, escalate to a confirmed [HYP] at confidence 70+.
+
+## STEP 6 — LEARNING
+
+**[LEARN] REJECTED @ naver/whale-browser-developers**: Repo remains documentation-only (last commit 2019-09-23; 2025-10-22 metadata-only refresh) — no browser binary source, sync flow code, or library manifests available for static analysis. Static analysis of sync module code cannot proceed from public repos; must use binary extraction.
+
+**[LEARN] REJECTED @ store.whale.naver.com**: Issue #23 (BCP47) maps to Naver web service, excluded per scope.yml out_of_scope (confirmed unchanged).
+
+**[LEARN] ACCEPTED OTHER @ sidebar environment**: CVE-2025-69235 (CWE-346 SOP bypass) confirmed fixed in v4.35.351.12 (Dec 2025); latest v4.38.386.14 is 3 minor version bumps ahead with 0 CVEs — regression window remains open. New variant hypothesis still requires binary install to verify.
+
+**[LEARN] ACCEPTED OTHER @ dual-tab environment**: CVE-2025-62585 (CWE-358 CSP bypass) confirmed fixed in v4.33.325.17 (Oct 2025); ~8 months of undisclosed changes since.
+
+**[LEARN] ACCEPTED XSS @ extension API**: CVE-2022-24072 + CVE-2024-40618 confirmed — built-in extension processing is a recurring Whale-only injection vector. Past CVEs were fixed; no new exploit path identified.
+
+**[LEARN] CONFIRMED @ NVD**: 0 CVEs published for Whale in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability disclosure gap.
+
+## STEP 7 — RISK SCORE
+
+**[RISK] sync: 65** — Sync is explicitly in scope and Whale-only with no public source code. Binary strings confirm custom `/whalesync` endpoint with Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`) absent from upstream Chromium. Android sync encryption added only 2025-04 (late) — possible weak KDF or plaintext key storage. whale.storage extension API may sync via Whale account. PII cascade potential (bookmarks + site passwords) makes this a High-severity target if binary extraction confirms weak crypto.
+
+**[RISK] browser: 78** — Sidebar + dual-tab environments have 6 confirmed CVEs in 2025 (SOP bypass CWE-346, iframe sandbox escape CWE-358, CSP bypass CWE-358). These are Whale-specific features not inherited from Chromium. Latest stable v4.38.386.14 is 3 minor version bumps ahead of last CVE-fix v4.35.351.12 (Dec 2025) with ZERO published CVEs in between — 6-month disclosure gap. Wiki docs confirm additional attack surface (sidebarAction.show() URL loading, drag-navigation exposure, DevTools-in-sidebar added v4.38.386.12). $4k SOP reward tier; high priority for new variant discovery.
+
+**[RISK] libs: 30** — Whale bundles Chromium (inherits all Chromium CVEs), but no Whale-only third-party library manifests or version lists are publicly available. The repo contains only translated documentation from 2019. Library-level version drift cannot be assessed without binary access. The Whale-only `socket.io.slim.js` push channel is confirmed bundled (content runtime-fetched), but its security posture cannot be assessed without binary extraction. Low visibility, moderate inherent risk.

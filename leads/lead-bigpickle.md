@@ -413,3 +413,31 @@ impact: sync data destruction + all-device log-out on token theft; DoS on accoun
 testability: PASSIVE
 [NEXT] PROBE: objdump/strings disassembly of the `/whalesync/reset` + `sync.encryption_bootstrap_token_per_account` call sites in `/tmp/opencode/whale_x/extract/opt/naver/whale/whale` (sha256 `6dd7ebc4...`) to recover the reset request method/body/auth-header shape and the bootstrap-token envelope storage (plaintext vs OSCrypt `v10/v11`), plus enumerate remaining embedded extension API schemas (`multiplayPrivate`, sync-related) for invite/session token entropy — local static only, zero network
 [RISK] sync: 65 — custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 78 — sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; binary now available enables repro-first variant hunting | libs: 35 — paks now parseable for a bundled-lib inventory, and Whale-only `socket.io.slim.js` is confirmed bundled (content runtime-fetched); version-drift assessment still requires upstream comparison
+## 2026-08-07 23:49:29 UTC [sync] (model bigpickle)
+[HYP] whale_sync_push socket.io push channel — server-controlled URL + unsanitized push message
+class: XSS
+asset: whale_sync_push component extension + utilityPrivate bridge (https://chat.whale.mu/) — Whale-only
+confidence: 55
+reasoning: binary embeds utilityPrivate.getPushServerURL (URL runtime-returned) + onPushUpdated(request_id,{message}); push_server_url_fetcher_base.cc logs "GetPushServerURL succeeded/failed"; service_worker.js+socket.io.slim.js are runtime-fetched, not in resources.pak; CVE-2022-24072/CVE-2024-40618 prove built-in-extension processing is a live Whale injection vector
+evidence_needed: runtime push URL returned by getPushServerURL; whether socket.io message payload reaches chrome.tabs/history or extension internals unsanitized; whether URL-fetch endpoint is attacker-influenceable
+verify_steps: AUTH_HELPED: authorized login → capture getPushServerURL response + runtime-fetched service_worker.js (file-local); audit socket.io onmessage handlers for unsanitized remote data reaching privileged APIs; zero out-of-scope probing
+impact: remote push message mutating synced tabs/history or injection in extension context; Medium-High
+testability: AUTH_HELPED
+[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
+class: AUTH
+asset: api.whale.naver.com/whalesync client engine + profile prefs sync.encryption_bootstrap_token_per_account{,_migration_done}, sync.whale_need_encryption_key_forced_time
+confidence: 60
+reasoning: strings confirm Whale-only prefs keys + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, `''xv10` magic); /whalesync authed by NEO_SES cookie only; sync.cookies/sync.passwords in type list
+evidence_needed: per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to a stale key
+verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util call sites for the bootstrap-token envelope and /whalesync/reset request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network
+impact: local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise; High
+testability: PASSIVE
+[HYP] whaleonPrivate messaging channel — room/inviteCode/password authz
+class: AUTH
+asset: WhaleON messaging (whaleonPrivate.connectMessagingChannel{roomId,password,inviteCode,clientId}, pushMessage, onMessageReceived) — client static only
+confidence: 45
+reasoning: schema exposes inviteCode+password-bound room join and raw pushMessage{data,targets}+onMessageReceived{data}; real-time channel into browser; scope/entropy undocumented
+evidence_needed: whether a replayed/guessed inviteCode or weak password joins a room and reads other participants' messages; whether pushMessage targets are validated
+verify_steps: AUTH_HELPED: two authorized accounts join a study room; test inviteCode replay post-leave, empty password, cross-room message targeting; capture payloads file-local; zero requests beyond client's own session
+impact: cross-session message disclosure or channel injection; Medium
+testability: AUTH_HELPED

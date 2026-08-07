@@ -4478,3 +4478,1714 @@ testability: PASSIVE
 
 **STEP 7 — RISK SCORE:**
 [RISK] sync: 65 — custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 78 — sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; binary now available enables repro-first variant hunting | libs: 35 — paks now parseable for a bundled-lib inventory, and Whale-only `socket.io.slim.js` is confirmed bundled (content runtime-fetched); version-drift assessment still requires upstream comparison
+===== ANALYST bigpickle 2026-08-07 23:49:41 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_x/ 2>/dev/null; echo "---"; ls -la /tmp/opencode/whale_x/extract/opt/naver/whale/ 2>/dev/null | head -50
+---
+[0m
+[0m$ [0msha256sum /tmp/opencode/whale_x/extract/opt/naver/whale/whale 2>/dev/null; echo "---"; ls -la /tmp/opencode/whale_x/opt/naver/whale/resources.pak 2>/dev/null
+---
+[0m
+[0m$ [0mls -la /tmp/opencode/ 2>/dev/null; echo "==="; ls -la /tmp/opencode/* 2>/dev/null | head -60
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 .
+drwxrwxrwt 15 root   root   12288 Aug  7 23:40 ..
+===
+[0m
+[0m$ [0mfind / -name "whale" -type f 2>/dev/null | head; echo "==="; find / -iname "*.pak" -path "*whale*" 2>/dev/null | head; echo "==="; find / -iname "*.whl" -o -iname "*.xapk" 2>/dev/null | head
+(no output)
+
+<shell_metadata>
+shell tool terminated command after exceeding timeout 120000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</shell_metadata>
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/ 2>/dev/null; echo "==="; ls -laR /home/runner/work/whale-hunt/whale-hunt/reports/ 2>/dev/null | head -60
+total 140
+drwxr-xr-x 11 runner runner  4096 Aug  7 23:40 .
+drwxr-xr-x  3 runner runner  4096 Aug  7 23:40 ..
+drwxr-xr-x  7 runner runner  4096 Aug  7 23:40 .git
+drwxr-xr-x  3 runner runner  4096 Aug  7 23:40 .github
+-rw-r--r--  1 runner runner  1057 Aug  7 23:40 README.md
+-rw-r--r--  1 runner runner  1035 Aug  7 23:43 analyst-out.txt
+-rw-r--r--  1 runner runner 32603 Aug  7 23:40 analyst-prompt.txt
+-rw-r--r--  1 runner runner 29631 Aug  7 23:40 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 leads
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 reports
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  7 23:40 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 scripts
+-rw-r--r--  1 runner runner    34 Aug  7 23:40 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  7 23:40 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  7 23:40 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  7 23:40 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  7 23:40 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 triage
+===
+/home/runner/work/whale-hunt/whale-hunt/reports/:
+total 1012
+drwxr-xr-x  2 runner runner   4096 Aug  7 23:40 .
+drwxr-xr-x 11 runner runner   4096 Aug  7 23:40 ..
+-rw-r--r--  1 runner runner 351712 Aug  7 23:40 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 584961 Aug  7 23:40 analyst-laguna.log
+-rw-r--r--  1 runner runner   8485 Aug  7 23:40 analyst-ling3.log
+-rw-r--r--  1 runner runner    720 Aug  7 23:40 analyst-longcat.log
+-rw-r--r--  1 runner runner  70272 Aug  7 23:40 analyst-nemotron3.log
+-rw-r--r--  1 runner runner  14463 Aug  7 23:40 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner   9029 Aug  7 23:40 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner     48 Aug  7 23:40 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner     50 Aug  7 23:40 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner  15334 Aug  7 23:40 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  21254 Aug  7 23:40 hypotheses.md
+-rw-r--r--  1 runner runner    136 Aug  7 23:40 valid-bugs.md
+[0m
+[0m$ [0mcat /home/runner/work/whale-hunt/whale-hunt/state_bigpickle.json; echo "==="; cat /home/runner/work/whale-hunt/whale-hunt/analyst-out.txt; echo "==="; ls /home/runner/work/whale-hunt/whale-hunt/knowledge/ /home/runner/work/whale-hunt/whale-hunt/leads/ /home/runner/work/whale-hunt/whale-hunt/inventory/
+{"phase": "POC", "target": "sync"}===
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_x/ 2>/dev/null; echo "---"; ls -la /tmp/opencode/whale_x/extract/opt/naver/whale/ 2>/dev/null | head -50
+---
+[0m
+[0m$ [0msha256sum /tmp/opencode/whale_x/extract/opt/naver/whale/whale 2>/dev/null; echo "---"; ls -la /tmp/opencode/whale_x/opt/naver/whale/resources.pak 2>/dev/null
+---
+[0m
+[0m$ [0mls -la /tmp/opencode/ 2>/dev/null; echo "==="; ls -la /tmp/opencode/* 2>/dev/null | head -60
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 .
+drwxrwxrwt 15 root   root   12288 Aug  7 23:40 ..
+===
+[0m
+[0m$ [0mfind / -name "whale" -type f 2>/dev/null | head; echo "==="; find / -iname "*.pak" -path "*whale*" 2>/dev/null | head; echo "==="; find / -iname "*.whl" -o -iname "*.xapk" 2>/dev/null | head
+(no output)
+
+<shell_metadata>
+shell tool terminated command after exceeding timeout 120000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</shell_metadata>
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/ 2>/dev/null; echo "==="; ls -laR /home/runner/work/whale-hunt/whale-hunt/reports/ 2>/dev/null | head -60
+total 140
+drwxr-xr-x 11 runner runner  4096 Aug  7 23:40 .
+drwxr-xr-x  3 runner runner  4096 Aug  7 23:40 ..
+drwxr-xr-x  7 runner runner  4096 Aug  7 23:40 .git
+drwxr-xr-x  3 runner runner  4096 Aug  7 23:40 .github
+-rw-r--r--  1 runner runner  1057 Aug  7 23:40 README.md
+-rw-r--r--  1 runner runner  1035 Aug  7 23:43 analyst-out.txt
+-rw-r--r--  1 runner runner 32603 Aug  7 23:40 analyst-prompt.txt
+-rw-r--r--  1 runner runner 29631 Aug  7 23:40 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 leads
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 reports
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  7 23:40 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 scripts
+-rw-r--r--  1 runner runner    34 Aug  7 23:40 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  7 23:40 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  7 23:40 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  7 23:40 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  7 23:40 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  7 23:40 triage
+===
+/home/runner/work/whale-hunt/whale-hunt/reports/:
+total 1012
+drwxr-xr-x  2 runner runner   4096 Aug  7 23:40 .
+drwxr-xr-x 11 runner runner   4096 Aug  7 23:40 ..
+-rw-r--r--  1 runner runner 351712 Aug  7 23:40 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 584961 Aug  7 23:40 analyst-laguna.log
+-rw-r--r--  1 runner runner   8485 Aug  7 23:40 analyst-ling3.log
+-rw-r--r--  1 runner runner    720 Aug  7 23:40 analyst-longcat.log
+-rw-r--r--  1 runner runner  70272 Aug  7 23:40 analyst-nemotron3.log
+-rw-r--r--  1 runner runner  14463 Aug  7 23:40 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner   9029 Aug  7 23:40 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner     48 Aug  7 23:40 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner     50 Aug  7 23:40 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner  15334 Aug  7 23:40 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  21254 Aug  7 23:40 hypotheses.md
+-rw-r--r--  1 runner runner    136 Aug  7 23:40 valid-bugs.md
+[0m
+===
+/home/runner/work/whale-hunt/whale-hunt/inventory/:
+whale.md
+
+/home/runner/work/whale-hunt/whale-hunt/knowledge/:
+index.md
+
+/home/runner/work/whale-hunt/whale-hunt/leads/:
+lead-bigpickle.md
+lead-laguna.md
+lead-ling3.md
+lead-longcat.md
+lead-nemotron3.md
+reposcan-2026-08-07-18-44.md
+reposcan-2026-08-07-18-59.md
+reposcan-2026-08-07-19-19.md
+reposcan-2026-08-07-19-22.md
+reposcan-2026-08-07-19-28.md
+reposcan-2026-08-07-20-06.md
+reposcan-2026-08-07-20-11.md
+reposcan-2026-08-07-20-59.md
+reposcan-2026-08-07-21-09.md
+reposcan-2026-08-07-21-58.md
+reposcan-2026-08-07-22-05.md
+reposcan-2026-08-07-22-23.md
+reposcan-2026-08-07-23-05.md
+reposcan-2026-08-07-23-08.md
+reposcan-latest.md
+[0m
+[0m$ [0mfind / -maxdepth 6 \( -iname "*whale*.deb" -o -iname "*whale*.xapk" -o -iname "whale" -o -iname "resources.pak" -o -iname "*.apk" \) 2>/dev/null | grep -v "/home/runner/work/whale-hunt" | head -30
+/opt/google/chrome/resources.pak
+/opt/microsoft/msedge/resources.pak
+/usr/local/share/chromium/chrome-linux/resources.pak
+[0m
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m→ [0mRead scope.yml
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && grep -oE 'https?://[a-zA-Z0-9./_?=&%-]*pstatic[a-zA-Z0-9./_?=&%-]*' reports/hypotheses-*.txt reports/analyst-*.log 2>/dev/null | sort -u | head -20
+reports/analyst-bigpickle.log:https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+reports/analyst-bigpickle.log:https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+reports/analyst-bigpickle.log:https://static-whale.pstatic.net/og/homepage.png
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && grep -rniE 'pstatic|cdnga|installer|whale.?setup|11\.6MB|11\.6 mb' reports/hypotheses-laguna.txt reports/analyst-laguna.log 2>/dev/null | head -30
+reports/hypotheses-laguna.txt:22:verify_steps: PASSIVE: Download Whale desktop installer stub from pstatic.net CDN; extract; grep sync module strings for "passphrase", "PBKDF2", "scrypt", "Sync", "NEO_SES", "nigori", "bootstrap_token". AUTH_HELPED: Authorized test login to observe token/key lifecycle in filesystem. Zero network requests to naver sync infra.
+reports/hypotheses-laguna.txt:40:[NEXT] PROBE: Download Whale desktop installer stub from pstatic.net CDN (identified by bigpickle as the browser package source — 11.6MB); extract with 7z; grep sync module strings: "passphrase", "PBKDF2", "scrypt", "NEO_SES", "nigori", "bootstrap_token", "sync.encryption", "whale_need_encryption_key_forced_time". Zero network requests to naver sync infrastructure — purely local static binary extraction. If KDF constants/iteration counts are weak or plaintext key storage paths are found, escalate to [HYP] confidence 70+.
+[0m
+The environment reset wiped `/tmp/opencode/whale_x/` — the previously-downloaded Whale binary (sha256 `6dd7ebc4...`) is gone, invalidating the queued binary-analysis probes. Let me check what persisted about the CDN source and current network access.
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && grep -nE 'deb|6dd7ebc4|whale_x|aria2|curl -o|wget' reports/analyst-bigpickle.log | head -30
+grep: reports/analyst-bigpickle.log: binary file matches
+102:2 | closed | 2017-08-05 | Possible issue with sidebar-sample
+138:for m in sorted(set(re.findall(r'https?://[^\"\'\s<>]+(?:\.deb|\.dmg|setup[^\"\'\s<>]*\.exe|\.rpm)[^\"\'\s<>]*', t)))[:15]:
+147:[0m$ [0msleep 1; for u in "https://installer.whale.naver.com/naver-whale-stable-current_amd64.deb" "https://installer.whale.naver.com/WhaleSetup.exe"; do curl -sI --max-time 20 "$u" -A "Mozilla/5.0" -o /dev/null -w "%{http_code} %{url_effective} %{content_type} %{size_download}\n"; sleep 1; done
+148:404 https://installer.whale.naver.com/naver-whale-stable-current_amd64.deb text/html; charset=iso-8859-1 0
+172:- [NEW] Whale-only CVE family 2025-26: sidebar/dual-tab SOP bypass, iframe sandbox escape, CSP bypass (CVE-2025-69234/5, 62583/4/5, 53600) — recurring boundary bugs in Whale-only UI envs
+177:- [PRIO] latest-desktop-sidebar-dual-tab — score 7.15 (attack 8 | business 8 | tech 7 | gate 8 | cloud 1 | fresh 8) — attack=any webpage reaches it, gate=no auth, tech=uncommon Whale-only container model, cloud=none, fresh=critical CVEs fixed only 2026-01
+191:[HYP] Security-boundary enforcement in Whale-only sidebar/dual-tab environments on latest desktop (variant hunting)
+193:asset: Latest desktop Whale (>=4.35.351.12) sidebar and dual-tab web panels
+195:reasoning: 2025-26 CVE family shows sidebar/dual-tab (Whale-only) repeatedly broke SOP, iframe sandbox, CSP (CVE-2025-69234/5, 62583/4/5, 53600), each fixed a release later; recurrence across 3 releases signals a systemic boundary weak spot; adjacent features (mobile window, quicksearch, scrapbook) may carry variants.
+196:evidence_needed: crafted HTML that escapes iframe sandbox or bypasses SOP/CSP inside sidebar/dual-tab web panel on the LATEST build
+197:verify_steps: AUTH_HELPED: install latest desktop Whale, open crafted HTML in sidebar and dual-tab web panels, test sandbox escape / cross-origin read / CSP bypass; repro-first on latest build; no server interaction.
+213:- [FINAL] 1) Whale sync passphrase/key-derivation & local key-storage design (AUTH, 58) — grounded in vendor design claim + new encryption timeline, concrete static verify steps. 2) Sidebar/dual-tab security-boundary variants (OTHER, 45) — strongest program-wide class from 2025-26 CVEs, but browser-core; covered by dedicated browser-target models, kept at moderate confidence.
+220:- [LEARN] ACCEPTED OTHER @ desktop sidebar/dual-tab: historical CVE recurrence proves the class was alive, but the exact 2025 bugs are patched (>=4.35.351.12); variants on latest remain unproven
+225:- [RISK] browser: 76 — three critical sidebar/dual-tab boundary CVEs in 2025-26 show Whale-only UI envs repeatedly break SOP/sandbox/CSP; large unvetted Whale-specific attack surface on latest; latest-version repro requirement is the main gate
+325:- [NEW] v4.38 sidebar changes: **Chrome Side Panel spec support + DevTools-in-sidebar** (2026-06-18) — new code paths on the exact recurring CVE-2025-69234/5 sidebar surface
+332:- [PRIO] Sidebar env incl. new DevTools-in-sidebar + Chrome Side Panel (≥4.38.386.14), 7.30, atk=9 biz=9 tech=7 gate=3 cloud=4 fresh=9 — 6 recurring 2025 boundary CVEs; June 2026 added brand-new code on the same surface
+338:- [HYP] Sidebar boundary enforcement on latest (≥4.38.386.14) — variant hunting incl. new DevTools-in-sidebar
+340:  asset: Whale sidebar web-panel + devtools-in-sidebar window (browser-internal, v4.38.386.14)
+342:  reasoning: 6 Whale-only sidebar/dual-tab CVEs in 2025 (SOP, iframe-sandbox, CSP); v4.38.386.12 (2026-06-18) added Chrome Side Panel spec + DevTools-in-sidebar onto that exact surface; CVE-2022-24072 shows devtools API is an injection vector.
+343:  evidence_needed: crafted HTML/webpanel that escapes sidebar sandbox or reads cross-origin data, or injects via the devtools-in-sidebar window, on the LATEST build
+344:  verify_steps: AUTH_HELPED: install v4.38.386.14, load crafted extension/page into sidebar web panel + devtools-in-sidebar; test sandbox escape / cross-origin XHR-fetch / CSP bypass; repro-first on latest; zero server interaction
+370:- [FINAL] 1) Sidebar boundary + DevTools-in-sidebar (OTHER, 50) 2) Multiplay invite-link/session authz (AUTH, 45) 3) Sync data-plane authz + key storage (AUTH, 42)
+373:- [NEXT] HUMAN: Acquire latest Whale v4.38.386.14 binary (official download) and run an authorized two-account test: (a) Multiplay — join via copied invite link, enumerate what a joiner can read of the host's open tabs (URLs/scroll/DOM) and test invite-link revocation/reuse; (b) Scrapbook — share a category, test link scope/replay; capture session/invite payloads and sync module artifacts file-local only, zero requests to naver sync infra. (Laguna already owns the sidebar HUMAN repro; this advances the sync target with the freshest surfaces.)
+377:- [LEARN] ACCEPTED OTHER @ sidebar environment: recurring Whale-only boundary class re-confirmed — 4.38 shipped Chrome Side Panel + DevTools-in-sidebar onto the same surface as the 2025 CVE family
+384:- [RISK] browser: 78 — 6 sidebar/dual-tab CVEs plus new 4.38 code (Side Panel spec, DevTools-in-sidebar) on the same surface; latest ships Chromium 148 (inherits CVE-2026-11645 V8 RCE, KEV, actively exploited — patched in 4.38.386.12 but not reportable); download-warning bypass just patched signals active hardening
+540:- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+545:- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+563:[HYP] Security-boundary enforcement in Whale-only sidebar/dual-tab environments on latest desktop (variant hunting)
+565:asset: Latest desktop Whale (>=4.35.351.12) sidebar and dual-tab web panels
+567:reasoning: 2025-26 CVE family shows sidebar/dual-tab (Whale-only) repeatedly broke SOP, iframe sandbox, CSP (CVE-2025-69234/5, 62583/4/5, 53600), each fixed a release later; recurrence across 3 releases signals a systemic boundary weak spot; adjacent features (mobile window, quicksearch, scrapbook) may carry variants.
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && grep -nE 'whale_x|\.deb|200.*amd64|packagecloud|deb_amd64|release-notes|4\.38\.386' reports/analyst-bigpickle.log | grep -iE 'curl|wget|download|deb|http' | head -30
+grep: reports/analyst-bigpickle.log: binary file matches
+138:for m in sorted(set(re.findall(r'https?://[^\"\'\s<>]+(?:\.deb|\.dmg|setup[^\"\'\s<>]*\.exe|\.rpm)[^\"\'\s<>]*', t)))[:15]:
+147:[0m$ [0msleep 1; for u in "https://installer.whale.naver.com/naver-whale-stable-current_amd64.deb" "https://installer.whale.naver.com/WhaleSetup.exe"; do curl -sI --max-time 20 "$u" -A "Mozilla/5.0" -o /dev/null -w "%{http_code} %{url_effective} %{content_type} %{size_download}\n"; sleep 1; done
+148:404 https://installer.whale.naver.com/naver-whale-stable-current_amd64.deb text/html; charset=iso-8859-1 0
+323:- [NEW] v4.38.386.12 fixed a Whale-specific **"download security warning bypass"** (no CVE yet) — fresh active hardening in the download flow
+332:- [PRIO] Sidebar env incl. new DevTools-in-sidebar + Chrome Side Panel (≥4.38.386.14), 7.30, atk=9 biz=9 tech=7 gate=3 cloud=4 fresh=9 — 6 recurring 2025 boundary CVEs; June 2026 added brand-new code on the same surface
+338:- [HYP] Sidebar boundary enforcement on latest (≥4.38.386.14) — variant hunting incl. new DevTools-in-sidebar
+340:  asset: Whale sidebar web-panel + devtools-in-sidebar window (browser-internal, v4.38.386.14)
+342:  reasoning: 6 Whale-only sidebar/dual-tab CVEs in 2025 (SOP, iframe-sandbox, CSP); v4.38.386.12 (2026-06-18) added Chrome Side Panel spec + DevTools-in-sidebar onto that exact surface; CVE-2022-24072 shows devtools API is an injection vector.
+344:  verify_steps: AUTH_HELPED: install v4.38.386.14, load crafted extension/page into sidebar web panel + devtools-in-sidebar; test sandbox escape / cross-origin XHR-fetch / CSP bypass; repro-first on latest; zero server interaction
+373:- [NEXT] HUMAN: Acquire latest Whale v4.38.386.14 binary (official download) and run an authorized two-account test: (a) Multiplay — join via copied invite link, enumerate what a joiner can read of the host's open tabs (URLs/scroll/DOM) and test invite-link revocation/reuse; (b) Scrapbook — share a category, test link scope/replay; capture session/invite payloads and sync module artifacts file-local only, zero requests to naver sync infra. (Laguna already owns the sidebar HUMAN repro; this advances the sync target with the freshest surfaces.)
+384:- [RISK] browser: 78 — 6 sidebar/dual-tab CVEs plus new 4.38 code (Side Panel spec, DevTools-in-sidebar) on the same surface; latest ships Chromium 148 (inherits CVE-2026-11645 V8 RCE, KEV, actively exploited — patched in 4.38.386.12 but not reportable); download-warning bypass just patched signals active hardening
+545:- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+663:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 mi
+681:[NEW] 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+686:[PRIO] Sidebar context SOP bypass — new variant post-CVE-2025-69235 on v4.38.386.14, score: 6.8 (attack_surface:8, business_value:9, tech_exposure:7, gate_ease:2, cloud_surface:3, freshness:9)
+689:[HYP] Sidebar context SOP bypass — new variant post-CVE-2025-69235 on v4.38.386.14
+693:reasoning: Wiki whale.sidebarAction docs reveal `show()` accepts a `url` parameter; `use_navigation_bar` defaults true but when false drag events navigate to other websites; CVE-2025-69235 confirmed SOP bypass, new variant post-CVE-2025-69235 on v4.38.386.14 (3 minor version bumps, zero published CVEs)
+787:- [NEW] v4.38.386.12 fixed a Whale-specific **"download security warning bypass"** (no CVE yet) — fresh active hardening in the download flow
+796:- [PRIO] Sidebar env incl. new DevTools-in-sidebar + Chrome Side Panel (≥4.38.386.14), 7.30, atk=9 biz=9 tech=7 gate=3 cloud=4 fresh=9 — 6 recurring 2025 boundary CVEs; June 2026 added brand-new code on the same surface
+802:- [HYP] Sidebar boundary enforcement on latest (≥4.38.386.14) — variant hunting incl. new DevTools-in-sidebar
+804:  asset: Whale sidebar web-panel + devtools-in-sidebar window (browser-internal, v4.38.386.14)
+806:  reasoning: 6 Whale-only sidebar/dual-tab CVEs in 2025 (SOP, iframe-sandbox, CSP); v4.38.386.12 (2026-06-18) added Chrome Side Panel spec + DevTools-in-sidebar onto that exact surface; CVE-2022-24072 shows devtools API is an injection vector.
+808:  verify_steps: AUTH_HELPED: install v4.38.386.14, load crafted extension/page into sidebar web panel + devtools-in-sidebar; test sandbox escape / cross-origin XHR-fetch / CSP bypass; repro-first on latest; zero server interaction
+837:- [NEXT] HUMAN: Acquire latest Whale v4.38.386.14 binary (official download) and run an authorized two-account test: (a) Multiplay — join via copied invite link, enumerate what a joiner can read of the host's open tabs (URLs/scroll/DOM) and test invite-link revocation/reuse; (b) Scrapbook — share a category, test link scope/replay; capture session/invite payloads and sync module artifacts file-local only, zero requests to naver sync infra. (Laguna already owns the sidebar HUMAN repro; this advances the sync target with the freshest surfaces.)
+848:- [RISK] browser: 78 — 6 sidebar/dual-tab CVEs plus new 4.38 code (Side Panel spec, DevTools-in-sidebar) on the same surface; latest ships Chromium 148 (inherits CVE-2026-11645 V8 RCE, KEV, actively exploited — patched in 4.38.386.12 but not reportable); download-warning bypass just patched signals active hardening
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && grep -anE 'mkdir.*whale_x|apt download|packages.navercorp|apt-get|mirror|mirrors|osdn|fastgit|ubuntu|download\.whale' reports/analyst-bigpickle.log | head -20
+758:[NEXT] PROBE: Acquire latest Whale desktop installer (non-Naver mirror) and Android XAPK 3.9.14.9; extract and decompile; static grep for sync module strings: "passphrase", "PBKDF2", "scrypt", "sync", "key", "token", "EncryptedSharedPreferences", "Local State", "Preferences" — zero network requests to naver infra
+998:[0m$ [0mcurl -s --max-time 20 -A "Mozilla/5.0 (X11; Linux x86_64)" "https://www.apkmirror.com/?post_type=app_release&searchtype=apk&s=com.naver.whale" -o /tmp/opencode/apkmirror.html; wc -c /tmp/opencode/apkmirror.html; grep -oE 'href="[^"]*com.naver.whale[^"]*"' /tmp/opencode/apkmirror.html | sort -u | head -10
+999:5681 /tmp/opencode/apkmirror.html
+1076:h=open('/tmp/opencode/apkmirror.html',encoding='utf-8',errors='ignore').read()
+1591:[0m$ [0msleep 1; curl -s --max-time 25 "https://www.apkmirror.com/?post_type=app_release&searchtype=apk&s=com.naver.whale" -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130 Safari/537.36" -o /tmp/apk.html -w "http:%{http_code} size:%{size_download}\n"; python3 -c "
+1639:verify_steps: AUTH_HELPED: acquire Android XAPK 3.9.14.9 (apkpure/APKMirror both 403 to curl — needs alternate mirror) + desktop package; decompile; grep sync module for passphrase/scrypt/PBKDF2 constants and key-store paths; authorized login to observe token/key filesystem lifecycle; zero requests to naver sync infra
+2352:[0m$ [0mcd /tmp/opencode && mkdir -p whale_x && dpkg-deb -x whale.deb whale_x 2>/dev/null || (ar x whale.deb && tar xf data.tar.xz -C whale_x 2>/dev/null || tar xf data.tar.* -C whale_x); ls whale_x/opt/whale/ 2>/dev/null | head; find whale_x -name "*.so" -path "*whale*" 2>/dev/null | head -5
+3245:verify_steps: PASSIVE: Acquire latest desktop installer and Android XAPK 3.9.14.9 from non-Naver mirror; extract/decompile; static grep for sync module strings: "passphrase", "PBKDF2", "scrypt", "sync", "key", "token", "EncryptedSharedPreferences", "Local State", "Preferences" — zero network requests to naver infra. AUTH_HELPED: Authorized test login to observe token/key lifecycle in filesystem.
+3259:[NEXT] PROBE: Acquire latest Whale desktop installer (non-Naver mirror) and Android XAPK 3.9.14.9; extract and decompile; static grep for sync module strings: "passphrase", "PBKDF2", "scrypt", "sync", "key", "token", "EncryptedSharedPreferences", "Local State", "Preferences" — zero network requests to naver infra
+3328:[0m$ [0mcd /tmp/opencode && mkdir -p whale_x && timeout 300 curl -sS "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" -o whale_x/whale.deb && ls -la whale_x/ && sha256sum whale_x/whale.deb
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && sed -n '3320,3420p' reports/analyst-bigpickle.log | tr -d '\000'
+Real installer URLs found on the pstatic.net CDN. Checking the Linux package size (HEAD only, passive).
+[0m$ [0mtimeout 20 curl -sS -I "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" | grep -iE "HTTP/|content-length|content-type|last-modified|etag"
+HTTP/2 200 
+content-length: 164163916
+last-modified: Thu, 25 Jun 2026 06:25:01 GMT
+content-type: application/x-debian-package
+[0m
+The 164 MB `.deb` is the full v4.38.386.14 Linux binary (last-modified 2026-06-25 = release date). This unblocks the entire sync-target static analysis. Downloading for local analysis.
+[0m$ [0mcd /tmp/opencode && mkdir -p whale_x && timeout 300 curl -sS "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" -o whale_x/whale.deb && ls -la whale_x/ && sha256sum whale_x/whale.deb
+total 160328
+drwxr-xr-x 2 runner runner      4096 Aug  7 23:00 .
+drwxr-xr-x 3 runner runner      4096 Aug  7 23:00 ..
+-rw-r--r-- 1 runner runner 164163916 Aug  7 23:01 whale.deb
+6dd7ebc47d7e8f21da1108ad5b0e17fcd562fd92e684da206564b51476e0b47e  whale_x/whale.deb
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x && dpkg-deb -x whale.deb extract/ 2>/dev/null || ar x whale.deb; ls -la extract/opt/naver/whale/ 2>/dev/null | head -40; echo "---size---"; du -sh extract/ 2>/dev/null
+total 413032
+drwxr-xr-x 8 runner runner      4096 Jun 24 09:34 .
+drwxr-xr-x 3 runner runner      4096 Jun 24 09:34 ..
+-rw-r--r-- 1 runner runner         7 Jun 24 09:34 CHROME_VERSION_EXTRA
+drwxr-xr-x 2 runner runner      4096 Jun 24 09:34 MEIPreload
+drwxr-xr-x 2 runner runner      4096 Jun 24 09:34 PrivacySandboxAttestationsPreloaded
+drwxr-xr-x 3 runner runner      4096 Jun 24 09:34 WidevineCdm
+-rwxr-xr-x 1 runner runner   4869288 Jun 24 09:34 chrome-management-service
+-rwxr-xr-x 1 runner runner   1623616 Jun 24 09:34 chrome_crashpad_handler
+drwxr-xr-x 2 runner runner      4096 Jun 24 09:34 cron
+-rw-r--r-- 1 runner runner       462 Jun 24 09:34 default-app-block
+-rw-r--r-- 1 runner runner  10876560 Jun 24 09:34 icudtl.dat
+-rw-r--r-- 1 runner runner    269992 Jun 24 09:34 libEGL.so
+-rw-r--r-- 1 runner runner   6684896 Jun 24 09:34 libGLESv2.so
+-rw-r--r-- 1 runner runner     27872 Jun 24 09:34 libqt5_shim.so
+-rw-r--r-- 1 runner runner     30248 Jun 24 09:34 libqt6_shim.so
+-rw-r--r-- 1 runner runner   4401528 Jun 24 09:34 libvk_swiftshader.so
+-rw-r--r-- 1 runner runner    681888 Jun 24 09:34 libvulkan.so.1
+drwxr-xr-x 2 runner runner     12288 Jun 24 09:34 locales
+-rwxr-xr-x 1 runner runner      1028 Jun 24 09:34 naver-whale
+-rw-r--r-- 1 runner runner     12759 Jun 24 09:34 product_logo_128.png
+-rw-r--r-- 1 runner runner       783 Jun 24 09:34 product_logo_16.png
+-rw-r--r-- 1 runner runner      1469 Jun 24 09:34 product_logo_24.png
+-rw-r--r-- 1 runner runner     41352 Jun 24 09:34 product_logo_256.png
+-rw-r--r-- 1 runner runner      2033 Jun 24 09:34 product_logo_32.png
+-rw-r--r-- 1 runner runner      3586 Jun 24 09:34 product_logo_48.png
+-rw-r--r-- 1 runner runner      4810 Jun 24 09:34 product_logo_64.png
+drwxr-xr-x 7 runner runner      4096 Jun 24 09:34 resources
+-rw-r--r-- 1 runner runner  41262698 Jun 24 09:34 resources.pak
+-rw-r--r-- 1 runner runner    722568 Jun 24 09:34 v8_context_snapshot.bin
+-rw-r--r-- 1 runner runner       107 Jun 24 09:34 vk_swiftshader_icd.json
+-rwxr-xr-x 1 runner runner 319511768 Jun 24 09:34 whale
+-rwsr-xr-x 1 runner runner     15368 Jun 24 09:34 whale-sandbox
+-rw-r--r-- 1 runner runner  14289590 Jun 24 09:34 whale_100_percent.pak
+-rw-r--r-- 1 runner runner  17507540 Jun 24 09:34 whale_200_percent.pak
+---size---
+468M	extract/
+[0m
+The actual binary now exists at the exact path my prior NEXT referenced. Running the real static analysis on the sync surface.
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "version: $(cat CHROME_VERSION_EXTRA)"; echo "---"; strings -n 8 whale 2>/dev/null | grep -iE "whalesync|whale_sync|sync_pb|nigori|encryption_bootstrap" | sort -u | head -60
+version: stable
+---
+	/whalesync/reset
+../../components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.cc
+../../components/sync/nigori/cross_user_sharing_keys.cc
+../../components/sync/nigori/cryptographer_impl.cc
+../../components/sync/nigori/nigori_data_type_processor.cc
+../../components/sync/nigori/nigori_sync_bridge_impl.cc
+../../whale/components/sync/engine/whale_sync_util.cc
+../../whale/components/sync/service/whale_sync_auth_manager.cc
+/whalesync
+ClearNigoriDataForMigration
+GetNigoriNodeForDebugging
+Nigori.bin
+NigoriClH
+NigoriClientTagHash
+NigoriDataTypeProcessor::ModelReadyToSync
+NigoriStorageKey
+RecordNigoriMemoryUsageAndCountsHistograms
+Sync.Crypto.NigoriKeyDerivationDuration.%s
+Sync.NigoriStorageDecryptionResult
+Sync.NigoriStorageEncryptionResult
+WhaleSyncAuthManager
+https://api.whale.naver.com/whalesync
+https://api.whale.naver.com/whalesync/whalesync
+https://dev-api.whale.naver.com/whalesync
+nigori-kH
+nigori-key
+sync.encryption_bootstrap_token
+sync.encryption_bootstrap_token_per_account
+sync.encryption_bootstrap_token_per_account_migration_done
+sync_pb.AccessibilityAnnotationSpecifics
+sync_pb.AccessibilityAnnotationSpecifics.CalendarSource
+sync_pb.AccessibilityAnnotationSpecifics.DriversLicense
+sync_pb.AccessibilityAnnotationSpecifics.FlightReservation
+sync_pb.AccessibilityAnnotationSpecifics.GmailSource
+sync_pb.AccessibilityAnnotationSpecifics.NaiveDate
+sync_pb.AccessibilityAnnotationSpecifics.NationalId
+sync_pb.AccessibilityAnnotationSpecifics.Order
+sync_pb.AccessibilityAnnotationSpecifics.Passport
+sync_pb.AccessibilityAnnotationSpecifics.PhotosSource
+sync_pb.AccessibilityAnnotationSpecifics.Shipment
+sync_pb.AccessibilityAnnotationSpecifics.Source
+sync_pb.AccessibilityAnnotationSpecifics.Vehicle
+sync_pb.AccountSettingSpecifics
+[0m
+The environment reset wiped the previously-downloaded binary (`/tmp/opencode/whale_x/` gone, sha256 `6dd7ebc4...` no longer on disk). The exact CDN source is known from the prior log. Let me verify reachability and re-acquire the binary to re-enable the queued static-analysis probes.
+[0m$ [0mcd /tmp/opencode && timeout 25 curl -sS -I "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" -A "Mozilla/5.0" | grep -iE "HTTP/|content-length|last-modified|content-type"
+HTTP/2 200 
+content-length: 164163916
+last-modified: Thu, 25 Jun 2026 06:25:01 GMT
+content-type: application/x-debian-package
+[0m
+CDN reachable, same build (164163916 bytes, last-modified 2026-06-25 = v4.38.386.14). Re-acquiring the binary to restore the local static-analysis capability.
+[0m$ [0mcd /tmp/opencode && mkdir -p whale_x && timeout 300 curl -sS "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" -o whale_x/whale.deb && sha256sum whale_x/whale.deb && ls -la whale_x/
+6dd7ebc47d7e8f21da1108ad5b0e17fcd562fd92e684da206564b51476e0b47e  whale_x/whale.deb
+total 160328
+drwxr-xr-x 2 runner runner      4096 Aug  7 23:44 .
+drwxr-xr-x 3 runner runner      4096 Aug  7 23:44 ..
+-rw-r--r-- 1 runner runner 164163916 Aug  7 23:44 whale.deb
+[0m
+sha256 matches prior session exactly. Extracting to restore the analysis workspace.
+[0m$ [0mcd /tmp/opencode/whale_x && dpkg-deb -x whale.deb extract/ 2>/dev/null; ls extract/opt/naver/whale/ | head -30; echo "---"; cat extract/opt/naver/whale/CHROME_VERSION_EXTRA 2>/dev/null; echo; du -sh extract/ 2>/dev/null
+CHROME_VERSION_EXTRA
+MEIPreload
+PrivacySandboxAttestationsPreloaded
+WidevineCdm
+chrome-management-service
+chrome_crashpad_handler
+cron
+default-app-block
+icudtl.dat
+libEGL.so
+libGLESv2.so
+libqt5_shim.so
+libqt6_shim.so
+libvk_swiftshader.so
+libvulkan.so.1
+locales
+naver-whale
+product_logo_128.png
+product_logo_16.png
+product_logo_24.png
+product_logo_256.png
+product_logo_32.png
+product_logo_48.png
+product_logo_64.png
+resources
+resources.pak
+v8_context_snapshot.bin
+vk_swiftshader_icd.json
+whale
+whale-sandbox
+---
+stable
+
+468M	extract/
+[0m
+[0m$ [0mls /home/runner/work/whale-hunt/whale-hunt/scripts/ 2>/dev/null; echo "---"; python3 -c "import importlib.util; print('paquette' in str(importlib.util.find_spec('paquette')))" 2>/dev/null; which unpack_pak 2>/dev/null; ls /tmp/opencode/whale_x/extract/opt/naver/whale/resources/ | head
+sync-issues.py
+---
+False
+accessibility
+inspector_overlay
+naver_smartlens
+quicksearch
+toolbox
+[0m
+Binary restored. Now running the queued probe: extracting `whale_sync_push/service_worker.js` + `socket.io.slim.js` from resources.pak.
+[0m$ [0mstrings -n 6 /tmp/opencode/whale_x/extract/opt/naver/whale/resources.pak 2>/dev/null | grep -iE "whale_sync_push|socket\.io|service_worker|multiplay" | sort -u | head -20
+(no output)
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && strings -n 6 whale 2>/dev/null | grep -iE "whale_sync_push|socket\.io|sync_push|push_service|webpush" | sort -u | head -20; echo "=== resources dirs ==="; ls resources/; echo "=== grep binary for sync push extension id ==="; strings -n 6 whale 2>/dev/null | grep -iE "sync" | grep -iE "\.crx|extension|_id|push" | sort -u | head -20
+PushMessagingGcmEndpointWebpushPath
+WebPush: info
+sync_push_server_url_fetcher
+whale_sync_push
+whale_sync_push/service_worker.js
+whale_sync_push/socket.io.slim.js
+=== resources dirs ===
+accessibility
+inspector_overlay
+naver_smartlens
+quicksearch
+toolbox
+=== grep binary for sync push extension id ===
+ from sync was uninstalled as external extension
+). This is undefined behaviour. Application writers should ensure that the min delay is always less than or equals max delay. If trying to use the playout delay header extensions described in https://webrtc.googlesource.com/src/+/refs/heads/main/docs/native-code/rtp-hdrext/playout-delay/, be careful that a playout delay hint or A/V sync settings may have caused this conflict.
+../../chrome/browser/extensions/api/storage/setting_sync_data.cc
+../../chrome/browser/extensions/api/storage/settings_sync_processor.cc
+../../chrome/browser/extensions/api/storage/settings_sync_util.cc
+../../chrome/browser/extensions/api/storage/sync_value_store_cache.cc
+../../chrome/browser/extensions/api/storage/syncable_settings_storage.cc
+../../chrome/browser/extensions/sync/account_extension_tracker.cc
+../../chrome/browser/extensions/sync/extension_sync_data.cc
+../../chrome/browser/extensions/sync/extension_sync_service.cc
+../../chrome/browser/extensions/sync/sync_bundle.cc
+Attempt to sync bad EntitySpecifics: no extension data.
+Attempt to sync bad ExtensionSpecifics (bad ID):
+Attempt to sync bad ExtensionSpecifics (bad update URL):
+Attempt to sync bad ExtensionSpecifics (bad version):
+BLOCKED_BY_CLOUD_POLICY_CHECKBLOCKED_BY_POLICYCORRUPTEDCUSTODIAN_APPROVAL_REQUIREDEXTERNAL_EXTENSIONGREYLISTNOT_ALLOWLISTEDNOT_ASH_KEEPLISTEDNOT_VERIFIEDPERMISSIONS_INCREASEPUBLISHED_IN_STORE_REQUIRED_BY_POLICYREINSTALLRELOADREMOTE_INSTALLSIDELOAD_WIPEOUTUNKNOWNUNKNOWN_FROM_SYNCUNSUPPORTED_DEVELOPER_EXTENSIONUNSUPPORTED_MANIFEST_VERSIONUNSUPPORTED_REQUIREMENTUPDATE_REQUIRED_BY_POLICYUSER_ACTION
+CREATE TABLE keywords (id INTEGER PRIMARY KEY,short_name VARCHAR NOT NULL,keyword VARCHAR NOT NULL,favicon_url VARCHAR NOT NULL,url VARCHAR NOT NULL,safe_for_autoreplace INTEGER,originating_url VARCHAR,date_created INTEGER DEFAULT 0,usage_count INTEGER DEFAULT 0,input_encodings VARCHAR,suggest_url VARCHAR,prepopulate_id INTEGER DEFAULT 0,created_by_policy INTEGER DEFAULT 0,last_modified INTEGER DEFAULT 0,sync_guid VARCHAR,alternate_urls VARCHAR,image_url VARCHAR,search_url_post_params VARCHAR,suggest_url_post_params VARCHAR,image_url_post_params VARCHAR,new_tab_url VARCHAR,log INTEGER DEFAULT 0,priority INTEGER DEFAULT 0,last_visited INTEGER DEFAULT 0, created_from_play_api INTEGER DEFAULT 0, is_active INTEGER DEFAULT 0, starter_pack_id INTEGER DEFAULT 0, enforced_by_policy INTEGER DEFAULT 0, featured_by_policy INTEGER DEFAULT 0, url_hash BLOB)
+CREATE TABLE temp_keywords (id INTEGER PRIMARY KEY,short_name VARCHAR NOT NULL,keyword VARCHAR NOT NULL,favicon_url VARCHAR NOT NULL,url VARCHAR NOT NULL,safe_for_autoreplace INTEGER,originating_url VARCHAR,date_created INTEGER DEFAULT 0,usage_count INTEGER DEFAULT 0,input_encodings VARCHAR,suggest_url VARCHAR,prepopulate_id INTEGER DEFAULT 0,created_by_policy INTEGER DEFAULT 0,instant_url VARCHAR,last_modified INTEGER DEFAULT 0,sync_guid VARCHAR,alternate_urls VARCHAR,search_terms_replacement_key VARCHAR,image_url VARCHAR,search_url_post_params VARCHAR,suggest_url_post_params VARCHAR,instant_url_post_params VARCHAR,image_url_post_params VARCHAR,new_tab_url VARCHAR,log INTEGER DEFAULT 0,priority INTEGER DEFAULT 0)
+CREATE TABLE temp_keywords (id INTEGER PRIMARY KEY,short_name VARCHAR NOT NULL,keyword VARCHAR NOT NULL,favicon_url VARCHAR NOT NULL,url VARCHAR NOT NULL,safe_for_autoreplace INTEGER,originating_url VARCHAR,date_created INTEGER DEFAULT 0,usage_count INTEGER DEFAULT 0,input_encodings VARCHAR,suggest_url VARCHAR,prepopulate_id INTEGER DEFAULT 0,created_by_policy INTEGER DEFAULT 0,last_modified INTEGER DEFAULT 0,sync_guid VARCHAR,alternate_urls VARCHAR,image_url VARCHAR,search_url_post_params VARCHAR,suggest_url_post_params VARCHAR,image_url_post_params VARCHAR,new_tab_url VARCHAR,log INTEGER DEFAULT 0,priority INTEGER DEFAULT 0,last_visited INTEGER DEFAULT 0)
+CREATE TABLE visits(id INTEGER PRIMARY KEY AUTOINCREMENT,url INTEGER NOT NULL,visit_time INTEGER NOT NULL,from_visit INTEGER,external_referrer_url TEXT,transition INTEGER DEFAULT 0 NOT NULL,segment_id INTEGER,visit_duration INTEGER DEFAULT 0 NOT NULL,incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT NULL,opener_visit INTEGER,originator_cache_guid TEXT,originator_visit_id INTEGER,originator_from_visit INTEGER,originator_opener_visit INTEGER,is_known_to_sync BOOLEAN DEFAULT FALSE NOT NULL,consider_for_ntp_most_visited BOOLEAN DEFAULT FALSE NOT NULL,visited_link_id INTEGER DEFAULT 0 NOT NULL,app_id TEXT)
+[0m
+Confirmed `whale_sync_push/service_worker.js` and `socket.io.slim.js` are embedded in the pak. Writing a pak parser to extract them.
+[0m$ [0mcat > /tmp/opencode/pakparse.py <<'EOF'
+import struct, sys, re
+
+path = "/tmp/opencode/whale_x/extract/opt/naver/whale/resources.pak"
+data = open(path, 'rb').read()
+
+# header: version(2) encoding(2) resource_count(2) alias_count(2)
+version, enc, rcount, acount = struct.unpack_from('<HHHH', data, 0)
+print(f"version={version} encoding={enc} resource_count={rcount} alias_count={acount}")
+if version == 4:
+    T = 'H'
+elif version == 5:
+    T = 'I'
+else:
+    sys.exit(f"unsupported version {version}")
+
+tbl = struct.calcsize('<HHHH')  # 8
+# resource table
+rs = []
+for i in range(rcount):
+    key, off = struct.unpack_from('<'+T+T, data, tbl + i*struct.calcsize('<'+T+T))
+    rs.append((key, off))
+tbl += rcount*struct.calcsize('<'+T+T)
+# alias table
+als = []
+for i in range(acount):
+    key, src = struct.unpack_from('<'+T+T, data, tbl + i*struct.calcsize('<'+T+T))
+    als.append((key, src))
+
+# For version 4/5, offsets are relative to the end of the header (start of resource table is 8).
+# Actually offsets are relative to end of header section = start of file + 8? 
+# Chrome: "resource_offset + header_size" ... in version 4, offsets are measured from the end of the header.
+# The header section size = 8 + rcount*4 + acount*4.
+hdr_size = 8 + rcount*struct.calcsize('<'+T+T) + acount*struct.calcsize('<'+T+T)
+
+found = {}
+for key, off in rs:
+    start = hdr_size + off
+    nxt = []
+    found[key] = start
+# resolve boundaries
+sizes = []
+keys_sorted = sorted(found.items(), key=lambda x: x[1])
+for idx,(k,s) in enumerate(keys_sorted):
+    end = keys_sorted[idx+1][1] if idx+1 < len(keys_sorted) else len(data)
+    sizes.append((k, s, end))
+
+import json
+out = []
+for k, s, e in sizes:
+    blob = data[s:e]
+    out.append((k, blob))
+    # scan for interesting names in each blob
+print(f"parsed {len(out)} resources")
+# dump map of key -> (size, first bytes)
+for k, blob in sorted(out):
+    head = blob[:32]
+    print(k, len(blob), repr(head[:24]))
+EOF
+python3 /tmp/opencode/pakparse.py
+version=5 encoding=0 resource_count=1 alias_count=0
+parsed 1 resources
+24909648 0 b''
+[0m
+[0m$ [0mcat > /tmp/opencode/pakparse.py <<'EOF'
+import struct, sys
+
+path = "/tmp/opencode/whale_x/extract/opt/naver/whale/resources.pak"
+data = open(path, 'rb').read()
+
+version, enc, rcount, acount = struct.unpack_from('<HHHH', data, 0)
+print(f"version={version} encoding={enc} resource_count={rcount} alias_count={acount}")
+if version == 4:
+    KT, OT = 'H', 'I'
+elif version == 5:
+    KT, OT = 'I', 'I'
+else:
+    sys.exit(f"unsupported version {version}")
+esize = struct.calcsize('<'+KT+OT)
+
+tbl = 8
+rs = []
+for i in range(rcount):
+    key, off = struct.unpack_from('<'+KT+OT, data, tbl + i*esize)
+    rs.append((key, off))
+tbl += rcount*esize
+als = []
+for i in range(acount):
+    key, src = struct.unpack_from('<'+KT+OT, data, tbl + i*esize)
+    als.append((key, src))
+tbl += acount*esize
+
+hdr_size = tbl
+print(f"hdr_size={hdr_size}")
+
+found = sorted([(k, hdr_size + off) for k, off in rs], key=lambda x: x[1])
+blobs = []
+for idx, (k, s) in enumerate(found):
+    e = found[idx+1][1] if idx+1 < len(found) else len(data)
+    blobs.append((k, data[s:e]))
+
+# alias resolution: alias key points to another resource id
+for k, src in als:
+    for kk, blob in blobs:
+        if kk == src:
+            blobs.append((k, blob))
+            break
+
+print(f"total resources: {len(blobs)}")
+want = re_compiled = None
+import re
+want_re = re.compile(rb'whale_sync_push|socket\.io|service_worker\.js|multiplay')
+for k, blob in sorted(blobs, key=lambda x: x[0]):
+    if want_re.search(blob):
+        print(f"MATCH key={k} size={len(blob)} head={blob[:40]!r}")
+EOF
+python3 /tmp/opencode/pakparse.py
+version=5 encoding=0 resource_count=1 alias_count=0
+hdr_size=16
+total resources: 1
+[0m
+[0m$ [0mxxd /tmp/opencode/whale_x/extract/opt/naver/whale/resources.pak | head -5; echo "---size---"; wc -c /tmp/opencode/whale_x/extract/opt/naver/whale/resources.pak
+00000000: 0500 0000 0100 0000 5017 7c01 f346 e291  ........P.|..F..
+00000010: 0000 f446 03bd 0000 f546 d6cf 0000 f646  ...F.....F.....F
+00000020: dcdf 0000 f746 2206 0100 f846 af27 0100  .....F"....F.'..
+00000030: f946 7d31 0100 fa46 f23f 0100 fb46 b945  .F}1...F.?...F.E
+00000040: 0100 fc46 dc6a 0100 fd46 4e7f 0100 fe46  ...F.j...FN....F
+---size---
+41262698 /tmp/opencode/whale_x/extract/opt/naver/whale/resources.pak
+[0m
+The pak header parse is wrong. Let me compare against a known-good Chrome pak to decode the format.
+[0m$ [0mxxd /opt/google/chrome/resources.pak 2>/dev/null | head -3; echo "---chromium---"; xxd /usr/local/share/chromium/chrome-linux/resources.pak 2>/dev/null | head -3; echo "---whale head 64---"; xxd -l 96 /tmp/opencode/whale_x/extract/opt/naver/whale/resources.pak
+00000000: 0500 0000 0100 0000 9016 7900 2e3b 5689  ..........y..;V.
+00000010: 0000 2f3b 239b 0000 303b 74c4 0000 323b  ../;#...0;t...2;
+00000020: 0959 0100 333b bc5b 0100 343b 4960 0100  .Y..3;.[..4;I`..
+---chromium---
+00000000: 0500 0000 0100 0000 5f15 6901 2e3b f085  ........_.i..;..
+00000010: 0000 2f3b f58b 0000 303b 3096 0000 323b  ../;....0;0...2;
+00000020: 59a7 0000 333b 51a9 0000 533b 06ad 0000  Y...3;Q...S;....
+---whale head 64---
+00000000: 0500 0000 0100 0000 5017 7c01 f346 e291  ........P.|..F..
+00000010: 0000 f446 03bd 0000 f546 d6cf 0000 f646  ...F.....F.....F
+00000020: dcdf 0000 f746 2206 0100 f846 af27 0100  .....F"....F.'..
+00000030: f946 7d31 0100 fa46 f23f 0100 fb46 b945  .F}1...F.?...F.E
+00000040: 0100 fc46 dc6a 0100 fd46 4e7f 0100 fe46  ...F.j...FN....F
+00000050: 9791 0100 ff46 b1a9 0100 0047 b2b4 0100  .....F.....G....
+[0m
+[0m$ [0mcat > /tmp/opencode/pakparse.py <<'EOF'
+import struct, re
+
+path = "/tmp/opencode/whale_x/extract/opt/naver/whale/resources.pak"
+data = open(path, 'rb').read()
+
+HDR = 18
+# first entry's offset gives the table size
+first = struct.unpack_from('<I', data, HDR+2)[0]
+print("first offset:", first, "-> est entries:", first//6)
+entries = []
+pos = HDR
+while True:
+    if pos+6 > len(data): break
+    key, off = struct.unpack_from('<HI', data, pos)
+    if off > len(data): break
+    entries.append((key, off))
+    pos += 6
+    if off >= first: break  # reached end of resource table region
+print(f"parsed {len(entries)} entries; last key={entries[-1][0]:#x} off={entries[-1][1]}")
+
+# build key->offset map (resolve to absolute)
+def abs_off(off): return HDR + off
+res = {}
+for key, off in entries:
+    res.setdefault(key, off)
+
+# We also need to discover actual data boundaries; the offset is start of blob,
+# end = next higher offset (among all keys).
+blobs = sorted([(k, abs_off(o)) for k, o in res.items() if o > 0], key=lambda x: x[1])
+out = {}
+for idx, (k, s) in enumerate(blobs):
+    e = blobs[idx+1][1] if idx+1 < len(blobs) else len(data)
+    out[k] = data[s:e]
+print(f"blobs: {len(out)}")
+for k, blob in sorted(out.items()):
+    head = blob[:24]
+    print(f"{k:5d} (0x{k:04x}) len={len(blob):8d} {head!r}")
+EOF
+python3 /tmp/opencode/pakparse.py 2>&1 | head -40
+first offset: 48387 -> est entries: 8064
+parsed 1 entries; last key=0x46f4 off=48387
+blobs: 1
+18164 (0x46f4) len=41214293 b'\x00\x80\x00\x00\x00\x80\x08\x06\x00\x00\x00\xc3>a\xcb\x00\x00\x00\tpHYs\x00'
+[0m
+The pak uses a custom header layout — entries are 6 bytes (uint16 key + uint32 offset, relative to header end) starting at byte 18. Rewriting the parser empirically.
+[0m$ [0mcat > /tmp/opencode/pakparse.py <<'EOF'
+import struct, re
+
+path = "/tmp/opencode/whale_x/extract/opt/naver/whale/resources.pak"
+data = open(path, 'rb').read()
+
+HDR = 18
+first = struct.unpack_from('<I', data, HDR+2)[0]
+table_end = HDR + first
+print("first offset:", first, "table region:", HDR, "->", table_end)
+
+entries = []
+pos = HDR
+while pos + 6 <= table_end:
+    key, off = struct.unpack_from('<HI', data, pos)
+    entries.append((key, off))
+    pos += 6
+print(f"parsed {len(entries)} entries; key range {min(k for k,_ in entries):#x}..{max(k for k,_ in entries):#x}")
+
+# dedupe / last-wins for keys
+res = {}
+for key, off in entries:
+    if off: res[key] = off
+
+# blob boundaries: sorted by absolute offset
+blobs = sorted([(k, HDR+o) for k, o in res.items()], key=lambda x: x[1])
+out = {}
+for idx, (k, s) in enumerate(blobs):
+    e = blobs[idx+1][1] if idx+1 < len(blobs) else len(data)
+    out[k] = data[s:e]
+
+print(f"blobs: {len(out)} total bytes: {sum(len(b) for b in out.values())}")
+want = re.compile(rb'whale_sync_push|socket\.io|service_worker\.js|multiplay|\.json|manifest')
+hits = 0
+for k, blob in sorted(out.items()):
+    if want.search(blob):
+        print(f"MATCH key={k:#06x} len={len(blob)} head={blob[:60]!r}")
+        hits += 1
+print("matches:", hits)
+EOF
+python3 /tmp/opencode/pakparse.py 2>&1 | tail -40
+first offset: 48387 table region: 18 -> 48405
+parsed 8064 entries; key range 0x0..0xfffe
+blobs: 7791 total bytes: 41262581
+MATCH key=0x4aac len=2199 head=b'019 NAVER Corp. All Rights reserved.\n * All rights, includin'
+matches: 1
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract && find . -type d | grep -iE "extension|resource" | head -30; echo "=== files with sync in name ==="; find . -iname "*sync*" 2>/dev/null | head -20; echo "=== whale_100_percent key==="; ls -la opt/naver/whale/whale_*.pak
+./opt/naver/whale/resources
+./opt/naver/whale/resources/accessibility
+./opt/naver/whale/resources/accessibility/reading_mode_gdocs_helper
+./opt/naver/whale/resources/inspector_overlay
+./opt/naver/whale/resources/quicksearch
+./opt/naver/whale/resources/quicksearch/_locales
+./opt/naver/whale/resources/quicksearch/_locales/en
+./opt/naver/whale/resources/quicksearch/_locales/ko
+./opt/naver/whale/resources/naver_smartlens
+./opt/naver/whale/resources/naver_smartlens/_locales
+./opt/naver/whale/resources/naver_smartlens/_locales/en
+./opt/naver/whale/resources/naver_smartlens/_locales/ko
+./opt/naver/whale/resources/toolbox
+./opt/naver/whale/resources/toolbox/_locales
+./opt/naver/whale/resources/toolbox/_locales/en
+./opt/naver/whale/resources/toolbox/_locales/ko
+=== files with sync in name ===
+=== whale_100_percent key===
+-rw-r--r-- 1 runner runner 14289590 Jun 24 09:34 opt/naver/whale/whale_100_percent.pak
+-rw-r--r-- 1 runner runner 17507540 Jun 24 09:34 opt/naver/whale/whale_200_percent.pak
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct
+data = open("whale_x/extract/opt/naver/whale/resources.pak",'rb').read()
+HDR=18
+first=struct.unpack_from('<I',data,HDR+2)[0]
+entries=[]
+pos=HDR
+while pos+6<=HDR+first:
+    key,off=struct.unpack_from('<HI',data,pos); entries.append((key,off)); pos+=6
+res={}
+for key,off in entries:
+    if off: res[key]=off
+blobs=sorted([(k,HDR+o) for k,o in res.items()],key=lambda x:x[1])
+out={}
+for idx,(k,s) in enumerate(blobs):
+    e=blobs[idx+1][1] if idx+1<len(blobs) else len(data)
+    out[k]=data[s:e]
+import re
+# broader scan
+pat=re.compile(rb'sync|socket|engine|service_worker|multiplay|whale',re.I)
+count=0
+for k,blob in sorted(out.items()):
+    if len(blob)<10000 and pat.search(blob) and (b'/' in blob[:200] or b'{' in blob[:100] or b'function' in blob[:500] or b'.js' in blob[:500]):
+        txt=blob[:80]
+        print(k, len(blob), repr(txt))
+        count+=1
+        if count>40: break
+EOF
+19113 908 b'tml dir="$i18n{textdirection}" lang="$i18n{language}">\n<head>\n  <meta charset="U'
+19115 2187 b'019 NAVER Corp. All Rights reserved.\n * All rights, including but not limited to'
+19121 3381 b'019 NAVER Corp. All Rights reserved.\n * All rights, including but not limited to'
+19124 5502 b'019 NAVER Corp. All Rights reserved.\n * All rights, including but not limited to'
+19126 4924 b'019 NAVER Corp. All Rights reserved.\n * All rights, including but not limited to'
+54247 6768 b'\xde\xc0\xc2\x19=\xe1)\n\x00@\x7f#:S\x1bds\xaa@\x1a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x010Q\x1d\x03\x11\x01\x07\xc8\x1e`\xcc\x01\x00\x00\x01\x08\x071\x0f\x1d\x04\x04`\x00\x00\x00\x00!\x07\x99\x11!\x03\x80\x07\xb5\x01a<\x00\x00\x00>\x00\x00\x00\x01\x0cJ'
+62468 2442 b'act\n * react-dom.production.min.js\n *\n * Copyright (c) Facebook, Inc. and its af'
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && strings -n 6 -t x whale 2>/dev/null | grep -iE "whale_sync_push|socket\.io\.slim" | head; echo "==="; strings -n 8 whale 2>/dev/null | grep -iE "extension_id|sync_push|kSyncPush|whale_sync_push" | head -20
+1a6179e whale_sync_push/service_worker.js
+1a63ada whale_sync_push/socket.io.slim.js
+1b886a9 whale_sync_push
+===
+extension_id_x
+whale_sync_push/service_worker.js
+whale_sync_push/socket.io.slim.js
+allowlisted_extension_ids
+blocked_extension_ids
+sync_push_server_url_fetcher
+whale_sync_push
+fetch_key_extension_id
+hash_extension_id
+job_extension_id
+chrome.cros.reporting.proto.ExtensionAppInstallEvent.extension_id
+RequestParams-extension_id
+PortContext-worker-extension_id
+MessagingSource-extension_id
+extension_ids_and_version = [
+EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE
+EXTENSION_ID
+SELECT id, extension_id, image_name, image_data, created_at, updated_at FROM images ORDER BY created_at DESC
+SELECT id, extension_id, image_name, image_data, created_at, updated_at FROM images WHERE extension_id=? ORDER BY created_at DESC
+DELETE FROM activitylog_compressed WHERE extension_id_x=?
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct, re
+data = open("whale_x/extract/opt/naver/whale/resources.pak",'rb').read()
+HDR=18
+first=struct.unpack_from('<I',data,HDR+2)[0]
+entries=[]; pos=HDR
+while pos+6<=HDR+first:
+    key,off=struct.unpack_from('<HI',data,pos); entries.append((key,off)); pos+=6
+res={k:o for k,o in entries if o}
+blobs=sorted([(k,HDR+o) for k,o in res.items()],key=lambda x:x[1])
+out={}
+for idx,(k,s) in enumerate(blobs):
+    e=blobs[idx+1][1] if idx+1<len(blobs) else len(data)
+    out[k]=data[s:e]
+for pat in [rb'engine\.io', rb'WebSocket', rb'ws://', rb'wss://', rb'io(', rb'emit(', rb'jsonp', rb'polling']:
+    hits=[k for k,b in out.items() if len(b)<200000 and pat in b]
+    print(pat, "->", len(hits), hits[:10])
+EOF
+b'engine\\.io' -> 0 []
+b'WebSocket' -> 0 []
+b'ws://' -> 0 []
+b'wss://' -> 0 []
+b'io(' -> 2 [55912, 55917]
+b'emit(' -> 0 []
+b'jsonp' -> 0 []
+b'polling' -> 0 []
+[0m
+The `whale_sync_push` extension content isn't in resources.pak — the binary references `sync_push_server_url_fetcher`, suggesting runtime-fetched. Let me inspect the binary context around those string references.
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== strings near whale_sync_push refs ==="; strings -n 4 -t x whale 2>/dev/null | awk '$1>="1a61700" && $1<="1a61850"' | head -30; echo; echo "=== around socket.io.slim ref ==="; strings -n 4 -t x whale 2>/dev/null | awk '$1>="1a63a80" && $1<="1a63b80"' | head -30; echo; echo "=== crx files anywhere ==="; find . -iname "*.crx" 2>/dev/null | head; echo "=== sync_push url strings ==="; strings -n 6 whale 2>/dev/null | grep -iE "sync.*push.*(url|http|server)|push.*whale\.naver" | head
+...output truncated...
+
+Full output saved to: /home/runner/.local/share/opencode/tool-output/tool_fde9f1841001P1JDS04Y2MmcRo
+
+{"namespace":"utilityPrivate","dependencies":["cookies"],"types":[{"id":"utilityPrivate.FileTypeInfo","type":"object","properties":{"extensions":{"type":"array","items":{"type":"string"}},"description":{"type":"string"}}},{"id":"utilityPrivate.FilePathInfo","type":"object","properties":{"title":{"type":"string"},"types":{"type":"array","items":{"$ref":"utilityPrivate.FileTypeInfo"}},"multi_file":{"type":"boolean","optional":true}}},{"id":"utilityPrivate.TypeStatus","type":"object","properties":{"name":{"type":"string"},"state":{"type":"string","optional":true},"message":{"type":"string","optional":true},"status":{"type":"string","optional":true},"group_type":{"type":"string","optional":true},"num_entries":{"type":"integer","optional":true},"num_live":{"type":"integer","optional":true}}},{"id":"utilityPrivate.ThemeColor","type":"object","properties":{"primary_color":{"type":"number"},"sub_color":{"type":"number","optional":true},"picked":{"type":"boolean","optional":true},"key":{"type":"number"}}},{"id":"utilityPrivate.SigninType","type":"string","enum":[{"name":"NAVER"},{"name":"WHALESPACE"},{"name":"EMAIL"},{"name":"SNS"},{"name":"WORKS"}]}],"functions":[{"name":"getServerTime","type":"function","parameters":[{"name":"url","type":"string"}],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"object","properties":{"url":{"type":"string"},"timestamp":{"type":"number"}}}]}},{"name":"getAccountInfo","type":"function","parameters":[{"name":"ignoreCache","type":"boolean"}],"returns_async":{"name":"callback","parameters":[{"name":"cookies","type":"array","items":{"$ref":"cookies.Cookie"}}]}},{"name":"getProfileUserInfo","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"userInfo","type":"object","properties":{"email":{"type":"string"},"id":{"type":"string"},"picture_url":{"type":"string"},"full_name":{"type":"string"},"customer":{"type":"string"},"organization_unit":{"type":"string"},"user_type":{"type":"string"},"signin_type":{"$ref":"utilityPrivate.SigninType"},"works_re_loc":{"type":"string"}}}]}},{"name":"isEnterpriseUser","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"isEnterpriseUser","type":"boolean"}]}},{"name":"getSyncCacheGuid","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"getSyncCacheGuid","type":"string"}]}},{"name":"showLoginPopup","type":"function","parameters":[{"name":"mode","type":"string","optional":true}],"returns_async":{"name":"callback","parameters":[{"name":"isAuthenticated","type":"boolean"}]}},{"name":"showFeedbackPopup","type":"function","parameters":[]},{"name":"getThemeColor","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"colors","type":"array","items":{"$ref":"utilityPrivate.ThemeColor"}}]}},{"name":"setThemeColor","type":"function","parameters":[{"name":"type","type":"integer"}]},{"name":"selectFilePath","type":"function","parameters":[{"$ref":"utilityPrivate.FilePathInfo","name":"info"}],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"array","items":{"type":"object","properties":{"path":{"type":"string"},"file_url":{"type":"string"}}}}]}},{"name":"getUserName","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"name","type":"string"}]}},{"name":"setWelcomePref","type":"function","parameters":[{"name":"name","type":"string"},{"name":"value","type":"any"}],"returns_async":{"name":"callback","parameters":[{"name":"success","type":"boolean"}]}},{"name":"onPushUpdated","type":"function","parameters":[{"type":"string","name":"request_id"},{"name":"details","type":"object","properties":{"message":{"type":"string"}}}]},{"name":"onPushConnected","type":"function","parameters":[{"type":"string","name":"request_id"}]},{"name":"onPushConnectError","type":"function","parameters":[{"type":"string","name":"request_id"},{"type":"string","name":"reason"}]},{"name":"onPushDisconnected","type":"function","parameters":[{"type":"string","name":"request_id"},{"type":"string","name":"reason"}]},{"name":"getPushServerURL","type":"function","parameters":[{"type":"string","name":"request_id"}],"returns_async":{"name":"callback","parameters":[{"name":"url","type":"string"}]}},{"name":"useNaverAsNTP","type":"function","parameters":[{"name":"use","type":"boolean"}],"returns_async":{"name":"callback","parameters":[]}},{"name":"isNaverUsedAsNTP","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"isFirstRun","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"isDefaultMemoEnabled","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"isAITabEntryPointEnabled","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"getChannel","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"channel","type":"string"}]}},{"name":"getWhalebookInfo","type":"function","platforms":["chromeos"],"parameters":[],"returns_async":{"name":"callback","type":"function","parameters":[{"name":"result","type":"object","properties":{"product_name":{"type":"string"},"is_whalebook2":{"type":"boolean"},"floating_keyboard_enabled":{"type":"boolean"}}}]}},{"name":"isDVUEnabled","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"setDVUEnabled","type":"function","parameters":[{"name":"enabled","type":"boolean"}],"returns_async":{"name":"callback","parameters":[]}},{"name":"isGlobalVersion","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"resetNativeScrapbookData","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"addUrlToScrapbookBloomFilter","type":"function","parameters":[{"type":"string","name":"url"}]},{"name":"getMembershipStatus","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"object","properties":{"success":{"type":"boolean"},"isActive":{"type":"boolean"},"raw":{"type":"string"}}}]}}],"events":[{"name":"onPushConnectionRequested","type":"function","parameters":[{"type":"string","name":"request_id"}]},{"name":"onPushDisconnectionRequested","type":"function","parameters":[{"type":"string","name":"request_id"}]}]}
+[0m
+The binary embeds the full `whale.*` extension API schema. This is a rich passive source — it exposes `utilityPrivate` (the sync-push bridge: `getPushServerURL`, `onPushUpdated(message)`, `getSyncCacheGuid`). Let me enumerate all embedded API namespaces.
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && strings -n 4 whale > /tmp/opencode/whale_strings.txt 2>/dev/null; wc -l /tmp/opencode/whale_strings.txt; grep -oE '"namespace":"[a-zA-Z0-9_.]+"' /tmp/opencode/whale_strings.txt | sort -u
+1900848 /tmp/opencode/whale_strings.txt
+"namespace":"accessibilityFeatures"
+"namespace":"account"
+"namespace":"action"
+"namespace":"activityLogPrivate"
+"namespace":"aiPrivate"
+"namespace":"alarms"
+"namespace":"app"
+"namespace":"app.currentWindowInternal"
+"namespace":"app.runtime"
+"namespace":"app.window"
+"namespace":"appViewGuestInternal"
+"namespace":"audio"
+"namespace":"autofillPrivate"
+"namespace":"automation"
+"namespace":"automationInternal"
+"namespace":"autotestPrivate"
+"namespace":"bluetooth"
+"namespace":"bluetoothLowEnergy"
+"namespace":"bluetoothPrivate"
+"namespace":"bluetoothSocket"
+"namespace":"bookmarkManagerPrivate"
+"namespace":"bookmarks"
+"namespace":"brailleDisplayPrivate"
+"namespace":"browserAction"
+"namespace":"browsingData"
+"namespace":"capturePreviewPrivate"
+"namespace":"cecPrivate"
+"namespace":"chromeWebViewInternal"
+"namespace":"clipboard"
+"namespace":"commandLinePrivate"
+"namespace":"commands"
+"namespace":"contentSettings"
+"namespace":"contextMenus"
+"namespace":"controlledFrameInternal"
+"namespace":"cookies"
+"namespace":"crashReportPrivate"
+"namespace":"debugger"
+"namespace":"declarativeContent"
+"namespace":"declarativeNetRequest"
+"namespace":"declarativeWebRequest"
+"namespace":"desktopCapture"
+"namespace":"developerPrivate"
+"namespace":"dns"
+"namespace":"dom"
+"namespace":"downloads"
+"namespace":"downloadsInternal"
+"namespace":"enterprise.hardwarePlatform"
+"namespace":"enterprise.reportingPrivate"
+"namespace":"enterprisePrivate"
+"namespace":"events"
+"namespace":"experimentalActor"
+"namespace":"experimentalAiData"
+"namespace":"extension"
+"namespace":"extensionOptionsInternal"
+"namespace":"extensionTypes"
+"namespace":"feedbackPrivate"
+"namespace":"fileHandlers"
+"namespace":"fileSystem"
+"namespace":"fontSettings"
+"namespace":"gcm"
+"namespace":"glicPrivate"
+"namespace":"guestViewInternal"
+"namespace":"hid"
+"namespace":"history"
+"namespace":"i18n"
+"namespace":"iconVariants"
+"namespace":"identity"
+"namespace":"idle"
+"namespace":"idltest"
+"namespace":"imageWriterPrivate"
+"namespace":"importerPrivate"
+"namespace":"input.ime"
+"namespace":"inputMethodPrivate"
+"namespace":"instanceID"
+"namespace":"languageSettingsPrivate"
+"namespace":"management"
+"namespace":"mdns"
+"namespace":"metricsPrivate"
+"namespace":"mimeHandlerPrivate"
+"namespace":"mimeHandlerViewGuestInternal"
+"namespace":"mojoPrivate"
+"namespace":"multiplayPrivate"
+"namespace":"neloPrivate"
+"namespace":"networkingPrivate"
+"namespace":"notifications"
+"namespace":"ntpSettingsPrivate"
+"namespace":"ntpWallpaper"
+"namespace":"ntpWallpaperPrivate"
+"namespace":"offscreen"
+"namespace":"omnibox"
+"namespace":"pageAction"
+"namespace":"pageCapture"
+"namespace":"passwordsPrivate"
+"namespace":"pdfViewerPrivate"
+"namespace":"permissions"
+"namespace":"power"
+"namespace":"prefsPrivate"
+"namespace":"printerProvider"
+"namespace":"printerProviderInternal"
+"namespace":"privacy"
+"namespace":"processes"
+"namespace":"promotionPrivate"
+"namespace":"protocolHandlers"
+"namespace":"proxy"
+"namespace":"proxyOverrideRulesPrivate"
+"namespace":"pwastorePrivate"
+"namespace":"readingList"
+"namespace":"resourcesPrivate"
+"namespace":"runtime"
+"namespace":"safeBrowsingPrivate"
+"namespace":"scrapbookPrivate"
+"namespace":"scripting"
+"namespace":"scriptsInternal"
+"namespace":"search"
+"namespace":"searchEnginesPrivate"
+"namespace":"sessions"
+"namespace":"settingsPrivate"
+"namespace":"sidePanel"
+"namespace":"sidebarAction"
+"namespace":"sidebarsPrivate"
+"namespace":"socket"
+"namespace":"sockets.tcp"
+"namespace":"sockets.tcpServer"
+"namespace":"sockets.udp"
+"namespace":"storage"
+"namespace":"syncFileSystem"
+"namespace":"system.cpu"
+"namespace":"system.display"
+"namespace":"system.memory"
+"namespace":"system.network"
+"namespace":"system.storage"
+"namespace":"systemPrivate"
+"namespace":"tabCapture"
+"namespace":"tabGroups"
+"namespace":"tabs"
+"namespace":"test"
+"namespace":"themestorePrivate"
+"namespace":"topSites"
+"namespace":"tts"
+"namespace":"ttsEngine"
+"namespace":"ttsPrivate"
+"namespace":"types"
+"namespace":"usb"
+"namespace":"userScripts"
+"namespace":"utility"
+"namespace":"utilityPrivate"
+"namespace":"virtualKeyboard"
+"namespace":"virtualKeyboardPrivate"
+"namespace":"webAuthenticationProxy"
+"namespace":"webNavigation"
+"namespace":"webRequest"
+"namespace":"webRequestInternal"
+"namespace":"webViewInternal"
+"namespace":"webViewRequest"
+"namespace":"webrtcAudioPrivate"
+"namespace":"webrtcDesktopCapturePrivate"
+"namespace":"webrtcLoggingPrivate"
+"namespace":"webstorePrivate"
+"namespace":"whaleon"
+"namespace":"whaleonPrivate"
+"namespace":"whalestorePrivate"
+"namespace":"windows"
+[0m
+Full embedded API surface enumerated. Now extracting the Whale-specific schemas relevant to sync: `utilityPrivate`, `multiplayPrivate`, `scrapbookPrivate`, `neloPrivate`, `whaleon`.
+[0m$ [0mcd /tmp/opencode && for ns in multiplayPrivate scrabookPrivate scrapbookPrivate neloPrivate whaleon whaleonPrivate; do echo "=== $ns ==="; python3 - "$ns" <<'EOF'
+import sys,re
+ns=sys.argv[1]
+data=open("whale_strings.txt",'rb').read()
+pat=rb'"namespace":"'+ns.encode()+rb'"'
+i=0
+while True:
+    j=data.find(pat,i)
+    if j<0: break
+    # find enclosing { ... } of the schema object (the namespace object)
+    start=data.rfind(b'{',0,j)
+    if start<0: break
+    # crude: print a window
+    print(data[j:j+700].decode('utf-8','replace'))
+    print("---")
+    i=j+1
+    break
+EOF
+done
+=== multiplayPrivate ===
+"namespace":"multiplayPrivate","types":[{"id":"multiplayPrivate.Peer","type":"object","properties":{"id":{"type":"string"},"name":{"type":"string"},"profile_color":{"type":"string"},"isMe":{"type":"boolean"},"profile_url":{"type":"string","optional":true}}},{"id":"multiplayPrivate.ChatInfo","type":"object","properties":{"multiplayId":{"type":"string"},"sessionToken":{"type":"string"},"myId":{"type":"string"},"targetId":{"type":"string","optional":true},"peers":{"type":"array","items":{"$ref":"multiplayPrivate.Peer"}}}}],"functions":[{"name":"initialize","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"chatInfo","$ref":"multiplayPrivate.ChatInfo"}]}}
+---
+=== scrabookPrivate ===
+=== scrapbookPrivate ===
+"namespace":"scrapbookPrivate","types":[{"id":"scrapbookPrivate.Category","type":"object","properties":{"id":{"type":"integer"},"name":{"type":"string","optional":true}}},{"id":"scrapbookPrivate.Feed","type":"object","properties":{"id":{"type":"integer"},"title":{"type":"string"},"description":{"type":"string"},"contentType":{"type":"string"},"contentProvider":{"type":"string"},"url":{"type":"string"},"imageUrl":{"type":"string"},"createAt":{"type":"number"},"updateAt":{"type":"number"},"memo":{"type":"string"},"category":{"$ref":"scrapbookPrivate.Category","optional":true},"tagList":{"type":"array","items":{"type":"string"}},"extra":{"type":"string","optional":true}}}],"functions":[{"name":
+---
+=== neloPrivate ===
+"namespace":"neloPrivate","types":[{"id":"neloPrivate.LogLevel","type":"string","enum":[{"name":"info"},{"name":"warning"},{"name":"error"},{"name":"fatal"}]}],"functions":[{"name":"send","type":"function","parameters":[{"name":"level","$ref":"neloPrivate.LogLevel","optional":true},{"name":"data","type":"string"}],"returns_async":{"name":"callback","parameters":[],"optional":true}}]}
+{"namespace":"ntpSettingsPrivate","functions":[{"name":"setPref","type":"function","parameters":[{"name":"name","type":"string"},{"name":"value","type":"any"}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"result","type":"any"}]}},{"name":"getPref","type":"function","parameters":[{"na
+---
+=== whaleon ===
+"namespace":"whaleon","types":[{"id":"whaleon.ColorArray","type":"array","items":{"type":"integer","minimum":0,"maximum":255},"minItems":4,"maxItems":4},{"id":"whaleon.Icons","type":"object","properties":{"urlFor1x":{"type":"string"},"urlFor2x":{"type":"string","optional":true}}},{"id":"whaleon.ButtonType","type":"string","enum":[{"name":"chat"},{"name":"member"},{"name":"reaction"},{"name":"screenShare"},{"name":"video"},{"name":"audio"}]},{"id":"whaleon.WindowType","type":"string","enum":[{"name":"conference"},{"name":"detachedWindow"},{"name":"chat"},{"name":"member"},{"name":"unknown"}]},{"id":"whaleon.Button","type":"object","properties":{"type":{"$ref":"whaleon.ButtonType"},"text":{"ty
+---
+=== whaleonPrivate ===
+"namespace":"whaleonPrivate","functions":[{"name":"getCurrent","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"any"}]}},{"name":"getClientId","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"client_id","type":"string"}]}},{"name":"closeConferenceWindow","type":"function","parameters":[]},{"name":"maximizeConferenceWindow","type":"function","parameters":[]},{"name":"minimizeConferenceWindow","type":"function","parameters":[]},{"name":"restoreConferenceWindow","type":"function","parameters":[]},{"name":"isConferenceWindowMaximized","type":"function","parameters":[],"returns_async":{"name":"ca
+---
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import re
+data=open("whale_strings.txt",'rb').read().decode('utf-8','replace')
+# lines that are JSON schemas contain "namespace":
+for line in data.splitlines():
+    if '"namespace":"multiplayPrivate"' in line:
+        print("MULTIPLAY FULL LEN:", len(line)); print(line[:6000]); break
+EOF
+MULTIPLAY FULL LEN: 2307
+{"namespace":"multiplayPrivate","types":[{"id":"multiplayPrivate.Peer","type":"object","properties":{"id":{"type":"string"},"name":{"type":"string"},"profile_color":{"type":"string"},"isMe":{"type":"boolean"},"profile_url":{"type":"string","optional":true}}},{"id":"multiplayPrivate.ChatInfo","type":"object","properties":{"multiplayId":{"type":"string"},"sessionToken":{"type":"string"},"myId":{"type":"string"},"targetId":{"type":"string","optional":true},"peers":{"type":"array","items":{"$ref":"multiplayPrivate.Peer"}}}}],"functions":[{"name":"initialize","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"chatInfo","$ref":"multiplayPrivate.ChatInfo"}]}},{"name":"getJoinUrl","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"url","type":"string"}]}},{"name":"getPeers","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"peers","type":"array","items":{"$ref":"multiplayPrivate.Peer"}}]}},{"name":"closeWindow","type":"function","parameters":[]},{"name":"openChatWith","type":"function","parameters":[{"name":"id","type":"string"}]},{"name":"setChatWindowAlwaysOnTop","type":"function","parameters":[{"name":"alwaysOnTop","type":"boolean"}]},{"name":"isChatWindowAlwaysOnTop","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"getMultiplayName","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"name","type":"string"}]}},{"name":"setMultiplayName","type":"function","parameters":[{"name":"name","type":"string"}]},{"name":"isCreatedByMeAndFirstRun","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"first_run","type":"boolean"}]}}],"events":[{"name":"onPeerAdded","type":"function","parameters":[{"name":"peerIds","type":"array","items":{"type":"string"}}]},{"name":"onPeerRemoved","type":"function","parameters":[{"name":"peerIds","type":"array","items":{"type":"string"}}]},{"name":"onMultiplayStartButtonClicked","type":"function","parameters":[]},{"name":"onMultiplayStarted","type":"function","parameters":[]},{"name":"onMultiplayNameChanged","type":"function","parameters":[{"name":"name","type":"string"}]}]}
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+data=open("whale_strings.txt",'rb').read().decode('utf-8','replace')
+for ns in ['scrapbookPrivate','utilityPrivate','sidebarAction','neloPrivate']:
+    for line in data.splitlines():
+        if '"namespace":"%s"'%ns in line:
+            print("=== %s (%d bytes) ==="%(ns,len(line)))
+            print(line[:5500]); print()
+            break
+EOF
+=== scrapbookPrivate (5273 bytes) ===
+{"namespace":"scrapbookPrivate","types":[{"id":"scrapbookPrivate.Category","type":"object","properties":{"id":{"type":"integer"},"name":{"type":"string","optional":true}}},{"id":"scrapbookPrivate.Feed","type":"object","properties":{"id":{"type":"integer"},"title":{"type":"string"},"description":{"type":"string"},"contentType":{"type":"string"},"contentProvider":{"type":"string"},"url":{"type":"string"},"imageUrl":{"type":"string"},"createAt":{"type":"number"},"updateAt":{"type":"number"},"memo":{"type":"string"},"category":{"$ref":"scrapbookPrivate.Category","optional":true},"tagList":{"type":"array","items":{"type":"string"}},"extra":{"type":"string","optional":true}}}],"functions":[{"name":"getFeeds","type":"function","parameters":[{"type":"object","name":"queryInfo","properties":{"keyword":{"type":"string","optional":true},"categoryId":{"type":"integer","optional":true},"url":{"type":"string","optional":true},"idLessThan":{"type":"integer","minimum":0,"optional":true},"idGreaterThan":{"type":"integer","minimum":0,"optional":true},"pageSize":{"type":"integer","optional":true},"contentType":{"type":"string","optional":true},"contentProvider":{"type":"string","optional":true},"tag":{"type":"string","optional":true}}}],"returns_async":{"name":"callback","parameters":[{"type":"array","name":"items","items":{"$ref":"scrapbookPrivate.Feed"}}]}},{"name":"getFeed","type":"function","parameters":[{"name":"feedId","choices":[{"type":"integer"},{"type":"string"}]}],"returns_async":{"name":"callback","parameters":[{"name":"item","$ref":"scrapbookPrivate.Feed"}]}},{"name":"createFeed","type":"function","parameters":[{"name":"createProperties","type":"object","properties":{"title":{"type":"string"},"contentType":{"type":"string"},"contentProvider":{"type":"string"},"description":{"type":"string","optional":true},"url":{"type":"string","optional":true},"imageUrl":{"type":"string","optional":true},"memo":{"type":"string","optional":true},"categoryId":{"type":"integer","optional":true},"tagList":{"type":"array","items":{"type":"string"},"optional":true},"extra":{"type":"string","optional":true}}}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"feed","$ref":"scrapbookPrivate.Feed"}]}},{"name":"updateFeed","type":"function","parameters":[{"name":"feedId","type":"integer"},{"name":"updateProperties","type":"object","properties":{"title":{"type":"string"},"contentType":{"type":"string"},"contentProvider":{"type":"string"},"description":{"type":"string","optional":true},"url":{"type":"string","optional":true},"imageUrl":{"type":"string","optional":true},"memo":{"type":"string","optional":true},"categoryId":{"type":"integer","optional":true},"tagList":{"type":"array","items":{"type":"string"},"optional":true},"extra":{"type":"string","optional":true},"recreate":{"type":"boolean","optional":true}}}],"returns_async":{"name":"callback","parameters":[{"name":"feed","$ref":"scrapbookPrivate.Feed"}]}},{"name":"removeFeed","type":"function","parameters":[{"name":"feedId","choices":[{"type":"integer","minimum":0},{"type":"array","items":{"type":"integer","minimum":0}}]}],"returns_async":{"name":"callback","optional":true,"parameters":[]}},{"name":"getCategories","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"categories","type":"array","items":{"$ref":"scrapbookPrivate.Category"}}]}},{"name":"createCategory","type":"function","parameters":[{"name":"createProperties","type":"object","properties":{"name":{"type":"string"}}}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"category","$ref":"scrapbookPrivate.Category"}]}},{"name":"updateCategory","type":"function","parameters":[{"name":"categoryId","type":"integer"},{"name":"updateProperties","type":"object","properties":{"name":{"type":"string"}}}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"category","$ref":"scrapbookPrivate.Category"}]}},{"name":"removeCategory","type":"function","parameters":[{"type":"object","name":"options","properties":{"categoryId":{"choices":[{"type":"integer","minimum":0},{"type":"array","items":{"type":"integer","minimum":0}}]},"withContent":{"type":"boolean","optional":true}}}],"returns_async":{"name":"callback","optional":true,"parameters":[]}},{"name":"setCategoryOrder","type":"function","parameters":[{"type":"array","name":"categoryIds","items":{"type":"integer","minimum":0}}],"returns_async":{"name":"callback","optional":true,"parameters":[]}},{"name":"getAllTags","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"tags","type":"array","items":{"type":"string"}}]}},{"name":"hasFeedForURL","type":"function","parameters":[{"name":"queryInfo","type":"object","properties":{"url":{"type":"string","optional":true}}}],"returns_async":{"name":"callback","parameters":[{"name":"hasFeed","type":"boolean"}]}},{"name":"reset","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"success","type":"boolean"}]}},{"name":"openScrapbook","type":"function","parameters":[],"returns_async":{"name":"callback","optional":true,"parameters":[]}}],"events":[{"name":"onFeedsChanged","type":"function"},{"name":"onCategoriesChanged","type":"function"}]}
+
+=== utilityPrivate (6692 bytes) ===
+{"namespace":"utilityPrivate","dependencies":["cookies"],"types":[{"id":"utilityPrivate.FileTypeInfo","type":"object","properties":{"extensions":{"type":"array","items":{"type":"string"}},"description":{"type":"string"}}},{"id":"utilityPrivate.FilePathInfo","type":"object","properties":{"title":{"type":"string"},"types":{"type":"array","items":{"$ref":"utilityPrivate.FileTypeInfo"}},"multi_file":{"type":"boolean","optional":true}}},{"id":"utilityPrivate.TypeStatus","type":"object","properties":{"name":{"type":"string"},"state":{"type":"string","optional":true},"message":{"type":"string","optional":true},"status":{"type":"string","optional":true},"group_type":{"type":"string","optional":true},"num_entries":{"type":"integer","optional":true},"num_live":{"type":"integer","optional":true}}},{"id":"utilityPrivate.ThemeColor","type":"object","properties":{"primary_color":{"type":"number"},"sub_color":{"type":"number","optional":true},"picked":{"type":"boolean","optional":true},"key":{"type":"number"}}},{"id":"utilityPrivate.SigninType","type":"string","enum":[{"name":"NAVER"},{"name":"WHALESPACE"},{"name":"EMAIL"},{"name":"SNS"},{"name":"WORKS"}]}],"functions":[{"name":"getServerTime","type":"function","parameters":[{"name":"url","type":"string"}],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"object","properties":{"url":{"type":"string"},"timestamp":{"type":"number"}}}]}},{"name":"getAccountInfo","type":"function","parameters":[{"name":"ignoreCache","type":"boolean"}],"returns_async":{"name":"callback","parameters":[{"name":"cookies","type":"array","items":{"$ref":"cookies.Cookie"}}]}},{"name":"getProfileUserInfo","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"userInfo","type":"object","properties":{"email":{"type":"string"},"id":{"type":"string"},"picture_url":{"type":"string"},"full_name":{"type":"string"},"customer":{"type":"string"},"organization_unit":{"type":"string"},"user_type":{"type":"string"},"signin_type":{"$ref":"utilityPrivate.SigninType"},"works_re_loc":{"type":"string"}}}]}},{"name":"isEnterpriseUser","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"isEnterpriseUser","type":"boolean"}]}},{"name":"getSyncCacheGuid","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"getSyncCacheGuid","type":"string"}]}},{"name":"showLoginPopup","type":"function","parameters":[{"name":"mode","type":"string","optional":true}],"returns_async":{"name":"callback","parameters":[{"name":"isAuthenticated","type":"boolean"}]}},{"name":"showFeedbackPopup","type":"function","parameters":[]},{"name":"getThemeColor","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"colors","type":"array","items":{"$ref":"utilityPrivate.ThemeColor"}}]}},{"name":"setThemeColor","type":"function","parameters":[{"name":"type","type":"integer"}]},{"name":"selectFilePath","type":"function","parameters":[{"$ref":"utilityPrivate.FilePathInfo","name":"info"}],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"array","items":{"type":"object","properties":{"path":{"type":"string"},"file_url":{"type":"string"}}}}]}},{"name":"getUserName","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"name","type":"string"}]}},{"name":"setWelcomePref","type":"function","parameters":[{"name":"name","type":"string"},{"name":"value","type":"any"}],"returns_async":{"name":"callback","parameters":[{"name":"success","type":"boolean"}]}},{"name":"onPushUpdated","type":"function","parameters":[{"type":"string","name":"request_id"},{"name":"details","type":"object","properties":{"message":{"type":"string"}}}]},{"name":"onPushConnected","type":"function","parameters":[{"type":"string","name":"request_id"}]},{"name":"onPushConnectError","type":"function","parameters":[{"type":"string","name":"request_id"},{"type":"string","name":"reason"}]},{"name":"onPushDisconnected","type":"function","parameters":[{"type":"string","name":"request_id"},{"type":"string","name":"reason"}]},{"name":"getPushServerURL","type":"function","parameters":[{"type":"string","name":"request_id"}],"returns_async":{"name":"callback","parameters":[{"name":"url","type":"string"}]}},{"name":"useNaverAsNTP","type":"function","parameters":[{"name":"use","type":"boolean"}],"returns_async":{"name":"callback","parameters":[]}},{"name":"isNaverUsedAsNTP","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"isFirstRun","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"isDefaultMemoEnabled","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"isAITabEntryPointEnabled","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"getChannel","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"channel","type":"string"}]}},{"name":"getWhalebookInfo","type":"function","platforms":["chromeos"],"parameters":[],"returns_async":{"name":"callback","type":"function","parameters":[{"name":"result","type":"object","properties":{"product_name":{"type":"string"},"is_whalebook2":{"type":"boolean"},"floating_keyboard_enabled":{"type":
+
+=== sidebarAction (3562 bytes) ===
+{"namespace":"sidebarAction","types":[{"id":"sidebarAction.ColorArray","type":"array","items":{"type":"integer","minimum":0,"maximum":255},"minItems":4,"maxItems":4},{"id":"sidebarAction.ImageDataType","type":"object","isInstanceOf":"ImageData","additionalProperties":{"type":"any"}}],"functions":[{"name":"show","type":"function","parameters":[{"name":"windowId","type":"integer","optional":true,"minimum":-2},{"name":"details","type":"object","optional":true,"properties":{"url":{"type":"string","optional":true},"reload":{"type":"boolean","optional":true}}}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"result","type":"object","optional":true,"properties":{"windowId":{"type":"integer","minimum":-2}}}]}},{"name":"hide","type":"function","parameters":[{"name":"windowId","type":"integer","optional":true,"minimum":-2}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"result","type":"object","optional":true,"properties":{"windowId":{"type":"integer","minimum":-2}}}]}},{"name":"dock","type":"function","parameters":[{"name":"windowId","type":"integer","minimum":-2},{"name":"details","type":"object","optional":true,"properties":{"parentWindowId":{"type":"integer","optional":true},"tabId":{"type":"integer","optional":true}}}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"windowId","type":"integer","minimum":-2}]}},{"name":"undock","type":"function","parameters":[{"name":"windowId","type":"integer","optional":true,"minimum":-2}],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"object","properties":{"popupId":{"type":"integer","minimum":-2},"tabId":{"type":"integer","minimum":-2}}}]}},{"name":"getDocked","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"windowIds","type":"array","items":{"type":"integer"}}]}},{"name":"isDocked","type":"function","parameters":[{"name":"windowId","type":"integer","minimum":-2}],"returns_async":{"name":"callback","parameters":[{"name":"docked","type":"boolean"}]}},{"name":"setTitle","type":"function","parameters":[{"name":"details","type":"object","properties":{"title":{"type":"string"}}}]},{"name":"getTitle","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"string"}]}},{"name":"setIcon","type":"function","parameters":[{"name":"details","type":"object","properties":{"imageData":{"$ref":"sidebarAction.ImageDataType"}}}]},{"name":"setPage","type":"function","parameters":[{"name":"details","type":"object","properties":{"page":{"type":"string"}}}]},{"name":"getPage","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"string"}]}},{"name":"setBadgeText","type":"function","parameters":[{"name":"details","type":"object","properties":{"text":{"type":"string"}}}]},{"name":"getBadgeText","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"string"}]}},{"name":"setBadgeBackgroundColor","type":"function","parameters":[{"name":"details","type":"object","properties":{"color":{"choices":[{"type":"string"},{"$ref":"sidebarAction.ColorArray"}]}}}]},{"name":"getBadgeBackgroundColor","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","$ref":"sidebarAction.ColorArray"}]}}],"events":[{"name":"onClicked","type":"function","parameters":[{"name":"result","type":"object","properties":{"windowId":{"type":"integer"},"opened":{"type":"boolean"}}}]}]}
+
+=== neloPrivate (387 bytes) ===
+{"namespace":"neloPrivate","types":[{"id":"neloPrivate.LogLevel","type":"string","enum":[{"name":"info"},{"name":"warning"},{"name":"error"},{"name":"fatal"}]}],"functions":[{"name":"send","type":"function","parameters":[{"name":"level","$ref":"neloPrivate.LogLevel","optional":true},{"name":"data","type":"string"}],"returns_async":{"name":"callback","parameters":[],"optional":true}}]}
+[0m
+Strong static evidence. Now checking how the push server URL is resolved (hardcoded vs server-fetched) and any push hostnames in the binary.
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && strings -n 8 whale 2>/dev/null | grep -oE 'https?://[a-zA-Z0-9./_?=&%:-]*' | grep -vE 'w3\.org|schema\.|chromium|chromium|google|example|github|w3c|gstatic|fonts\.|apis\.google|webassembly|developer\.mozilla|\.svg|\.png|\.jpg|\.css|\.gif' | sort -u | head -60
+http://
+http://%s/
+http://%s:80
+http://127.0.0.1:
+http://127.0.0.1multiple-clientsmbership
+http://An
+http://Descriptionrelatively
+http://EVIntl-ccrt.gwww.gicert.com/1ocsp.verisign.com09rapidssl.cos.godaddy.com/repository/0
+http://In
+http://UA-Compatible
+http://according
+http://addEventListenerresponsible
+http://adressesok.posten.no/nb/postal_codes/search
+http://aia1.netlock.hu/index.cgi?ca=gold04
+http://aia2.netlock.hu/index.cgi?ca=gold04
+http://aia3.netlock.hu/index.cgi?ca=gold0
+http://anf.es/es/certificates_download/ANF_Global_Root_CA_SHA256_2036.cer0
+http://api.me.naver.com/
+http://apis.naver.com/whale/whale/seed
+http://applicationslink
+http://ator
+http://autorite.certigna.fr/certignarootca.der0
+http://autorite.dhimyotis.com/certignarootca.der0m
+http://c
+http://c.pki.goog/r/r1.crl0
+http://c.pki.goog/r/r2.crl0
+http://c.pki.goog/r/r3.crl0
+http://c.pki.goog/r/r4.crl0
+http://ca.b-trust.org/repository/B-TrustRootACAOCSP.cer0
+http://ca.eadtrust.eu/eadtrust-root-ecc256eaddvov2019.crt0
+http://ca.eadtrust.eu/eadtrust-root-ecc256eadevpsd22019.crt0
+http://ca.eadtrust.eu/eadtrust-root-ecc384eaddvov2019.crt0
+http://ca.eadtrust.eu/eadtrust-root-ecc384eadevpsd22019.crt0
+http://ca.eadtrust.eu/eadtrust-root-rsa4096eaddvov2019.crt0
+http://ca.eadtrust.eu/eadtrust-root-rsa4096eadevpsd22019.crt0
+http://ca.eadtrust.eu/eadtrust-root-rsa8192eaddvov2019.crt0
+http://ca.eadtrust.eu/eadtrust-root-rsa8192eadevpsd22019.crt0
+http://ca.evrotrust.com/aia/EvrotrustRSARootCA.crt0
+http://ca.evrotrust.com/crl/EvrotrustRSARootCA.crl0x
+http://ca.evrotrust.com/ocsp0
+http://cert.infocert.it/ca3/root/CA.crt08
+http://certificates.godaddy.com/repository/gd_intermediate.crt0
+http://certificates.godaddy.com/repository100.
+http://cp.e-szigno.hu/acps0
+http://cpdc.chinapost.com.cn/web/
+http://crbug.com
+http://crbug.com/1138528
+http://crbug.com/435223477
+http://crbug.com/660005.
+http://cript
+http://crl.a-trust.at/crl/A-Trust-Root-070
+http://crl.a-trust.at/crl/A-Trust-Root-090
+http://crl.anf.es/certificates-download/ANFACSLRootCA.cer0
+http://crl.anf.es/crl/ANFSecureServerRootCA-arl.crl09
+http://crl.anf.es/crl/ANF_AC_SL_Root_CA-arl.crl0B
+http://crl.anf.es/crl/ANF_Global_Root_CA_2036_arl.crl0
+http://crl.athexgroup.gr/ATHEXRSARootCAR2.crl0
+http://crl.b-trust.org/repository/B-TrustRootACA.crl0x
+http://crl.buypass.no/crl/BPClass3RootCA.crl03
+http://crl.buypassca.com/BPCl3RootCaG2QC.crl0H
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && strings -n 8 whale 2>/dev/null | grep -oE 'https?://[a-zA-Z0-9./_?=&%:-]*' | grep -iE 'naver|whale|pstatic|clova|nid\.' | sort -u
+http://api.me.naver.com/
+http://apis.naver.com/whale/whale/seed
+http://dev.simage-api.navercorp.com:10335/smartlens/smartlens
+http://naver.com
+http://section.blog.naver.com/Search/Post.nhn?pageNo=1&rangeType=ALL&orderBy=sim&keyword=
+http://section.blog.naver.com/favicon.ico?2
+http://service.whale.naver.com/whale-variations/seed
+http://shopping.naver.com/search/all.nhn?query=
+http://static.shopping.naver.net/favicon_v4.ico
+http://update2.whale.naver.com/service/update2/json
+http://whale.com/foo.html
+https://%smyactivity.whale.naver.com/
+https://%smyactivity.whalebrowser.com/
+https://%smyactivity.whalespace.io/
+https://ac.search.naver.com/nx/ac?of=os&ie=
+https://ac.search.naver.com/nx/ac?q_enc=UTF-8&r_format=json&r_enc=UTF-8&r_unicode=0&ans=2&frm=whale&st=100
+https://account.whalebrowser.com/
+https://account.whalespace.io
+https://account.whalespace.io/
+https://alpha-account.whalespace.io
+https://alpha-authn.whalespace.io
+https://alpha-enterprise.whale.naver.com
+https://alpha-enterprise.whale.naver.com/devicemanagement/data/api
+https://alpha-update.whale.naver.com
+https://api.mybox.naver.com
+https://api.scopic.naver.com/whale?st=whale&q_device=pc
+https://api.whale.naver.com/v1/membership
+https://api.whale.naver.com/whalesync
+https://api.whale.naver.com/whalesync/whalesync
+https://apis.naver.com
+https://apis.naver.com/
+https://apis.naver.com/whale-papago/papago_public/n2mt/translate/bulk
+https://apis.naver.com/whale/belli/
+https://apis.naver.com/whale/labsapi/tts/makeTTS
+https://apis.naver.com/whale/naver_keep/
+https://apis.naver.com/whale/scrapbook-whalebrowser/
+https://apis.naver.com/whale/whale
+https://apis.naver.com/whale/whale/getLocation
+https://apis.naver.com/whale/whale/getLocation2
+https://apis.naver.com/whale/whale/seed
+https://authn.whalespace.io
+https://beta-update.whale.naver.com
+https://canary-update.whale.naver.com
+https://chat.whale.mu/
+https://cloudstorage.naver.com/k/keep/r/M3plaUw%3D/M3plaUw%3D%24SU1HXzA0MDQuUE5H%24MTY0Njg3NTExNDUwMg%3D%3D
+https://cloudstorage.naver.com/k/keep/r/M3plaUw%3D/M3plaUw%3D%24SU1HXzA0MDUuUE5H%24MTY0Njg4NTQ5MTYxNg%3D%3D
+https://cv.whale.naver.com
+https://dev-account.whalespace.io
+https://dev-api.whale.naver.com/v1/membership
+https://dev-api.whale.naver.com/whalesync
+https://dev-auth.whalebrowser.com
+https://dev-chat.whale.mu/
+https://dev-enterprise.whale.naver.com
+https://dev-enterprise.whale.naver.com/devicemanagement/data/api
+https://dev-multiplay.whale.naver.com/
+https://dev-oauth.whale.naver.com/
+https://dev-scrapbook.whalebrowser.com/
+https://dev-scrapbook.whalespace.io/
+https://dev-service.whale.naver.com/static/content.populator.js
+https://dev-store.whale.naver.com
+https://dev-store.whale.naver.com/update/whx
+https://dev-study.whaleon.naver.com/
+https://dev-toolbox.whale.naver.com/
+https://dev-update2.whale.naver.com/service/update2/json
+https://dev-update2.whale.naver.com/service/update2/whx
+https://dev-web-study.whaleon.naver.com/preview/
+https://dev-web-whaleon.whalespace.io/
+https://dev-web.whaleon.naver.com/
+https://dev-whaleon.whalespace.io/
+https://dev-whaleon.whalespace.io/terms/
+https://dev-whatsnew.whalebrowser.com/
+https://dev.apis.naver.com
+https://dev.apis.naver.com/whale/belli/
+https://dev.apis.naver.com/whale/scrapbook-whalebrowser/
+https://dev.scrapbook.naver.com/
+https://dev.whale.mu/lti/
+https://dev.whaleon.naver.com/
+https://dev.whaleon.naver.com/my/history
+https://dev.whaleon.naver.com/my/schedule
+https://dev.whaleon.naver.com/terms/
+https://docviewer.whale.naver.com
+https://en.dict.naver.com/
+https://enterprise.whale.naver.com
+https://enterprise.whale.naver.com/devicemanagement/data/api
+https://event.whale.naver.com/browser/install
+https://files.mybox.naver.com
+https://finance.naver.com/
+https://forum.whale.naver.com
+https://forum.whale.naver.com/forum/26/
+https://geoloc.naver.com/location
+https://help.whale.naver.com
+https://help.whale.naver.com/
+https://help.whale.naver.com/desktop/extensions/faq/1
+https://help.whale.naver.com/desktop/features/abusiveads
+https://help.whale.naver.com/desktop/features/secretwindow
+https://help.whale.naver.com/desktop/settings/faq/6/
+https://help.whale.naver.com/desktop/settings/faq/7
+https://help.whale.naver.com/desktop/settings/faq/7/
+https://help.whale.naver.com/desktop/store/
+https://help.whale.naver.com/desktop/sync_passphrase
+https://help.whale.naver.com/desktop/troubleshooting/connection/
+https://help.whale.naver.com/desktop/troubleshooting/unsafesite/
+https://help.whale.naver.com/desktop/whaleon/fae/7/
+https://help.whale.naver.com/ko/desktop/troubleshooting/unsafeconnection/
+https://host_placement/whale/whale/history
+https://host_placement/whale/whale/history_delete
+https://kr-col-ext.nelo.navercorp.com/_store
+https://local.store.whale.naver.com:8080/update/whx
+https://locally_created_whale_account_image_url
+https://m.blog.naver.com/SectionPostSearch.nhn?searchValue=
+https://m.comic.naver.com/webtoon/detail.nhn?titleId=183559&no=446&seq=
+https://m.naver.com
+https://m.naver.com/
+https://m.naver.com/pc/index.html
+https://m.search.naver.com/search.naver?sm=whl_
+https://mail.naver.com/
+https://msearch.shopping.naver.com/search/all.nhn?query=
+https://multiplay.whale.naver.com/
+https://mybox.naver.com/
+https://mybox.naver.com/forward.nhn?cmd=acceptFolder&path=/Whale
+https://news.naver.com/
+https://nid.naver.com/
+https://nid.naver.com/login/noauth/oauthCallback.nhn
+https://nid.naver.com/user2/help/naverProfile.nhn
+https://nlog.naver.com/n
+https://notice.naver.com/notices/whalespace/15829
+https://ntracker-collector.naver.com/nlog/api/v1/naverwhale/event
+https://oauth.whale.naver.com/
+https://ocr-api.whale.naver.com/whale-papago/papago_public/ocr/detect
+https://openapi.naver.com/
+https://optimizationguide-whale.naver.com/downloads
+https://order.pay.naver.com/home
+https://papago.naver.com/
+https://policies.whale.naver.com/privacy-whitepaper
+https://policies.whale.naver.com/terms
+https://public2.upphoto.naver.com
+https://safebrowsing.naver.com
+https://safebrowsing.naver.com/safebrowsing/binary/%s
+https://safebrowsing.naver.com/safebrowsing/report_page?url=%s
+https://scrapbook.naver.com/
+https://scrapbook.whalebrowser.com/
+https://scrapbook.whalespace.io/
+https://search.naver.com/
+https://search.naver.com/search.naver
+https://search.naver.com/search.naver?ie=
+https://service.whale.naver.com/csd/csd.json.enc
+https://service.whale.naver.com/static/content.populator.js
+https://service.whale.naver.com/user_agent/ua_tweak.json
+https://service.whale.naver.com/whale-variations/seed
+https://shared-whale.pstatic.net/browser/assets/newtab-configs.json
+https://shared-whale.pstatic.net/browser/assets/r.codes.json
+https://shared-whale.pstatic.net/tds/tds-v2-current-global.json
+https://shared-whale.pstatic.net/tds/tds-v2-current.json
+https://shopping.naver.com/
+https://shopping.naver.com/cart
+https://shopping.naver.com/my/keep-products
+https://shopping.naver.com/my/keep-stores
+https://sidekick.fever.naver.com/whale/v2/categories
+https://sidekick.fever.naver.com/whale/v2/messages
+https://ssl.pstatic.net
+https://ssl.pstatic.net/dicimg/favicons/dict/v1/mhome/favicon.ico
+https://ssl.pstatic.net/sstatic/search/favicon/favicon_140327.ico
+https://ssl.pstatic.net/static/pwe/address/img_profile.png
+https://stage-account.whalespace.io
+https://stage-authn.whalespace.io
+https://stage-enterprise.whale.naver.com
+https://stage-enterprise.whale.naver.com/devicemanagement/data/api
+https://stage-scrapbook.whalebrowser.com/
+https://stage-scrapbook.whalespace.io/
+https://stage-store.whale.naver.com/update/whx
+https://stage-toolbox.whale.naver.com/
+https://stage-update2.whale.naver.com/service/update2/json
+https://stage-whaleon.whalespace.io/
+https://stage.scrapbook.naver.com/
+https://stage.whaleon.naver.com/
+https://static.nid.naver.com/
+https://stg.apis.naver.com
+https://stg.apis.naver.com/whale/belli/
+https://stg.apis.naver.com/whale/scrapbook-whalebrowser/
+https://store.whale.naver.com
+https://store.whale.naver.com/
+https://store.whale.naver.com/api/statistics
+https://store.whale.naver.com/detail/
+https://store.whale.naver.com/update/whx
+https://study.whaleon.naver.com/
+https://support.whale.naver.com/api/v1/feedback/whale/submit
+https://toolbox.whale.naver.com/
+https://update2.whale.naver.com/service/update2/json
+https://update2.whale.naver.com/service/update2/whx
+https://wbs.naver.com/wbs
+https://web-study.whaleon.naver.com/preview/
+https://web-whaleon.whalespace.io/
+https://web.whaleon.naver.com/
+https://whale.mu/lti/
+https://whale.naver.com
+https://whaleon.naver.com/
+https://whaleon.naver.com/my/history
+https://whaleon.naver.com/my/schedule
+https://whaleon.naver.com/on/
+https://whaleon.naver.com/terms/
+https://whaleon.whalespace.io/
+https://whaleon.whalespace.io/my/history
+https://whaleon.whalespace.io/my/schedule
+https://whaleon.whalespace.io/terms/
+https://whatsnew.whalebrowser.com/
+https://www.naver.com
+https://www.naver.com/
+https://www.naver.com/?onboarding
+[0m
+Rich endpoint inventory. Now pinpointing the push/socket server and the sync-push URL fetcher source.
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== push/socket hostnames ==="; strings -n 6 whale 2>/dev/null | grep -iE 'push.*(http|\.naver|\.mu|\.io)|socket.*(http|\.naver|\.mu|\.io)|engine\.io|\.mu/' | sort -u | head -20; echo "=== whale.mu context ==="; strings -n 6 whale 2>/dev/null | grep -iE 'whale\.mu|multiplay_session|push_server' | sort -u | head -20; echo "=== csd / seed / sync hosts ==="; strings -n 6 whale 2>/dev/null | grep -iE 'whalesync|sync\.naver|push\.naver' | sort -u | head
+=== push/socket hostnames ===
+An insecure WebSocket connection may not be initiated from a page loaded over HTTPS.
+Chrome currently does not support the Push API in incognito mode (https://crbug.com/41124656). There is deliberately no way to feature-detect this, since incognito mode needs to be undetectable by websites.
+Chrome currently only supports the Push API for subscriptions that will result in user-visible messages. You can indicate this by calling pushManager.subscribe({userVisibleOnly: true}) instead. See https://goo.gl/yqv4Q4 for more details.
+Enable Local Network Access checks for WebSockets. Requires the #local-network-access-check flag to also be enabled See: https://chromestatus.com/feature/5197681148428288
+EnableWebsocketsOverHttp3
+Enables Source-Specific Multicast support in Direct Sockets API. See https://github.com/WICG/direct-sockets/blob/main/docs/multicast-explainer.md for details.
+Enables access to the Direct Sockets API in service workers. See https://github.com/WICG/direct-sockets for details.
+Enables access to the Direct Sockets API in shared workers. See https://github.com/WICG/direct-sockets for details.
+Net.WebSocket.ErrorCodes.Http2
+https://chat.whale.mu/
+https://dev-chat.whale.mu/
+https://dev.whale.mu/lti/
+https://whale.mu/lti/
+whale_sync_push/socket.io.slim.js
+{"namespace":"webRequest","properties":{"MAX_HANDLER_BEHAVIOR_CHANGED_CALLS_PER_10_MINUTES":{"value":20,"type":"integer"}},"types":[{"id":"webRequest.ResourceType","type":"string","enum":[{"name":"main_frame"},{"name":"sub_frame"},{"name":"stylesheet"},{"name":"script"},{"name":"image"},{"name":"font"},{"name":"object"},{"name":"xmlhttprequest"},{"name":"ping"},{"name":"csp_report"},{"name":"media"},{"name":"websocket"},{"name":"webbundle"},{"name":"other"}]},{"id":"webRequest.OnBeforeRequestOptions","type":"string","enum":[{"name":"blocking"},{"name":"requestBody"},{"name":"extraHeaders"}]},{"id":"webRequest.OnBeforeSendHeadersOptions","type":"string","enum":[{"name":"requestHeaders"},{"name":"blocking"},{"name":"extraHeaders"}]},{"id":"webRequest.OnSendHeadersOptions","type":"string","enum":[{"name":"requestHeaders"},{"name":"extraHeaders"}]},{"id":"webRequest.OnHeadersReceivedOptions","type":"string","enum":[{"name":"blocking"},{"name":"responseHeaders"},{"name":"extraHeaders"},{"name":"securityInfo"},{"name":"securityInfoRawDer"}]},{"id":"webRequest.OnAuthRequiredOptions","type":"string","enum":[{"name":"responseHeaders"},{"name":"blocking"},{"name":"asyncBlocking"},{"name":"extraHeaders"}]},{"id":"webRequest.OnResponseStartedOptions","type":"string","enum":[{"name":"responseHeaders"},{"name":"extraHeaders"}]},{"id":"webRequest.OnBeforeRedirectOptions","type":"string","enum":[{"name":"responseHeaders"},{"name":"extraHeaders"}]},{"id":"webRequest.OnCompletedOptions","type":"string","enum":[{"name":"responseHeaders"},{"name":"extraHeaders"}]},{"id":"webRequest.OnErrorOccurredOptions","type":"string","enum":[{"name":"extraHeaders"}]},{"id":"webRequest.RequestFilter","type":"object","properties":{"urls":{"type":"array","items":{"type":"string"}},"types":{"type":"array","optional":true,"items":{"$ref":"webRequest.ResourceType"}},"tabId":{"type":"integer","optional":true},"windowId":{"type":"integer","optional":true}}},{"id":"webRequest.HttpHeaders","type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"value":{"type":"string","optional":true},"binaryValue":{"type":"array","optional":true,"items":{"type":"integer"}}}}},{"id":"webRequest.BlockingResponse","type":"object","properties":{"cancel":{"type":"boolean","optional":true},"redirectUrl":{"type":"string","optional":true},"requestHeaders":{"$ref":"webRequest.HttpHeaders","optional":true},"responseHeaders":{"$ref":"webRequest.HttpHeaders","optional":true},"authCredentials":{"type":"object","optional":true,"properties":{"username":{"type":"string"},"password":{"type":"string"}}}}},{"id":"webRequest.UploadData","type":"object","properties":{"bytes":{"type":"any","optional":true},"file":{"type":"string","optional":true}}},{"id":"webRequest.SecurityInfo","type":"object","properties":{"certificates":{"type":"array","items":{"type":"object","properties":{"rawDER":{"type":"binary","optional":true},"fingerprint":{"type":"object","properties":{"sha256":{"type":"string"}}}}}},"state":{"type":"string"}}},{"id":"webRequest.FormDataItem","choices":[{"type":"binary"},{"type":"string"}]},{"id":"webRequest.IgnoredActionType","decription":"Denotes the extension proposed action which was ignored.","type":"string","enum":["redirect","request_headers","response_headers","auth_credentials"]}],"functions":[{"name":"handlerBehaviorChanged","type":"function","parameters":[],"returns_async":{"name":"callback","optional":true,"parameters":[]}}],"events":[{"name":"onBeforeRequest","type":"function","parameters":[{"type":"object","name":"details","properties":{"requestId":{"type":"string"},"url":{"type":"string"},"method":{"type":"string"},"frameId":{"type":"integer"},"parentFrameId":{"type":"integer"},"documentId":{"type":"string","optional":true},"parentDocumentId":{"type":"string","optional":true},"documentLifecycle":{"$ref":"extensionTypes.DocumentLifecycle","optional":true},"frameType":{"$ref":"extensionTypes.FrameType","optional":true},"requestBody":{"type":"object","optional":true,"properties":{"error":{"type":"string","optional":true},"formData":{"type":"object","optional":true,"properties":{},"additionalProperties":{"type":"array","items":{"$ref":"webRequest.FormDataItem"}}},"raw":{"type":"array","optional":true,"items":{"$ref":"webRequest.UploadData"}}}},"tabId":{"type":"integer"},"type":{"$ref":"webRequest.ResourceType"},"initiator":{"type":"string","optional":true},"timeStamp":{"type":"number"}}}],"extraParameters":[{"$ref":"webRequest.RequestFilter","name":"filter"},{"type":"array","optional":true,"name":"extraInfoSpec","items":{"$ref":"webRequest.OnBeforeRequestOptions"}}],"returns":{"$ref":"webRequest.BlockingResponse","optional":true}},{"name":"onBeforeSendHeaders","type":"function","parameters":[{"type":"object","name":"details","properties":{"requestId":{"type":"string"},"url":{"type":"string"},"method":{"type":"string"},"frameId":{"type":"integer"},"parentFrameId":{"type":"integer"},"documentId":{"type":"string","optional":true},"parentDocumentId":{"type":"string","optional":true},"documentLifecycle":{"$ref":"extensionTypes.DocumentLifecycle"},"frameType":{"$ref":"extensionTypes.FrameType"},"tabId":{"type":"integer"},"initiator":{"type":"string","optional":true},"type":{"$ref":"webRequest.ResourceType"},"timeStamp":{"type":"number"},"requestHeaders":{"$ref":"webRequest.HttpHeaders","optional":true}}}],"extraParameters":[{"$ref":"webRequest.RequestFilter","name":"filter"},{"type":"array","optional":true,"name":"extraInfoSpec","items":{"$ref":"webRequest.OnBeforeSendHeadersOptions"}}],"returns":{"$ref":"webRequest.BlockingResponse","optional":true}},{"name":"onSendHeaders","type":"function","parameters":[{"type":"object","name":"details","properties":{"requestId":{"type":"string"},"url":{"type":"string"},"method":{"type":"string"},"frameId":{"type":"integer"},"parentFrameId":{"type":"integer"},"documentId":{"type":"string","optional":true},"parentDocumentId":{"type":"string","optional":true},"documentLifecycle":{"$ref":"extensionTypes.DocumentLifecycle"},"frameType":{"$ref":"extensionTypes.FrameType"},"tabId":{"type":"integer"},"type":{"$ref":"webRequest.ResourceType"},"initiator":{"type":"string","optional":true},"timeStamp":{"type":"number"},"requestHeaders":{"$ref":"webRequest.HttpHeaders","optional":true}}}],"extraParameters":[{"$ref":"webRequest.RequestFilter","name":"filter"},{"type":"array","optional":true,"name":"extraInfoSpec","items":{"$ref":"webRequest.OnSendHeadersOptions"}}]},{"name":"onHeadersReceived","type":"function","parameters":[{"type":"object","name":"details","properties":{"requestId":{"type":"string"},"url":{"type":"string"},"method":{"type":"string"},"frameId":{"type":"integer"},"parentFrameId":{"type":"integer"},"documentId":{"type":"string","optional":true},"parentDocumentId":{"type":"string","optional":true},"documentLifecycle":{"$ref":"extensionTypes.DocumentLifecycle"},"frameType":{"$ref":"extensionTypes.FrameType"},"tabId":{"type":"integer"},"type":{"$ref":"webRequest.ResourceType"},"initiator":{"type":"string","optional":true},"timeStamp":{"type":"number"},"statusLine":{"type":"string"},"responseHeaders":{"$ref":"webRequest.HttpHeaders","optional":true},"statusCode":{"type":"integer"},"securityInfo":{"$ref":"webRequest.SecurityInfo","optional":true}}}],"extraParameters":[{"$ref":"webRequest.RequestFilter","name":"filter"},{"type":"array","optional":true,"name":"extraInfoSpec","items":{"$ref":"webRequest.OnHeadersReceivedOptions"}}],"returns":{"$ref":"webRequest.BlockingResponse","optional":true}},{"name":"onAuthRequired","type":"function","parameters":[{"type":"object","name":"details","properties":{"requestId":{"type":"string"},"url":{"type":"string"},"method":{"type":"string"},"frameId":{"type":"integer"},"parentFrameId":{"type":"integer"},"documentId":{"type":"string","optional":true},"parentDocumentId":{"type":"string","optional":true},"documentLifecycle":{"$ref":"extensionTypes.DocumentLifecycle"},"frameType":{"$ref":"extensionTypes.FrameType"},"tabId":{"type":"integer"},"type":{"$ref":"webRequest.ResourceType"},"initiator":{"type":"string","optional":true},"timeStamp":{"type":"number"},"scheme":{"type":"string"},"realm":{"type":"string","optional":true},"challenger":{"type":"object","properties":{"host":{"type":"string"},"port":{"type":"integer"}}},"isProxy":{"type":"boolean"},"responseHeaders":{"$ref":"webRequest.HttpHeaders","optional":true},"statusLine":{"type":"string"},"statusCode":{"type":"integer"}}},{"type":"function","optional":true,"name":"asyncCallback","parameters":[{"name":"response","$ref":"webRequest.BlockingResponse"}]}],"extraParameters":[{"$ref":"webRequest.RequestFilter","name":"filter"},{"type":"array","optional":true,"name":"extraInfoSpec","items":{"$ref":"webRequest.OnAuthRequiredOptions"}}],"returns":{"$ref":"webRequest.BlockingResponse","optional":true}},{"name":"onResponseStarted","type":"function","parameters":[{"type":"object","name":"details","properties":{"requestId":{"type":"string"},"url":{"type":"string"},"method":{"type":"string"},"frameId":{"type":"integer"},"parentFrameId":{"type":"integer"},"documentId":{"type":"string","optional":true},"parentDocumentId":{"type":"string","optional":true},"documentLifecycle":{"$ref":"extensionTypes.DocumentLifecycle"},"frameType":{"$ref":"extensionTypes.FrameType"},"tabId":{"type":"integer"},"type":{"$ref":"webRequest.ResourceType"},"initiator":{"type":"string","optional":true},"timeStamp":{"type":"number"},"ip":{"type":"string","optional":true},"fromCache":{"type":"boolean"},"statusCode":{"type":"integer"},"responseHeaders":{"$ref":"webRequest.HttpHeaders","optional":true},"statusLine":{"type":"string"}}}],"extraParameters":[{"$ref":"webRequest.RequestFilter","name":"filter"},{"type":"array","optional":true,"name":"extraInfoSpec","items":{"$ref":"webRequest.OnResponseStartedOptions"}}]},{"name":"onBeforeRedirect","type":"function","parameters":[{"type":"object","name":"details","properties":{"requestId":{"type":"string"},"url":{"type":"string"},"method":{"type":"string"},"frameId":{"type":"integer"},"parentFrameId":{"type":"integer"},"documentId":{"type":"string","optional":true},"parentDocumentId":{"type":"string","optional":true},"documentLifecycle":{"$ref":"extensionTypes.DocumentLifecycle"},"frameType":{"$ref":"extensionTypes.FrameType"},"tabId":{"type":"integer"},"type":{"$ref":"webRequest.ResourceType"},"initiator":{"type":"string","optional":true},"timeStamp":{"type":"number"},"ip":{"type":"string","optional":true},"fromCache":{"type":"boolean"},"statusCode":{"type":"integer"},"redirectUrl":{"type":"string"},"responseHeaders":{"$ref":"webRequest.HttpHeaders","optional":true},"statusLine":{"type":"string"}}}],"extraParameters":[{"$ref":"webRequest.RequestFilter","name":"filter"},{"type":"array","optional":true,"name":"extraInfoSpec","items":{"$ref":"webRequest.OnBeforeRedirectOptions"}}]},{"name":"onCompleted","type":"function","parameters":[{"type":"object","name":"details","properties":{"requestId":{"type":"string"},"url":{"type":"string"},"method":{"type":"string"},"frameId":{"type":"integer"},"parentFrameId":{"type":"integer"},"documentId":{"type":"string","optional":true},"parentDocumentId":{"type":"string","optional":true},"documentLifecycle":{"$ref":"extensionTypes.DocumentLifecycle"},"frameType":{"$ref":"extensionTypes.FrameType"},"tabId":{"type":"integer"},"type":{"$ref":"webRequest.ResourceType"},"initiator":{"type":"string","optional":true},"timeStamp":{"type":"number"},"ip":{"type":"string","optional":true},"fromCache":{"type":"boolean"},"statusCode":{"type":"integer"},"responseHeaders":{"$ref":"webRequest.HttpHeaders","optional":true},"statusLine":{"type":"string"}}}],"extraParameters":[{"$ref":"webRequest.RequestFilter","name":"filter"},{"type":"array","optional":true,"name":"extraInfoSpec","items":{"$ref":"webRequest.OnCompletedOptions"}}]},{"name":"onErrorOccurred","type":"function","parameters":[{"type":"object","name":"details","properties":{"requestId":{"type":"string"},"url":{"type":"string"},"method":{"type":"string"},"frameId":{"type":"integer"},"parentFrameId":{"type":"integer"},"documentId":{"type":"string","optional":true},"parentDocumentId":{"type":"string","optional":true},"documentLifecycle":{"$ref":"extensionTypes.DocumentLifecycle"},"frameType":{"$ref":"extensionTypes.FrameType"},"tabId":{"type":"integer"},"type":{"$ref":"webRequest.ResourceType"},"initiator":{"type":"string","optional":true},"timeStamp":{"type":"number"},"ip":{"type":"string","optional":true},"fromCache":{"type":"boolean"},"error":{"type":"string"}}}],"extraParameters":[{"$ref":"webRequest.RequestFilter","name":"filter"},{"type":"array","optional":true,"name":"extraInfoSpec","items":{"$ref":"webRequest.OnErrorOccurredOptions"}}]},{"name":"onActionIgnored","type":"function","parameters":[{"type":"object","name":"details","properties":{"requestId":{"type":"string"},"action":{"$ref":"webRequest.IgnoredActionType"}}}]}]}
+=== whale.mu context ===
+../../whale/components/invalidation/impl/push_server_url_fetcher_base.cc
+../../whale/whale/browser/multiplay/multiplay_session_io_message_router.cc
+../../whale/whale/browser/multiplay/multiplay_session_io_tab_message_handler.cc
+.whale.mu
+https://chat.whale.mu/
+https://dev-chat.whale.mu/
+https://dev.whale.mu/lti/
+https://whale.mu/lti/
+no push_server_url
+sync_push_server_url_fetcher
+=== csd / seed / sync hosts ===
+	/whalesync/reset
+/whalesync
+WhaleSyncAuthManager
+https://api.whale.naver.com/whalesync
+https://api.whale.naver.com/whalesync/whalesync
+https://dev-api.whale.naver.com/whalesync
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== push/invalidation related strings ==="; strings -n 6 whale 2>/dev/null | grep -iE 'invalidation|push_server|pushserver|whale\.push|socket\.io' | sort -u | head -30; echo; echo "=== near chat.whale.mu (context) ==="; strings -n 4 -t x whale 2>/dev/null | grep -B2 -A2 'chat\.whale\.mu' | head -20
+=== push/invalidation related strings ===
+../../components/invalidation/impl/per_user_topic_subscription_manager.cc
+../../components/invalidation/impl/per_user_topic_subscription_request.cc
+../../components/invalidation/invalidation_listener_impl.cc
+../../third_party/blink/renderer/core/css/invalidation/style_invalidator.cc
+../../third_party/blink/renderer/platform/graphics/paint/paint_under_invalidation_checker.cc
+../../third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.cc
+../../whale/components/invalidation/impl/push_server_url_fetcher_base.cc
+../../whale/components/policy/core/common/invalidation_utils.cc
+../../whale/components/sync/invalidations/session_io_handler.cc
+../../whale/whale/browser/invalidation/url_constants.cc
+../../whale/whale/browser/invalidation/whale_invalidation_listener_impl.cc
+2CC_SCHEDULER_ACTION_PERFORM_IMPL_SIDE_INVALIDATION
+5CC_SCHEDULER_ACTION_V2_PERFORM_IMPL_SIDE_INVALIDATION
+ActiveDevicesProviderImpl::CalculateInvalidationInfo
+ActiveDevicesProviderImpl::CalculateInvalidationInfo() => ActiveDevicesInvalidationInfo::Create
+Browser unenrollment: Attempting DMToken invalidation
+Compositing.TileManager.TileInvalidationArea
+DNS_CACHE_INVALIDATION_IN_PROGRESS
+DeferImplInvalidation
+Document::updateStyleInvalidationIfNeeded
+Element has pending invalidation list
+Enterprise.CBCMExtensionInstallPolicyInvalidations
+Enterprise.CBCMPolicyInvalidations
+Enterprise.DeviceExtensionInstallPolicyInvalidations
+Enterprise.DeviceLocalAccountPolicyInvalidations2
+Enterprise.DevicePolicyInvalidations2
+Enterprise.ExtensionInstallPolicyInvalidations
+Enterprise.PolicyInvalidations
+FCMInvalidations.DirectInvalidation.RegistrationTokenRetrievalStatus
+FCMInvalidations.FailedSubscriptionsErrorCode
+
+=== near chat.whale.mu (context) ===
+28e592c multiplay
+28e5940 whale://multiplay
+28e5960 https://chat.whale.mu/
+28e5980 https://dev-chat.whale.mu/
+28e59a0 https://multiplay.whale.naver.com/
+28e59d0 https://dev-multiplay.whale.naver.com/
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && strings -n 6 whale 2>/dev/null | grep -iE 'invalidation|/ws/|push' | grep -iE 'http|/v[0-9]/|\.naver|\.mu|server' | sort -u | head; echo "=== search for a URL with 'push' path ==="; strings -n 8 whale 2>/dev/null | grep -oE 'https?://[a-zA-Z0-9./_?=&%:-]*' | grep -iE 'push|inval|ws|noti' | sort -u | head
+(?s:.*)backtracking not supportedEnd number in range cannot be 0Expected name (RULE or TOKEN)lark grammar too deeply nestedExpected valueExpected '{' after %larkUnmatched %lark { ... }iexpected '_' or '[start_bit:stop_bit]'expecting rule, token or statementExpected at least one name after %declaresuffixtemperatureCannot have multiple stop/suffix conditionsCannot have multiple stop_capture namesflags not allowed in this contextgrammar must have either lark_grammar or json_schemacannot have both lark_grammar and json_schemaadditionalItemsadditionalPropertiesformatitemsmaxLengthmaxPropertiesmaximumminLengthminPropertiesminimummultipleOfpatternpatternPropertiespropertiesprefixItemshttps://json-schema.org/draft/2020-12/schemahttps://json-schema.org/draft/2019-09/schemahttp://json-schema.org/draft-07/schemahttp://json-schema.org/draft-06/schemahttp://json-schema.org/draft-04/schemaincompatible boolean valuesincompatible typesSchema intersection stack level exceededx-guidanceoverride statement not supported yetdeclare statement not supported yetparams not supported yetpriority not supported yetempty grammars arraystartno tokenizer - can't validate <[...]>no tokenizer - can't validate <special_token>no tokenizer - can't validate <[^...]>no tokenizer - can't validate <any_token>true|falserequired item is unsatisfiableAll options in anyOf are unsatisfiableNo options in anyOfoneOf not fully supported, falling back to anyOf. This may cause validation errors in some cases.oneOf constraints are not supported. Enable 'coerce_one_of' option to approximate oneOf with anyOfmin/maxProperties only supported when all keys listed in "properties" are required(\\([\"\\\/bfnrt]|u[a-fA-F0-9]{4})|[^\"\\\x00-\x1F\x7F])[\x20\x0A\x0D\x09]+rollback not supported with max_tokens=... or stop=... lexemes; suffix=... is OKtoken_lens and token_bytes must be settokenizer_jsonsliceEither tokenize_fn or use_approximate_greedy_tokenize_fn must be setforce_bytes_emptyregexllguidanceEmpty grammarTokenizer is nullff_tokensfailed to advance parser after adding bytes ignoring lexerInternal error: initial push failedlexer precomputation failed; either increase limits.initial_lexer_fuel or disable limits.precompute_large_lexemesrollback: parser errorbacktrack sampled
+../../net/third_party/quiche/src/quiche/http2/decoder/payload_decoders/push_promise_payload_decoder.cc
+../../whale/components/invalidation/impl/push_server_url_fetcher_base.cc
+Chrome currently does not support the Push API in incognito mode (https://crbug.com/41124656). There is deliberately no way to feature-detect this, since incognito mode needs to be undetectable by websites.
+Chrome currently only supports the Push API for subscriptions that will result in user-visible messages. You can indicate this by calling pushManager.subscribe({userVisibleOnly: true}) instead. See https://goo.gl/yqv4Q4 for more details.
+Failed to get push server url: 
+GetPushServerURL called: 
+GetPushServerURL failed: 
+GetPushServerURL succeeded: 
+HTTP3_CANCEL_PUSH_RECEIVED
+=== search for a URL with 'push' path ===
+http://unisolated.invalid
+https://%smyactivity.whalebrowser.com/
+https://account.whalebrowser.com/
+https://api-lb.freespoke.com/typeahead/v1/browser?q=
+https://apis.naver.com/whale/scrapbook-whalebrowser/
+https://autopush-aratea-pa.sandbox.googleapis.com/generate
+https://autopush-chromesyncsharedentities-pa.sandbox.googleapis.com/v1
+https://cleanbrowsing.org/privacy
+https://customerreviews.google.com/v/merchant?q=amazon.com&c=US&gl=US
+https://dev-auth.whalebrowser.com
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && strings -n 8 whale 2>/dev/null | grep -oE 'https?://[a-zA-Z0-9./_?=&%:-]*' | grep -iE 'whale' | grep -vE 'myactivity|account\.|store\.|update|help\.|policies|whatsnew|forum|search|notice|docviewer|mail|news|shopping|blog|finance|dict|comic|webtoon|section|ocrtopics|order' | sort -u
+http://apis.naver.com/whale/whale/seed
+http://service.whale.naver.com/whale-variations/seed
+http://whale.com/foo.html
+https://alpha-authn.whalespace.io
+https://alpha-enterprise.whale.naver.com
+https://alpha-enterprise.whale.naver.com/devicemanagement/data/api
+https://api.scopic.naver.com/whale?st=whale&q_device=pc
+https://api.whale.naver.com/v1/membership
+https://api.whale.naver.com/whalesync
+https://api.whale.naver.com/whalesync/whalesync
+https://apis.naver.com/whale-papago/papago_public/n2mt/translate/bulk
+https://apis.naver.com/whale/belli/
+https://apis.naver.com/whale/labsapi/tts/makeTTS
+https://apis.naver.com/whale/naver_keep/
+https://apis.naver.com/whale/scrapbook-whalebrowser/
+https://apis.naver.com/whale/whale
+https://apis.naver.com/whale/whale/getLocation
+https://apis.naver.com/whale/whale/getLocation2
+https://apis.naver.com/whale/whale/seed
+https://authn.whalespace.io
+https://chat.whale.mu/
+https://cv.whale.naver.com
+https://dev-api.whale.naver.com/v1/membership
+https://dev-api.whale.naver.com/whalesync
+https://dev-auth.whalebrowser.com
+https://dev-chat.whale.mu/
+https://dev-enterprise.whale.naver.com
+https://dev-enterprise.whale.naver.com/devicemanagement/data/api
+https://dev-multiplay.whale.naver.com/
+https://dev-oauth.whale.naver.com/
+https://dev-scrapbook.whalebrowser.com/
+https://dev-scrapbook.whalespace.io/
+https://dev-service.whale.naver.com/static/content.populator.js
+https://dev-study.whaleon.naver.com/
+https://dev-toolbox.whale.naver.com/
+https://dev-web-study.whaleon.naver.com/preview/
+https://dev-web-whaleon.whalespace.io/
+https://dev-web.whaleon.naver.com/
+https://dev-whaleon.whalespace.io/
+https://dev-whaleon.whalespace.io/terms/
+https://dev.apis.naver.com/whale/belli/
+https://dev.apis.naver.com/whale/scrapbook-whalebrowser/
+https://dev.whale.mu/lti/
+https://dev.whaleon.naver.com/
+https://dev.whaleon.naver.com/my/history
+https://dev.whaleon.naver.com/my/schedule
+https://dev.whaleon.naver.com/terms/
+https://enterprise.whale.naver.com
+https://enterprise.whale.naver.com/devicemanagement/data/api
+https://event.whale.naver.com/browser/install
+https://host_placement/whale/whale/history
+https://host_placement/whale/whale/history_delete
+https://locally_created_whale_account_image_url
+https://multiplay.whale.naver.com/
+https://mybox.naver.com/forward.nhn?cmd=acceptFolder&path=/Whale
+https://ntracker-collector.naver.com/nlog/api/v1/naverwhale/event
+https://oauth.whale.naver.com/
+https://ocr-api.whale.naver.com/whale-papago/papago_public/ocr/detect
+https://optimizationguide-whale.naver.com/downloads
+https://scrapbook.whalebrowser.com/
+https://scrapbook.whalespace.io/
+https://service.whale.naver.com/csd/csd.json.enc
+https://service.whale.naver.com/static/content.populator.js
+https://service.whale.naver.com/user_agent/ua_tweak.json
+https://service.whale.naver.com/whale-variations/seed
+https://shared-whale.pstatic.net/browser/assets/newtab-configs.json
+https://shared-whale.pstatic.net/browser/assets/r.codes.json
+https://shared-whale.pstatic.net/tds/tds-v2-current-global.json
+https://shared-whale.pstatic.net/tds/tds-v2-current.json
+https://sidekick.fever.naver.com/whale/v2/categories
+https://sidekick.fever.naver.com/whale/v2/messages
+https://stage-authn.whalespace.io
+https://stage-enterprise.whale.naver.com
+https://stage-enterprise.whale.naver.com/devicemanagement/data/api
+https://stage-scrapbook.whalebrowser.com/
+https://stage-scrapbook.whalespace.io/
+https://stage-toolbox.whale.naver.com/
+https://stage-whaleon.whalespace.io/
+https://stage.whaleon.naver.com/
+https://stg.apis.naver.com/whale/belli/
+https://stg.apis.naver.com/whale/scrapbook-whalebrowser/
+https://study.whaleon.naver.com/
+https://support.whale.naver.com/api/v1/feedback/whale/submit
+https://toolbox.whale.naver.com/
+https://web-study.whaleon.naver.com/preview/
+https://web-whaleon.whalespace.io/
+https://web.whaleon.naver.com/
+https://whale.mu/lti/
+https://whale.naver.com
+https://whaleon.naver.com/
+https://whaleon.naver.com/my/history
+https://whaleon.naver.com/my/schedule
+https://whaleon.naver.com/on/
+https://whaleon.naver.com/terms/
+https://whaleon.whalespace.io/
+https://whaleon.whalespace.io/my/history
+https://whaleon.whalespace.io/my/schedule
+https://whaleon.whalespace.io/terms/
+[0m
+Push extension is runtime-fetched (not in pak) — key correction to the queued probe. Let me capture the sync prefs keys and NEO_SES auth references for the bootstrap-token hypothesis.
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== sync prefs keys ==="; strings -n 6 whale 2>/dev/null | grep -E '^sync\.' | sort -u | head -30; echo; echo "=== whale-only sync prefs ==="; strings -n 6 whale 2>/dev/null | grep -E 'whale.*(sync|encryption|key|token|bootstrap)' | grep -viE '\.cc$|\.h$' | sort -u | head -20; echo; echo "=== NEO_SES / session cookie ==="; strings -n 6 whale 2>/dev/null | grep -iE 'NEO_SES|NID_SES|nid_login|oauth2/v1' | sort -u | head -10
+=== sync prefs keys ===
+sync.ai_subscription_tier
+sync.apps
+sync.autH
+sync.autofill
+sync.autofill_wallet_import_enabled_migrated
+sync.bag_of_chips
+sync.birthday
+sync.bookmarks
+sync.cache_guid
+sync.cached_passphrase_type
+sync.cached_persistent_auth_error
+sync.cached_trusted_vault_auto_upgrade_experiment_group
+sync.clean_up_stats_table_from_account_password_store
+sync.cookies
+sync.data_type_status_for_sync_to_signin
+sync.demographics
+sync.demographics_birth_year_offset
+sync.device_statistics_timestamp
+sync.dogfood_groups
+sync.enable_local_sync_backend
+sync.encryption_bootstrap_token
+sync.encryption_bootstrap_token_per_account
+sync.encryption_bootstrap_token_per_account_migration_done
+sync.extensions
+sync.feature_status_for_sync_to_signin
+sync.first_full_sync_completed
+sync.first_time_tried_to_migrate_sync_feature_paused_to_signin
+sync.gaia_id
+sync.glic_rollout_eligibility
+sync.has_setup_completed
+
+=== whale-only sync prefs ===
+	/whalesync/reset
+/whale/whale-email-login/token
+/whale/whalespace/get-token
+/whalesync
+https://api.whale.naver.com/whalesync
+https://api.whale.naver.com/whalesync/whalesync
+https://dev-api.whale.naver.com/whalesync
+https://help.whale.naver.com/desktop/sync_passphrase
+sync.whale_need_encryption_key_forced_time
+use-whale-policy-verification-key
+whale://settings/syncSetup
+whale_sync_push
+whale_sync_push/service_worker.js
+whale_sync_push/socket.io.slim.js
+{"namespace":"developerPrivate","functions":[{"name":"autoUpdate","type":"function","parameters":[],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"getExtensionsInfo","type":"function","parameters":[{"$ref":"developerPrivate.GetExtensionsInfoOptions","name":"options","optional":true}],"returns_async":{"parameters":[{"type":"array","items":{"$ref":"developerPrivate.ExtensionInfo"},"name":"result"}],"name":"callback","optional":true}},{"name":"getExtensionInfo","type":"function","parameters":[{"type":"string","name":"id"}],"returns_async":{"parameters":[{"$ref":"developerPrivate.ExtensionInfo","name":"result"}],"name":"callback","optional":true}},{"name":"getExtensionSize","type":"function","parameters":[{"type":"string","name":"id"}],"returns_async":{"parameters":[{"type":"string","name":"string"}],"name":"callback"}},{"name":"getProfileConfiguration","type":"function","parameters":[],"returns_async":{"parameters":[{"$ref":"developerPrivate.ProfileInfo","name":"info"}],"name":"callback"}},{"name":"updateProfileConfiguration","type":"function","parameters":[{"$ref":"developerPrivate.ProfileConfigurationUpdate","name":"update"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"reload","type":"function","parameters":[{"type":"string","name":"extensionId"},{"$ref":"developerPrivate.ReloadOptions","name":"options","optional":true}],"returns_async":{"parameters":[{"$ref":"developerPrivate.LoadError","optional":true,"name":"error"}],"name":"callback","optional":true}},{"name":"updateExtensionConfiguration","type":"function","parameters":[{"$ref":"developerPrivate.ExtensionConfigurationUpdate","name":"update"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"loadUnpacked","type":"function","parameters":[{"$ref":"developerPrivate.LoadUnpackedOptions","name":"options","optional":true}],"returns_async":{"parameters":[{"$ref":"developerPrivate.LoadError","optional":true,"name":"error"}],"name":"callback","optional":true}},{"name":"installDroppedFile","type":"function","parameters":[],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"notifyDragInstallInProgress","type":"function","parameters":[]},{"name":"loadDirectory","type":"function","parameters":[{"type":"object","additionalProperties":{"type":"any"},"isInstanceOf":"DirectoryEntry","name":"directory"}],"returns_async":{"parameters":[{"type":"string","name":"string"}],"name":"callback"}},{"name":"choosePath","type":"function","parameters":[{"$ref":"developerPrivate.SelectType","name":"selectType"},{"$ref":"developerPrivate.FileType","name":"fileType"}],"returns_async":{"parameters":[{"type":"string","name":"string"}],"name":"callback"}},{"name":"packDirectory","type":"function","parameters":[{"type":"string","name":"path"},{"type":"string","name":"privateKeyPath","optional":true},{"type":"integer","name":"flags","optional":true}],"returns_async":{"parameters":[{"$ref":"developerPrivate.PackDirectoryResponse","name":"response"}],"name":"callback","optional":true}},{"name":"requestFileSource","type":"function","parameters":[{"$ref":"developerPrivate.RequestFileSourceProperties","name":"properties"}],"returns_async":{"parameters":[{"$ref":"developerPrivate.RequestFileSourceResponse","name":"response"}],"name":"callback"}},{"name":"openDevTools","type":"function","parameters":[{"$ref":"developerPrivate.OpenDevToolsProperties","name":"properties"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"deleteExtensionErrors","type":"function","parameters":[{"$ref":"developerPrivate.DeleteExtensionErrorsProperties","name":"properties"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"repairExtension","type":"function","parameters":[{"type":"string","name":"extensionId"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"showOptions","type":"function","parameters":[{"type":"string","name":"extensionId"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"showPath","type":"function","parameters":[{"type":"string","name":"extensionId"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"setShortcutHandlingSuspended","type":"function","parameters":[{"type":"boolean","name":"isSuspended"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"updateExtensionCommand","type":"function","parameters":[{"$ref":"developerPrivate.ExtensionCommandUpdate","name":"update"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"addHostPermission","type":"function","parameters":[{"type":"string","name":"extensionId"},{"type":"string","name":"host"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"removeHostPermission","type":"function","parameters":[{"type":"string","name":"extensionId"},{"type":"string","name":"host"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"getUserSiteSettings","type":"function","parameters":[],"returns_async":{"parameters":[{"$ref":"developerPrivate.UserSiteSettings","name":"settings"}],"name":"callback"}},{"name":"addUserSpecifiedSites","type":"function","parameters":[{"$ref":"developerPrivate.UserSiteSettingsOptions","name":"options"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"removeUserSpecifiedSites","type":"function","parameters":[{"$ref":"developerPrivate.UserSiteSettingsOptions","name":"options"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"getUserAndExtensionSitesByEtld","type":"function","parameters":[],"returns_async":{"parameters":[{"type":"array","items":{"$ref":"developerPrivate.SiteGroup"},"name":"siteGroups"}],"name":"callback"}},{"name":"getMatchingExtensionsForSite","type":"function","parameters":[{"type":"string","name":"site"}],"returns_async":{"parameters":[{"type":"array","items":{"$ref":"developerPrivate.MatchingExtensionInfo"},"name":"matchingExtensions"}],"name":"callback"}},{"name":"updateSiteAccess","type":"function","parameters":[{"type":"string","name":"site"},{"type":"array","items":{"$ref":"developerPrivate.ExtensionSiteAccessUpdate"},"name":"updates"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"removeMultipleExtensions","type":"function","parameters":[{"type":"array","items":{"type":"string"},"name":"extensionIds"}],"returns_async":{"parameters":[],"name":"callback","optional":true}},{"name":"dismissSafetyHubExtensionsMenuNotification","type":"function","parameters":[]},{"name":"dismissMv2DeprecationNoticeForExtension","type":"function","parameters":[{"type":"string","name":"extensionId"}]},{"name":"uploadExtensionToAccount","type":"function","parameters":[{"type":"string","name":"extensionId"}],"returns_async":{"parameters":[{"type":"boolean","name":"result"}],"name":"callback"}},{"name":"showSiteSettings","type":"function","platforms":["desktop_android"],"parameters":[{"type":"string","name":"extensionId"}]},{"name":"inspect","type":"function","deprecated":"Use openDevTools","parameters":[{"$ref":"developerPrivate.InspectOptions","name":"options"}],"returns_async":{"parameters":[],"name":"callback","optional":true}}],"types":[{"id":"developerPrivate.InspectOptions","properties":{"extension_id":{"type":"string","name":"extension_id"},"render_process_id":{"choices":[{"type":"string"},{"type":"integer"}],"name":"render_process_id"},"render_view_id":{"choices":[{"type":"string"},{"type":"integer"}],"name":"render_view_id"},"incognito":{"type":"boolean","name":"incognito"}},"type":"object"},{"id":"developerPrivate.ExtensionType","type":"string","enum":[{"name":"HOSTED_APP"},{"name":"PLATFORM_APP"},{"name":"LEGACY_PACKAGED_APP"},{"name":"EXTENSION"},{"name":"THEME"},{"name":"SHARED_MODULE"}]},{"id":"developerPrivate.Location","type":"string","enum":[{"name":"FROM_STORE"},{"name":"UNPACKED"},{"name":"THIRD_PARTY"},{"name":"INSTALLED_BY_DEFAULT"},{"name":"UNKNOWN"}]},{"id":"developerPrivate.ViewType","type":"string","enum":[{"name":"APP_WINDOW"},{"name":"BACKGROUND_CONTENTS"},{"name":"COMPONENT"},{"name":"EXTENSION_BACKGROUND_PAGE"},{"name":"EXTENSION_DIALOG"},{"name":"EXTENSION_GUEST"},{"name":"EXTENSION_POPUP"},{"name":"EXTENSION_SERVICE_WORKER_BACKGROUND"},{"name":"TAB_CONTENTS"},{"name":"OFFSCREEN_DOCUMENT"},{"name":"EXTENSION_SIDE_PANEL"},{"name":"DEVELOPER_TOOLS"}]},{"id":"developerPrivate.ErrorType","type":"string","enum":[{"name":"MANIFEST"},{"name":"RUNTIME"}]},{"id":"developerPrivate.ErrorLevel","type":"string","enum":[{"name":"LOG"},{"name":"WARN"},{"name":"ERROR"}]},{"id":"developerPrivate.ExtensionState","type":"string","enum":[{"name":"ENABLED"},{"name":"DISABLED"},{"name":"TERMINATED"},{"name":"BLOCKLISTED"}]},{"id":"developerPrivate.CommandScope","type":"string","enum":[{"name":"GLOBAL"},{"name":"CHROME"}]},{"id":"developerPrivate.SafetyCheckWarningReason","type":"string","enum":[{"name":"UNPUBLISHED"},{"name":"POLICY"},{"name":"MALWARE"},{"name":"OFFSTORE"},{"name":"UNWANTED"},{"name":"NO_PRIVACY_PRACTICE"}]},{"id":"developerPrivate.AccessModifier","properties":{"isEnabled":{"type":"boolean","name":"isEnabled"},"isActive":{"type":"boolean","name":"isActive"}},"type":"object"},{"id":"developerPrivate.StackFrame","properties":{"lineNumber":{"type":"integer","name":"lineNumber"},"columnNumber":{"type":"integer","name":"columnNumber"},"url":{"type":"string","name":"url"},"functionName":{"type":"string","name":"functionName"}},"type":"object"},{"id":"developerPrivate.ManifestError","properties":{"type":{"$ref":"developerPrivate.ErrorType","name":"type"},"extensionId":{"type":"string","name":"extensionId"},"fromIncognito":{"type":"boolean","name":"fromIncognito"},"source":{"type":"string","name":"source"},"message":{"type":"string","name":"message"},"id":{"type":"integer","name":"id"},"manifestKey":{"type":"string","name":"manifestKey"},"manifestSpecific":{"type":"string","name":"manifestSpecific","optional":true}},"type":"object"},{"id":"developerPrivate.RuntimeError","properties":{"type":{"$ref":"developerPrivate.ErrorType","name":"type"},"extensionId":{"type":"string","name":"extensionId"},"fromIncognito":{"type":"boolean","name":"fromIncognito"},"source":{"type":"string","name":"source"},"message":{"type":"string","name":"message"},"id":{"type":"integer","name":"id"},"severity":{"$ref":"developerPrivate.ErrorLevel","name":"severity"},"contextUrl":{"type":"string","name":"contextUrl"},"occurrences":{"type":"integer","name":"occurrences"},"renderViewId":{"type":"integer","name":"renderViewId"},"renderProcessId":{"type":"integer","name":"renderProcessId"},"canInspect":{"type":"boolean","name":"canInspect"},"isServiceWorker":{"type":"boolean","name":"isServiceWorker"},"stackTrace":{"type":"array","items":{"$ref":"developerPrivate.StackFrame"},"name":"stackTrace"}},"type":"object"},{"id":"developerPrivate.DisableReasons","properties":{"suspiciousInstall":{"type":"boolean","name":"suspiciousInstall"},"corruptInstall":{"type":"boolean","name":"corruptInstall"},"updateRequired":{"type":"boolean","name":"updateRequired"},"publishedInStoreRequired":{"type":"boolean","name":"publishedInStoreRequired"},"blockedByPolicy":{"type":"boolean","name":"blockedByPolicy"},"reloading":{"type":"boolean","name":"reloading"},"custodianApprovalRequired":{"type":"boolean","name":"custodianApprovalRequired"},"parentDisabledPermissions":{"type":"boolean","name":"parentDisabledPermissions"},"unsupportedManifestVersion":{"type":"boolean","name":"unsupportedManifestVersion"},"unsupportedDeveloperExtension":{"type":"boolean","name":"unsupportedDeveloperExtension"}},"type":"object"},{"id":"developerPrivate.OptionsPage","properties":{"openInTab":{"type":"boolean","name":"openInTab"},"url":{"type":"string","name":"url"}},"type":"object"},{"id":"developerPrivate.HomePage","properties":{"url":{"type":"string","name":"url"},"specified":{"type":"boolean","name":"specified"}},"type":"object"},{"id":"developerPrivate.ExtensionView","properties":{"url":{"type":"string","name":"url"},"renderProcessId":{"type":"integer","name":"renderProcessId"},"renderViewId":{"type":"integer","name":"renderViewId"},"incognito":{"type":"boolean","name":"incognito"},"isIframe":{"type":"boolean","name":"isIframe"},"type":{"$ref":"developerPrivate.ViewType","name":"type"}},"type":"object"},{"id":"developerPrivate.HostAccess","type":"string","enum":[{"name":"ON_CLICK"},{"name":"ON_SPECIFIC_SITES"},{"name":"ON_ALL_SITES"}]},{"id":"developerPrivate.SafetyCheckStrings","properties":{"panelString":{"type":"string","name":"panelString","optional":true},"detailString":{"type":"string","name":"detailString","optional":true}},"type":"object"},{"id":"developerPrivate.ControlledInfo","properties":{"text":{"type":"string","name":"text"}},"type":"object"},{"id":"developerPrivate.Command","properties":{"description":{"type":"string","name":"description"},"keybinding":{"type":"string","name":"keybinding"},"name":{"type":"string","name":"name"},"isActive":{"type":"boolean","name":"isActive"},"scope":{"$ref":"developerPrivate.CommandScope","name":"scope"},"isExtensionAction":{"type":"boolean","name":"isExtensionAction"}},"type":"object"},{"id":"developerPrivate.DependentExtension","properties":{"id":{"type":"string","name":"id"},"name":{"type":"string","name":"name"}},"type":"object"},{"id":"developerPrivate.Permission","properties":{"message":{"type":"string","name":"message"},"submessages":{"type":"array","items":{"type":"string"},"name":"submessages"}},"type":"object"},{"id":"developerPrivate.WhaleNtpResource","properties":{"type":{"type":"string","name":"type"},"source":{"type":"string","name":"source"},"title":{"type":"string","name":"title","optional":true},"extra":{"type":"string","name":"extra","optional":true}},"type":"object"},{"id":"developerPrivate.SiteControl","properties":{"host":{"type":"string","name":"host"},"granted":{"type":"boolean","name":"granted"}},"type":"object"},{"id":"developerPrivate.RuntimeHostPermissions","properties":{"hasAllHosts":{"type":"boolean","name":"hasAllHosts"},"hostAccess":{"$ref":"developerPrivate.HostAccess","name":"hostAccess"},"hosts":{"type":"array","items":{"$ref":"developerPrivate.SiteControl"},"name":"hosts"}},"type":"object"},{"id":"developerPrivate.Permissions","properties":{"simplePermissions":{"type":"array","items":{"$ref":"developerPrivate.Permission"},"name":"simplePermissions"},"runtimeHostPermissions":{"$ref":"developerPrivate.RuntimeHostPermissions","name":"runtimeHostPermissions","optional":true}},"type":"object"},{"id":"developerPrivate.ExtensionInfo","properties":{"blocklistText":{"type":"string","name":"blocklistText","optional":true},"safetyCheckText":{"$ref":"developerPrivate.SafetyCheckStrings","name":"safetyCheckText","optional":true},"commands":{"type":"array","items":{"$ref":"developerPrivate.Command"},"name":"commands"},"controlledInfo":{"$ref":"developerPrivate.ControlledInfo","name":"controlledInfo","optional":true},"dependentExtensions":{"type":"array","items":{"$ref":"developerPrivate.DependentExtension"},"name":"dependentExtensions"},"description":{"type":"string","name":"description"},"disableReasons":{"$ref":"developerPrivate.DisableReasons","name":"disableReasons"},"errorCollection":{"$ref":"developerPrivate.AccessModifier","name":"errorCollection"},"fileAccess":{"$ref":"developerPrivate.AccessModifier","name":"fileAccess"},"fileAccessPendingChange":{"type":"boolean","name":"fileAccessPendingChange"},"homePage":{"$ref":"developerPrivate.HomePage","name":"homePage"},"iconUrl":{"type":"string","name":"iconUrl"},"id":{"type":"string","name":"id"},"incognitoAccess":{"$ref":"developerPrivate.AccessModifier","name":"incognitoAccess"},"userScriptsAccess":{"$ref":"developerPrivate.AccessModifier","name":"userScriptsAccess"},"incognitoAccessPendingChange":{"type":"boolean","name":"incognitoAccessPendingChange"},"notificationEnabled":{"$ref":"developerPrivate.AccessModifier","name":"notificationEnabled"},"installWarnings":{"type":"array","items":{"type":"string"},"name":"installWarnings"},"isCommandRegistrationHandledExternally":{"type":"boolean","name":"isCommandRegistrationHandledExternally"},"launchUrl":{"type":"string","name":"launchUrl","optional":true},"location":{"$ref":"developerPrivate.Location","name":"location"},"locationText":{"type":"string","name":"locationText","optional":true},"manifestErrors":{"type":"array","items":{"$ref":"developerPrivate.ManifestError"},"name":"manifestErrors"},"manifestHomePageUrl":{"type":"string","name":"manifestHomePageUrl"},"mustRemainInstalled":{"type":"boolean","name":"mustRemainInstalled"},"name":{"type":"string","name":"name"},"offlineEnabled":{"type":"boolean","name":"offlineEnabled"},"optionsPage":{"$ref":"developerPrivate.OptionsPage","name":"optionsPage","optional":true},"path":{"type":"string","name":"path","optional":true},"permissions":{"$ref":"developerPrivate.Permissions","name":"permissions"},"prettifiedPath":{"type":"string","name":"prettifiedPath","optional":true},"recommendationsUrl":{"type":"string","name":"recommendationsUrl","optional":true},"runtimeErrors":{"type":"array","items":{"$ref":"developerPrivate.RuntimeError"},"name":"runtimeErrors"},"runtimeWarnings":{"type":"array","items":{"type":"string"},"name":"runtimeWarnings"},"state":{"$ref":"developerPrivate.ExtensionState","name":"state"},"type":{"$ref":"developerPrivate.ExtensionType","name":"type"},"updateUrl":{"type":"string","name":"updateUrl"},"userMayModify":{"type":"boolean","name":"userMayModify"},"version":{"type":"string","name":"version"},"views":{"type":"array","items":{"$ref":"developerPrivate.ExtensionView"},"name":"views"},"webStoreUrl":{"type":"string","name":"webStoreUrl"},"showSafeBrowsingAllowlistWarning":{"type":"boolean","name":"showSafeBrowsingAllowlistWarning"},"safetyCheckWarningReason":{"$ref":"developerPrivate.SafetyCheckWarningReason","name":"safetyCheckWarningReason","optional":true},"showAccessRequestsInToolbar":{"type":"boolean","name":"showAccessRequestsInToolbar"},"pinnedToToolbar":{"type":"boolean","name":"pinnedToToolbar","optional":true},"isAffectedByMV2Deprecation":{"type":"boolean","name":"isAffectedByMV2Deprecation"},"didAcknowledgeMV2DeprecationNotice":{"type":"boolean","name":"didAcknowledgeMV2DeprecationNotice"},"canUploadAsAccountExtension":{"type":"boolean","name":"canUploadAsAccountExtension"},"whaleNtpResources":{"type":"array","items":{"$ref":"developerPrivate.WhaleNtpResource"},"name":"whaleNtpResources","optional":true},"hasSidebarAction":{"type":"boolean","name":"hasSidebarAction","optional":true},"isComponentLocation":{"type":"boolean","name":"isComponentLocation","optional":true}},"type":"object"},{"id":"developerPrivate.ProfileInfo","properties":{"canLoadUnpacked":{"type":"boolean","name":"canLoadUnpacked"},"inDeveloperMode":{"type":"boolean","name":"inDeveloperMode"},"isDeveloperModeControlledByPolicy":{"type":"boolean","name":"isDeveloperModeControlledByPolicy"},"isIncognitoAvailable":{"type":"boolean","name":"isIncognitoAvailable"},"isChildAccount":{"type":"boolean","name":"isChildAccount"},"isMv2DeprecationNoticeDismissed":{"type":"boolean","name":"isMv2DeprecationNoticeDismissed"}},"type":"object"},{"id":"developerPrivate.GetExtensionsInfoOptions","properties":{"includeDisabled":{"type":"boolean","name":"includeDisabled","optional":true},"includeTerminated":{"type":"boolean","name":"includeTerminated","optional":true}},"type":"object"},{"id":"developerPrivate.ExtensionConfigurationUpdate","properties":{"extensionId":{"type":"string","name":"extensionId"},"fileAccess":{"type":"boolean","name":"fileAccess","optional":true},"incognitoAccess":{"type":"boolean","name":"incognitoAccess","optional":true},"userScriptsAccess":{"type":"boolean","name":"userScriptsAccess","optional":true},"errorCollection":{"type":"boolean","name":"errorCollection","optional":true},"notificationEnabled":{"type":"boolean","name":"notificationEnabled","optional":true},"hostAccess":{"$ref":"developerPrivate.HostAccess","name":"hostAccess","optional":true},"showAccessRequestsInToolbar":{"type":"boolean","name":"showAccessRequestsInToolbar","optional":true},"acknowledgeSafetyCheckWarningReason":{"$ref":"developerPrivate.SafetyCheckWarningReason","name":"acknowledgeSafetyCheckWarningReason","optional":true},"acknowledgeSafetyCheckWarning":{"type":"boolean","name":"acknowledgeSafetyCheckWarning","optional":true},"pinnedToToolbar":{"type":"boolean","name":"pinnedToToolbar","optional":true}},"type":"object"},{"id":"developerPrivate.ProfileConfigurationUpdate","properties":{"inDeveloperMode":{"type":"boolean","name":"inDeveloperMode","optional":true},"isMv2DeprecationNoticeDismissed":{"type":"boolean","name":"isMv2DeprecationNoticeDismissed","optional":true}},"type":"object"},{"id":"developerPrivate.ExtensionCommandUpdate","properties":{"extensionId":{"type":"string","name":"extensionId"},"commandName":{"type":"string","name":"commandName"},"scope":{"$ref":"developerPrivate.CommandScope","name":"scope","optional":true},"keybinding":{"type":"string","name":"keybinding","optional":true}},"type":"object"},{"id":"developerPrivate.ReloadOptions","properties":{"failQuietly":{"type":"boolean","name":"failQuietly","optional":true},"populateErrorForUnpacked":{"type":"boolean","name":"populateErrorForUnpacked","optional":true}},"type":"object"},{"id":"developerPrivate.LoadUnpackedOptions","properties":{"failQuietly":{"type":"boolean","name":"failQuietly","optional":true},"populateError":{"type":"boolean","name":"populateError","optional":true},"retryGuid":{"type":"string","name":"retryGuid","optional":true},"useDraggedPath":{"type":"boolean","name":"useDraggedPath","optional":true}},"type":"object"},{"id":"developerPrivate.SiteSet","type":"string","enum":[{"name":"USER_PERMITTED"},{"name":"USER_RESTRICTED"},{"name":"EXTENSION_SPECIFIED"}]},{"id":"developerPrivate.UserSiteSettingsOptions","properties":{"siteSet":{"$ref":"developerPrivate.SiteSet","name":"siteSet"},"hosts":{"type":"array","items":{"type":"string"},"name":"hosts"}},"type":"object"},{"id":"developerPrivate.UserSiteSettings","properties":{"permittedSites":{"type":"array","items":{"type":"string"},"name":"permittedSites"},"restrictedSites":{"type":"array","items":{"type":"string"},"name":"restrictedSites"}},"type":"object"},{"id":"developerPrivate.SiteInfo","properties":{"siteSet":{"$ref":"developerPrivate.SiteSet","name":"siteSet"},"numExtensions":{"type":"integer","name":"numExtensions"},"site":{"type":"string","name":"site"}},"type":"object"},{"id":"developerPrivate.SiteGroup","properties":{"etldPlusOne":{"type":"string","name":"etldPlusOne"},"numExtensions":{"type":"integer","name":"numExtensions"},"sites":{"type":"array","items":{"$ref":"developerPrivate.SiteInfo"},"name":"sites"}},"type":"object"},{"id":"developerPrivate.MatchingExtensionInfo","properties":{"id":{"type":"string","name":"id"},"siteAccess":{"$ref":"developerPrivate.HostAccess","name":"siteAccess"},"canRequestAllSites":{"type":"boolean","name":"canRequestAllSites"}},"type":"object"},{"id":"developerPrivate.ExtensionSiteAccessUpdate","properties":{"id":{"type":"string","name":"id"},"siteAccess":{"$ref":"developerPrivate.HostAccess","name":"siteAccess"}},"type":"object"},{"id":"developerPrivate.PackStatus","type":"string","enum":[{"name":"SUCCESS"},{"name":"ERROR"},{"name":"WARNING"}]},{"id":"developerPrivate.FileType","type":"string","enum":[{"name":"LOAD"},{"name":"PEM"}]},{"id":"developerPrivate.SelectType","type":"string","enum":[{"name":"FILE"},{"name":"FOLDER"}]},{"id":"developerPrivate.EventType","type":"string","enum":[{"name":"INSTALLED"},{"name":"UNINSTALLED"},{"name":"LOADED"},{"name":"UNLOADED"},{"name":"VIEW_REGISTERED"},{"name":"VIEW_UNREGISTERED"},{"name":"ERROR_ADDED"},{"name":"ERRORS_REMOVED"},{"name":"PREFS_CHANGED"},{"name":"WARNINGS_CHANGED"},{"name":"COMMAND_ADDED"},{"name":"COMMAND_REMOVED"},{"name":"PERMISSIONS_CHANGED"},{"name":"SERVICE_WORKER_STARTED"},{"name":"SERVICE_WORKER_STOPPED"},{"name":"CONFIGURATION_CHANGED"},{"name":"PINNED_ACTIONS_CHANGED"}]},{"id":"developerPrivate.PackDirectoryResponse","properties":{"message":{"type":"string","name":"message"},"item_path":{"type":"string","name":"item_path"},"pem_path":{"type":"string","name":"pem_path"},"override_flags":{"type":"integer","name":"override_flags"},"status":{"$ref":"developerPrivate.PackStatus","name":"status"}},"type":"object"},{"id":"developerPrivate.ProjectInfo","properties":{"name":{"type":"string","name":"name"}},"type":"object"},{"id":"developerPrivate.EventData","properties":{"event_type":{"$ref":"developerPrivate.EventType","name":"event_type"},"item_id":{"type":"string","name":"item_id"},"extensionInfo":{"$ref":"developerPrivate.ExtensionInfo","name":"extensionInfo","optional":true}},"type":"object"},{"id":"developerPrivate.ErrorFileSource","properties":{"beforeHighlight":{"type":"string","name":"beforeHighlight"},"highlight":{"type":"string","name":"highlight"},"afterHighlight":{"type":"string","name":"afterHighlight"}},"type":"object"},{"id":"developerPrivate.LoadError","properties":{"error":{"type":"string","name":"error"},"path":{"type":"string","name":"path"},"source":{"$ref":"developerPrivate.ErrorFileSource","name":"source","optional":true},"retryGuid":{"type":"string","name":"retryGuid"}},"type":"object"},{"id":"developerPrivate.RequestFileSourceProperties","properties":{"extensionId":{"type":"string","name":"extensionId"},"pathSuffix":{"type":"string","name":"pathSuffix"},"message":{"type":"string","name":"message"},"manifestKey":{"type":"string","name":"manifestKey","optional":true},"manifestSpecific":{"type":"string","name":"manifestSpecific","optional":true},"lineNumber":{"type":"integer","name":"lineNumber","optional":true}},"type":"object"},{"id":"developerPrivate.RequestFileSourceResponse","properties":{"source":{"$ref":"developerPrivate.ErrorFileSource","name":"source","optional":true},"title":{"type":"string","name":"title"},"message":{"type":"string","name":"message"}},"type":"object"},{"id":"developerPrivate.OpenDevToolsProperties","properties":{"extensionId":{"type":"string","name":"extensionId","optional":true},"renderViewId":{"type":"integer","name":"renderViewId"},"renderProcessId":{"type":"integer","name":"renderProcessId"},"isServiceWorker":{"type":"boolean","name":"isServiceWorker","optional":true},"incognito":{"type":"boolean","name":"incognito","optional":true},"url":{"type":"string","name":"url","optional":true},"lineNumber":{"type":"integer","name":"lineNumber","optional":true},"columnNumber":{"type":"integer","name":"columnNumber","optional":true}},"type":"object"},{"id":"developerPrivate.DeleteExtensionErrorsProperties","properties":{"extensionId":{"type":"string","name":"extensionId"},"errorIds":{"type":"array","items":{"type":"integer"},"name":"errorIds","optional":true},"type":{"$ref":"developerPrivate.ErrorType","name":"type","optional":true}},"type":"object"}],"events":[{"name":"onItemStateChanged","type":"function","parameters":[{"$ref":"developerPrivate.EventData","name":"response"}]},{"name":"onProfileStateChanged","type":"function","parameters":[{"$ref":"developerPrivate.ProfileInfo","name":"info"}]},{"name":"onUserSiteSettingsChanged","type":"function","parameters":[{"$ref":"developerPrivate.UserSiteSettings","name":"settings"}]}],"properties":{},"platforms":null,"deprecated":null}
+{"namespace":"management","types":[{"id":"management.WhaleNtpResource","type":"object","properties":{"type":{"type":"string"},"source":{"type":"string"},"title":{"type":"string","optional":true},"extra":{"type":"string","optional":true}}},{"id":"management.IconInfo","type":"object","properties":{"size":{"type":"integer"},"url":{"type":"string"}}},{"id":"management.LaunchType","type":"string","enum":["OPEN_AS_REGULAR_TAB","OPEN_AS_PINNED_TAB","OPEN_AS_WINDOW","OPEN_FULL_SCREEN"]},{"id":"management.ExtensionDisabledReason","type":"string","enum":["unknown","permissions_increase"]},{"id":"management.ExtensionType","type":"string","enum":["extension","hosted_app","packaged_app","legacy_packaged_app","theme","login_screen_extension"]},{"id":"management.ExtensionInstallType","type":"string","enum":["admin","development","normal","sideload","other"]},{"id":"management.ExtensionInfo","type":"object","properties":{"id":{"type":"string"},"name":{"type":"string"},"shortName":{"type":"string"},"description":{"type":"string"},"version":{"type":"string"},"versionName":{"type":"string","optional":true},"mayDisable":{"type":"boolean"},"mayEnable":{"type":"boolean","optional":true},"enabled":{"type":"boolean"},"disabledReason":{"$ref":"management.ExtensionDisabledReason","optional":true},"isApp":{"type":"boolean","deprecated":"Please use $(ref:management.ExtensionInfo.type)."},"type":{"$ref":"management.ExtensionType"},"appLaunchUrl":{"type":"string","optional":true},"homepageUrl":{"type":"string","optional":true},"updateUrl":{"type":"string","optional":true},"offlineEnabled":{"type":"boolean"},"optionsUrl":{"type":"string"},"icons":{"type":"array","optional":true,"items":{"$ref":"management.IconInfo"}},"permissions":{"type":"array","items":{"type":"string"}},"hostPermissions":{"type":"array","items":{"type":"string"}},"installType":{"$ref":"management.ExtensionInstallType"},"launchType":{"$ref":"management.LaunchType","optional":true},"availableLaunchTypes":{"type":"array","optional":true,"items":{"$ref":"management.LaunchType"}},"whaleNtpResources":{"type":"array","items":{"$ref":"management.WhaleNtpResource"}},"hasSidebarAction":{"type":"boolean","optional":true}}},{"id":"management.UninstallOptions","type":"object","properties":{"showConfirmDialog":{"type":"boolean","optional":true}}}],"functions":[{"name":"getAll","parameters":[],"returns_async":{"name":"callback","optional":true,"parameters":[{"type":"array","name":"result","items":{"$ref":"management.ExtensionInfo"}}]}},{"name":"get","parameters":[{"name":"id","type":"string"}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"result","$ref":"management.ExtensionInfo"}]}},{"name":"getSelf","parameters":[],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"result","$ref":"management.ExtensionInfo"}]}},{"name":"getPermissionWarningsById","parameters":[{"name":"id","type":"string"}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"permissionWarnings","type":"array","items":{"type":"string"}}]}},{"name":"getPermissionWarningsByManifest","parameters":[{"name":"manifestStr","type":"string"}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"permissionWarnings","type":"array","items":{"type":"string"}}]}},{"name":"setEnabled","parameters":[{"name":"id","type":"string"},{"name":"enabled","type":"boolean"}],"returns_async":{"name":"callback","optional":true,"parameters":[]}},{"name":"uninstall","parameters":[{"name":"id","type":"string"},{"name":"options","$ref":"management.UninstallOptions","optional":true}],"returns_async":{"name":"callback","optional":true,"parameters":[]}},{"name":"uninstallSelf","parameters":[{"name":"options","$ref":"management.UninstallOptions","optional":true}],"returns_async":{"name":"callback","optional":true,"parameters":[]}},{"name":"launchApp","parameters":[{"name":"id","type":"string"}],"returns_async":{"name":"callback","optional":true,"parameters":[]}},{"name":"createAppShortcut","parameters":[{"name":"id","type":"string"}],"returns_async":{"name":"callback","optional":true,"parameters":[]}},{"name":"setLaunchType","parameters":[{"name":"id","type":"string"},{"name":"launchType","$ref":"management.LaunchType"}],"returns_async":{"name":"callback","type":"function","optional":true,"parameters":[]}},{"name":"generateAppForLink","parameters":[{"name":"url","type":"string"},{"name":"title","type":"string"}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"result","$ref":"management.ExtensionInfo"}]}},{"name":"installReplacementWebApp","parameters":[],"returns_async":{"name":"callback","optional":true,"parameters":[]}}],"events":[{"name":"onInstalled","type":"function","parameters":[{"name":"info","$ref":"management.ExtensionInfo"}]},{"name":"onUninstalled","type":"function","parameters":[{"name":"id","type":"string"}]},{"name":"onEnabled","type":"function","parameters":[{"name":"info","$ref":"management.ExtensionInfo"}]},{"name":"onDisabled","type":"function","parameters":[{"name":"info","$ref":"management.ExtensionInfo"}]}]}
+{"namespace":"resourcesPrivate","types":[{"id":"resourcesPrivate.Component","type":"string","enum":[{"name":"identity"},{"name":"pdf"},{"name":"hwp"},{"name":"whaleon"}]}],"functions":[{"parameters":[{"name":"component","$ref":"resourcesPrivate.Component"}],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"object","additionalProperties":{"type":"any"}}]},"name":"getStrings","type":"function"}],"properties":{},"events":[],"platforms":null,"deprecated":null}
+{"namespace":"utilityPrivate","dependencies":["cookies"],"types":[{"id":"utilityPrivate.FileTypeInfo","type":"object","properties":{"extensions":{"type":"array","items":{"type":"string"}},"description":{"type":"string"}}},{"id":"utilityPrivate.FilePathInfo","type":"object","properties":{"title":{"type":"string"},"types":{"type":"array","items":{"$ref":"utilityPrivate.FileTypeInfo"}},"multi_file":{"type":"boolean","optional":true}}},{"id":"utilityPrivate.TypeStatus","type":"object","properties":{"name":{"type":"string"},"state":{"type":"string","optional":true},"message":{"type":"string","optional":true},"status":{"type":"string","optional":true},"group_type":{"type":"string","optional":true},"num_entries":{"type":"integer","optional":true},"num_live":{"type":"integer","optional":true}}},{"id":"utilityPrivate.ThemeColor","type":"object","properties":{"primary_color":{"type":"number"},"sub_color":{"type":"number","optional":true},"picked":{"type":"boolean","optional":true},"key":{"type":"number"}}},{"id":"utilityPrivate.SigninType","type":"string","enum":[{"name":"NAVER"},{"name":"WHALESPACE"},{"name":"EMAIL"},{"name":"SNS"},{"name":"WORKS"}]}],"functions":[{"name":"getServerTime","type":"function","parameters":[{"name":"url","type":"string"}],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"object","properties":{"url":{"type":"string"},"timestamp":{"type":"number"}}}]}},{"name":"getAccountInfo","type":"function","parameters":[{"name":"ignoreCache","type":"boolean"}],"returns_async":{"name":"callback","parameters":[{"name":"cookies","type":"array","items":{"$ref":"cookies.Cookie"}}]}},{"name":"getProfileUserInfo","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"userInfo","type":"object","properties":{"email":{"type":"string"},"id":{"type":"string"},"picture_url":{"type":"string"},"full_name":{"type":"string"},"customer":{"type":"string"},"organization_unit":{"type":"string"},"user_type":{"type":"string"},"signin_type":{"$ref":"utilityPrivate.SigninType"},"works_re_loc":{"type":"string"}}}]}},{"name":"isEnterpriseUser","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"isEnterpriseUser","type":"boolean"}]}},{"name":"getSyncCacheGuid","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"getSyncCacheGuid","type":"string"}]}},{"name":"showLoginPopup","type":"function","parameters":[{"name":"mode","type":"string","optional":true}],"returns_async":{"name":"callback","parameters":[{"name":"isAuthenticated","type":"boolean"}]}},{"name":"showFeedbackPopup","type":"function","parameters":[]},{"name":"getThemeColor","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"colors","type":"array","items":{"$ref":"utilityPrivate.ThemeColor"}}]}},{"name":"setThemeColor","type":"function","parameters":[{"name":"type","type":"integer"}]},{"name":"selectFilePath","type":"function","parameters":[{"$ref":"utilityPrivate.FilePathInfo","name":"info"}],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"array","items":{"type":"object","properties":{"path":{"type":"string"},"file_url":{"type":"string"}}}}]}},{"name":"getUserName","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"name","type":"string"}]}},{"name":"setWelcomePref","type":"function","parameters":[{"name":"name","type":"string"},{"name":"value","type":"any"}],"returns_async":{"name":"callback","parameters":[{"name":"success","type":"boolean"}]}},{"name":"onPushUpdated","type":"function","parameters":[{"type":"string","name":"request_id"},{"name":"details","type":"object","properties":{"message":{"type":"string"}}}]},{"name":"onPushConnected","type":"function","parameters":[{"type":"string","name":"request_id"}]},{"name":"onPushConnectError","type":"function","parameters":[{"type":"string","name":"request_id"},{"type":"string","name":"reason"}]},{"name":"onPushDisconnected","type":"function","parameters":[{"type":"string","name":"request_id"},{"type":"string","name":"reason"}]},{"name":"getPushServerURL","type":"function","parameters":[{"type":"string","name":"request_id"}],"returns_async":{"name":"callback","parameters":[{"name":"url","type":"string"}]}},{"name":"useNaverAsNTP","type":"function","parameters":[{"name":"use","type":"boolean"}],"returns_async":{"name":"callback","parameters":[]}},{"name":"isNaverUsedAsNTP","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"isFirstRun","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"isDefaultMemoEnabled","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"isAITabEntryPointEnabled","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"getChannel","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"channel","type":"string"}]}},{"name":"getWhalebookInfo","type":"function","platforms":["chromeos"],"parameters":[],"returns_async":{"name":"callback","type":"function","parameters":[{"name":"result","type":"object","properties":{"product_name":{"type":"string"},"is_whalebook2":{"type":"boolean"},"floating_keyboard_enabled":{"type":"boolean"}}}]}},{"name":"isDVUEnabled","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"setDVUEnabled","type":"function","parameters":[{"name":"enabled","type":"boolean"}],"returns_async":{"name":"callback","parameters":[]}},{"name":"isGlobalVersion","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"resetNativeScrapbookData","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"addUrlToScrapbookBloomFilter","type":"function","parameters":[{"type":"string","name":"url"}]},{"name":"getMembershipStatus","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"object","properties":{"success":{"type":"boolean"},"isActive":{"type":"boolean"},"raw":{"type":"string"}}}]}}],"events":[{"name":"onPushConnectionRequested","type":"function","parameters":[{"type":"string","name":"request_id"}]},{"name":"onPushDisconnectionRequested","type":"function","parameters":[{"type":"string","name":"request_id"}]}]}
+{"namespace":"whaleonPrivate","functions":[{"name":"getCurrent","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"any"}]}},{"name":"getClientId","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"client_id","type":"string"}]}},{"name":"closeConferenceWindow","type":"function","parameters":[]},{"name":"maximizeConferenceWindow","type":"function","parameters":[]},{"name":"minimizeConferenceWindow","type":"function","parameters":[]},{"name":"restoreConferenceWindow","type":"function","parameters":[]},{"name":"isConferenceWindowMaximized","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"is_maximized","type":"boolean"}]}},{"name":"isConferenceWindowMinimized","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"is_minimized","type":"boolean"}]}},{"name":"toggleFullscreenConferenceWindow","type":"function","parameters":[]},{"name":"isConferenceWindowFullscreen","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"is_fullscreen","type":"boolean"}]}},{"name":"setConferenceWindowAlwaysOnTop","type":"function","parameters":[{"name":"alwaysOnTop","type":"boolean"}]},{"name":"isConferenceWindowAlwaysOnTop","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"setConferenceWindowCanResize","type":"function","parameters":[{"name":"canResize","type":"boolean"}]},{"name":"setConferenceWindowMinimumSize","type":"function","parameters":[{"name":"width","type":"integer"},{"name":"height","type":"integer"}]},{"name":"connectMessagingChannel","type":"function","parameters":[{"name":"details","type":"object","properties":{"roomId":{"type":"string"},"password":{"type":"string"},"inviteCode":{"type":"string"},"clientId":{"type":"string"}}}],"returns_async":{"name":"callback","type":"function","parameters":[{"name":"result","type":"boolean"}]}},{"name":"disconnectMessagingChannel","parameters":[{"name":"roomId","type":"string"}]},{"name":"pushMessage","parameters":[{"name":"details","type":"object","properties":{"useNative":{"type":"boolean","optional":true},"roomId":{"type":"string","optional":true},"breakoutRoomId":{"type":"string","optional":true},"data":{"type":"any"},"type":{"type":"string"},"targets":{"type":"array","items":{"type":"string"},"optional":true},"isGroupMessage":{"type":"boolean","optional":true}}}]},{"name":"isMessagingChannelConnected","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"connected","type":"boolean"}]}},{"name":"startVideoParty","type":"function","parameters":[{"name":"details","type":"object","properties":{"conferenceId":{"type":"string"},"provider":{"type":"string"},"vid":{"type":"string"}}}]},{"name":"stopVideoParty","type":"function","parameters":[{"name":"conferenceId","type":"string"}]},{"name":"pushLocalMessage","parameters":[{"name":"data","type":"string"}]},{"name":"changeStudyMode","type":"function","parameters":[{"name":"targetType","type":"string"},{"name":"themeId","type":"string"}]},{"name":"getStudyInfo","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"info","type":"object","properties":{"is_host":{"type":"boolean"},"study_mode":{"type":"string"},"theme_id":{"type":"string"}}}]}},{"name":"getSelectedOutputDevice","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"device_id","type":"string"}]}},{"name":"setDraggableArea","type":"function","parameters":[{"name":"x","type":"integer"},{"name":"y","type":"integer"},{"name":"width","type":"integer"},{"name":"height","type":"integer"},{"name":"name","type":"string","optional":true}]},{"name":"activateWindow","type":"function","parameters":[{"name":"target_name","type":"string","optional":true}]},{"name":"setDisplayAffinity","type":"function","parameters":[{"name":"isExcludeCapture","type":"boolean"}]},{"name":"isVp9DefaultEnabled","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"is_enabled","type":"boolean"}]}}],"events":[{"name":"onMessagingChannelDisconnected","type":"fuction","parameters":[{"name":"details","type":"object","properties":{"roomId":{"type":"string"},"reason":{"type":"string"}}}]},{"name":"onMessageReceived","type":"fuction","parameters":[{"name":"details","type":"object","properties":{"roomId":{"type":"string"},"sender":{"type":"string"},"type":{"type":"string"},"data":{"type":"string"},"isBroadcast":{"type":"boolean"},"serial":{"type":"number","optional":true}}}]},{"name":"onVideoPartyStarted","type":"function","parameters":[{"name":"conferenceId","type":"string"},{"name":"id","type":"string"}]},{"name":"onVideoPartyStopped","type":"function","parameters":[{"name":"conferenceId","type":"string"},{"name":"id","type":"string"}]},{"name":"onCoViewingStarted","type":"function","parameters":[{"name":"conferenceId","type":"string"},{"name":"id","type":"string"},{"name":"type","type":"string"}]},{"name":"onCoViewingStopped","type":"function","parameters":[{"name":"conferenceId","type":"string"},{"name":"id","type":"string"},{"name":"type","type":"string"}]},{"name":"onLocalMessageReceived","type":"fuction","parameters":[{"name":"data","type":"string"}]},{"name":"onStudyInfoChanged","type":"function","parameters":[{"name":"info","type":"object","properties":{"isHost":{"type":"boolean"},"studyMode":{"type":"string"},"themeId":{"type":"string"}}}]},{"name":"onOutputDeviceChanged","type":"function","parameters":[]},{"name":"onFullscreenStateChanged","type":"fuction","parameters":[{"name":"isFullscreen","type":"boolean"}]},{"name":"onConferenceWindowBoundsChanged","type":"fuction","parameters":[{"name":"x","type":"integer"},{"name":"y","type":"integer"},{"name":"width","type":"integer"},{"name":"height","type":"integer"}]}]}
+{"namespace":"whalestorePrivate","types":[{"id":"whalestorePrivate.Result","type":"string","enum":[{"name":""},{"name":"success"},{"name":"user_gesture_required"},{"name":"unknown_error"},{"name":"feature_disabled"},{"name":"unsupported_extension_type"},{"name":"missing_dependencies"},{"name":"install_error"},{"name":"user_cancelled"},{"name":"invalid_id"},{"name":"blacklisted"},{"name":"blocked_by_policy"},{"name":"install_in_progress"},{"name":"launch_in_progress"},{"name":"manifest_error"},{"name":"icon_error"},{"name":"invalid_icon_url"},{"name":"already_installed"}]},{"id":"whalestorePrivate.InstallResultCode","type":"string","enum":[{"name":""},{"name":"success_new_install"},{"name":"success_already_installed"},{"name":"get_web_install_info_failed"},{"name":"previously_uninstalled"},{"name":"web_contents_destroyed"},{"name":"write_data_failed"},{"name":"user_install_declined"},{"name":"not_valid_manifest_for_web_app"},{"name":"intent_to_play_store"},{"name":"web_app_disabled"},{"name":"install_url_redirected"},{"name":"install_url_load_failed"},{"name":"expected_app_id_check_failed"},{"name":"install_url_load_time_out"},{"name":"failed_placeholder_uninstall"},{"name":"not_installable"},{"name":"apk_web_app_install_failed"},{"name":"cancelled_on_web_app_provider_shutting_down"},{"name":"web_app_provider_not_ready"},{"name":"success_offline_only_install"},{"name":"success_offline_fallback_install"},{"name":"install_task_destroyed"},{"name":"update_task_failed"},{"name":"app_not_in_registrar_after_commit"},{"name":"halted_by_sync_uninstall"},{"name":"install_url_invalid"},{"name":"icon_downloading_failed"},{"name":"cancelled_due_to_main_frame_navigation"},{"name":"no_valid_icons_in_manifest"},{"name":"no_custom_manifest_id"},{"name":"manifest_id_mismatch"},{"name":"fallback_install_using_trusted_icons"}]}],"functions":[{"name":"isUserMayLoad","parameters":[{"name":"id","type":"string","minLength":32,"maxLength":32}],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"beginInstallWithManifest3","parameters":[{"name":"details","type":"object","properties":{"id":{"type":"string","minLength":32,"maxLength":32},"manifest":{"type":"string","minLength":1},"iconUrl":{"type":"string","optional":true,"desciption":"A URL for the image to display in the confirmation dialog"},"localizedName":{"type":"string","optional":true},"locale":{"type":"string","optional":true},"appInstallBubble":{"type":"boolean","optional":true},"enableLauncher":{"type":"boolean","optional":true},"authuser":{"type":"string","optional":true}},"additionalProperties":{"type":"any"}}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"result","$ref":"whalestorePrivate.Result"}]}},{"name":"completeInstall","parameters":[{"name":"expected_id","type":"string"}],"returns_async":{"name":"callback","optional":true,"parameters":[]}},{"name":"beginInstallPWA","parameters":[{"name":"details","type":"object","properties":{"url":{"type":"string","desciption":"A URL for the manifest of web site"},"has_manifest":{"type":"boolean","desciption":"Return whether there is manifest or not."}}}],"returns_async":{"name":"callback","optional":true,"parameters":[{"name":"result","$ref":"whalestorePrivate.InstallResultCode"}]}},{"name":"isInIncognitoMode","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"is_incognito","type":"boolean"}]}},{"name":"autoUpdate","parameters":[],"returns_async":{"name":"callback","optional":true,"parameters":[]}}]}
+
+=== NEO_SES / session cookie ===
+/oauth2/v1/nid/epoch/v1
+/oauth2/v1/nid/login
+/oauth2/v1/nid/refresh
+; NID_SES=
+Cookie: NEO_SES=%s
+Cookie: NEO_SES=%s; WORKS_RE_LOC=%s
+NEO_SES
+NEO_SES=
+NEO_SES=%s
+NID_SES
+[0m
+Restored binary yields rich static facts. One quick targeted check — OSCrypt envelope markers for the bootstrap-token storage question.
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== OSCrypt envelope ==="; strings -n 6 whale 2>/dev/null | grep -iE 'v10|v11|DPAPI|os_crypt|oscrypt|encrypted_key|Safe Storage' | sort -u | head -15; echo; echo "=== nigori key / bootstrap envelope ==="; strings -n 6 whale 2>/dev/null | grep -iE 'nigori-key|bootstrap_token|EncryptionKeys|passphrase_type|NigoriStorage' | sort -u | head -15; echo; echo "=== whale_sync_util path strings ==="; strings -n 6 whale 2>/dev/null | grep -iE 'whale_sync' | sort -u | head -15
+=== OSCrypt envelope ===
+''xv10
+../../components/os_crypt/async/browser/freedesktop_secret_key_provider.cc
+../../components/os_crypt/async/browser/secret_portal_key_provider.cc
+../../components/os_crypt/async/common/encryptor.cc
+../../components/os_crypt/sync/key_storage_libsecret.cc
+../../components/os_crypt/sync/key_storage_linux.cc
+../../components/os_crypt/sync/key_storage_util_linux.cc
+../../components/os_crypt/sync/kwallet_dbus.cc
+../../components/os_crypt/sync/libsecret_util_linux.cc
+../../components/os_crypt/sync/os_crypt_linux.cc
+../../services/network/enterprise/encryption/os_crypt_cache_encryption_delegate.cc
+../../whale/components/os_crypt/sync/os_crypt_whale.cc
+../../whale/components/os_crypt/sync/wbc_wrapper_apis.cc
+.ReencryptedWithAsyncOSCrypt
+Belkin F5D7051 802.11g Adapter v1000 [Broadcom 4320]
+
+=== nigori key / bootstrap envelope ===
+DEPRECATED_BOOTSTRAP_TOKEN_UPDATED
+NigoriStorageKey
+PASSPHRASE_TYPE_CHANGED
+Sync.NigoriStorageDecryptionResult
+Sync.NigoriStorageEncryptionResult
+Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito
+Sync.TrustedVaultJavascriptSetEncryptionKeysValidArgs
+TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain
+TrustedVault.JavascriptSetClientEncryptionKeysValidArgs
+TrustedVault.SetEncryptionKeysForSecurityDomain.AllProfiles
+TrustedVault.SetEncryptionKeysForSecurityDomain.OffTheRecordOnly
+chrome.mojom.TrustedVaultEncryptionKeysExtension
+nigori-key
+passphrase_type
+setClientEncryptionKeys
+
+=== whale_sync_util path strings ===
+../../whale/components/sync/engine/whale_sync_util.cc
+../../whale/components/sync/service/whale_sync_auth_manager.cc
+whale_sync_push
+whale_sync_push/service_worker.js
+whale_sync_push/socket.io.slim.js
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && cat >> leads/lead-bigpickle.md <<'EOF'
+## 2026-08-07 23:45:00 UTC [sync] (model bigpickle)
+- [CHANGED] Env reset wiped /tmp/opencode/whale_x; re-downloaded v4.38.386.14 .deb from installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb; sha256 6dd7ebc4... byte-identical to prior session; static workspace restored.
+- [NEW] resources.pak parse (custom header 18B, v5, 7791 blobs): whale_sync_push/service_worker.js + socket.io.slim.js NOT present -> runtime-fetched component extension (push_server_url_fetcher_base.cc, sync_push_server_url_fetcher, "GetPushServerURL called/succeeded"); prior pak-extraction probe invalidated.
+- [NEW] Push transport: https://chat.whale.mu/ + dev-chat.whale.mu; server-returned via utilityPrivate.getPushServerURL(request_id).
+- [NEW] Full embedded API schema dump: utilityPrivate (getPushServerURL/onPushUpdated{message}/getSyncCacheGuid/getAccountInfo/getProfileUserInfo), multiplayPrivate (initialize->ChatInfo{multiplayId,sessionToken,myId,peers}, getJoinUrl), scrapbookPrivate (feed CRUD+reset), whaleonPrivate (connectMessagingChannel{roomId,password,inviteCode,clientId}, pushMessage, onMessageReceived{data}), neloPrivate, sidebarAction.show({url,reload}).
+- [NEW] Sync auth: /whalesync carries Cookie NEO_SES[;WORKS_RE_LOC]; NID /oauth2/v1/nid/{login,refresh,epoch/v1}; /whale/whale-email-login/token, /whale/whalespace/get-token.
+- [NEW] Whale-forked OSCrypt on Linux: os_crypt_whale.cc + wbc_wrapper_apis.cc, envelope magic ''xv10 -> key-storage deviates from upstream.
+- [NEW] Sync prefs incl. sync.cookies + whale-only encryption_bootstrap_token_per_account{,_migration_done}, whale_need_encryption_key_forced_time.
+EOF
+echo done
+done
+[0m
+Static probe complete. Persisting findings to the lead file, then emitting the analysis.
+STEP 1 — DELTA
+- [CHANGED] Env reset wiped /tmp/opencode; re-downloaded v4.38.386.14 .deb (sha256 `6dd7ebc4...` byte-identical to prior session) from installer-whale.pstatic.net; static-analysis workspace restored
+- [NEW] whale_sync_push/service_worker.js + socket.io.slim.js are NOT in resources.pak — runtime-fetched component extension (push_server_url_fetcher_base.cc, `GetPushServerURL called/succeeded` logs); prior "extract from resources.pak" probe invalidated
+- [NEW] Push transport identified: https://chat.whale.mu/ + dev-chat.whale.mu; push URL is server-returned via `utilityPrivate.getPushServerURL(request_id)`
+- [NEW] Full embedded API schema dump (120+ namespaces): utilityPrivate (getPushServerURL/onPushUpdated{message}/getSyncCacheGuid/getAccountInfo), multiplayPrivate (initialize→ChatInfo{multiplayId,sessionToken,myId,peers}, getJoinUrl), scrapbookPrivate (feed CRUD+reset), whaleonPrivate (connectMessagingChannel{roomId,password,inviteCode,clientId}, pushMessage, onMessageReceived{data}), neloPrivate, sidebarAction.show({url,reload})
+- [NEW] Sync auth model confirmed: /whalesync requests carry only `Cookie: NEO_SES[;WORKS_RE_LOC]`; NID /oauth2/v1/nid/{login,refresh,epoch/v1}; token endpoints /whale/whale-email-login/token + /whale/whalespace/get-token
+- [NEW] Whale forks OSCrypt on Linux: `os_crypt_whale.cc` + `wbc_wrapper_apis.cc`, envelope magic `''xv10` → key storage deviates from upstream libsecret path
+- [NEW] Sync prefs confirm sync.cookies + Whale-only `encryption_bootstrap_token_per_account{,_migration_done}` + `whale_need_encryption_key_forced_time`
+
+STEP 2 — PRIORITIZE
+- [PRIO] whale_sync_push socket.io push channel + utilityPrivate bridge (chat.whale.mu), 7.35 — atk7 biz9 tech9 gate2 cloud8 fresh9 — runtime-fetched code + server-returned URL + remote message events
+- [PRIO] Sync engine bootstrap-token / Whale-OSCrypt key storage, 7.20 — atk6 biz10 tech7 gate5 cloud7 fresh7 — NEO_SES-only auth + forked OSCrypt + per-account token prefs
+- [PRIO] whaleonPrivate messaging channel (inviteCode/password/roomId), 6.75 — atk7 biz7 tech8 gate3 cloud8 fresh8 — custom real-time channel into browser
+
+STEP 3 — HYPOTHESES
+[HYP] whale_sync_push socket.io push channel — server-controlled URL + unsanitized push message
+class: XSS
+asset: whale_sync_push component extension + utilityPrivate bridge (https://chat.whale.mu/) — Whale-only
+confidence: 55
+reasoning: binary embeds utilityPrivate.getPushServerURL (URL runtime-returned) + onPushUpdated(request_id,{message}); push_server_url_fetcher_base.cc logs "GetPushServerURL succeeded/failed"; service_worker.js+socket.io.slim.js are runtime-fetched, not in resources.pak; CVE-2022-24072/CVE-2024-40618 prove built-in-extension processing is a live Whale injection vector
+evidence_needed: runtime push URL returned by getPushServerURL; whether socket.io message payload reaches chrome.tabs/history or extension internals unsanitized; whether URL-fetch endpoint is attacker-influenceable
+verify_steps: AUTH_HELPED: authorized login → capture getPushServerURL response + runtime-fetched service_worker.js (file-local); audit socket.io onmessage handlers for unsanitized remote data reaching privileged APIs; zero out-of-scope probing
+impact: remote push message mutating synced tabs/history or injection in extension context; Medium-High
+testability: AUTH_HELPED
+
+[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
+class: AUTH
+asset: api.whale.naver.com/whalesync client engine + profile prefs sync.encryption_bootstrap_token_per_account{,_migration_done}, sync.whale_need_encryption_key_forced_time
+confidence: 60
+reasoning: strings confirm Whale-only prefs keys + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, `''xv10` magic); /whalesync authed by NEO_SES cookie only; sync.cookies/sync.passwords in type list
+evidence_needed: per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to a stale key
+verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util call sites for the bootstrap-token envelope and /whalesync/reset request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network
+impact: local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise; High
+testability: PASSIVE
+
+[HYP] whaleonPrivate messaging channel — room/inviteCode/password authz
+class: AUTH
+asset: WhaleON messaging (whaleonPrivate.connectMessagingChannel{roomId,password,inviteCode,clientId}, pushMessage, onMessageReceived) — client static only
+confidence: 45
+reasoning: schema exposes inviteCode+password-bound room join and raw pushMessage{data,targets}+onMessageReceived{data}; real-time channel into browser; scope/entropy undocumented
+evidence_needed: whether a replayed/guessed inviteCode or weak password joins a room and reads other participants' messages; whether pushMessage targets are validated
+verify_steps: AUTH_HELPED: two authorized accounts join a study room; test inviteCode replay post-leave, empty password, cross-room message targeting; capture payloads file-local; zero requests beyond client's own session
+impact: cross-session message disclosure or channel injection; Medium
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- Keep all three: XSS (not REJECTED) w/ concrete AUTH_HELPED steps; AUTH w/ concrete PASSIVE steps; AUTH w/ concrete AUTH_HELPED steps
+- [PARKED] Sidebar/dual-tab SOP variant hunting: HUMAN_ONLY (binary install + interactive dual-tab/sidebar test), no passive-first path this run
+- [PARKED] "Extract whale_sync_push from resources.pak" probe: invalidated — extension is runtime-fetched, not in pak
+- [FINAL] 1. Sync bootstrap-token/Whale-OSCrypt storage (60, AUTH, PASSIVE) 2. whale_sync_push push channel (55, XSS, AUTH_HELPED) 3. whaleonPrivate messaging authz (45, AUTH, AUTH_HELPED)
+
+STEP 5 — NEXT ACTION
+- [NEXT] PROBE: objdump/strings disassembly of `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` + `whale_sync_util.cc` call sites in `/tmp/opencode/whale_x/extract/opt/naver/whale/whale` (sha256 `6dd7ebc4...`) to recover (a) `/whalesync/reset` request method/body/auth-header shape, (b) bootstrap-token envelope storage (plaintext vs `''xv10` Whale-OSCrypt), (c) the push-server-URL fetch endpoint — local static only, zero network
+
+STEP 6 — LEARNING
+- [LEARN] REJECTED binary-extraction @ resources.pak: whale_sync_push/service_worker.js + socket.io.slim.js absent — runtime-fetched component extension; pak-extraction verify path dead
+- [LEARN] ACCEPTED XSS @ extension API: utilityPrivate onPushUpdated{message} bridge + runtime-fetched push extension re-confirm built-in-extension processing as live Whale injection surface (precedent CVE-2022-24072/CVE-2024-40618)
+- [LEARN] ACCEPTED AUTH @ sync: NEO_SES cookie-only auth on /whalesync + Whale-forked OSCrypt (''xv10 envelope) + per-account bootstrap-token prefs confirmed — client key-storage class alive
+
+STEP 7 — RISK SCORE
+- [RISK] sync: 68 — runtime-fetched socket.io push channel + NEO_SES-only auth + Whale-forked OSCrypt key storage + per-account bootstrap tokens all statically confirmed, none runtime-verified; multiplay/whaleon session tokens exposed to extension context
+- [RISK] browser: 78 — sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; binary restored enables repro-first variant hunting
+- [RISK] libs: 38 — resources.pak now parseable (custom 18-byte header, 7791 blobs); Whale-only OSCrypt fork + runtime socket.io lib confirmed; full lib-inventory diff vs upstream still pending
