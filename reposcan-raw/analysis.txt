@@ -1,126 +1,1395 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base you provided appears to be for Naver Whale browser, not Gladia. Let me actually scan the gladiaio GitHub org to perform the triage.
-[0m$ [0mgh repo list gladiaio --limit 50 --json name,description,visibility,updatedAt,primaryLanguage
-gh: To use GitHub CLI in a GitHub Actions workflow, set the GH_TOKEN environment variable. Example:
-  env:
-    GH_TOKEN: ${{ github.token }}
+[0m$ [0mgh api /orgs/gladiaio/repos --paginate 2>/dev/null | jq -r '.[].full_name' | sort
+(no output)
 [0m
-[0m$ [0mcurl -s "https://api.github.com/orgs/gladiaio/repos?per_page=100" | jq -r '.[] | "\(.name)\t\(.description // "no description")\t\(.visibility)\t\(.updated_at)\t\(.language // "none")"'
-gladia-cli	no description	public	2026-07-27T03:25:24Z	Go
-gladia-samples	no description	public	2026-07-28T14:02:30Z	Python
-triton-inference-memory-allocation	no description	public	2026-05-04T10:31:55Z	Python
-gunicorn-fix-sigabort	gunicorn 'Green Unicorn' is a WSGI HTTP Server for UNIX, fast clients and sleepy applications.	public	2025-08-12T07:11:26Z	Python
-uvicorn-fix-sigabort	An ASGI web server, for Python. 🦄	public	2025-09-03T19:38:24Z	Python
-docs	no description	public	2026-07-29T18:22:34Z	MDX
-1password-scim	1Password SCIM Bridge deployment examples	public	2024-02-01T14:16:13Z	HCL
-sdk	no description	public	2026-07-23T20:34:01Z	Python
-gladia-quiz-app	no description	public	2025-11-28T16:04:27Z	TypeScript
-normalization	A lightweight library for normalizing speech transcripts before computing WER	public	2026-07-22T04:16:54Z	Python
-vllm_backend	no description	public	2026-03-04T13:15:26Z	Python
-transformers	🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. 	public	2026-03-11T14:38:15Z	none
-compare-stt	Blind comparison of speech-to-text providers.	public	2026-08-04T12:20:14Z	TypeScript
-n8n-nodes-gladia	no description	public	2026-07-23T15:57:27Z	TypeScript
-cloudnative-pg	CloudNativePG is a comprehensive platform designed to seamlessly manage PostgreSQL databases within Kubernetes environments, covering the entire operational lifecycle from initial deployment to ongoing maintenance	public	2026-04-23T15:06:27Z	none
-skills	Official AI agent skills from Gladia for integrating speech-to-text transcription into your applications	public	2026-08-07T06:45:59Z	none
-realtime-multilingual-asr-router	no description	public	2026-07-29T22:42:30Z	Python
-vercel-ai	The AI Toolkit for TypeScript. From the creators of Next.js, the AI SDK is a free open-source library for building AI-powered applications and agents 	public	2026-06-12T06:46:36Z	none
-gladiaflow	A desktop app for real-time voice dictation powered by Gladia's realtime transcription	public	2026-08-07T20:38:38Z	Rust
-[0m
-[0m$ [0mcurl -s "https://registry.npmjs.org/@gladiaio/sdk" | jq -r '{name: .name, version: .version, description: .description, homepage: .homepage, repository: .repository, bugs: .bugs, versions: (.versions | keys | length), latest: .dist-tags.latest, time: .time[.dist-tags.latest], maintainers: .maintainers}'
-jq: error: syntax error, unexpected '-', expecting '}' (Unix shell quoting issues?) at <top-level>, line 1:
-{name: .name, version: .version, description: .description, homepage: .homepage, repository: .repository, bugs: .bugs, versions: (.versions | keys | length), latest: .dist-tags.latest, time: .time[.dist-tags.latest], maintainers: .maintainers}                                                                                                                                                                           
-jq: 1 compile error
-[0m
-[0m$ [0mcurl -s "https://registry.npmjs.org/@gladiaio/sdk" | jq -r '. | {name, version, description, homepage, repository, bugs, versionCount: (.versions | length), latest: ."dist-tags".latest, publishedAt: .time[."dist-tags".latest], maintainers}'
+I'll triage the gladiaio GitHub org and @gladiaio/sdk npm package. Let me start by gathering the actual scan data.
+[0m$ [0mnpm view @gladiaio/sdk --json 2>/dev/null | head -200
 {
+  "_id": "@gladiaio/sdk@1.1.0",
+  "_rev": "129-8d16ae11f6d0f01320400f5fcaa4e9e8",
   "name": "@gladiaio/sdk",
-  "version": null,
-  "description": "Gladia JavaScript/TypeScript SDK",
-  "homepage": "https://github.com/gladiaio/sdk#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gladiaio/sdk.git"
+  "dist-tags": {
+    "latest": "1.1.0"
+  },
+  "versions": [
+    "0.1.0",
+    "0.1.1",
+    "0.1.2",
+    "0.2.0",
+    "0.2.1",
+    "0.3.0",
+    "0.3.1",
+    "0.4.0",
+    "0.4.1",
+    "0.4.2",
+    "0.4.3",
+    "0.5.0",
+    "0.5.1",
+    "0.5.2",
+    "0.5.3",
+    "0.6.0",
+    "0.6.1",
+    "1.0.0",
+    "1.0.4",
+    "1.0.5",
+    "1.0.7",
+    "1.1.0"
+  ],
+  "time": {
+    "created": "2025-09-09T15:01:20.684Z",
+    "modified": "2026-07-23T20:48:35.899Z",
+    "0.8.9": "2022-10-28T08:45:13.203Z",
+    "0.8.10": "2022-10-28T09:20:28.511Z",
+    "0.8.11": "2022-10-28T10:16:20.446Z",
+    "0.8.12": "2022-11-02T13:40:47.351Z",
+    "0.8.13": "2022-11-02T14:22:51.825Z",
+    "0.8.14": "2022-11-10T15:46:41.656Z",
+    "0.8.15": "2022-11-10T16:20:33.692Z",
+    "0.8.16": "2022-11-13T18:27:04.269Z",
+    "0.8.17": "2022-11-18T16:07:37.254Z",
+    "0.9.1": "2022-11-22T14:38:02.436Z",
+    "0.9.2": "2022-11-23T07:38:30.338Z",
+    "0.9.3": "2022-11-30T09:32:14.398Z",
+    "0.9.4": "2022-11-30T10:05:06.541Z",
+    "0.9.5": "2022-12-09T11:31:31.615Z",
+    "0.10.1": "2022-12-09T12:39:20.544Z",
+    "0.10.2": "2022-12-09T14:22:43.928Z",
+    "0.10.3": "2022-12-09T15:13:00.720Z",
+    "0.10.4": "2022-12-09T17:23:13.026Z",
+    "0.10.5": "2022-12-12T17:13:58.447Z",
+    "0.10.6": "2022-12-12T17:29:59.221Z",
+    "0.10.7": "2022-12-19T19:29:04.531Z",
+    "0.10.8": "2023-01-10T13:24:01.450Z",
+    "0.10.9": "2023-01-10T15:17:51.295Z",
+    "0.10.10": "2023-01-10T15:37:49.001Z",
+    "0.10.11": "2023-01-11T09:01:49.220Z",
+    "0.10.12": "2023-01-11T13:12:36.873Z",
+    "0.10.13": "2023-01-11T21:12:54.881Z",
+    "0.10.14": "2023-01-12T09:10:07.435Z",
+    "0.10.15": "2023-01-17T10:19:35.165Z",
+    "0.10.16": "2023-01-17T12:05:23.330Z",
+    "0.10.17": "2023-01-17T12:58:17.730Z",
+    "0.10.18": "2023-01-17T16:09:20.768Z",
+    "0.10.19": "2023-01-18T15:26:15.155Z",
+    "0.10.20": "2023-01-18T18:04:32.626Z",
+    "0.10.21": "2023-01-20T08:16:14.497Z",
+    "0.10.22": "2023-01-20T10:04:28.819Z",
+    "0.10.23": "2023-01-20T15:04:40.649Z",
+    "0.10.24": "2023-01-20T15:11:16.682Z",
+    "0.10.25": "2023-01-20T15:13:48.025Z",
+    "0.10.26": "2023-01-20T15:31:50.478Z",
+    "0.10.27": "2023-01-20T15:39:56.257Z",
+    "0.10.28": "2023-01-20T15:42:19.092Z",
+    "0.10.29": "2023-01-20T15:50:28.108Z",
+    "0.10.30": "2023-01-24T08:25:37.753Z",
+    "0.10.31": "2023-01-27T09:03:39.648Z",
+    "0.10.32": "2023-01-27T13:42:54.782Z",
+    "0.10.33": "2023-01-30T16:53:45.752Z",
+    "0.10.34": "2023-01-31T10:05:22.344Z",
+    "0.10.35": "2023-01-31T16:26:08.125Z",
+    "0.10.36": "2023-01-31T18:05:57.019Z",
+    "0.10.37": "2023-02-01T09:07:05.551Z",
+    "0.10.38": "2023-02-08T13:16:19.390Z",
+    "0.10.39": "2023-02-09T11:04:51.004Z",
+    "0.10.40": "2023-02-10T16:05:17.732Z",
+    "0.10.41": "2023-02-10T16:39:30.367Z",
+    "0.10.42": "2023-02-13T20:05:28.053Z",
+    "0.10.43": "2023-02-14T14:05:13.700Z",
+    "0.10.44": "2023-02-14T15:41:25.199Z",
+    "0.10.45": "2023-02-21T09:05:46.595Z",
+    "0.10.47": "2023-02-22T15:05:00.452Z",
+    "0.10.48": "2023-02-22T15:20:28.452Z",
+    "0.10.49": "2023-02-22T16:44:44.559Z",
+    "0.10.50": "2023-02-22T17:34:36.357Z",
+    "0.10.51": "2023-02-23T12:06:26.120Z",
+    "0.10.52": "2023-02-27T10:05:37.941Z",
+    "0.10.53": "2023-02-28T10:05:00.048Z",
+    "0.10.54": "2023-02-28T11:04:57.740Z",
+    "0.10.55": "2023-03-06T17:10:50.627Z",
+    "0.10.56": "2023-03-07T13:42:28.741Z",
+    "0.10.57": "2023-03-10T08:35:13.404Z",
+    "0.10.58": "2023-03-14T13:12:41.710Z",
+    "0.10.59": "2023-03-14T16:06:56.161Z",
+    "0.10.60": "2023-03-15T20:45:18.851Z",
+    "0.10.61": "2023-03-16T12:33:03.265Z",
+    "0.10.62": "2023-03-16T16:55:15.030Z",
+    "0.10.63": "2023-03-17T08:41:22.881Z",
+    "0.10.64": "2023-03-17T10:05:27.471Z",
+    "0.10.65": "2023-03-22T10:47:01.768Z",
+    "0.10.66": "2023-03-22T14:36:58.372Z",
+    "0.10.67": "2023-03-24T15:34:12.413Z",
+    "0.10.68": "2023-03-27T15:05:00.983Z",
+    "0.10.70": "2023-04-07T11:04:58.255Z",
+    "0.10.71": "2023-04-07T12:17:40.107Z",
+    "0.1.0": "2025-09-09T15:01:20.882Z",
+    "0.1.1": "2025-09-09T15:26:22.552Z",
+    "0.1.2": "2025-09-09T16:16:44.602Z",
+    "0.2.0": "2025-09-10T11:59:15.930Z",
+    "0.2.1": "2025-09-10T12:25:32.638Z",
+    "0.3.0": "2025-09-10T13:51:29.726Z",
+    "0.3.1": "2025-09-10T14:19:42.168Z",
+    "0.4.0": "2025-09-16T07:49:54.760Z",
+    "0.4.1": "2025-09-16T10:32:15.201Z",
+    "0.4.2": "2025-09-19T15:59:53.302Z",
+    "0.4.3": "2025-09-23T12:24:17.194Z",
+    "0.5.0": "2025-09-25T09:18:44.573Z",
+    "0.5.1": "2025-09-30T16:39:08.467Z",
+    "0.5.2": "2025-10-08T13:17:05.116Z",
+    "0.5.3": "2025-10-24T16:36:23.856Z",
+    "0.6.0": "2025-10-28T10:54:53.857Z",
+    "0.6.1": "2025-11-28T13:24:15.718Z",
+    "1.0.0": "2026-03-26T13:27:50.624Z",
+    "1.0.3": "2026-04-13T18:14:58.725Z",
+    "1.0.4": "2026-04-17T10:06:11.064Z",
+    "1.0.5": "2026-06-17T13:03:22.884Z",
+    "1.0.7": "2026-06-29T20:36:21.038Z",
+    "1.1.0": "2026-07-23T20:48:35.560Z"
   },
   "bugs": {
     "url": "https://github.com/gladiaio/sdk/issues"
   },
-  "versionCount": 22,
-  "latest": "1.1.0",
-  "publishedAt": "2026-07-23T20:48:35.560Z",
+  "author": "Gladia",
+  "license": "MIT",
+  "homepage": "https://github.com/gladiaio/sdk#readme",
+  "keywords": [
+    "gladia",
+    "sdk",
+    "typescript",
+    "javascript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gladiaio/sdk.git"
+  },
+  "description": "Gladia JavaScript/TypeScript SDK",
   "maintainers": [
-    {
-      "name": "clement-gladia",
-      "email": "ccharmet@gladia.io"
+    "clement-gladia <ccharmet@gladia.io>",
+    "gladia-admin <tech-certified@gladia.io>",
+    "commarla <lcommarieu@gladia.io>",
+    "hugo_gladia <himbert@gladia.io>",
+    "tnesztler <picobuntu@gmail.com>",
+    "amorin_gladia <amorin@gladia.io>",
+    "thibautlb <ecouprie@gladia.io>",
+    "remigladia <rlejeune@gladia.io>",
+    "acorbeau-gladia <acorbeau@gladia.io>",
+    "jqueguiner <jlqueguiner@gladia.io>",
+    "hpapier.ext.gladia <hpapier.ext@gladia.io>",
+    "clafaye <clafaye@gladia.io>",
+    "opopops <ggueutier@gladia.io>",
+    "bot-npmjs-gladiaio <bot-npmjs@gladia.io>",
+    "rpiotaix <rpiotaix@gladia.io>",
+    "yoannkygladia <ykeoxay@gladia.io>",
+    "cpire <cpire@gladia.io>"
+  ],
+  "readmeFilename": "README.md",
+  "version": "1.1.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
-    {
-      "name": "gladia-admin",
-      "email": "tech-certified@gladia.io"
+    "./package.json": "./package.json"
+  },
+  "unpkg": "dist/index.iife.js",
+  "jsdelivr": "dist/index.iife.js",
+  "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.6",
+    "@types/node": "^20.19.19",
+    "@types/ws": "^8.18.1",
+[0m
+[0m$ [0mgh repo list gladiaio --limit 100 --json name,description,url,updatedAt,isPrivate 2>/dev/null
+(no output)
+[0m
+[0m$ [0mnpm pack @gladiaio/sdk@1.1.0 --dry-run 2>/dev/null | head -100
+gladiaio-sdk-1.1.0.tgz
+[0m
+[0m$ [0mgh api /orgs/gladiaio/repos --paginate 2>/dev/null || curl -s "https://api.github.com/orgs/gladiaio/repos?per_page=100"
+...output truncated...
+
+Full output saved to: /home/runner/.local/share/opencode/tool-output/tool_fde3bf037001iB9xzjfmsRgfx0
+
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": {
+      "key": "bsd-3-clause",
+      "name": "BSD 3-Clause \"New\" or \"Revised\" License",
+      "spdx_id": "BSD-3-Clause",
+      "url": "https://api.github.com/licenses/bsd-3-clause",
+      "node_id": "MDc6TGljZW5zZTU="
     },
-    {
-      "name": "commarla",
-      "email": "lcommarieu@gladia.io"
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+
+    ],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 0,
+    "default_branch": "main",
+    "permissions": {
+      "admin": false,
+      "maintain": false,
+      "push": false,
+      "triage": false,
+      "pull": true
     },
-    {
-      "name": "hugo_gladia",
-      "email": "himbert@gladia.io"
-    },
-    {
-      "name": "tnesztler",
-      "email": "picobuntu@gmail.com"
-    },
-    {
-      "name": "amorin_gladia",
-      "email": "amorin@gladia.io"
-    },
-    {
-      "name": "thibautlb",
-      "email": "ecouprie@gladia.io"
-    },
-    {
-      "name": "remigladia",
-      "email": "rlejeune@gladia.io"
-    },
-    {
-      "name": "acorbeau-gladia",
-      "email": "acorbeau@gladia.io"
-    },
-    {
-      "name": "jqueguiner",
-      "email": "jlqueguiner@gladia.io"
-    },
-    {
-      "name": "hpapier.ext.gladia",
-      "email": "hpapier.ext@gladia.io"
-    },
-    {
-      "name": "clafaye",
-      "email": "clafaye@gladia.io"
-    },
-    {
-      "name": "opopops",
-      "email": "ggueutier@gladia.io"
-    },
-    {
-      "name": "bot-npmjs-gladiaio",
-      "email": "bot-npmjs@gladia.io"
-    },
-    {
-      "name": "rpiotaix",
-      "email": "rpiotaix@gladia.io"
-    },
-    {
-      "name": "yoannkygladia",
-      "email": "ykeoxay@gladia.io"
-    },
-    {
-      "name": "cpire",
-      "email": "cpire@gladia.io"
+    "custom_properties": {
+
     }
-  ]
-}
+  },
+  {
+    "id": 1178953935,
+    "node_id": "R_kgDORkVozw",
+    "name": "transformers",
+    "full_name": "gladiaio/transformers",
+    "private": false,
+    "owner": {
+      "login": "gladiaio",
+      "id": 92447723,
+      "node_id": "O_kgDOBYKj6w",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92447723?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gladiaio",
+      "html_url": "https://github.com/gladiaio",
+      "followers_url": "https://api.github.com/users/gladiaio/followers",
+      "following_url": "https://api.github.com/users/gladiaio/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gladiaio/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gladiaio/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gladiaio/subscriptions",
+      "organizations_url": "https://api.github.com/users/gladiaio/orgs",
+      "repos_url": "https://api.github.com/users/gladiaio/repos",
+      "events_url": "https://api.github.com/users/gladiaio/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gladiaio/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/gladiaio/transformers",
+    "description": "🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. ",
+    "fork": true,
+    "url": "https://api.github.com/repos/gladiaio/transformers",
+    "forks_url": "https://api.github.com/repos/gladiaio/transformers/forks",
+    "keys_url": "https://api.github.com/repos/gladiaio/transformers/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/gladiaio/transformers/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/gladiaio/transformers/teams",
+    "hooks_url": "https://api.github.com/repos/gladiaio/transformers/hooks",
+    "issue_events_url": "https://api.github.com/repos/gladiaio/transformers/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/gladiaio/transformers/events",
+    "assignees_url": "https://api.github.com/repos/gladiaio/transformers/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/gladiaio/transformers/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/gladiaio/transformers/tags",
+    "blobs_url": "https://api.github.com/repos/gladiaio/transformers/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/gladiaio/transformers/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/gladiaio/transformers/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/gladiaio/transformers/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/gladiaio/transformers/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/gladiaio/transformers/languages",
+    "stargazers_url": "https://api.github.com/repos/gladiaio/transformers/stargazers",
+    "contributors_url": "https://api.github.com/repos/gladiaio/transformers/contributors",
+    "subscribers_url": "https://api.github.com/repos/gladiaio/transformers/subscribers",
+    "subscription_url": "https://api.github.com/repos/gladiaio/transformers/subscription",
+    "commits_url": "https://api.github.com/repos/gladiaio/transformers/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/gladiaio/transformers/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/gladiaio/transformers/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/gladiaio/transformers/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/gladiaio/transformers/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/gladiaio/transformers/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/gladiaio/transformers/merges",
+    "archive_url": "https://api.github.com/repos/gladiaio/transformers/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/gladiaio/transformers/downloads",
+    "issues_url": "https://api.github.com/repos/gladiaio/transformers/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/gladiaio/transformers/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/gladiaio/transformers/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/gladiaio/transformers/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/gladiaio/transformers/labels{/name}",
+    "releases_url": "https://api.github.com/repos/gladiaio/transformers/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/gladiaio/transformers/deployments",
+    "created_at": "2026-03-11T14:37:29Z",
+    "updated_at": "2026-03-11T14:38:15Z",
+    "pushed_at": "2026-06-10T13:09:35Z",
+    "git_url": "git://github.com/gladiaio/transformers.git",
+    "ssh_url": "git@github.com:gladiaio/transformers.git",
+    "clone_url": "https://github.com/gladiaio/transformers.git",
+    "svn_url": "https://github.com/gladiaio/transformers",
+    "homepage": "https://huggingface.co/transformers",
+    "size": 403169,
+    "stargazers_count": 1,
+    "watchers_count": 1,
+    "language": null,
+    "has_issues": false,
+    "has_projects": true,
+    "has_downloads": false,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": {
+      "key": "apache-2.0",
+      "name": "Apache License 2.0",
+      "spdx_id": "Apache-2.0",
+      "url": "https://api.github.com/licenses/apache-2.0",
+      "node_id": "MDc6TGljZW5zZTI="
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+
+    ],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 1,
+    "default_branch": "qwen3-asr",
+    "permissions": {
+      "admin": false,
+      "maintain": false,
+      "push": false,
+      "triage": false,
+      "pull": true
+    },
+    "custom_properties": {
+
+    }
+  },
+  {
+    "id": 1180578459,
+    "node_id": "R_kgDORl4ymw",
+    "name": "compare-stt",
+    "full_name": "gladiaio/compare-stt",
+    "private": false,
+    "owner": {
+      "login": "gladiaio",
+      "id": 92447723,
+      "node_id": "O_kgDOBYKj6w",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92447723?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gladiaio",
+      "html_url": "https://github.com/gladiaio",
+      "followers_url": "https://api.github.com/users/gladiaio/followers",
+      "following_url": "https://api.github.com/users/gladiaio/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gladiaio/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gladiaio/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gladiaio/subscriptions",
+      "organizations_url": "https://api.github.com/users/gladiaio/orgs",
+      "repos_url": "https://api.github.com/users/gladiaio/repos",
+      "events_url": "https://api.github.com/users/gladiaio/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gladiaio/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/gladiaio/compare-stt",
+    "description": "Blind comparison of speech-to-text providers.",
+    "fork": false,
+    "url": "https://api.github.com/repos/gladiaio/compare-stt",
+    "forks_url": "https://api.github.com/repos/gladiaio/compare-stt/forks",
+    "keys_url": "https://api.github.com/repos/gladiaio/compare-stt/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/gladiaio/compare-stt/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/gladiaio/compare-stt/teams",
+    "hooks_url": "https://api.github.com/repos/gladiaio/compare-stt/hooks",
+    "issue_events_url": "https://api.github.com/repos/gladiaio/compare-stt/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/gladiaio/compare-stt/events",
+    "assignees_url": "https://api.github.com/repos/gladiaio/compare-stt/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/gladiaio/compare-stt/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/gladiaio/compare-stt/tags",
+    "blobs_url": "https://api.github.com/repos/gladiaio/compare-stt/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/gladiaio/compare-stt/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/gladiaio/compare-stt/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/gladiaio/compare-stt/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/gladiaio/compare-stt/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/gladiaio/compare-stt/languages",
+    "stargazers_url": "https://api.github.com/repos/gladiaio/compare-stt/stargazers",
+    "contributors_url": "https://api.github.com/repos/gladiaio/compare-stt/contributors",
+    "subscribers_url": "https://api.github.com/repos/gladiaio/compare-stt/subscribers",
+    "subscription_url": "https://api.github.com/repos/gladiaio/compare-stt/subscription",
+    "commits_url": "https://api.github.com/repos/gladiaio/compare-stt/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/gladiaio/compare-stt/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/gladiaio/compare-stt/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/gladiaio/compare-stt/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/gladiaio/compare-stt/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/gladiaio/compare-stt/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/gladiaio/compare-stt/merges",
+    "archive_url": "https://api.github.com/repos/gladiaio/compare-stt/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/gladiaio/compare-stt/downloads",
+    "issues_url": "https://api.github.com/repos/gladiaio/compare-stt/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/gladiaio/compare-stt/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/gladiaio/compare-stt/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/gladiaio/compare-stt/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/gladiaio/compare-stt/labels{/name}",
+    "releases_url": "https://api.github.com/repos/gladiaio/compare-stt/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/gladiaio/compare-stt/deployments",
+    "created_at": "2026-03-13T07:23:17Z",
+    "updated_at": "2026-08-04T12:20:14Z",
+    "pushed_at": "2026-08-04T12:19:28Z",
+    "git_url": "git://github.com/gladiaio/compare-stt.git",
+    "ssh_url": "git@github.com:gladiaio/compare-stt.git",
+    "clone_url": "https://github.com/gladiaio/compare-stt.git",
+    "svn_url": "https://github.com/gladiaio/compare-stt",
+    "homepage": "https://compare-stt.com",
+    "size": 1551,
+    "stargazers_count": 4,
+    "watchers_count": 4,
+    "language": "TypeScript",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": false,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 2,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 4,
+    "license": {
+      "key": "mit",
+      "name": "MIT License",
+      "spdx_id": "MIT",
+      "url": "https://api.github.com/licenses/mit",
+      "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+
+    ],
+    "visibility": "public",
+    "forks": 2,
+    "open_issues": 4,
+    "watchers": 4,
+    "default_branch": "main",
+    "permissions": {
+      "admin": false,
+      "maintain": false,
+      "push": false,
+      "triage": false,
+      "pull": true
+    },
+    "custom_properties": {
+
+    }
+  },
+  {
+    "id": 1205949452,
+    "node_id": "R_kgDOR-FUDA",
+    "name": "n8n-nodes-gladia",
+    "full_name": "gladiaio/n8n-nodes-gladia",
+    "private": false,
+    "owner": {
+      "login": "gladiaio",
+      "id": 92447723,
+      "node_id": "O_kgDOBYKj6w",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92447723?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gladiaio",
+      "html_url": "https://github.com/gladiaio",
+      "followers_url": "https://api.github.com/users/gladiaio/followers",
+      "following_url": "https://api.github.com/users/gladiaio/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gladiaio/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gladiaio/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gladiaio/subscriptions",
+      "organizations_url": "https://api.github.com/users/gladiaio/orgs",
+      "repos_url": "https://api.github.com/users/gladiaio/repos",
+      "events_url": "https://api.github.com/users/gladiaio/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gladiaio/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/gladiaio/n8n-nodes-gladia",
+    "description": null,
+    "fork": false,
+    "url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia",
+    "forks_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/forks",
+    "keys_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/teams",
+    "hooks_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/hooks",
+    "issue_events_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/events",
+    "assignees_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/tags",
+    "blobs_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/languages",
+    "stargazers_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/stargazers",
+    "contributors_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/contributors",
+    "subscribers_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/subscribers",
+    "subscription_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/subscription",
+    "commits_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/merges",
+    "archive_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/downloads",
+    "issues_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/labels{/name}",
+    "releases_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/deployments",
+    "created_at": "2026-04-09T12:40:12Z",
+    "updated_at": "2026-07-23T15:57:27Z",
+    "pushed_at": "2026-08-04T03:09:21Z",
+    "git_url": "git://github.com/gladiaio/n8n-nodes-gladia.git",
+    "ssh_url": "git@github.com:gladiaio/n8n-nodes-gladia.git",
+    "clone_url": "https://github.com/gladiaio/n8n-nodes-gladia.git",
+    "svn_url": "https://github.com/gladiaio/n8n-nodes-gladia",
+    "homepage": null,
+    "size": 456,
+    "stargazers_count": 0,
+    "watchers_count": 0,
+    "language": "TypeScript",
+    "has_issues": true,
+    "has_projects": false,
+    "has_downloads": false,
+    "has_wiki": false,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 1,
+    "license": {
+      "key": "mit",
+      "name": "MIT License",
+      "spdx_id": "MIT",
+      "url": "https://api.github.com/licenses/mit",
+      "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+
+    ],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 1,
+    "watchers": 0,
+    "default_branch": "main",
+    "permissions": {
+      "admin": false,
+      "maintain": false,
+      "push": false,
+      "triage": false,
+      "pull": true
+    },
+    "custom_properties": {
+
+    }
+  },
+  {
+    "id": 1219135236,
+    "node_id": "R_kgDOSKqHBA",
+    "name": "cloudnative-pg",
+    "full_name": "gladiaio/cloudnative-pg",
+    "private": false,
+    "owner": {
+      "login": "gladiaio",
+      "id": 92447723,
+      "node_id": "O_kgDOBYKj6w",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92447723?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gladiaio",
+      "html_url": "https://github.com/gladiaio",
+      "followers_url": "https://api.github.com/users/gladiaio/followers",
+      "following_url": "https://api.github.com/users/gladiaio/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gladiaio/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gladiaio/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gladiaio/subscriptions",
+      "organizations_url": "https://api.github.com/users/gladiaio/orgs",
+      "repos_url": "https://api.github.com/users/gladiaio/repos",
+      "events_url": "https://api.github.com/users/gladiaio/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gladiaio/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/gladiaio/cloudnative-pg",
+    "description": "CloudNativePG is a comprehensive platform designed to seamlessly manage PostgreSQL databases within Kubernetes environments, covering the entire operational lifecycle from initial deployment to ongoing maintenance",
+    "fork": true,
+    "url": "https://api.github.com/repos/gladiaio/cloudnative-pg",
+    "forks_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/forks",
+    "keys_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/teams",
+    "hooks_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/hooks",
+    "issue_events_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/events",
+    "assignees_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/tags",
+    "blobs_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/languages",
+    "stargazers_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/stargazers",
+    "contributors_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/contributors",
+    "subscribers_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/subscribers",
+    "subscription_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/subscription",
+    "commits_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/merges",
+    "archive_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/downloads",
+    "issues_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/labels{/name}",
+    "releases_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/gladiaio/cloudnative-pg/deployments",
+    "created_at": "2026-04-23T15:06:27Z",
+    "updated_at": "2026-04-23T15:06:27Z",
+    "pushed_at": "2026-07-25T03:29:04Z",
+    "git_url": "git://github.com/gladiaio/cloudnative-pg.git",
+    "ssh_url": "git@github.com:gladiaio/cloudnative-pg.git",
+    "clone_url": "https://github.com/gladiaio/cloudnative-pg.git",
+    "svn_url": "https://github.com/gladiaio/cloudnative-pg",
+    "homepage": "https://cloudnative-pg.io",
+    "size": 33195,
+    "stargazers_count": 0,
+    "watchers_count": 0,
+    "language": null,
+    "has_issues": false,
+    "has_projects": true,
+    "has_downloads": false,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 2,
+    "license": {
+      "key": "apache-2.0",
+      "name": "Apache License 2.0",
+      "spdx_id": "Apache-2.0",
+      "url": "https://api.github.com/licenses/apache-2.0",
+      "node_id": "MDc6TGljZW5zZTI="
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": true,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+
+    ],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 2,
+    "watchers": 0,
+    "default_branch": "main",
+    "permissions": {
+      "admin": false,
+      "maintain": false,
+      "push": false,
+      "triage": false,
+      "pull": true
+    },
+    "custom_properties": {
+
+    }
+  },
+  {
+    "id": 1251341045,
+    "node_id": "R_kgDOSpXy9Q",
+    "name": "skills",
+    "full_name": "gladiaio/skills",
+    "private": false,
+    "owner": {
+      "login": "gladiaio",
+      "id": 92447723,
+      "node_id": "O_kgDOBYKj6w",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92447723?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gladiaio",
+      "html_url": "https://github.com/gladiaio",
+      "followers_url": "https://api.github.com/users/gladiaio/followers",
+      "following_url": "https://api.github.com/users/gladiaio/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gladiaio/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gladiaio/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gladiaio/subscriptions",
+      "organizations_url": "https://api.github.com/users/gladiaio/orgs",
+      "repos_url": "https://api.github.com/users/gladiaio/repos",
+      "events_url": "https://api.github.com/users/gladiaio/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gladiaio/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/gladiaio/skills",
+    "description": "Official AI agent skills from Gladia for integrating speech-to-text transcription into your applications",
+    "fork": false,
+    "url": "https://api.github.com/repos/gladiaio/skills",
+    "forks_url": "https://api.github.com/repos/gladiaio/skills/forks",
+    "keys_url": "https://api.github.com/repos/gladiaio/skills/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/gladiaio/skills/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/gladiaio/skills/teams",
+    "hooks_url": "https://api.github.com/repos/gladiaio/skills/hooks",
+    "issue_events_url": "https://api.github.com/repos/gladiaio/skills/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/gladiaio/skills/events",
+    "assignees_url": "https://api.github.com/repos/gladiaio/skills/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/gladiaio/skills/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/gladiaio/skills/tags",
+    "blobs_url": "https://api.github.com/repos/gladiaio/skills/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/gladiaio/skills/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/gladiaio/skills/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/gladiaio/skills/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/gladiaio/skills/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/gladiaio/skills/languages",
+    "stargazers_url": "https://api.github.com/repos/gladiaio/skills/stargazers",
+    "contributors_url": "https://api.github.com/repos/gladiaio/skills/contributors",
+    "subscribers_url": "https://api.github.com/repos/gladiaio/skills/subscribers",
+    "subscription_url": "https://api.github.com/repos/gladiaio/skills/subscription",
+    "commits_url": "https://api.github.com/repos/gladiaio/skills/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/gladiaio/skills/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/gladiaio/skills/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/gladiaio/skills/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/gladiaio/skills/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/gladiaio/skills/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/gladiaio/skills/merges",
+    "archive_url": "https://api.github.com/repos/gladiaio/skills/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/gladiaio/skills/downloads",
+    "issues_url": "https://api.github.com/repos/gladiaio/skills/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/gladiaio/skills/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/gladiaio/skills/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/gladiaio/skills/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/gladiaio/skills/labels{/name}",
+    "releases_url": "https://api.github.com/repos/gladiaio/skills/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/gladiaio/skills/deployments",
+    "created_at": "2026-05-27T13:36:29Z",
+    "updated_at": "2026-08-07T06:45:59Z",
+    "pushed_at": "2026-08-07T06:20:06Z",
+    "git_url": "git://github.com/gladiaio/skills.git",
+    "ssh_url": "git@github.com:gladiaio/skills.git",
+    "clone_url": "https://github.com/gladiaio/skills.git",
+    "svn_url": "https://github.com/gladiaio/skills",
+    "homepage": "",
+    "size": 114,
+    "stargazers_count": 1,
+    "watchers_count": 1,
+    "language": null,
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": false,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 1,
+    "license": {
+      "key": "mit",
+      "name": "MIT License",
+      "spdx_id": "MIT",
+      "url": "https://api.github.com/licenses/mit",
+      "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+      "agent",
+      "gladia",
+      "skills",
+      "speech-to-text",
+      "stt",
+      "transcritpion"
+    ],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 1,
+    "watchers": 1,
+    "default_branch": "main",
+    "permissions": {
+      "admin": false,
+      "maintain": false,
+      "push": false,
+      "triage": false,
+      "pull": true
+    },
+    "custom_properties": {
+
+    }
+  },
+  {
+    "id": 1252566939,
+    "node_id": "R_kgDOSqinmw",
+    "name": "realtime-multilingual-asr-router",
+    "full_name": "gladiaio/realtime-multilingual-asr-router",
+    "private": false,
+    "owner": {
+      "login": "gladiaio",
+      "id": 92447723,
+      "node_id": "O_kgDOBYKj6w",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92447723?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gladiaio",
+      "html_url": "https://github.com/gladiaio",
+      "followers_url": "https://api.github.com/users/gladiaio/followers",
+      "following_url": "https://api.github.com/users/gladiaio/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gladiaio/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gladiaio/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gladiaio/subscriptions",
+      "organizations_url": "https://api.github.com/users/gladiaio/orgs",
+      "repos_url": "https://api.github.com/users/gladiaio/repos",
+      "events_url": "https://api.github.com/users/gladiaio/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gladiaio/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/gladiaio/realtime-multilingual-asr-router",
+    "description": null,
+    "fork": false,
+    "url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router",
+    "forks_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/forks",
+    "keys_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/teams",
+    "hooks_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/hooks",
+    "issue_events_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/events",
+    "assignees_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/tags",
+    "blobs_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/languages",
+    "stargazers_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/stargazers",
+    "contributors_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/contributors",
+    "subscribers_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/subscribers",
+    "subscription_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/subscription",
+    "commits_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/merges",
+    "archive_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/downloads",
+    "issues_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/labels{/name}",
+    "releases_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/gladiaio/realtime-multilingual-asr-router/deployments",
+    "created_at": "2026-05-28T16:44:09Z",
+    "updated_at": "2026-07-29T22:42:30Z",
+    "pushed_at": "2026-05-29T15:10:13Z",
+    "git_url": "git://github.com/gladiaio/realtime-multilingual-asr-router.git",
+    "ssh_url": "git@github.com:gladiaio/realtime-multilingual-asr-router.git",
+    "clone_url": "https://github.com/gladiaio/realtime-multilingual-asr-router.git",
+    "svn_url": "https://github.com/gladiaio/realtime-multilingual-asr-router",
+    "homepage": null,
+    "size": 3022,
+    "stargazers_count": 20,
+    "watchers_count": 20,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": false,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 1,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 1,
+    "license": {
+      "key": "mit",
+      "name": "MIT License",
+      "spdx_id": "MIT",
+      "url": "https://api.github.com/licenses/mit",
+      "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+
+    ],
+    "visibility": "public",
+    "forks": 1,
+    "open_issues": 1,
+    "watchers": 20,
+    "default_branch": "main",
+    "permissions": {
+      "admin": false,
+      "maintain": false,
+      "push": false,
+      "triage": false,
+      "pull": true
+    },
+    "custom_properties": {
+
+    }
+  },
+  {
+    "id": 1267026775,
+    "node_id": "R_kgDOS4VLVw",
+    "name": "vercel-ai",
+    "full_name": "gladiaio/vercel-ai",
+    "private": false,
+    "owner": {
+      "login": "gladiaio",
+      "id": 92447723,
+      "node_id": "O_kgDOBYKj6w",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92447723?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gladiaio",
+      "html_url": "https://github.com/gladiaio",
+      "followers_url": "https://api.github.com/users/gladiaio/followers",
+      "following_url": "https://api.github.com/users/gladiaio/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gladiaio/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gladiaio/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gladiaio/subscriptions",
+      "organizations_url": "https://api.github.com/users/gladiaio/orgs",
+      "repos_url": "https://api.github.com/users/gladiaio/repos",
+      "events_url": "https://api.github.com/users/gladiaio/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gladiaio/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/gladiaio/vercel-ai",
+    "description": "The AI Toolkit for TypeScript. From the creators of Next.js, the AI SDK is a free open-source library for building AI-powered applications and agents ",
+    "fork": true,
+    "url": "https://api.github.com/repos/gladiaio/vercel-ai",
+    "forks_url": "https://api.github.com/repos/gladiaio/vercel-ai/forks",
+    "keys_url": "https://api.github.com/repos/gladiaio/vercel-ai/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/gladiaio/vercel-ai/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/gladiaio/vercel-ai/teams",
+    "hooks_url": "https://api.github.com/repos/gladiaio/vercel-ai/hooks",
+    "issue_events_url": "https://api.github.com/repos/gladiaio/vercel-ai/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/gladiaio/vercel-ai/events",
+    "assignees_url": "https://api.github.com/repos/gladiaio/vercel-ai/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/gladiaio/vercel-ai/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/gladiaio/vercel-ai/tags",
+    "blobs_url": "https://api.github.com/repos/gladiaio/vercel-ai/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/gladiaio/vercel-ai/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/gladiaio/vercel-ai/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/gladiaio/vercel-ai/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/gladiaio/vercel-ai/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/gladiaio/vercel-ai/languages",
+    "stargazers_url": "https://api.github.com/repos/gladiaio/vercel-ai/stargazers",
+    "contributors_url": "https://api.github.com/repos/gladiaio/vercel-ai/contributors",
+    "subscribers_url": "https://api.github.com/repos/gladiaio/vercel-ai/subscribers",
+    "subscription_url": "https://api.github.com/repos/gladiaio/vercel-ai/subscription",
+    "commits_url": "https://api.github.com/repos/gladiaio/vercel-ai/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/gladiaio/vercel-ai/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/gladiaio/vercel-ai/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/gladiaio/vercel-ai/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/gladiaio/vercel-ai/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/gladiaio/vercel-ai/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/gladiaio/vercel-ai/merges",
+    "archive_url": "https://api.github.com/repos/gladiaio/vercel-ai/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/gladiaio/vercel-ai/downloads",
+    "issues_url": "https://api.github.com/repos/gladiaio/vercel-ai/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/gladiaio/vercel-ai/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/gladiaio/vercel-ai/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/gladiaio/vercel-ai/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/gladiaio/vercel-ai/labels{/name}",
+    "releases_url": "https://api.github.com/repos/gladiaio/vercel-ai/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/gladiaio/vercel-ai/deployments",
+    "created_at": "2026-06-12T06:46:36Z",
+    "updated_at": "2026-06-12T06:46:36Z",
+    "pushed_at": "2026-08-05T11:29:58Z",
+    "git_url": "git://github.com/gladiaio/vercel-ai.git",
+    "ssh_url": "git@github.com:gladiaio/vercel-ai.git",
+    "clone_url": "https://github.com/gladiaio/vercel-ai.git",
+    "svn_url": "https://github.com/gladiaio/vercel-ai",
+    "homepage": "https://ai-sdk.dev",
+    "size": 203162,
+    "stargazers_count": 0,
+    "watchers_count": 0,
+    "language": null,
+    "has_issues": false,
+    "has_projects": true,
+    "has_downloads": false,
+    "has_wiki": false,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 3,
+    "license": {
+      "key": "other",
+      "name": "Other",
+      "spdx_id": "NOASSERTION",
+      "url": null,
+      "node_id": "MDc6TGljZW5zZTA="
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+
+    ],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 3,
+    "watchers": 0,
+    "default_branch": "main",
+    "permissions": {
+      "admin": false,
+      "maintain": false,
+      "push": false,
+      "triage": false,
+      "pull": true
+    },
+    "custom_properties": {
+
+    }
+  },
+  {
+    "id": 1317221874,
+    "node_id": "R_kgDOToM18g",
+    "name": "gladiaflow",
+    "full_name": "gladiaio/gladiaflow",
+    "private": false,
+    "owner": {
+      "login": "gladiaio",
+      "id": 92447723,
+      "node_id": "O_kgDOBYKj6w",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92447723?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gladiaio",
+      "html_url": "https://github.com/gladiaio",
+      "followers_url": "https://api.github.com/users/gladiaio/followers",
+      "following_url": "https://api.github.com/users/gladiaio/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gladiaio/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gladiaio/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gladiaio/subscriptions",
+      "organizations_url": "https://api.github.com/users/gladiaio/orgs",
+      "repos_url": "https://api.github.com/users/gladiaio/repos",
+      "events_url": "https://api.github.com/users/gladiaio/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gladiaio/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/gladiaio/gladiaflow",
+    "description": "A desktop app for real-time voice dictation powered by Gladia's realtime transcription",
+    "fork": false,
+    "url": "https://api.github.com/repos/gladiaio/gladiaflow",
+    "forks_url": "https://api.github.com/repos/gladiaio/gladiaflow/forks",
+    "keys_url": "https://api.github.com/repos/gladiaio/gladiaflow/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/gladiaio/gladiaflow/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/gladiaio/gladiaflow/teams",
+    "hooks_url": "https://api.github.com/repos/gladiaio/gladiaflow/hooks",
+    "issue_events_url": "https://api.github.com/repos/gladiaio/gladiaflow/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/gladiaio/gladiaflow/events",
+    "assignees_url": "https://api.github.com/repos/gladiaio/gladiaflow/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/gladiaio/gladiaflow/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/gladiaio/gladiaflow/tags",
+    "blobs_url": "https://api.github.com/repos/gladiaio/gladiaflow/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/gladiaio/gladiaflow/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/gladiaio/gladiaflow/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/gladiaio/gladiaflow/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/gladiaio/gladiaflow/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/gladiaio/gladiaflow/languages",
+    "stargazers_url": "https://api.github.com/repos/gladiaio/gladiaflow/stargazers",
+    "contributors_url": "https://api.github.com/repos/gladiaio/gladiaflow/contributors",
+    "subscribers_url": "https://api.github.com/repos/gladiaio/gladiaflow/subscribers",
+    "subscription_url": "https://api.github.com/repos/gladiaio/gladiaflow/subscription",
+    "commits_url": "https://api.github.com/repos/gladiaio/gladiaflow/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/gladiaio/gladiaflow/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/gladiaio/gladiaflow/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/gladiaio/gladiaflow/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/gladiaio/gladiaflow/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/gladiaio/gladiaflow/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/gladiaio/gladiaflow/merges",
+    "archive_url": "https://api.github.com/repos/gladiaio/gladiaflow/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/gladiaio/gladiaflow/downloads",
+    "issues_url": "https://api.github.com/repos/gladiaio/gladiaflow/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/gladiaio/gladiaflow/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/gladiaio/gladiaflow/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/gladiaio/gladiaflow/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/gladiaio/gladiaflow/labels{/name}",
+    "releases_url": "https://api.github.com/repos/gladiaio/gladiaflow/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/gladiaio/gladiaflow/deployments",
+    "created_at": "2026-07-30T12:02:12Z",
+    "updated_at": "2026-08-07T20:38:38Z",
+    "pushed_at": "2026-08-04T14:00:25Z",
+    "git_url": "git://github.com/gladiaio/gladiaflow.git",
+    "ssh_url": "git@github.com:gladiaio/gladiaflow.git",
+    "clone_url": "https://github.com/gladiaio/gladiaflow.git",
+    "svn_url": "https://github.com/gladiaio/gladiaflow",
+    "homepage": "https://www.gladia.io/gladiaflow",
+    "size": 882,
+    "stargazers_count": 5,
+    "watchers_count": 5,
+    "language": "Rust",
+    "has_issues": true,
+    "has_projects": false,
+    "has_downloads": false,
+    "has_wiki": false,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 3,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 2,
+    "license": {
+      "key": "mit",
+      "name": "MIT License",
+      "spdx_id": "MIT",
+      "url": "https://api.github.com/licenses/mit",
+      "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+      "desktop-app",
+      "dictation",
+      "speech-to-text",
+      "stt",
+      "transcription"
+    ],
+    "visibility": "public",
+    "forks": 3,
+    "open_issues": 2,
+    "watchers": 5,
+    "default_branch": "main",
+    "permissions": {
+      "admin": false,
+      "maintain": false,
+      "push": false,
+      "triage": false,
+      "pull": true
+    },
+    "custom_properties": {
+
+    }
+  }
+]
+[0m
+[0m$ [0mnpm pack @gladiaio/sdk@1.1.0 --dry-run 2>&1 | head -200
+npm notice
+npm notice 📦  @gladiaio/sdk@1.1.0
+npm notice Tarball Contents
+npm notice 2.5kB CHANGELOG.md
+npm notice 4.6kB README.md
+npm notice 1.0kB dist/_virtual/rolldown_runtime.cjs
+npm notice 3.9kB dist/client.cjs
+npm notice 6.8kB dist/client.cjs.map
+npm notice 658B dist/client.d.cts
+npm notice 393B dist/client.d.cts.map
+npm notice 654B dist/client.d.ts
+npm notice 392B dist/client.d.ts.map
+npm notice 3.7kB dist/client.js
+npm notice 6.7kB dist/client.js.map
+npm notice 1.4kB dist/helpers.cjs
+npm notice 3.0kB dist/helpers.cjs.map
+npm notice 1.3kB dist/helpers.js
+npm notice 3.0kB dist/helpers.js.map
+npm notice 100B dist/index.cjs
+npm notice 9.3kB dist/index.d.cts
+npm notice 9.3kB dist/index.d.ts
+npm notice 23.8kB dist/index.iife.js
+npm notice 94.1kB dist/index.iife.js.map
+npm notice 69B dist/index.js
+npm notice 948B dist/internal_types.d.cts
+npm notice 565B dist/internal_types.d.cts.map
+npm notice 945B dist/internal_types.d.ts
+npm notice 564B dist/internal_types.d.ts.map
+npm notice 6.9kB dist/network/httpClient.cjs
+npm notice 17.0kB dist/network/httpClient.cjs.map
+npm notice 1.5kB dist/network/httpClient.d.cts
+npm notice 627B dist/network/httpClient.d.cts.map
+npm notice 1.5kB dist/network/httpClient.d.ts
+npm notice 626B dist/network/httpClient.d.ts.map
+npm notice 6.8kB dist/network/httpClient.js
+npm notice 17.0kB dist/network/httpClient.js.map
+npm notice 657B dist/network/iso-fetch.cjs
+npm notice 1.3kB dist/network/iso-fetch.cjs.map
+npm notice 620B dist/network/iso-fetch.js
+npm notice 1.3kB dist/network/iso-fetch.js.map
+npm notice 1.1kB dist/network/iso-ws.cjs
+npm notice 3.4kB dist/network/iso-ws.cjs.map
+npm notice 1.2kB dist/network/iso-ws.d.cts
+npm notice 447B dist/network/iso-ws.d.cts.map
+npm notice 1.2kB dist/network/iso-ws.d.ts
+npm notice 446B dist/network/iso-ws.d.ts.map
+npm notice 1.1kB dist/network/iso-ws.js
+npm notice 3.4kB dist/network/iso-ws.js.map
+npm notice 141B dist/network/types.d.cts
+npm notice 135B dist/network/types.d.cts.map
+npm notice 140B dist/network/types.d.ts
+npm notice 134B dist/network/types.d.ts.map
+npm notice 5.2kB dist/network/wsClient.cjs
+npm notice 10.5kB dist/network/wsClient.cjs.map
+npm notice 1.5kB dist/network/wsClient.d.cts
+npm notice 826B dist/network/wsClient.d.cts.map
+npm notice 1.5kB dist/network/wsClient.d.ts
+npm notice 825B dist/network/wsClient.d.ts.map
+npm notice 4.9kB dist/network/wsClient.js
+npm notice 10.5kB dist/network/wsClient.js.map
+npm notice 5.0kB dist/types.d.cts
+npm notice 522B dist/types.d.cts.map
+npm notice 5.0kB dist/types.d.ts
+npm notice 521B dist/types.d.ts.map
+npm notice 3.0kB dist/v2/live/client.cjs
+npm notice 5.2kB dist/v2/live/client.cjs.map
+npm notice 1.7kB dist/v2/live/client.d.cts
+npm notice 385B dist/v2/live/client.d.cts.map
+npm notice 1.7kB dist/v2/live/client.d.ts
+npm notice 384B dist/v2/live/client.d.ts.map
+npm notice 2.9kB dist/v2/live/client.js
+npm notice 5.1kB dist/v2/live/client.js.map
+npm notice 38.4kB dist/v2/live/generated-types.d.cts
+npm notice 8.5kB dist/v2/live/generated-types.d.cts.map
+npm notice 38.4kB dist/v2/live/generated-types.d.ts
+npm notice 8.5kB dist/v2/live/generated-types.d.ts.map
+npm notice 98B dist/v2/live/index.cjs
+npm notice 90B dist/v2/live/index.js
+npm notice 7.9kB dist/v2/live/session.cjs
+npm notice 19.2kB dist/v2/live/session.cjs.map
+npm notice 6.2kB dist/v2/live/session.d.cts
+npm notice 1.2kB dist/v2/live/session.d.cts.map
+npm notice 6.2kB dist/v2/live/session.d.ts
+npm notice 1.2kB dist/v2/live/session.d.ts.map
+npm notice 7.6kB dist/v2/live/session.js
+npm notice 19.2kB dist/v2/live/session.js.map
+npm notice 443B dist/v2/live/types.d.cts
+npm notice 196B dist/v2/live/types.d.cts.map
+npm notice 441B dist/v2/live/types.d.ts
+npm notice 195B dist/v2/live/types.d.ts.map
+npm notice 10.3kB dist/v2/prerecorded/client.cjs
+npm notice 16.1kB dist/v2/prerecorded/client.cjs.map
+npm notice 7.3kB dist/v2/prerecorded/client.d.cts
+npm notice 833B dist/v2/prerecorded/client.d.cts.map
+npm notice 7.3kB dist/v2/prerecorded/client.d.ts
+npm notice 832B dist/v2/prerecorded/client.d.ts.map
+npm notice 10.2kB dist/v2/prerecorded/client.js
+npm notice 16.1kB dist/v2/prerecorded/client.js.map
+npm notice 30.5kB dist/v2/prerecorded/generated-types.d.cts
+npm notice 6.8kB dist/v2/prerecorded/generated-types.d.cts.map
+npm notice 30.5kB dist/v2/prerecorded/generated-types.d.ts
+npm notice 6.8kB dist/v2/prerecorded/generated-types.d.ts.map
+npm notice 48B dist/v2/prerecorded/index.cjs
+npm notice 51B dist/v2/prerecorded/index.js
+npm notice 140B dist/version.cjs
+npm notice 242B dist/version.cjs.map
+npm notice 127B dist/version.js
+npm notice 240B dist/version.js.map
+npm notice 1.1kB package.json
+npm notice 882B project.json
+npm notice 2.1kB scripts/write-version.mjs
+npm notice 3.1kB src/client.test.ts
+npm notice 4.4kB src/client.ts
+npm notice 2.0kB src/helpers.ts
+npm notice 163B src/index.ts
+npm notice 995B src/internal_types.ts
+npm notice 12.7kB src/network/httpClient.test.ts
+npm notice 11.8kB src/network/httpClient.ts
+npm notice 809B src/network/iso-fetch.ts
+npm notice 2.6kB src/network/iso-ws.ts
+npm notice 45B src/network/types.ts
+npm notice 22.5kB src/network/wsClient.test.ts
+npm notice 6.8kB src/network/wsClient.ts
+npm notice 4.9kB src/types.ts
+npm notice 3.7kB src/v2/live/client.ts
+npm notice 36.9kB src/v2/live/generated-types.ts
+npm notice 131B src/v2/live/index.ts
+npm notice 4.8kB src/v2/live/session.test.ts
+npm notice 14.7kB src/v2/live/session.ts
+npm notice 327B src/v2/live/types.ts
+npm notice 12.5kB src/v2/prerecorded/client.ts
+npm notice 29.7kB src/v2/prerecorded/generated-types.ts
+npm notice 70B src/v2/prerecorded/index.ts
+npm notice 111B src/version.ts
+npm notice 574B tsconfig.json
+npm notice 515B tsconfig.spec.json
+npm notice 496B tsdown.config.ts
+npm notice 720B vitest.config.ts
+npm notice Tarball Details
+npm notice name: @gladiaio/sdk
+npm notice version: 1.1.0
+npm notice filename: gladiaio-sdk-1.1.0.tgz
+npm notice package size: 148.1 kB
+npm notice unpacked size: 806.0 kB
+npm notice shasum: af89149b9469135fbf7fffd9f3b415e483d30bbc
+npm notice integrity: sha512-iKrYT+lAQ0Wiq[...]qxyFmn7Imvfog==
+npm notice total files: 135
+npm notice
+gladiaio-sdk-1.1.0.tgz
 [0m
 [93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
-[0m✗ [0mmkdir -p /tmp/gladia-scan && cd /tmp/gladia-scan && for repo in sdk gladia-cli gladia-samples skills gladiaflow; do echo "=== Cloning $repo ===" && git clone --depth 1 "https://github.com/gladiaio/$repo.git" 2>/dev/null || echo "Failed to clone $repo"; done failed
+[0m✗ [0mgit clone --depth 1 https://github.com/gladiaio/sdk.git /tmp/gladiaio-sdk 2>/dev/null && cd /tmp/gladiaio-sdk && find . -type f \( -name "*.ts" -o -name "*.js" -o -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name "*.env*" -o -name "*.toml" \) ! -path "*/node_modules/*" ! -path "*/dist/*" ! -path "*/.git/*" | head -100 failed
 [91m[1mError: [0mThe user rejected permission to use this specific tool call.
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mgit clone --depth 1 https://github.com/gladiaio/skills.git /tmp/gladiaio-skills 2>/dev/null && cd /tmp/gladiaio-skills && find . -type f \( -name "*.ts" -o -name "*.js" -o -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name "*.env*" -o -name "*.toml" -o -name "*.py" \) ! -path "*/node_modules/*" ! -path "*/.git/*" | head -100 failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mgit clone --depth 1 https://github.com/gladiaio/compare-stt.git /tmp/gladiaio-compare-stt 2>/dev/null && cd /tmp/gladiaio-compare-stt && find . -type f \( -name "*.ts" -o -name "*.js" -o -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name "*.env*" \) ! -path "*/node_modules/*" ! -path "*/.git/*" | head -100 failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+Now I have the repo list and npm package contents. Let me scan the key repos (sdk, skills, compare-stt, n8n-nodes-gladia, realtime-multilingual-asr-router, gladiaflow) for secrets and interesting findings.
