@@ -1669,3 +1669,571 @@ STEP 7 — RISK SCORE
 - [RISK] sync: 58 — Multiplay GA adds real-time URL/tab sync with a documented but unverifiable cross-account boundary; Scrapbook short-URL links (30-day TTL) expand the shared-data plane; passphrase client-side KDF confirmed but mobile impl custom/late (2025-04); binary unavailable blocks static verification
 - [RISK] browser: 78 — sidebar+DevTools-in-sidebar fresh code on a 6-CVE recurring surface; download-warning bypass just patched (active hardening); CVE-2026-11645 inherited (KEV) but not reportable; latest-version repro is the main gate
 - [RISK] libs: 30 — no Whale-only bundled-lib manifest; installer DLL family recurring but pre-3.1.0.0 (local, old); no inventory possible without the binary
+===== ANALYST bigpickle 2026-08-07 21:57:03 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && ls -la reports/ 2>/dev/null | head -50
+total 128
+drwxr-xr-x 11 runner runner  4096 Aug  7 21:38 .
+drwxr-xr-x  3 runner runner  4096 Aug  7 21:38 ..
+drwxr-xr-x  7 runner runner  4096 Aug  7 21:38 .git
+drwxr-xr-x  3 runner runner  4096 Aug  7 21:38 .github
+-rw-r--r--  1 runner runner  1057 Aug  7 21:38 README.md
+-rw-r--r--  1 runner runner    32 Aug  7 21:38 analyst-out.txt
+-rw-r--r--  1 runner runner 27250 Aug  7 21:38 analyst-prompt.txt
+-rw-r--r--  1 runner runner 24278 Aug  7 21:38 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 leads
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 reports
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  7 21:38 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 scripts
+-rw-r--r--  1 runner runner    34 Aug  7 21:38 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  7 21:38 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  7 21:38 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  7 21:38 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  7 21:38 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 triage
+total 532
+drwxr-xr-x  2 runner runner   4096 Aug  7 21:38 .
+drwxr-xr-x 11 runner runner   4096 Aug  7 21:38 ..
+-rw-r--r--  1 runner runner 145679 Aug  7 21:38 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 275463 Aug  7 21:38 analyst-laguna.log
+-rw-r--r--  1 runner runner   7837 Aug  7 21:38 analyst-ling3.log
+-rw-r--r--  1 runner runner    450 Aug  7 21:38 analyst-longcat.log
+-rw-r--r--  1 runner runner  34486 Aug  7 21:38 analyst-nemotron3.log
+-rw-r--r--  1 runner runner  14927 Aug  7 21:38 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner   5954 Aug  7 21:38 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner     48 Aug  7 21:38 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner     50 Aug  7 21:38 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner   9773 Aug  7 21:38 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  11709 Aug  7 21:38 hypotheses.md
+-rw-r--r--  1 runner runner    136 Aug  7 21:38 valid-bugs.md
+[0m
+[0m$ [0mfind . -maxdepth 3 -type d 2>/dev/null | head -40
+.
+./.github
+./.github/workflows
+./reposcan-raw
+./knowledge
+./.git
+./.git/objects
+./.git/objects/8b
+./.git/objects/97
+./.git/objects/4d
+./.git/objects/58
+./.git/objects/6a
+./.git/objects/fa
+./.git/objects/f1
+./.git/objects/71
+./.git/objects/77
+./.git/objects/c7
+./.git/objects/pack
+./.git/objects/40
+./.git/objects/66
+./.git/objects/04
+./.git/objects/13
+./.git/objects/b6
+./.git/objects/fe
+./.git/objects/f2
+./.git/objects/e1
+./.git/objects/95
+./.git/objects/9e
+./.git/objects/4c
+./.git/objects/df
+./.git/objects/b0
+./.git/objects/f9
+./.git/objects/6f
+./.git/objects/5c
+./.git/objects/7b
+./.git/objects/03
+./.git/objects/65
+./.git/objects/50
+./.git/objects/52
+./.git/objects/92
+[0m
+[0m$ [0mcat state_bigpickle.json; echo; ls scripts/; echo "---"; ls knowledge/ leads/ triage/ inventory/ 2>/dev/null
+{"phase": "POC", "target": "sync"}
+sync-issues.py
+---
+inventory/:
+whale.md
+
+knowledge/:
+index.md
+
+leads/:
+lead-bigpickle.md
+lead-laguna.md
+lead-ling3.md
+lead-longcat.md
+lead-nemotron3.md
+reposcan-2026-08-07-18-44.md
+reposcan-2026-08-07-18-59.md
+reposcan-2026-08-07-19-19.md
+reposcan-2026-08-07-19-22.md
+reposcan-2026-08-07-19-28.md
+reposcan-2026-08-07-20-06.md
+reposcan-2026-08-07-20-11.md
+reposcan-2026-08-07-20-59.md
+reposcan-2026-08-07-21-09.md
+reposcan-latest.md
+
+triage/:
+run-2026-08-07-19-23.md
+run-2026-08-07-21-01.md
+run-2026-08-07-21-04.md
+[0m
+[0m→ [0mRead reports/hypotheses-bigpickle.txt
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m→ [0mRead scripts/sync-issues.py
+[0m→ [0mRead scope.yml
+[0m→ [0mRead knowledge/index.md
+[0m→ [0mRead leads/reposcan-latest.md
+[0m→ [0mRead inventory/whale.md
+[0m
+[0m$ [0mdate -u; echo; ls -la triage/; echo "---"; ls -la leads/
+Fri Aug  7 21:39:09 UTC 2026
+
+total 44
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 21:38 ..
+-rw-r--r--  1 runner runner  8463 Aug  7 21:38 run-2026-08-07-19-23.md
+-rw-r--r--  1 runner runner 14983 Aug  7 21:38 run-2026-08-07-21-01.md
+-rw-r--r--  1 runner runner  7882 Aug  7 21:38 run-2026-08-07-21-04.md
+---
+total 172
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 21:38 ..
+-rw-r--r--  1 runner runner 37217 Aug  7 21:38 lead-bigpickle.md
+-rw-r--r--  1 runner runner 29214 Aug  7 21:38 lead-laguna.md
+-rw-r--r--  1 runner runner  5208 Aug  7 21:38 lead-ling3.md
+-rw-r--r--  1 runner runner   332 Aug  7 21:38 lead-longcat.md
+-rw-r--r--  1 runner runner 26286 Aug  7 21:38 lead-nemotron3.md
+-rw-r--r--  1 runner runner  2883 Aug  7 21:38 reposcan-2026-08-07-18-44.md
+-rw-r--r--  1 runner runner  1240 Aug  7 21:38 reposcan-2026-08-07-18-59.md
+-rw-r--r--  1 runner runner  6783 Aug  7 21:38 reposcan-2026-08-07-19-19.md
+-rw-r--r--  1 runner runner  2370 Aug  7 21:38 reposcan-2026-08-07-19-22.md
+-rw-r--r--  1 runner runner   366 Aug  7 21:38 reposcan-2026-08-07-19-28.md
+-rw-r--r--  1 runner runner   466 Aug  7 21:38 reposcan-2026-08-07-20-06.md
+-rw-r--r--  1 runner runner   617 Aug  7 21:38 reposcan-2026-08-07-20-11.md
+-rw-r--r--  1 runner runner   948 Aug  7 21:38 reposcan-2026-08-07-20-59.md
+-rw-r--r--  1 runner runner  5763 Aug  7 21:38 reposcan-2026-08-07-21-09.md
+-rw-r--r--  1 runner runner  5763 Aug  7 21:38 reposcan-latest.md
+[0m
+[0m✗ [0mRead triage/run-2026-08-07-21-04.md failed
+[91m[1mError: [0mCannot read binary file: /home/runner/work/whale-hunt/whale-hunt/triage/run-2026-08-07-21-04.md
+[0m
+[0m$ [0mfile triage/*.md; echo; head -c 2000 triage/run-2026-08-07-21-04.md
+triage/run-2026-08-07-19-23.md: Unicode text, UTF-8 text, with very long lines (378), with escape sequences
+triage/run-2026-08-07-21-01.md: Unicode text, UTF-8 text
+triage/run-2026-08-07-21-04.md: data
+
+
+===== TRIAGE 2026-08-07 21:04:53 UTC =====
+2026-08-07 21:01 UTC — TRIAGE RESULTS
+==================================
+Models: bigpickle, laguna, ling3, longcat, nemotron3
+Distinct hypotheses triaged: 7
+VALID: 0 | INVALID: 0 | HOLD: 7
+
+All leads fail Q4 (passive GET/HEAD-only proof). Pipeline is in seed/recon
+state — no probe results were produced (probe-results.txt empty). No binary
+acquisition or static analysis has been performed yet.
+
+Top-priority HOLD for next phase:
+  - Lead 4 (Sync KDF/key storage, confidence 58) — needs binary extraction
+  - Lead 5 (Bundled libs, confidence 35–45) — needs binary + inventory
+
+Reporting channel: TBD — scope.yml disclosure_policy not yet confirmed.
+
+Full triage: triage/run-2026-08-07-21-01.md
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+[0m
+[0m$ [0mhead -60 triage/run-2026-08-07-21-01.md; echo "=== 19-23 ==="; head -40 triage/run-2026-08-07-19-23.md
+===== TRIAGE 2026-08-07 21:01 UTC =====
+Strict triager: longcat-2.0-free
+
+SCOPE (scope.yml):
+  IN: Whale browser (latest v4.38.386.14), Whale-only third-party libs, Synchronization
+  OUT: *.naver.com / *.navercorp.com web services, built-in extension web servers
+      (Papago/Belli), URL preview spoofing, XSS Auditor bypass, IETab,
+      SafeBrowsing FP/FN
+  RULES: passive_first (GET/HEAD), <=1 rps, no DoS, no account creation,
+         no data modification, no pre-disclosure, latest_version_required
+
+DUPLICATE CHECK:
+  - 21 known Whale CVEs, 0 published in 2026
+  - Known fixed: CVE-2025-69234/69235 (sidebar, fixed v4.35.351.12),
+    CVE-2025-53600/62583/62584/62585 (dual-tab, fixed v4.33.325.17),
+    CVE-2022-24072 (devtools injection), CVE-2024-40618 (built-in ext XSS)
+  - valid-bugs.md: 0 previously validated bugs
+  - reposcan-latest.md: 0 hits, 0 files scanned
+
+PROBE RESULTS: NONE (probe-results.txt empty, new-leads.txt empty)
+
+HYPOTHESES FROM HUNT BOTS (deduplicated below):
+
+LEAD 1: Sidebar Context SOP Bypass — new variant post-CVE-2025-69235 on v4.38.386.14
+LEAD 2: Extension API message handling / origin validation bypass
+LEAD 3: Dual-Tab SOP/CSP bypass — new variant post-CVE-2025-62585
+LEAD 4: Sync passphrase KDF weakness / plaintext-adjacent key storage
+LEAD 5: Bundled third-party libs version drift
+LEAD 6: Multiplay session scoping / invite-link authorization bypass
+LEAD 7: Sidebar boundary incl. DevTools-in-sidebar window
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LEAD 1: Sidebar Context SOP Bypass — new variant post-CVE-2025-69235 on v4.38.386.14
+  Sources: bigpickle(45), laguna(55→60), ling3(60), nemotron3(45→60)
+  Class: OTHER (SOP/CSP bypass) | Testability: HUMAN_ONLY
+
+  Q1 Scope?     YES — Whale sidebar is a browser-internal, Whale-specific feature;
+                  not a Naver web service.
+  Q2 Reach?     YES — malicious webpage or installed extension can invoke
+                  sidebarAction.show({url}) and drag-navigation.
+  Q3 Impact?    YES — SOP bypass → cross-origin data theft, credential/CSRF
+                  exfiltration from sidebar panel (High).
+  Q4 Passive?   NO — verify requires: install browser binary, load crafted
+                  extension, call show({url}) with cross-origin page, attempt
+                  XHR/fetch, observe SOP enforcement. HUMAN_ONLY per all models.
+                  No GET/HEAD-only path exists.
+  Q5 Novel?     PLAUSIBLE — 3 minor version bumps since fix, 0 CVEs in 2026,
+                  recurring family (6 sidebar/dual-tab CVEs in 2025). But no
+                  evidence of a *specific* new variant.
+  Q6 Rejected?  PASS — real SOP bypass, not info-disclosure/best-practice/self-XSS.
+  Q7 Accept?    NO — hypothesis only. The fix for CVE-2025-69235 may be complete.
+                  No evidence of regression without binary + active testing.
+
+  Verdict: **HOLD** — Hypothesis only; no passive proof path; requires browser
+  binary install + active testing (HUMAN_ONLY) to confirm or deny. Not reportable
+  in current state. Cannot pass Q4.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+=== 19-23 ===
+
+===== TRIAGE 2026-08-07 19:23:34 UTC =====
+[0m
+> build · longcat-2.0-free
+[0m
+[0m• [0mExplore Whale program structure[90m Explore Agent[0m
+Let me first explore the repository to understand the Whale program structure and scope before evaluating any leads.
+[0m✓ [0mExplore Whale program structure[90m Explore Agent[0m
+[0m→ [0mRead scope.yml
+[0m→ [0mRead knowledge/index.md
+[0m→ [0mRead reports/valid-bugs.md
+[0m→ [0mRead new-leads.txt
+[0m→ [0mRead probe-results.txt
+Let me read the scope, knowledge base, and existing leads to properly triage.
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m→ [0mRead leads/lead-laguna.md
+[0m→ [0mRead leads/lead-ling3.md
+[0m→ [0mRead leads/lead-longcat.md
+[0m→ [0mRead leads/lead-nemotron3.md
+The `new-leads.txt` and `probe-results.txt` are empty. Let me check the lead files that the hunt bot produced.
+[0m→ [0mRead leads/reposcan-latest.md
+[0m→ [0mRead inventory/whale.md
+[0m→ [0mRead triage-prompt.txt
+Now let me check the reposcan leads and inventory for complete context.
+Now I have the full picture. The `new-leads.txt`, `probe-results.txt`, and the `LEADS:` section in the triage prompt are all empty — the pipeline has produced no probe results or validated leads. However, the hunt bots have generated hypotheses across the lead files. Let me triage the **distinct hypotheses** as the leads, since those are what the bot actually produced.
+
+---
+
+# STRICT TRIAGE REPORT — Whale Program — 2026-08-07
+
+**Scope rules enforced:** In scope = Whale browser latest version (v4.38.386.14), Whale-only third-party libs, Sync. Excluded = all `*.naver.com`/`*.navercorp.com` services, built-in extension web servers, URL preview spoofing, XSS Auditor bypass, IETab, SafeBrowsing FP/FN. Testing = passive GET/HEAD only (≤1 rps), no account creation, no data modification, no pre-disclosure.
+
+**Known CVEs used for duplicate detection (21 total, 0 in 2026):**
+- CVE-2025-69234/69235 — sidebar SOP/sandbox bypass (fixed v4.35.351.12)
+- CVE-2025-53600/62583/62584/62585 — dual-tab SOP/sandbox/CSP bypass (fixed v4.33.325.17)
+- CVE-2022-24072 — devtools API JS injection
+- CVE-2024-40618 — built-in extension XSS
+
+**Note:** All leads below are recon-level hypotheses without any confirmed vulnerability on the latest version. No probe results exist (`probe-results.txt` is empty).
+[0m
+[0m$ [0mcurl -s -L -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36" -o /tmp/opencode/whale_dl.html -w "%{http_code} %{url_effective} %{size_download}\n" --max-time 25 "https://whale.naver.com/download"
+200 https://whale.naver.com/download 6335
+[0m
+[0m$ [0mcurl -s -A "Mozilla/5.0" -w "\nHTTP:%{http_code}\n" --max-time 25 "https://whale.naver.com/en/download" -o /tmp/opencode/whale_dl_en.html; ls -la /tmp/opencode/
+HTTP:200
+total 32
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:39 .
+drwxrwxrwt 15 root   root   12288 Aug  7 21:39 ..
+-rw-r--r--  1 runner runner  6335 Aug  7 21:39 whale_dl.html
+-rw-r--r--  1 runner runner  6335 Aug  7 21:39 whale_dl_en.html
+[0m
+[0m$ [0mcat /tmp/opencode/whale_dl.html
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+
+    <!-- Google Search Console domain ownership verification -->
+    <meta name="google-site-verification" content="LmOBJtbnxRXIfA66Ty2ubCojYvrmipw3Muc4bctnGGU" />
+
+    <!-- Early connection hints for external CDN domains -->
+    <link rel="preconnect" href="https://shared-whale.pstatic.net" />
+    <link rel="preconnect" href="https://wcs.naver.net" />
+    <link rel="dns-prefetch" href="https://installer-whale.pstatic.net" />
+    <link rel="dns-prefetch" href="https://static-whale.pstatic.net" />
+
+    <!-- Fallback values — overridden at runtime by PageMeta component based on locale -->
+    <title>NAVER Whale Browser</title>
+    <meta name="description" content="클릭은 줄이고 효율은 높이세요. 사이드바, 듀얼 탭, 화상회의 웨일온 등 다양한 기능을 지금 바로 경험하세요." />
+
+    <!-- Favicon -->
+    <link rel="icon" href="https://shared-whale.pstatic.net/favicon/icon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="https://shared-whale.pstatic.net/favicon/icon.png" />
+    <link rel="apple-touch-icon" href="https://shared-whale.pstatic.net/favicon/icon180.png" sizes="180x180" />
+    <link rel="apple-touch-icon" href="https://shared-whale.pstatic.net/favicon/icon256.png" sizes="256x256" />
+    <link rel="apple-touch-icon" href="https://shared-whale.pstatic.net/favicon/icon512.png" sizes="512x512" />
+
+    <!-- Open Graph (static properties — locale-dependent ones set by PageMeta) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://whale.naver.com/og/og_image_rectangle.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://whale.naver.com/og/og_image_rectangle.png" />
+
+    <!--
+      TODO: Replace placeholder IDs before production deployment.
+      GTM_ID → actual Google Tag Manager container ID
+      TWITTER_PIXEL_ID → actual Twitter Pixel ID
+      Get values from the existing homepage env: NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID, NEXT_PUBLIC_TWITTER_PIXEL_ID
+    -->
+    <!-- Google Tag Manager (disabled until IDs are configured) -->
+    <!--
+    <script>
+      if (location.hostname === 'whale.naver.com') {
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM_ID');
+      }
+    </script>
+    -->
+
+    <!-- Twitter Pixel (disabled until IDs are configured) -->
+    <!--
+    <script>
+      if (location.hostname === 'whale.naver.com') {
+        !function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):
+        s.queue.push(arguments);},s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,
+        u.src='//static.ads-twitter.com/uwt.js',a=t.getElementsByTagName(n)[0],
+        a.parentNode.insertBefore(u,a))}(window,document,'script');
+        twq('init','TWITTER_PIXEL_ID');twq('track','PageView');
+      }
+    </script>
+    -->
+
+
+    <!-- LCS (Naver Log Collection System) — init on all deployment phases (DEV/TEST/REAL) -->
+    <script>
+      if (/^(dev\.|test\.)?whale\.naver\.com$/.test(location.hostname)) {
+        window.lcs_SerName = 'lcs.naver.com';
+      }
+    </script>
+    <script defer src="/vendor/lcslog.v0.14.0.js"></script>
+
+    <!-- nClicks: ccsrv is read by the bundled SDK (src/vendor/nclicks.js) — init on all phases -->
+    <script>
+      if (/^(dev\.|test\.)?whale\.naver\.com$/.test(location.hostname)) {
+        window.ccsrv = 'cc.naver.com';
+      }
+    </script>
+    <script type="module" crossorigin src="https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js"></script>
+    <link rel="stylesheet" crossorigin href="https://shared-whale.pstatic.net/home2/assets/index-cFWAVrkk.css">
+      <link rel="preload" as="image" href="https://shared-whale.pstatic.net/home2/assets/hero-bg-B6qML11p.png" />
+  </head>
+  <body>
+    <!-- Google Tag Manager (noscript) — disabled until GTM_ID is configured -->
+    <!--
+    <noscript>
+      <iframe src="https://www.googletagmanager.com/ns.html?id=GTM_ID"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    -->
+    <div id="root"></div>
+    <noscript>
+      <div style="font-family: sans-serif; max-width: 800px; margin: 60px auto; padding: 0 24px; color: #222;">
+        <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 12px;">
+          네이버 웨일 브라우저 / NAVER Whale Browser
+        </h1>
+        <p style="font-size: 1.125rem; color: #555; margin-bottom: 24px;">
+          당신의 클릭보다 빠른 브라우저 · A browser faster than your click
+        </p>
+        <p style="font-size: 1rem; margin-bottom: 32px;">
+          일상을 여는 새로운 시작 네이버 웨일 · A new beginning that opens your everyday — NAVER Whale
+        </p>
+        <a href="https://whale.naver.com/ko/download/"
+           style="display: inline-block; background: #00c73c; color: #fff; font-size: 1rem; font-weight: 600;
+                  padding: 12px 28px; border-radius: 6px; text-decoration: none; margin-right: 12px;">
+          웨일 다운로드
+        </a>
+        <a href="https://whale.naver.com/en/download/"
+           style="display: inline-block; background: #00c73c; color: #fff; font-size: 1rem; font-weight: 600;
+                  padding: 12px 28px; border-radius: 6px; text-decoration: none;">
+          Download Whale
+        </a>
+        <p style="margin-top: 32px; font-size: 0.875rem; color: #888;">
+          이 페이지를 보려면 JavaScript를 활성화해 주세요. ·
+          Please enable JavaScript to view this page.
+        </p>
+      </div>
+    </noscript>
+  </body>
+</html>
+[0m
+[0m$ [0mcurl -s -A "Mozilla/5.0" --max-time 30 "https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js" -o /tmp/opencode/whale_home.js; ls -la /tmp/opencode/whale_home.js; grep -oE 'https?://[^"'"'"' ]+' /tmp/opencode/whale_home.js | sort -u | head -40
+-rw-r--r-- 1 runner runner 840257 Aug  7 21:39 /tmp/opencode/whale_home.js
+http://schema.org
+http://www.w3.org/1998/Math/MathML
+http://www.w3.org/1999/xhtml
+http://www.w3.org/1999/xlink
+http://www.w3.org/2000/svg
+http://www.w3.org/XML/1998/namespace
+https://apps.apple.com/app/id1374073304
+https://blog.naver.com/whaleteam
+https://bugbounty.whale.naver.com/
+https://class.whalespace.io/
+https://forum.whale.naver.com/
+https://help.naver.com/service/17587/category/bookmark
+https://help.whale.naver.com/
+https://help.whale.naver.com/ko/desktop/
+https://installer-whale.pstatic.net/downloads/banner/${encodeURIComponent(s)}/WhaleSetup.exe`};case
+https://installer-whale.pstatic.net/downloads/beta/installers/NaverWhaleBeta.dmg
+https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+https://installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg
+https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupARM64.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX86.exe
+https://itunes.apple.com/app/id1374073304?mt=8
+https://play.google.com/store/apps/details?id=com.naver.whale
+https://play.google.com/store/apps/details?id=com.naver.whale&referrer=utm_source%3Dwhale%2520home%26utm_medium%3Ddownload%26utm_campaign%3D
+https://policies.whale.naver.com/${g}/terms`,$=`https://policies.whale.naver.com/${g}/privacy-whitepaper`,_=o??h,nt=_===
+https://policies.whale.naver.com/ko/privacy-whitepaper
+https://policies.whale.naver.com/ko/terms
+https://policy.naver.com/policy/privacy.html
+https://privacy.naver.com
+https://reactjs.org/docs/error-decoder.html?invariant=
+https://scrapbook.naver.com
+https://shared-whale.pstatic.net/home2/assets/banner-floating-symbol-CeRo_TXw.svg
+https://shared-whale.pstatic.net/home2/assets/chp1-ODqt6nzi.webm
+https://shared-whale.pstatic.net/home2/assets/chp1-oiA4An1M.mp4
+https://shared-whale.pstatic.net/home2/assets/chp10-F0ln5JJP.mp4
+https://shared-whale.pstatic.net/home2/assets/chp10-Vp5PI4C2.webm
+https://shared-whale.pstatic.net/home2/assets/chp11-CRQNfKJ5.mp4
+https://shared-whale.pstatic.net/home2/assets/chp11-DH-YUrr6.webm
+[0m
+Found the installer URLs. Let me probe the actual binary and check for version/sync strings.
+[0m$ [0mgrep -oE '"[^"]*(sync|sync|passphrase|kdf|key|token)[^"]*"' /tmp/opencode/whale_home.js | sort -u | head -30; echo "---version---"; grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' /tmp/opencode/whale_home.js | sort -u | head
+" will be ignored.')),!d&&!immutableRouteKeys.has(h)&&(c[h]=a[h])}Object.assign(o,c),Object.assign(o,_extends$2({},i(o),{lazy:void 0}))}async function defaultDataStrategy(e){let{matches:i}=e,s=i.filter(o=>o.shouldLoad);return(await Promise.all(s.map(o=>o.resolve()))).reduce((o,c,h)=>Object.assign(o,{[s[h].route.id]:c}),{})}async function callDataStrategyImpl(e,i,s,a,o,c,h,g,d,b){let j=c.map(nt=>nt.route.lazy?loadLazyRouteModule(nt.route,d,g):void 0),$=c.map((nt,it)=>{let rt=j[it],ot=o.some(et=>et.route.id===nt.route.id);return _extends$2({},nt,{shouldLoad:ot,resolve:async et=>(et&&a.method==="
+"&&((kt=Et.state)==null?void 0:kt._isRedirect)!==!0,Ft;xt.actionData?Object.keys(xt.actionData).length>0?Ft=xt.actionData:Ft=null:zt?Ft=ct.actionData:Ft=null;let Dt=xt.loaderData?mergeLoaderData(ct.loaderData,xt.loaderData,xt.matches||[],xt.errors):ct.loaderData,Nt=ct.blockers;Nt.size>0&&(Nt=new Map(Nt),Nt.forEach((Kt,ar)=>Nt.set(ar,IDLE_BLOCKER)));let Vt=vt===!0||ct.navigation.formMethod!=null&&isMutationMethod(ct.navigation.formMethod)&&((Lt=Et.state)==null?void 0:Lt._isRedirect)!==!0;g&&(h=g,g=void 0),Rt||ft===Action.Pop||(ft===Action.Push?e.history.push(Et,Et.state):ft===Action.Replace&&e.history.replace(Et,Et.state));let Ut;if(ft===Action.Pop){let Kt=wt.get(ct.location.pathname);Kt&&Kt.has(Et.pathname)?Ut={currentLocation:ct.location,nextLocation:Et}:wt.has(Et.pathname)&&(Ut={currentLocation:Et,nextLocation:ct.location})}else if(St){let Kt=wt.get(ct.location.pathname);Kt?Kt.add(Et.pathname):(Kt=new Set([Et.pathname]),wt.set(ct.location.pathname,Kt)),Ut={currentLocation:ct.location,nextLocation:Et}}$t(_extends$2({},xt,{actionData:Ft,loaderData:Dt,historyAction:ft,location:Et,initialized:!0,navigation:IDLE_NAVIGATION,revalidation:"
+"&&(d.keyPrefix=d.keyPrefix||a||c.keyPrefix);const _=o.options.keySeparator||"
+"&&(h||setTimeout(()=>o(`/${c}/getready?skip=1`),50))},children:[s(e.ctaKey),jsxRuntimeExports.jsx(DownloadArrowIcon,{})]})]},e.key)}function WindowsIcon(){return jsxRuntimeExports.jsx("
+"&&(nt.route.lazy||nt.route.loader)&&(ot=!0),ot?callLoaderOrAction(i,a,nt,rt,et,b):Promise.resolve({type:ResultType.data,result:void 0}))})}),_=await e({matches:$,request:a,params:c[0].params,fetcherKey:h,context:b});try{await Promise.all(j)}catch{}return _}async function callLoaderOrAction(e,i,s,a,o,c){let h,g,d=b=>{let j,$=new Promise((it,rt)=>j=rt);g=()=>j(),i.signal.addEventListener("
+"&&(s[j]=!0),isNaN(b)||(s[j]=parseInt(b,10))}})}return{formatName:i,formatOptions:s}},createCachedFormatter=e=>{const i={};return(s,a,o)=>{let c=o;o&&o.interpolationkey&&o.formatParams&&o.formatParams[o.interpolationkey]&&o[o.interpolationkey]&&(c={...c,[o.interpolationkey]:void 0});const h=a+JSON.stringify(c);let g=i[h];return g||(g=e(getCleanedCode(a),o),i[h]=g),g(s)}};class Formatter{constructor(){let i=arguments.length>0&&arguments[0]!==void 0?arguments[0]:{};this.logger=baseLogger.create("
+"&&(this.options.interpolation={...o.interpolation,...this.options.interpolation}),s.keySeparator!==void 0&&(this.options.userDefinedKeySeparator=s.keySeparator),s.nsSeparator!==void 0&&(this.options.userDefinedNsSeparator=s.nsSeparator);const c=j=>j?typeof j=="
+"&&St.data===void 0?Pt=g:Pt=shouldRevalidateLoader(wt,_extends$2({currentUrl:tt,currentParams:i.matches[i.matches.length-1].params,nextUrl:et,nextParams:s[s.length-1].params},a,{actionResult:ot,actionStatus:st,defaultShouldRevalidate:lt?!1:g})),Pt&&ct.push({key:vt,routeId:ft.routeId,path:ft.path,matches:yt,match:wt,controller:new AbortController})}),[ht,ct]}function shouldLoadRouteOnHydration(e,i,s){if(e.lazy)return!0;if(!e.loader)return!1;let a=i!=null&&i[e.id]!==void 0,o=s!=null&&s[e.id]!==void 0;return!a&&o?!1:typeof e.loader=="
+"&&_e!==null&&_e.type===ya&&_e.key===null&&(_e=_e.props.children),typeof _e=="
+"&&_e!==null){switch(_e.$$typeof){case va:e:{for(var lt=_e.key,ht=et;ht!==null;){if(ht.key===lt){if(lt=_e.type,lt===ya){if(ht.tag===7){s(tt,ht.sibling),et=o(ht,_e.props.children),et.return=tt,tt=et;break e}}else if(ht.elementType===lt||typeof lt=="
+"&&_e!==null){switch(_e.$$typeof){case va:return _e.key===lt?d(tt,et,_e,st):null;case wa:return _e.key===lt?b(tt,et,_e,st):null;case Ha:return lt=_e._init,_(tt,et,lt(_e._payload),st)}if(eb(_e)||Ka(_e))return lt!==null?null:j(tt,et,_e,st,null);Mg(tt,_e)}return null}function nt(tt,et,_e,st,lt){if(typeof st=="
+"&&console.warn(i);try{throw new Error(i)}catch{}}}function createKey(){return Math.random().toString(36).substr(2,8)}function getHistoryState(e,i){return{usr:e.state,key:e.key,idx:i}}function createLocation(e,i,s,a){return s===void 0&&(s=null),_extends$2({pathname:typeof e=="
+"&&e!==null&&e.key!=null?escape$1("
+"&&et!==null){switch(et.$$typeof){case va:return _e=Rg(et.type,et.key,et.props,null,tt.mode,_e),_e.ref=Lg(tt,null,et),_e.return=tt,_e;case wa:return et=Sg(et,tt.mode,_e),et.return=tt,et;case Ha:var st=et._init;return $(tt,st(et._payload),_e)}if(eb(et)||Ka(et))return et=Tg(et,tt.mode,_e,null),et.return=tt,et;Mg(tt,et)}return null}function _(tt,et,_e,st){var lt=et!==null?et.key:null;if(typeof _e=="
+"&&lt!==null&&lt.$$typeof===Ha&&Ng(lt)===et.type)?(st=o(et,_e.props),st.ref=Lg(tt,et,_e),st.return=tt,st):(st=Rg(_e.type,_e.key,_e.props,null,tt.mode,st),st.ref=Lg(tt,et,_e),st.return=tt,st)}function b(tt,et,_e,st){return et===null||et.tag!==4||et.stateNode.containerInfo!==_e.containerInfo||et.stateNode.implementation!==_e.implementation?(et=Sg(_e,tt.mode,st),et.return=tt,et):(et=o(et,_e.children||[]),et.return=tt,et)}function j(tt,et,_e,st,lt){return et===null||et.tag!==7?(et=Tg(_e,tt.mode,st,lt),et.return=tt,et):(et=o(et,_e),et.return=tt,et)}function $(tt,et,_e){if(typeof et=="
+"&&lt!==null&&lt.$$typeof===Ha&&Ng(lt)===ht.type){s(tt,ht.sibling),et=o(ht,_e.props),et.ref=Lg(tt,ht,_e),et.return=tt,tt=et;break e}s(tt,ht);break}else i(tt,ht);ht=ht.sibling}_e.type===ya?(et=Tg(_e.props.children,tt.mode,st,_e.key),et.return=tt,tt=et):(st=Rg(_e.type,_e.key,_e.props,null,tt.mode,st),st.ref=Lg(tt,et,_e),st.return=tt,tt=st)}return h(tt);case wa:e:{for(ht=_e.key;et!==null;){if(et.key===ht)if(et.tag===4&&et.stateNode.containerInfo===_e.containerInfo&&et.stateNode.implementation===_e.implementation){s(tt,et.sibling),et=o(et,_e.children||[]),et.return=tt,tt=et;break e}else{s(tt,et);break}else i(tt,et);et=et.sibling}et=Sg(_e,tt.mode,st),et.return=tt,tt=et}return h(tt);case Ha:return ht=_e._init,ot(tt,et,ht(_e._payload),st)}if(eb(_e))return it(tt,et,_e,st);if(Ka(_e))return rt(tt,et,_e,st);Mg(tt,_e)}return typeof _e=="
+"&&o&&o.res&&(a.lng=this.language||o.usedLng),a.nest!==!1&&(i=this.interpolator.nest(i,function(){for(var _=arguments.length,nt=new Array(_),it=0;it<_;it++)nt[it]=arguments[it];return c&&c[0]===nt[0]&&!a.context?(h.logger.warn(`It seems you are nesting recursively key: ${nt[0]} in key: ${s[0]}`),null):h.translate(...nt,s)},a)),a.interpolation&&this.interpolator.reset()}const g=a.postProcess||this.options.postProcess,d=isString$2(g)?[g]:g;return i!=null&&d&&d.length&&a.applyPostProcessor!==!1&&(i=postProcessor.handle(d,i,s,this.options&&this.options.postProcessPassResolved?{i18nResolved:{...o,usedParams:this.getUsedParamsDetails(a)},...a}:a,this)),i}resolve(i){let s=arguments.length>1&&arguments[1]!==void 0?arguments[1]:{},a,o,c,h,g;return isString$2(i)&&(i=[i]),i.forEach(d=>{if(this.isValidLookup(a))return;const b=this.extractFromKey(d,s),j=b.key;o=j;let $=b.namespaces;this.options.fallbackNS&&($=$.concat(this.options.fallbackNS));const _=s.count!==void 0&&!isString$2(s.count),nt=_&&!s.ordinal&&s.count===0&&this.pluralResolver.shouldUseIntlApi(),it=s.context!==void 0&&(isString$2(s.context)||typeof s.context=="
+"&&st!==null){switch(st.$$typeof){case va:return tt=tt.get(st.key===null?_e:st.key)||null,d(et,tt,st,lt);case wa:return tt=tt.get(st.key===null?_e:st.key)||null,b(et,tt,st,lt);case Ha:var ht=st._init;return nt(tt,et,_e,ht(st._payload),lt)}if(eb(st)||Ka(st))return tt=tt.get(_e)||null,j(et,tt,st,lt,null);Mg(et,st)}return null}function it(tt,et,_e,st){for(var lt=null,ht=null,ct=et,ft=et=0,vt=null;ct!==null&&ft<_e.length;ft++){ct.index>ft?(vt=ct,ct=null):vt=ct.sibling;var yt=_(tt,ct,_e[ft],st);if(yt===null){ct===null&&(ct=vt);break}e&&ct&&yt.alternate===null&&i(tt,ct),et=c(yt,et,ft),ht===null?lt=yt:ht.sibling=yt,ht=yt,ct=vt}if(ft===_e.length)return s(tt,ct),I&&tg(tt,ft),lt;if(ct===null){for(;ft<_e.length;ft++)ct=$(tt,_e[ft],st),ct!==null&&(et=c(ct,et,ft),ht===null?lt=ct:ht.sibling=ct,ht=ct);return I&&tg(tt,ft),lt}for(ct=a(tt,ct);ft<_e.length;ft++)vt=nt(ct,tt,ft,_e[ft],st),vt!==null&&(e&&vt.alternate!==null&&ct.delete(vt.key===null?ft:vt.key),et=c(vt,et,ft),ht===null?lt=vt:ht.sibling=vt,ht=vt);return e&&ct.forEach(function(St){return i(tt,St)}),I&&tg(tt,ft),lt}function rt(tt,et,_e,st){var lt=Ka(_e);if(typeof lt!="
+"')),new ErrorResponseImpl(e||500,g,new Error(d),!0)}function findRedirect(e){let i=Object.entries(e);for(let s=i.length-1;s>=0;s--){let[a,o]=i[s];if(isRedirectResult(o))return{key:a,result:o}}}function stripHashFromPath(e){let i=typeof e=="
+"'));try{h=JSON.parse(_),b&&(h={...b,...h})}catch(rt){return this.logger.warn(`failed parsing options string in nesting for key ${d}`,rt),`${d}${j}${_}`}return h.defaultValue&&h.defaultValue.indexOf(this.prefix)>-1&&delete h.defaultValue,d};for(;o=this.nestingRegexp.exec(i);){let d=[];h={...a},h=h.replace&&!isString$2(h.replace)?h.replace:h,h.applyPostProcessor=!1,delete h.defaultValue;let b=!1;if(o[0].indexOf(this.formatSeparator)!==-1&&!/{.*}/.test(o[1])){const j=o[1].split(this.formatSeparator).map($=>$.trim());o[1]=j.shift(),d=j,b=!0}if(c=s(g.call(this,o[1].trim(),h),h),c&&o[0]===i&&!isString$2(c))return c;isString$2(c)||(c=makeString(c)),c||(this.logger.warn(`missed to resolve ${o[1]} for nesting ${i}`),c="
+")&&zt({currentLocation:xt,nextLocation:bt,historyAction:kt}))return jt}function Nr(Et){let xt=getInternalRouterError(404,{pathname:Et}),bt=g||h,{matches:kt,route:Lt}=getShortCircuitMatches(bt);return Fr(),{notFoundMatches:kt,route:Lt,error:xt}}function Fr(Et){let xt=[];return It.forEach((bt,kt)=>{(!Et||Et(kt))&&(bt.cancel(),xt.push(kt),It.delete(kt))}),xt}function Yr(Et,xt,bt){if(it=Et,ot=xt,rt=bt||null,!tt&&ct.navigation===IDLE_NAVIGATION){tt=!0;let kt=zr(ct.location,ct.matches);kt!=null&&$t({restoreScrollPosition:kt})}return()=>{it=null,ot=null,rt=null}}function Wr(Et,xt){return rt&&rt(Et,xt.map(kt=>convertRouteMatchToUiMatch(kt,ct.loaderData)))||Et.key}function qr(Et,xt){if(it&&ot){let bt=Wr(Et,xt);it[bt]=ot()}}function zr(Et,xt){if(it){let bt=Wr(Et,xt),kt=it[bt];if(typeof kt=="
+"))):b({request:i,params:s.params,context:c},...it!==void 0?[it]:[]),nt=(async()=>{try{return{type:"
+")),d||!h||!isString$2(a)?d:deepFind(this.data&&this.data[i]&&this.data[i][s],a,c)}addResource(i,s,a,o){let c=arguments.length>4&&arguments[4]!==void 0?arguments[4]:{silent:!1};const h=c.keySeparator!==void 0?c.keySeparator:this.options.keySeparator;let g=[i,s];a&&(g=g.concat(h?a.split(h):a)),i.indexOf("
+")),effect||(effect=thisLayer(4)),hasParent=!!(elem.hierarchy&&elem.hierarchy.length),hasParent&&!parent&&(parent=elem.hierarchy[0].layerInterface),time=this.comp.renderedFrame/this.comp.globalData.frameRate,_needsRandom&&seedRandom(randSeed+time),needsVelocity&&(velocity=velocityAtTime(time)),expression_function(),this.frameExpressionId=elem.globalData.frameId,scoped_bm_rt=scoped_bm_rt.propType===propTypes.SHAPE?scoped_bm_rt.v:scoped_bm_rt,scoped_bm_rt)}return executeExpression.__preventDeadCodeRemoval=[$bm_transform,anchorPoint,time,velocity,inPoint,outPoint,width,height,name,loop_in,loop_out,smooth,toComp,fromCompToSurface,toWorld,fromWorld,mask,position,rotation,scale,thisComp,numKeys,active,wiggle,loopInDuration,loopOutDuration,comp,lookAt,easeOut,easeIn,ease,nearestKey,key,text,textIndex,textTotal,selectorValue,framesToTime,timeToFrames,sourceRectAtTime,substring,substr,posterizeTime,index,globalData],executeExpression}return ob.initiateExpression=initiateExpression,ob.__preventDeadCodeRemoval=[window,document,XMLHttpRequest,fetch,frames,$bm_neg,add,$bm_sum,$bm_sub,$bm_mul,$bm_div,$bm_mod,clamp,radians_to_degrees,degreesToRadians,degrees_to_radians,normalize,rgbToHsl,hslToRgb,linear,random,createPath,_lottieGlobal],ob.resetFrame=resetFrame,ob}(),Expressions=function(){var e={};e.initExpressions=i,e.resetFrame=ExpressionManager.resetFrame;function i(s){var a=0,o=[];function c(){a+=1}function h(){a-=1,a===0&&d()}function g(b){o.indexOf(b)===-1&&o.push(b)}function d(){var b,j=o.length;for(b=0;b<j;b+=1)o[b].release();o.length=0}s.renderer.compInterface=CompExpressionInterface(s.renderer),s.renderer.globalData.projectInterface.registerComposition(s.renderer),s.renderer.globalData.pushExpression=c,s.renderer.globalData.popExpression=h,s.renderer.globalData.registerExpressionProperty=g}return e}(),MaskManagerInterface=function(){function e(s,a){this._mask=s,this._data=a}Object.defineProperty(e.prototype,"
+"))}return i;case 0:return a=i.type,o=i.pendingProps,o=i.elementType===a?o:Ci(a,o),cj(e,i,a,o,s);case 1:return a=i.type,o=i.pendingProps,o=i.elementType===a?o:Ci(a,o),hj(e,i,a,o,s);case 3:e:{if(kj(i),e===null)throw Error(p(387));a=i.pendingProps,c=i.memoizedState,o=c.element,lh(e,i),qh(i,a,null,s);var h=i.memoizedState;if(a=h.element,c.isDehydrated)if(c={element:a,isDehydrated:!1,cache:h.cache,pendingSuspenseBoundaries:h.pendingSuspenseBoundaries,transitions:h.transitions},i.updateQueue.baseState=c,i.memoizedState=c,i.flags&256){o=Ji(Error(p(423)),i),i=lj(e,i,a,s,o);break e}else if(a!==o){o=Ji(Error(p(424)),i),i=lj(e,i,a,s,o);break e}else for(yg=Lf(i.stateNode.containerInfo.firstChild),xg=i,I=!0,zg=null,s=Vg(i,null,a,s),i.child=s;s;)s.flags=s.flags&-3|4096,s=s.sibling;else{if(Ig(),a===o){i=Zi(e,i,s);break e}Xi(e,i,a,s)}i=i.child}return i;case 5:return Ah(i),e===null&&Eg(i),a=i.type,o=i.pendingProps,c=e!==null?e.memoizedProps:null,h=o.children,Ef(a,o)?h=null:c!==null&&Ef(a,c)&&(i.flags|=32),gj(e,i),Xi(e,i,h,s),i.child;case 6:return e===null&&Eg(i),null;case 13:return oj(e,i,s);case 4:return yh(i,i.stateNode.containerInfo),a=i.pendingProps,e===null?i.child=Ug(i,null,a,s):Xi(e,i,a,s),i.child;case 11:return a=i.type,o=i.pendingProps,o=i.elementType===a?o:Ci(a,o),Yi(e,i,a,o,s);case 7:return Xi(e,i,i.pendingProps,s),i.child;case 8:return Xi(e,i,i.pendingProps.children,s),i.child;case 12:return Xi(e,i,i.pendingProps.children,s),i.child;case 10:e:{if(a=i.type._context,o=i.pendingProps,c=i.memoizedProps,h=o.value,G(Wg,a._currentValue),a._currentValue=h,c!==null)if(He(c.value,h)){if(c.children===o.children&&!Wf.current){i=Zi(e,i,s);break e}}else for(c=i.child,c!==null&&(c.return=i);c!==null;){var g=c.dependencies;if(g!==null){h=c.child;for(var d=g.firstContext;d!==null;){if(d.context===a){if(c.tag===1){d=mh(-1,s&-s),d.tag=2;var b=c.updateQueue;if(b!==null){b=b.shared;var j=b.pending;j===null?d.next=d:(d.next=j.next,j.next=d),b.pending=d}}c.lanes|=s,d=c.alternate,d!==null&&(d.lanes|=s),bh(c.return,s,i),g.lanes|=s;break}d=d.next}}else if(c.tag===10)h=c.type===i.type?null:c.child;else if(c.tag===18){if(h=c.return,h===null)throw Error(p(341));h.lanes|=s,g=h.alternate,g!==null&&(g.lanes|=s),bh(h,s,i),h=c.sibling}else h=c.child;if(h!==null)h.return=c;else for(h=c;h!==null;){if(h===i){h=null;break}if(c=h.sibling,c!==null){c.return=h.return,h=c;break}h=h.return}c=h}Xi(e,i,o.children,s),i=i.child}return i;case 9:return o=i.type,a=i.pendingProps.children,ch(i,s),o=eh(o),a=a(o),i.flags|=1,Xi(e,i,a,s),i.child;case 14:return a=i.type,o=Ci(a,i.pendingProps),o=Ci(a.type,o),$i(e,i,a,o,s);case 15:return bj(e,i,i.type,i.pendingProps,s);case 17:return a=i.type,o=i.pendingProps,o=i.elementType===a?o:Ci(a,o),ij(e,i),i.tag=1,Zf(a)?(e=!0,cg(i)):e=!1,ch(i,s),Gi(i,a,o),Ii(i,a,o,s),jj(null,i,a,!0,e,s);case 19:return xj(e,i,s);case 22:return dj(e,i,s)}throw Error(p(156,i.tag))};function Fk(e,i){return ac(e,i)}function $k(e,i,s,a){this.tag=e,this.key=s,this.sibling=this.child=this.return=this.stateNode=this.type=this.elementType=null,this.index=0,this.ref=null,this.pendingProps=i,this.dependencies=this.memoizedState=this.updateQueue=this.memoizedProps=null,this.mode=a,this.subtreeFlags=this.flags=0,this.deletions=null,this.childLanes=this.lanes=0,this.alternate=null}function Bg(e,i,s,a){return new $k(e,i,s,a)}function aj(e){return e=e.prototype,!(!e||!e.isReactComponent)}function Zk(e){if(typeof e=="
+"))}return i=Bg(h,s,i,o),i.elementType=e,i.type=a,i.lanes=c,i}function Tg(e,i,s,a){return e=Bg(7,e,a,i),e.lanes=s,e}function pj(e,i,s,a){return e=Bg(22,e,a,i),e.elementType=Ia,e.lanes=s,e.stateNode={isHidden:!1},e}function Qg(e,i,s){return e=Bg(6,e,null,i),e.lanes=s,e}function Sg(e,i,s){return i=Bg(4,e.children!==null?e.children:[],e.key,i),i.lanes=s,i.stateNode={containerInfo:e.containerInfo,pendingChildren:null,implementation:e.implementation},i}function al(e,i,s,a,o){this.tag=i,this.containerInfo=e,this.finishedWork=this.pingCache=this.current=this.pendingChildren=null,this.timeoutHandle=-1,this.callbackNode=this.pendingContext=this.context=null,this.callbackPriority=0,this.eventTimes=zc(0),this.expirationTimes=zc(-1),this.entangledLanes=this.finishedLanes=this.mutableReadLanes=this.expiredLanes=this.pingedLanes=this.suspendedLanes=this.pendingLanes=0,this.entanglements=zc(0),this.identifierPrefix=a,this.onRecoverableError=o,this.mutableSourceEagerHydrationData=null}function bl(e,i,s,a,o,c,h,g,d){return e=new al(e,i,s,g,d),i===1?(i=1,c===!0&&(i|=8)):i=0,c=Bg(3,null,null,i),e.current=c,c.stateNode=e,c.memoizedState={element:a,isDehydrated:s,cache:null,transitions:null,pendingSuspenseBoundaries:null},kh(c),e}function cl(e,i,s){var a=3<arguments.length&&arguments[3]!==void 0?arguments[3]:null;return{$$typeof:wa,key:a==null?null:"
+"),a?e.setProperty(s,o):e[s]=o}}var tb=A({menuitem:!0},{area:!0,base:!0,br:!0,col:!0,embed:!0,hr:!0,img:!0,input:!0,keygen:!0,link:!0,meta:!0,param:!0,source:!0,track:!0,wbr:!0});function ub(e,i){if(i){if(tb[e]&&(i.children!=null||i.dangerouslySetInnerHTML!=null))throw Error(p(137,e));if(i.dangerouslySetInnerHTML!=null){if(i.children!=null)throw Error(p(60));if(typeof i.dangerouslySetInnerHTML!="
+"),await resolveDeferredData(g,h.signal,!0).then(b=>{b&&(i[o]=b)}))}}async function resolveDeferredData(e,i,s){if(s===void 0&&(s=!1),!await e.deferredData.resolveData(i)){if(s)try{return{type:ResultType.data,data:e.deferredData.unwrappedData}}catch(o){return{type:ResultType.error,error:o}}return{type:ResultType.data,data:e.deferredData.data}}}function hasNakedIndexQuery(e){return new URLSearchParams(e).getAll("
+"),b&&(c=d.reduce((j,$)=>this.format(j,$,a.lng,{...a,interpolationkey:o[1].trim()}),c.trim())),i=i.replace(o[0],c),this.regexp.lastIndex=0}return i}}const parseFormatStr=e=>{let i=e.toLowerCase().trim();const s={};if(e.indexOf("
+"),fr(Et,getDoneFetcher(Zt.data))}}async function ir(Et,xt,bt,kt){let{submission:Lt,fetcherSubmission:jt,preventScrollReset:zt,replace:Ft}=kt===void 0?{}:kt;xt.response.headers.has("
+---version---
+[0m
+[0m$ [0mfor u in "https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe" "https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe" "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" "https://installer-whale.pstatic.net/downloads/banner/WhaleSetup.exe"; do echo "== $u"; curl -s -I -A "Mozilla/5.0" --max-time 20 "$u" | grep -iE "HTTP/|content-length|last-modified|content-type|etag" ; done
+== https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+HTTP/2 200 
+content-length: 11678736
+last-modified: Tue, 28 Apr 2026 13:12:52 GMT
+content-type: application/x-msdownload
+== https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe
+HTTP/2 200 
+content-length: 202165776
+last-modified: Wed, 05 Aug 2026 08:09:12 GMT
+content-type: application/x-msdownload
+== https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb
+HTTP/2 200 
+content-length: 164163916
+last-modified: Thu, 25 Jun 2026 06:25:01 GMT
+content-type: application/x-debian-package
+== https://installer-whale.pstatic.net/downloads/banner/WhaleSetup.exe
+HTTP/2 404 
+content-length: 196
+content-type: text/html; charset=iso-8859-1
+[0m
+The full installers are on the pstatic.net CDN. The `.deb` (164MB, full Linux binary, dated 2026-06-25 = v4.38.386.14 release) is the best target for static sync analysis. Downloading it.
+[0m$ [0mcurl -s -A "Mozilla/5.0" --max-time 100 -o /tmp/opencode/whale.deb "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" && ls -la /tmp/opencode/whale.deb && sha256sum /tmp/opencode/whale.deb
+-rw-r--r-- 1 runner runner 173022092 Aug  7 21:40 /tmp/opencode/whale.deb
+13ce390513308695aacbe1ba246f28228aa1a713b09c356fc9cda75f695dce89  /tmp/opencode/whale.deb
+[0m
+Full 164MB Linux binary acquired. Extracting to inspect the sync module.
+[0m$ [0mcd /tmp/opencode && dpkg-deb -x whale.deb whale_extract 2>&1 | head; du -sh whale_extract; ls whale_extract/
+490M	whale_extract
+etc
+opt
+usr
+[0m
+[0m$ [0mcd /tmp/opencode/whale_extract && find . -maxdepth 4 -name "whale*" -type f 2>/dev/null | head; echo "---"; find . -maxdepth 4 -type d | head -30
+./opt/naver/whale/whale_200_percent.pak
+./opt/naver/whale/whale_100_percent.pak
+./opt/naver/whale/whale
+./opt/naver/whale/whale-sandbox
+---
+.
+./opt
+./opt/naver
+./opt/naver/whale
+./opt/naver/whale/MEIPreload
+./opt/naver/whale/PrivacySandboxAttestationsPreloaded
+./opt/naver/whale/apparmor.d
+./opt/naver/whale/cron
+./opt/naver/whale/resources
+./opt/naver/whale/locales
+./opt/naver/whale/WidevineCdm
+./etc
+./etc/cron.daily
+./usr
+./usr/share
+./usr/share/gnome-control-center
+./usr/share/gnome-control-center/default-apps
+./usr/share/doc
+./usr/share/doc/naver-whale-stable
+./usr/share/man
+./usr/share/man/man1
+./usr/share/appdata
+./usr/share/applications
+./usr/bin
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/opencode/whale_extract/opt/naver/whale/*, /usr/share/doc/naver-whale-stable/*); auto-rejecting
+[0m✗ [0mcd /tmp/opencode/whale_extract/opt/naver/whale && ls -la | head -60; echo "=== version ==="; cat /usr/share/doc/naver-whale-stable/changelog* 2>/dev/null | head -5; ls ../../../../..//usr/share/doc/naver-whale-stable/ failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.

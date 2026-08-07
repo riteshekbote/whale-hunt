@@ -4356,3 +4356,1820 @@ testability: HUMAN_ONLY
 [RISK] sync: 55 — whale.storage extension API exists and may sync via Whale account (eligible focus area); passphrase KDF/key-storage design entirely client-side with NO public code available; Android sync encryption added only 2025-04 (late); binary static analysis not yet performed; moderate-high exposure due to source-unavailable constraint + PII cascade potential (bookmarks + site passwords)
 [RISK] browser: 78 — sidebar + dual-tab environments have 6 confirmed CVEs in 2025 (SOP bypass CWE-346, iframe sandbox escape CWE-358, CSP bypass CWE-358); these are Whale-specific features not inherited from Chromium; latest stable v4.38.386.14 is 3 minor version bumps ahead of last CVE fix (Dec 2025 v4.35.351.12) with ZERO published CVEs in between — 6-month disclosure gap; wiki docs confirm additional attack surface (sidebarAction.show() URL loading, drag-navigation exposure); $4k SOP reward tier; high priority for new variant discovery
 [RISK] libs: 30 — Whale bundles Chromium (inherits all Chromium CVEs), but no Whale-only third-party library manifests or version lists are publicly available; repo contains only translated documentation from 2019; library-level version drift cannot be assessed without binary access; low visibility, moderate inherent risk
+===== ANALYST laguna 2026-08-07 21:57:03 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/
+total 136
+drwxr-xr-x 11 runner runner  4096 Aug  7 21:38 .
+drwxr-xr-x  3 runner runner  4096 Aug  7 21:38 ..
+drwxr-xr-x  7 runner runner  4096 Aug  7 21:38 .git
+drwxr-xr-x  3 runner runner  4096 Aug  7 21:38 .github
+-rw-r--r--  1 runner runner  1057 Aug  7 21:38 README.md
+-rw-r--r--  1 runner runner    39 Aug  7 21:38 analyst-out.txt
+-rw-r--r--  1 runner runner 30157 Aug  7 21:38 analyst-prompt.txt
+-rw-r--r--  1 runner runner 27185 Aug  7 21:38 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 leads
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 reports
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  7 21:38 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 scripts
+-rw-r--r--  1 runner runner    34 Aug  7 21:38 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  7 21:38 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  7 21:38 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  7 21:38 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  7 21:38 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 triage
+[0m
+[0m$ [0mwhich 7z 7za unzip strings xxd innoextract 2>/dev/null; dpkg -l | grep -i p7zip 2>/dev/null || echo "p7zip not found"
+/usr/bin/7z
+/usr/bin/7za
+/usr/bin/unzip
+/usr/bin/strings
+/usr/bin/xxd
+ii  p7zip-full                               16.02+transitional.1                             all          transitional package
+ii  p7zip-rar                                16.02+transitional.1                             all          transitional package
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/reports/ 2>/dev/null || echo "no reports dir"; ls -la /tmp/opencode/ 2>/dev/null || echo "no opencode tmp"
+total 532
+drwxr-xr-x  2 runner runner   4096 Aug  7 21:38 .
+drwxr-xr-x 11 runner runner   4096 Aug  7 21:38 ..
+-rw-r--r--  1 runner runner 145679 Aug  7 21:38 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 275463 Aug  7 21:38 analyst-laguna.log
+-rw-r--r--  1 runner runner   7837 Aug  7 21:38 analyst-ling3.log
+-rw-r--r--  1 runner runner    450 Aug  7 21:38 analyst-longcat.log
+-rw-r--r--  1 runner runner  34486 Aug  7 21:38 analyst-nemotron3.log
+-rw-r--r--  1 runner runner  14927 Aug  7 21:38 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner   5954 Aug  7 21:38 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner     48 Aug  7 21:38 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner     50 Aug  7 21:38 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner   9773 Aug  7 21:38 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  11709 Aug  7 21:38 hypotheses.md
+-rw-r--r--  1 runner runner    136 Aug  7 21:38 valid-bugs.md
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 .
+drwxrwxrwt 15 root   root   12288 Aug  7 21:39 ..
+[0m
+I'll analyze the current state and check what's available in the workspace to advance the hunt.
+[0m→ [0mRead scope.yml
+[0m→ [0mRead ctx.txt
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/knowledge/ /home/runner/work/whale-hunt/whale-hunt/inventory/ /home/runner/work/whale-hunt/whale-hunt/scripts/ /home/runner/work/whale-hunt/whale-hunt/leads/ /home/runner/work/whale-hunt/whale-hunt/triage/
+/home/runner/work/whale-hunt/whale-hunt/inventory/:
+total 20
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 21:38 ..
+-rw-r--r--  1 runner runner 11185 Aug  7 21:38 whale.md
+
+/home/runner/work/whale-hunt/whale-hunt/knowledge/:
+total 12
+drwxr-xr-x  2 runner runner 4096 Aug  7 21:38 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 21:38 ..
+-rw-r--r--  1 runner runner 3302 Aug  7 21:38 index.md
+
+/home/runner/work/whale-hunt/whale-hunt/leads/:
+total 172
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 21:38 ..
+-rw-r--r--  1 runner runner 37217 Aug  7 21:38 lead-bigpickle.md
+-rw-r--r--  1 runner runner 29214 Aug  7 21:38 lead-laguna.md
+-rw-r--r--  1 runner runner  5208 Aug  7 21:38 lead-ling3.md
+-rw-r--r--  1 runner runner   332 Aug  7 21:38 lead-longcat.md
+-rw-r--r--  1 runner runner 26286 Aug  7 21:38 lead-nemotron3.md
+-rw-r--r--  1 runner runner  2883 Aug  7 21:38 reposcan-2026-08-07-18-44.md
+-rw-r--r--  1 runner runner  1240 Aug  7 21:38 reposcan-2026-08-07-18-59.md
+-rw-r--r--  1 runner runner  6783 Aug  7 21:38 reposcan-2026-08-07-19-19.md
+-rw-r--r--  1 runner runner  2370 Aug  7 21:38 reposcan-2026-08-07-19-22.md
+-rw-r--r--  1 runner runner   366 Aug  7 21:38 reposcan-2026-08-07-19-28.md
+-rw-r--r--  1 runner runner   466 Aug  7 21:38 reposcan-2026-08-07-20-06.md
+-rw-r--r--  1 runner runner   617 Aug  7 21:38 reposcan-2026-08-07-20-11.md
+-rw-r--r--  1 runner runner   948 Aug  7 21:38 reposcan-2026-08-07-20-59.md
+-rw-r--r--  1 runner runner  5763 Aug  7 21:38 reposcan-2026-08-07-21-09.md
+-rw-r--r--  1 runner runner  5763 Aug  7 21:38 reposcan-latest.md
+
+/home/runner/work/whale-hunt/whale-hunt/scripts/:
+total 16
+drwxr-xr-x  2 runner runner 4096 Aug  7 21:38 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 21:38 ..
+-rw-r--r--  1 runner runner 7506 Aug  7 21:38 sync-issues.py
+
+/home/runner/work/whale-hunt/whale-hunt/triage/:
+total 44
+drwxr-xr-x  2 runner runner  4096 Aug  7 21:38 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 21:38 ..
+-rw-r--r--  1 runner runner  8463 Aug  7 21:38 run-2026-08-07-19-23.md
+-rw-r--r--  1 runner runner 14983 Aug  7 21:38 run-2026-08-07-21-01.md
+-rw-r--r--  1 runner runner  7882 Aug  7 21:38 run-2026-08-07-21-04.md
+[0m
+Good, I have 7z, strings, and other tools available. Let me read the key files to understand the current state and check what's available for the sync KDF PROBE.
+[0m→ [0mRead knowledge/index.md
+[0m→ [0mRead scripts/sync-issues.py
+[0m✗ [0mRead valid-bugs.md failed
+[91m[1mError: [0mFile not found: /home/runner/work/whale-hunt/whale-hunt/valid-bugs.md
+[0m→ [0mRead README.md
+Let me read the knowledge base, inventory, and the sync script — and start the PROBE on the Whale installer.
+[0m→ [0mRead inventory/whale.md
+[0m→ [0mRead leads/reposcan-latest.md
+[0m
+[0m$ [0mcurl -sI -m 15 "https://dl.whale.naver.com/?x=1" 2>/dev/null | head -20 || echo "curl failed or no redirect"
+(no output)
+[0m
+Let me read the inventory, latest reposcan, and the top hypothesis source — and start probing for the Whale installer URL.
+[0m$ [0mcurl -sI -m 15 "https://whale.naver.com/" 2>/dev/null | head -20 || echo "curl failed"
+HTTP/2 200 
+x-powered-by: Express
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+strict-transport-security: max-age=31536000; includeSubDomains
+content-security-policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://wcs.naver.net https://t1.daumcdn.net https://dev-shared.whale.naver.com https://shared-whale.pstatic.net https://ssl.pstatic.net; style-src 'self' 'unsafe-inline' https://dev-shared.whale.naver.com https://shared-whale.pstatic.net; img-src 'self' data: https://shared-whale.pstatic.net https://static-whale.pstatic.net https://dev-shared.whale.naver.com; media-src 'self' https://dev-shared.whale.naver.com https://shared-whale.pstatic.net; font-src 'self' https://dev-shared.whale.naver.com https://shared-whale.pstatic.net; connect-src 'self' https://dev-shared.whale.naver.com https://shared-whale.pstatic.net https://nam.veta.naver.com https://lcs.naver.com https://*.lcs.naver.com https://cc.naver.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'
+permissions-policy: picture-in-picture=()
+cache-control: no-cache
+accept-ranges: bytes
+last-modified: Fri, 03 Jul 2026 08:46:37 GMT
+etag: W/"18bf-19f272890ed"
+content-type: text/html; charset=UTF-8
+content-length: 6335
+date: Fri, 07 Aug 2026 21:41:10 GMT
+referrer-policy: unsafe-url
+server: nfront
+[0m
+[0m→ [0mRead reports/hypotheses-nemotron3.txt
+[0m
+[0m$ [0mcurl -s -m 15 "https://whale.naver.com/" 2>/dev/null | grep -oiE 'href="[^"]*download[^"]*"|href="[^"]*install[^"]*"|href="[^"]*whale[^"]*"|dl[^"]*|psstatic[^"]*"' | head -30
+href="https://shared-whale.pstatic.net"
+href="https://installer-whale.pstatic.net"
+href="https://static-whale.pstatic.net"
+href="https://shared-whale.pstatic.net/favicon/icon.png"
+href="https://shared-whale.pstatic.net/favicon/icon.png"
+href="https://shared-whale.pstatic.net/favicon/icon180.png"
+href="https://shared-whale.pstatic.net/favicon/icon256.png"
+href="https://shared-whale.pstatic.net/favicon/icon512.png"
+dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+dl;f.parentNode.insertBefore(j,f);
+dled SDK (src/vendor/nclicks.js) — init on all phases -->
+href="https://shared-whale.pstatic.net/home2/assets/index-cFWAVrkk.css"
+href="https://shared-whale.pstatic.net/home2/assets/hero-bg-B6qML11p.png"
+href="https://whale.naver.com/ko/download/"
+href="https://whale.naver.com/en/download/"
+[0m
+The reposcan-latest.md was redirected to scanning gladiaio instead of naver — that's an infrastructure issue but confirms the reposcan is running. Let me read the top hypothesis file and find the Whale installer download URL to execute the sync KDF PROBE.
+[0m$ [0mcurl -sI -m 15 "https://dl.whale.naver.com/whale/20260807/whale_installer.exe" 2>/dev/null | head -5; echo "---"; curl -sI -m 15 "https://dl.whale.naver.com/" 2>/dev/null | head -5
+---
+[0m
+[0m$ [0mcurl -s -m 15 "https://whale.naver.com/en/download/" 2>/dev/null | grep -oiE 'href="[^"]*\.exe"|"[^"]*installer-whale[^"]*"|"[^"]*dl[^"]*whale[^"]*"|"[^"]*download[^"]*\.exe"|file:"[^"]*"' | head -20
+"https://installer-whale.pstatic.net"
+[0m
+Found the download links. Let me fetch the download page to get the actual installer URL on `installer-whale.pstatic.net`.
+[0m$ [0mcurl -s -m 15 "https://whale.naver.com/en/download/" 2>/dev/null | grep -oiE 'href="[^"]*"|src="[^"]*"' | head -40
+href="https://shared-whale.pstatic.net"
+href="https://wcs.naver.net"
+href="https://installer-whale.pstatic.net"
+href="https://static-whale.pstatic.net"
+href="https://shared-whale.pstatic.net/favicon/icon.png"
+href="https://shared-whale.pstatic.net/favicon/icon.png"
+href="https://shared-whale.pstatic.net/favicon/icon180.png"
+href="https://shared-whale.pstatic.net/favicon/icon256.png"
+href="https://shared-whale.pstatic.net/favicon/icon512.png"
+src="/vendor/lcslog.v0.14.0.js"
+src="https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js"
+href="https://shared-whale.pstatic.net/home2/assets/index-cFWAVrkk.css"
+href="https://shared-whale.pstatic.net/home2/assets/hero-bg-B6qML11p.png"
+src="https://www.googletagmanager.com/ns.html?id=GTM_ID"
+href="https://whale.naver.com/ko/download/"
+href="https://whale.naver.com/en/download/"
+[0m
+[0m$ [0mcurl -s -m 15 "https://whale.naver.com/en/download/" 2>/dev/null | grep -iE 'download|install|exe|pc|windows|mac' | grep -ivE 'css|js|favicon|png|svg|ico|google|gtm' | head -30
+<link rel="dns-prefetch" href="https://installer-whale.pstatic.net" />
+        !function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):
+        <a href="https://whale.naver.com/ko/download/"
+        <a href="https://whale.naver.com/en/download/"
+          Download Whale
+[0m
+[0m$ [0mcurl -s -m 15 "https://whale.naver.com/en/download/" 2>/dev/null | grep -oiE 'data-[a-z\-]*="[^"]*"' | head -20; echo "---data-href---"; curl -s -m 15 "https://whale.naver.com/en/download/" 2>/dev/null | grep -oiE 'onclick="[^"]*"' | head -10
+---data-href---
+[0m
+Let me dig deeper — the download link is likely in JavaScript. Let me search the page for download button data attributes or try common installer URL patterns.
+[0m$ [0mfor url in "https://installer-whale.pstatic.net/whale_installer.exe" "https://installer-whale.pstatic.net/whale_installer/1.0/whale_installer.exe" "https://installer-whale.pstatic.net/20260807/whale_installer.exe" "https://installer-whale.pstatic.net/latest/whale_installer.exe"; do echo "=== $url ==="; curl -sI -m 10 "$url" 2>/dev/null | head -3; done
+=== https://installer-whale.pstatic.net/whale_installer.exe ===
+HTTP/2 404 
+date: Fri, 07 Aug 2026 21:42:12 GMT
+content-length: 217
+=== https://installer-whale.pstatic.net/whale_installer/1.0/whale_installer.exe ===
+HTTP/2 404 
+date: Fri, 07 Aug 2026 21:42:13 GMT
+content-length: 196
+=== https://installer-whale.pstatic.net/20260807/whale_installer.exe ===
+HTTP/2 404 
+date: Fri, 07 Aug 2026 21:42:15 GMT
+content-length: 226
+=== https://installer-whale.pstatic.net/latest/whale_installer.exe ===
+HTTP/2 404 
+date: Fri, 07 Aug 2026 21:42:16 GMT
+content-length: 196
+[0m
+[0m$ [0mcurl -s -m 15 "https://whale.naver.com/en/download/" 2>/dev/null | grep -oiE '.{0,80}(?i:download|exe|install|pc|windows|macos|darwin|setup).{0,80}' | grep -ivE 'css|js|favicon|png|svg|ico|google|gtm|twitter|navigator|canonical|webmanifest|dns-prefetch|preconnect|stylesheet' | head -30
+grep: warning: ? at start of expression
+        !function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):
+[0m
+Let me get the full page HTML to find the download URL construction — likely in JavaScript or a hidden link.
+[0m$ [0mcurl -s -m 15 "https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js" 2>/dev/null | grep -oiE '.{0,60}(exe|download|install|whale_install|setup).{0,60}' | head -20; echo "---"; curl -s -m 15 "https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js" 2>/dev/null | grep -oiE 'https://[^"'\'') ]*' | grep -iE 'install|exe|download|whale' | head -20
+lCallback=function(at){at.callback=null},e.unstable_continueExecution=function(){it||nt||(it=!0,dt(lt))},e.unstable_forceFr
+ar mt=_;_=ut;try{return at()}finally{_=mt}},e.unstable_pauseExecution=function(){},e.unstable_requestPaint=function(){},e.u
+h(function(e){z[e]=new v(e,3,!0,e,null,!1,!1)});["capture","download"].forEach(function(e){z[e]=new v(e,4,!1,e,null,!1,!1)});["c
+tml":e}var mb,nb=function(e){return typeof MSApp<"u"&&MSApp.execUnsafeLocalFunction?function(i,s,a,o){MSApp.execUnsafeLocal
+(e[a]=i[a]):deepExtend(e[a],i[a],s):e[a]=i[a]);return e},regexEscape=e=>e.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g,"\\
+ was not yet loaded`,"This means something IS WRONG in your setup. You access the t function before i18next.init / i18next.lo
+0,this.useRawValueToEscape=o!==void 0?o:!1,this.prefix=c?regexEscape(c):h||"{{",this.suffix=g?regexEscape(g):d||"}}",this.f
+Suffix=this.unescapePrefix?"":j||"",this.nestingPrefix=_?regexEscape(_):nt||regexEscape("$t("),this.nestingSuffix=it?regexE
+scape(it):rt||regexEscape(")"),this.nestingOptionsSeparator=ot||",",this.maxRepl
+escape(nt)):regexSafe(nt)}].forEach(nt=>{for(g=0;c=nt.regex.exec(i);){const it=c[1].trim();if(h=b(it),h===void 0)if(typeof 
+fix)>-1&&delete h.defaultValue,d};for(;o=this.nestingRegexp.exec(i);){let d=[];h={...a},h=h.replace&&!isString$2(h.replace)
+ was not yet loaded`,"This means something IS WRONG in your setup. You access the t function before i18next.init / i18next.lo
+){e.sort((i,s)=>i.score!==s.score?s.score-i.score:compareIndexes(i.routesMeta.map(a=>a.childrenIndex),s.routesMeta.map(a=>a
+emptySegmentValue:staticSegmentValue),a)}function compareIndexes(e,i){return e.length===i.length&&e.slice(0,-1).every((a,o)
+nScrolled:o,isHeaderHidden:j,isFloatingMenuVisible:_,showGnbDownloadButtons:d,activeFloatingMenuTarget:it,isQrDocked:ot,isQrOnHe
+b=i[s],j=i[s+1];for(a=o=0;a<b.length&&!g&&b[a];)if(g=b[a++].exec(e),g)for(c=0;c<j.length;c++)d=g[++o],h=j[c],typeof h===TYP
+]]=h[1]:h.length>=3&&(typeof h[1]===TYPEOF.FUNCTION&&!(h[1].exec&&h[1].test)?h.length>3?this[h[0]]=d?h[1].apply(this,h.slic
+r","Opera Mobi":"OperaMobile",Yandex:"YaBrowser"},defaultRegexes={browser:[[/\b(?:crmo|crios)\/([\w\.]+)/i],[VERSION,[NAME,
+"&&this.get(VERSION)=="18.6"){var e=/\) Version\/([\d\.]+)/.exec(this.ua);e&&parseInt(e[1].substring(0,2),10)>=26&&this.set
+R.userAgent:EMPTY,g=new UACHData(s,!0),d=i?extend(defaultRegexes,i):defaultRegexes,b=function(j){return j==RESULT?function(
+---
+https://v1.whale.naver.com/whats_new/notice
+https://v1.whale.naver.com/whats_new/press
+https://v1.whale.naver.com/whats_new/
+https://whale.naver.com/
+https://www.instagram.com/naver_whale/
+https://blog.naver.com/whaleteam
+https://www.facebook.com/NaverWhale
+https://twitter.com/naverwhale
+https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+https://installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg
+https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb
+https://play.google.com/store/apps/details?id=com.naver.whale&referrer=utm_source%3Dwhale%2520home%26utm_medium%3Ddownload%26utm_campaign%3D
+https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+https://installer-whale.pstatic.net/downloads/banner/${encodeURIComponent(s
+https://shared-whale.pstatic.net/home2/assets/security-back-malware-DS4BwNm4.svg
+https://shared-whale.pstatic.net/home2/assets/security-back-activity-yh1s49uH.svg
+https://shared-whale.pstatic.net/home2/assets/security-back-clean-DHpVei9U.svg
+https://shared-whale.pstatic.net/home2/assets/security-icon-clean-J17NtSY0.svg
+https://shared-whale.pstatic.net/home2/assets/security-shadow-safe-Bc2FeD5Y.png
+https://shared-whale.pstatic.net/home2/assets/security-shadow-malware-CJoflL0T.png
+[0m
+Excellent — I found the installer URLs on `installer-whale.pstatic.net`. Let me download the Windows installer stub and extract it to grep for sync-related strings.
+[0m$ [0mcurl -sI -m 15 "https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe" 2>/dev/null | grep -iE 'content-length|content-type|content-encoding|x-goog|x-amz|etag|last-modified'
+content-length: 11678736
+last-modified: Tue, 28 Apr 2026 13:12:52 GMT
+content-type: application/exe
+[0m
+11.6MB installer from April 2026. Let me download it and extract strings for the sync KDF PROBE.
+[0m$ [0mcurl -s -L -m 120 -o /tmp/opencode/WhaleSetup.exe "https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe" 2>&1; ls -la /tmp/opencode/WhaleSetup.exe; sha256sum /tmp/opencode/WhaleSetup.exe
+-rw-r--r-- 1 runner runner 11678736 Aug  7 21:43 /tmp/opencode/WhaleSetup.exe
+0fea2f35ae650e4eff6847fc2078619c3e6c43b5082f1576f1ba7d567e08e44e  /tmp/opencode/WhaleSetup.exe
+[0m
+[0m$ [0mcd /tmp/opencode && mkdir -p whale_extract && 7z l WhaleSetup.exe 2>&1 | tail -30
+.....           20           20  .rsrc/1033/GROUP_CURSOR/17047
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/17048
+                    .....           34           34  .rsrc/1033/GROUP_CURSOR/30977
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/30998
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/30999
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31000
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31001
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31002
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31003
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31004
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31005
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31006
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31007
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31008
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31009
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31010
+                    .....           20           20  .rsrc/1033/GROUP_CURSOR/31011
+                    .....          146          146  .rsrc/1024/GROUP_ICON/161
+                    .....           34           34  .rsrc/1033/GROUP_ICON/16931
+                    .....           34           34  .rsrc/1033/GROUP_ICON/16995
+                    .....           90           90  .rsrc/1033/GROUP_ICON/17100
+                    .....           34           34  .rsrc/1033/GROUP_ICON/17105
+                    .....        24347        24347  .rsrc/1024/HTML/148
+                    .....        13162        13162  .rsrc/1024/HTML/149
+                    .....         1985         1985  .rsrc/1033/MANIFEST/1
+                    .....           28           28  .rsrc/1033/241/16138
+                    .....           24           24  .rsrc/1033/241/16960
+2026-04-14 05:04:23 .....        10768        10768  CERTIFICATE
+------------------- ----- ------------ ------------  ------------------------
+2026-04-14 05:04:23           21043064     21042888  782 files
+[0m
+Downloaded successfully (sha256: `0fea2f35ae650e4eff6847fc2078619c3e6c43b5082f1576f1ba7d567e08e44e`). Now let me extract it and grep for sync-related strings — this is purely static extraction, no execution.
+[0m$ [0mstrings -n 8 /tmp/opencode/WhaleSetup.exe | grep -iE '(passphrase|PBKDF2|scrypt|sync|key.?deriv|EncryptedSharedPreferences|Local State|Preferences|keychain|salt|iterat|bcrypt|argon|AES|encryption|decrypt|encrypt|secret|pass.?word|token|oauth|bearer)' | sort -u | head -80
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"><dependency><dependentAssembly><assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="x86" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity></dependentAssembly></dependency><trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"><security><requestedPrivileges><requestedExecutionLevel level="requireAdministrator" uiAccess="false"></requestedExecutionLevel></requestedPrivileges></security></trustInfo><application xmlns="urn:schemas-microsoft-com:asm.v3"><windowsSettings><dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:application xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"></ms_compatibility:supportedOS></ms_compatibility:application></ms_compatibility:compatibility></assembly>
+`eh vector constructor iterator'
+`eh vector copy constructor iterator'
+`eh vector destructor iterator'
+`eh vector vbase constructor iterator'
+`eh vector vbase copy constructor iterator'
+`managed vector constructor iterator'
+`managed vector copy constructor iterator'
+`managed vector destructor iterator'
+`vector constructor iterator'
+`vector copy constructor iterator'
+`vector destructor iterator'
+`vector vbase constructor iterator'
+`vector vbase copy constructor iterator'
+[0m
+The installer is an Inno Setup binary with embedded resources. Let me extract the full archive to search for the browser binaries and sync strings.
+[0m$ [0mcd /tmp/opencode/whale_extract && 7z x -y ../WhaleSetup.exe 2>&1 | tail -20; echo "==="; find /tmp/opencode/whale_extract -type f | head -40; echo "---total files---"; find /tmp/opencode/whale_extract -type f | wc -l
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31006
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31007
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31008
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31009
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31010
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31011
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/16931
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/16995
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/17100
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/17105
+ERROR: Data Error : .rsrc/1024/HTML/148
+ERROR: Data Error : .rsrc/1024/HTML/149
+ERROR: Data Error : .rsrc/1033/241/16138
+ERROR: Data Error : .rsrc/1033/241/16960
+
+Sub items Errors: 766
+
+Archives with Errors: 1
+
+Sub items Errors: 766
+===
+/tmp/opencode/whale_extract/UPX0
+/tmp/opencode/whale_extract/UPX1
+/tmp/opencode/whale_extract/CERTIFICATE
+/tmp/opencode/whale_extract/.rsrc/18/STRING/94
+/tmp/opencode/whale_extract/.rsrc/18/STRING/91
+/tmp/opencode/whale_extract/.rsrc/18/STRING/93
+/tmp/opencode/whale_extract/.rsrc/18/STRING/3585
+/tmp/opencode/whale_extract/.rsrc/18/STRING/90
+/tmp/opencode/whale_extract/.rsrc/18/STRING/92
+/tmp/opencode/whale_extract/.rsrc/18/STRING/89
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/46
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/39
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/41
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/40
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/42
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/48
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/45
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/50
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/43
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/44
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/47
+/tmp/opencode/whale_extract/.rsrc/1033/ICON/49
+/tmp/opencode/whale_extract/.rsrc/1033/CSS/182
+/tmp/opencode/whale_extract/.rsrc/1033/CSS/183
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17089
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17121
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17037
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/16138
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17049
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17126
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17034
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17080
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17118
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17117
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17055
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17053
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17067
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/16139
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/17123
+/tmp/opencode/whale_extract/.rsrc/1033/BITMAP/16131
+---total files---
+782
+[0m
+[0m$ [0mstrings -n 6 /tmp/opencode/WhaleSetup.exe | grep -iE '(sync|passphrase|PBKDF2|scrypt|key_deriv|EncryptedShared|Local State|Preferences|keychain|bcrypt|argon|encrypt|decrypt|secret|oauth|bearer|token|iteration|salt|derived)' | sort -u | head -80
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"><dependency><dependentAssembly><assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="x86" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity></dependentAssembly></dependency><trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"><security><requestedPrivileges><requestedExecutionLevel level="requireAdministrator" uiAccess="false"></requestedExecutionLevel></requestedPrivileges></security></trustInfo><application xmlns="urn:schemas-microsoft-com:asm.v3"><windowsSettings><dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:application xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"></ms_compatibility:supportedOS></ms_compatibility:application></ms_compatibility:compatibility></assembly>
+[0m
+[0m$ [0mstrings -n 8 /tmp/opencode/WhaleSetup.exe | grep -oiE 'https?://[a-z0-9._/-]+' | sort -u | head -60
+http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0E
+http://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0
+http://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crt0_
+http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C
+http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0
+http://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S
+http://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0
+http://crl3.digicert.com/DigiCertTrustedRootG4.crl0
+http://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0
+http://ocsp.digicert.com0
+http://ocsp.digicert.com0A
+http://ocsp.digicert.com0C
+http://schemas.microsoft.com/SMI/2005/WindowsSettings
+http://whale.naver.com0
+http://www.digicert.com/CPS0
+[0m
+The installer uses UPX packing. Let me run targeted string searches on the raw binary for sync-related strings and download URLs — this is the key for the sync KDF PROBE.
+[0m$ [0mstrings -n 4 /tmp/opencode/WhaleSetup.exe | grep -iE '(installer-whale|download|setup|installdir|target|component|whale\.|naver\.)' | sort -u | head -80
+D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb
+http://whale.naver.com0
+[0m
+[0m$ [0mstrings -n 4 /tmp/opencode/WhaleSetup.exe | grep -iE '(http|url|download|update|component|manifest|config|json|xml|proxy|server|endpoint|cdn|bucket|s3)' | grep -viE '(digicert|cacerts|crl|ocsp|schemas\.microsoft|whale\.naver\.com$)' | sort -u | head -40
+<trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+ S3H/5
+ s3k&<E
+!S3n
+#&S3'
+#S3,a
+$GS3
+$S3VcE$
+$ns3
+&s3gv
+'Ogxml
+'XS3
+(URL|OS
+*S3:
+*mS3
+,Us3
+-XMl
+/s3]i
+2js3
+7%e|4ws30
+7S3\
+7s3%l
+:S3|
+;xS3
+;~S3>
+<(s3*
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<assembly xmlns='urn:schemas-microsoft-com:asm.v1' manifestVersion='1.0'>
+A\s3
+C S3
+Cdn^
+DS35
+E^G|S3
+GHttp
+Gss3
+I[rKS3E
+Ls3LP
+S#]uS3u.U
+S3)j
+[0m
+[0m$ [0mfind /tmp/opencode/whale_extract -name "*.html" -exec cat {} \; 2>/dev/null | head -80; echo "==="; find /tmp/opencode/whale_extract -name "STRING" -type d 2>/dev/null; strings /tmp/opencode/whale_extract/.rsrc/18/STRING/94 2>/dev/null | head -20
+===
+/tmp/opencode/whale_extract/.rsrc/18/STRING
+/tmp/opencode/whale_extract/.rsrc/1033/STRING
+/tmp/opencode/whale_extract/.rsrc/9/STRING
+[0m
+Key finding: the installer is an **online stub installer** — the PDB path reveals `D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb`. The sync module strings aren't in the stub itself. Let me dig deeper for download URLs and check the HTML resources.
+[0m$ [0mstrings -n 8 /tmp/opencode/WhaleSetup.exe | grep -iE '(whale|naver|browser|version|install|setup|update|component|download|online|remote|fetch|cdn|bucket)' | sort -u | head -60
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"><dependency><dependentAssembly><assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="x86" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity></dependentAssembly></dependency><trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"><security><requestedPrivileges><requestedExecutionLevel level="requireAdministrator" uiAccess="false"></requestedExecutionLevel></requestedPrivileges></security></trustInfo><application xmlns="urn:schemas-microsoft-com:asm.v3"><windowsSettings><dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:application xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"></ms_compatibility:supportedOS></ms_compatibility:application></ms_compatibility:compatibility></assembly>
+<assembly xmlns='urn:schemas-microsoft-com:asm.v1' manifestVersion='1.0'>
+D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb
+NAVER Co
+NAVER Corp.0
+NAVER Corp.1
+h"cDn!ZF~
+http://whale.naver.com0
+[0m
+[0m$ [0mcd /tmp/opencode/whale_extract && python3 -c "
+import struct, os
+
+# Parse PE resources to extract HTML and STRING table entries
+pe_file = '../WhaleSetup.exe'
+data = open(pe_file, 'rb').read()
+
+# Look for HTML content (starts with <!DOCTYPE or <html)
+import re
+for m in re.finditer(b'<!DOCTYPE[^>]*>', data):
+    start = m.start()
+    # Find end of HTML block
+    end = data.find(b'</html>', start)
+    if end > 0:
+        end += 7
+        snippet = data[start:end]
+        if len(snippet) < 5000:
+            print(f'--- HTML block at {start:#x} ({len(snippet)} bytes) ---')
+            print(snippet.decode('utf-8', errors='replace')[:2000])
+            print()
+" 2>/dev/null | head -80
+(no output)
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 4 -e l WhaleSetup.exe | grep -iE '(sync|passphr|PBKDF|key|token|encrypt|decrypt|oauth|bearer|salt|iterat|derive|keychain|secret|pass|local.?state|preference)' | sort -u | head -60
+AQUA_IDB_OFFICE2007_MENU_BTN%AQUA_IDB_OFFICE2007_MENU_BTN_DISABLED%AQUA_IDB_OFFICE2007_MENU_BTN_SCROLL_T"AQUA_IDB_OFFICE2007_MENU_ITEM_BACK&AQUA_IDB_OFFICE2007_MENU_ITEM_MARKER_C&AQUA_IDB_OFFICE2007_MENU_ITEM_MARKER_R$AQUA_IDB_OFFICE2007_POPUPMENU_BORDER'AQUA_IDB_OFFICE2007_POPUPMENU_RESIZEBAR/AQUA_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_HV0AQUA_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_HVT.AQUA_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_V(AQUA_IDB_OFFICE2007_RIBBON_BORDER_FLOATY$AQUA_IDB_OFFICE2007_RIBBON_BTN_CHECK&AQUA_IDB_OFFICE2007_RIBBON_BTN_DEFAULT,AQUA_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_IMAGE*AQUA_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_QAT/AQUA_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_QAT_ICON,AQUA_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_F_C,AQUA_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_F_M,AQUA_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_L_C,AQUA_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_L_M,AQUA_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_M_C,AQUA_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_M_M&AQUA_IDB_OFFICE2007_RIBBON_BTN_GROUP_F&AQUA_IDB_OFFICE2007_RIBBON_BTN_GROUP_L&AQUA_IDB_OFFICE2007_RIBBON_BTN_GROUP_M&AQUA_IDB_OFFICE2007_RIBBON_BTN_GROUP_S*AQUA_IDB_OFFICE2007_RIBBON_BTN_LAUNCH_ICON#AQUA_IDB_OFFICE2007_RIBBON_BTN_MAIN'AQUA_IDB_OFFICE2007_RIBBON_BTN_MENU_H_C'AQUA_IDB_OFFICE2007_RIBBON_BTN_MENU_H_M'AQUA_IDB_OFFICE2007_RIBBON_BTN_MENU_V_C'AQUA_IDB_OFFICE2007_RIBBON_BTN_MENU_V_M'AQUA_IDB_OFFICE2007_RIBBON_BTN_NORMAL_B'AQUA_IDB_OFFICE2007_RIBBON_BTN_NORMAL_S%AQUA_IDB_OFFICE2007_RIBBON_BTN_PAGE_L%AQUA_IDB_OFFICE2007_RIBBON_BTN_PAGE_R(AQUA_IDB_OFFICE2007_RIBBON_BTN_PALETTE_B(AQUA_IDB_OFFICE2007_RIBBON_BTN_PALETTE_M(AQUA_IDB_OFFICE2007_RIBBON_BTN_PALETTE_T)AQUA_IDB_OFFICE2007_RIBBON_BTN_PANEL_MAIN*AQUA_IDB_OFFICE2007_RIBBON_BTN_STATUS_PANE%AQUA_IDB_OFFICE2007_RIBBON_CAPTION_QA+AQUA_IDB_OFFICE2007_RIBBON_CAPTION_QA_GLASS(AQUA_IDB_OFFICE2007_RIBBON_CATEGORY_BACK'AQUA_IDB_OFFICE2007_RIBBON_CATEGORY_TAB0AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_B_BTN_DEFAULT2AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_BACK5AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_CAPTION1AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_TAB0AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_G_BTN_DEFAULT2AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_BACK5AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_CAPTION1AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_TAB0AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_I_BTN_DEFAULT2AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_BACK5AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_CAPTION1AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_TAB0AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_O_BTN_DEFAULT2AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_BACK5AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_CAPTION1AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_TAB/AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_PANEL_BACK_B/AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_PANEL_BACK_T0AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_R_BTN_DEFAULT2AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_BACK5AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_CAPTION1AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_TAB,AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_SEPARATOR0AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_V_BTN_DEFAULT2AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_BACK5AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_CAPTION1AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_TAB0AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_Y_BTN_DEFAULT2AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_BACK5AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_CAPTION1AQUA_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_TAB&AQUA_IDB_OFFICE2007_RIBBON_KEYTIP_BACK'AQUA_IDB_OFFICE2007_RIBBON_PANEL_BACK_B'AQUA_IDB_OFFICE2007_RIBBON_PANEL_BACK_T*AQUA_IDB_OFFICE2007_RIBBON_PANEL_SEPARATOR(AQUA_IDB_OFFICE2007_RIBBON_PROGRESS_BACK,AQUA_IDB_OFFICE2007_RIBBON_PROGRESS_INFINITY*AQUA_IDB_OFFICE2007_RIBBON_PROGRESS_NORMAL.AQUA_IDB_OFFICE2007_RIBBON_PROGRESS_NORMAL_EXT+AQUA_IDB_OFFICE2007_RIBBON_SLIDER_BTN_MINUS*AQUA_IDB_OFFICE2007_RIBBON_SLIDER_BTN_PLUS'AQUA_IDB_OFFICE2007_RIBBON_SLIDER_THUMB"AQUA_IDB_OFFICE2007_STATUSBAR_BACK&AQUA_IDB_OFFICE2007_STATUSBAR_BACK_EXT(AQUA_IDB_OFFICE2007_STATUSBAR_PANEBORDER%AQUA_IDB_OFFICE2007_STATUSBAR_SIZEBOX AQUA_IDB_OFFICE2007_SYS_BTN_BACK"AQUA_IDB_OFFICE2007_SYS_BTN_BACK_S!AQUA_IDB_OFFICE2007_SYS_BTN_CLOSE#AQUA_IDB_OFFICE2007_SYS_BTN_CLOSE_S$AQUA_IDB_OFFICE2007_SYS_BTN_MAXIMIZE&AQUA_IDB_OFFICE2007_SYS_BTN_MAXIMIZE_S$AQUA_IDB_OFFICE2007_SYS_BTN_MINIMIZE&AQUA_IDB_OFFICE2007_SYS_BTN_MINIMIZE_S#AQUA_IDB_OFFICE2007_SYS_BTN_RESTORE%AQUA_IDB_OFFICE2007_SYS_BTN_RESTORE_S
+BLACK_IDB_OFFICE2007_MENU_BTN&BLACK_IDB_OFFICE2007_MENU_BTN_DISABLED&BLACK_IDB_OFFICE2007_MENU_BTN_SCROLL_T,BLACK_IDB_OFFICE2007_MENU_BTN_VERT_SEPARATOR#BLACK_IDB_OFFICE2007_MENU_ITEM_BACK'BLACK_IDB_OFFICE2007_MENU_ITEM_MARKER_C'BLACK_IDB_OFFICE2007_MENU_ITEM_MARKER_R%BLACK_IDB_OFFICE2007_OUTLOOK_BAR_BACK%BLACK_IDB_OFFICE2007_OUTLOOK_BTN_PAGE%BLACK_IDB_OFFICE2007_POPUPMENU_BORDER(BLACK_IDB_OFFICE2007_POPUPMENU_RESIZEBAR0BLACK_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_HV1BLACK_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_HVT/BLACK_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_V)BLACK_IDB_OFFICE2007_RIBBON_BORDER_FLOATY&BLACK_IDB_OFFICE2007_RIBBON_BORDER_QAT%BLACK_IDB_OFFICE2007_RIBBON_BTN_CHECK'BLACK_IDB_OFFICE2007_RIBBON_BTN_DEFAULT,BLACK_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_ICON-BLACK_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_IMAGE+BLACK_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_QAT0BLACK_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_QAT_ICON-BLACK_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_F_C-BLACK_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_F_M-BLACK_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_L_C-BLACK_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_L_M-BLACK_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_M_C-BLACK_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_M_M'BLACK_IDB_OFFICE2007_RIBBON_BTN_GROUP_F'BLACK_IDB_OFFICE2007_RIBBON_BTN_GROUP_L'BLACK_IDB_OFFICE2007_RIBBON_BTN_GROUP_M'BLACK_IDB_OFFICE2007_RIBBON_BTN_GROUP_S&BLACK_IDB_OFFICE2007_RIBBON_BTN_LAUNCH+BLACK_IDB_OFFICE2007_RIBBON_BTN_LAUNCH_ICON$BLACK_IDB_OFFICE2007_RIBBON_BTN_MAIN(BLACK_IDB_OFFICE2007_RIBBON_BTN_MENU_H_C(BLACK_IDB_OFFICE2007_RIBBON_BTN_MENU_H_M(BLACK_IDB_OFFICE2007_RIBBON_BTN_MENU_V_C(BLACK_IDB_OFFICE2007_RIBBON_BTN_MENU_V_M(BLACK_IDB_OFFICE2007_RIBBON_BTN_NORMAL_B(BLACK_IDB_OFFICE2007_RIBBON_BTN_NORMAL_S&BLACK_IDB_OFFICE2007_RIBBON_BTN_PAGE_L&BLACK_IDB_OFFICE2007_RIBBON_BTN_PAGE_R)BLACK_IDB_OFFICE2007_RIBBON_BTN_PALETTE_B)BLACK_IDB_OFFICE2007_RIBBON_BTN_PALETTE_M)BLACK_IDB_OFFICE2007_RIBBON_BTN_PALETTE_T*BLACK_IDB_OFFICE2007_RIBBON_BTN_PANEL_MAIN+BLACK_IDB_OFFICE2007_RIBBON_BTN_STATUS_PANE&BLACK_IDB_OFFICE2007_RIBBON_CAPTION_QA,BLACK_IDB_OFFICE2007_RIBBON_CAPTION_QA_GLASS)BLACK_IDB_OFFICE2007_RIBBON_CATEGORY_BACK(BLACK_IDB_OFFICE2007_RIBBON_CATEGORY_TAB,BLACK_IDB_OFFICE2007_RIBBON_CATEGORY_TAB_SEP1BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_B_BTN_DEFAULT3BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_BACK6BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_CAPTION2BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_TAB1BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_G_BTN_DEFAULT3BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_BACK6BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_CAPTION2BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_TAB1BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_I_BTN_DEFAULT3BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_BACK6BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_CAPTION2BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_TAB1BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_O_BTN_DEFAULT3BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_BACK6BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_CAPTION2BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_TAB0BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_PANEL_BACK_B0BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_PANEL_BACK_T1BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_R_BTN_DEFAULT3BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_BACK6BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_CAPTION2BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_TAB-BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_SEPARATOR1BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_V_BTN_DEFAULT3BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_BACK6BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_CAPTION2BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_TAB1BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_Y_BTN_DEFAULT3BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_BACK6BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_CAPTION2BLACK_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_TAB'BLACK_IDB_OFFICE2007_RIBBON_KEYTIP_BACK(BLACK_IDB_OFFICE2007_RIBBON_PANEL_BACK_B(BLACK_IDB_OFFICE2007_RIBBON_PANEL_BACK_T&BLACK_IDB_OFFICE2007_RIBBON_PANEL_MAIN-BLACK_IDB_OFFICE2007_RIBBON_PANEL_MAIN_BORDER%BLACK_IDB_OFFICE2007_RIBBON_PANEL_QAT+BLACK_IDB_OFFICE2007_RIBBON_PANEL_SEPARATOR)BLACK_IDB_OFFICE2007_RIBBON_PROGRESS_BACK-BLACK_IDB_OFFICE2007_RIBBON_PROGRESS_INFINITY+BLACK_IDB_OFFICE2007_RIBBON_PROGRESS_NORMAL/BLACK_IDB_OFFICE2007_RIBBON_PROGRESS_NORMAL_EXT,BLACK_IDB_OFFICE2007_RIBBON_SLIDER_BTN_MINUS+BLACK_IDB_OFFICE2007_RIBBON_SLIDER_BTN_PLUS(BLACK_IDB_OFFICE2007_RIBBON_SLIDER_THUMB#BLACK_IDB_OFFICE2007_STATUSBAR_BACK'BLACK_IDB_OFFICE2007_STATUSBAR_BACK_EXT)BLACK_IDB_OFFICE2007_STATUSBAR_PANEBORDER&BLACK_IDB_OFFICE2007_STATUSBAR_SIZEBOX!BLACK_IDB_OFFICE2007_SYS_BTN_BACK#BLACK_IDB_OFFICE2007_SYS_BTN_BACK_S"BLACK_IDB_OFFICE2007_SYS_BTN_CLOSE$BLACK_IDB_OFFICE2007_SYS_BTN_CLOSE_S%BLACK_IDB_OFFICE2007_SYS_BTN_MAXIMIZE'BLACK_IDB_OFFICE2007_SYS_BTN_MAXIMIZE_S%BLACK_IDB_OFFICE2007_SYS_BTN_MINIMIZE'BLACK_IDB_OFFICE2007_SYS_BTN_MINIMIZE_S$BLACK_IDB_OFFICE2007_SYS_BTN_RESTORE&BLACK_IDB_OFFICE2007_SYS_BTN_RESTORE_S
+BLUE_IDB_OFFICE2007_MENU_BTN%BLUE_IDB_OFFICE2007_MENU_BTN_DISABLED%BLUE_IDB_OFFICE2007_MENU_BTN_SCROLL_T+BLUE_IDB_OFFICE2007_MENU_BTN_VERT_SEPARATOR"BLUE_IDB_OFFICE2007_MENU_ITEM_BACK&BLUE_IDB_OFFICE2007_MENU_ITEM_MARKER_C&BLUE_IDB_OFFICE2007_MENU_ITEM_MARKER_R$BLUE_IDB_OFFICE2007_OUTLOOK_BAR_BACK$BLUE_IDB_OFFICE2007_OUTLOOK_BTN_PAGE$BLUE_IDB_OFFICE2007_POPUPMENU_BORDER'BLUE_IDB_OFFICE2007_POPUPMENU_RESIZEBAR/BLUE_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_HV0BLUE_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_HVT.BLUE_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_V(BLUE_IDB_OFFICE2007_RIBBON_BORDER_FLOATY%BLUE_IDB_OFFICE2007_RIBBON_BORDER_QAT$BLUE_IDB_OFFICE2007_RIBBON_BTN_CHECK&BLUE_IDB_OFFICE2007_RIBBON_BTN_DEFAULT+BLUE_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_ICON,BLUE_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_IMAGE*BLUE_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_QAT/BLUE_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_QAT_ICON,BLUE_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_F_C,BLUE_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_F_M,BLUE_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_L_C,BLUE_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_L_M,BLUE_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_M_C,BLUE_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_M_M&BLUE_IDB_OFFICE2007_RIBBON_BTN_GROUP_F&BLUE_IDB_OFFICE2007_RIBBON_BTN_GROUP_L&BLUE_IDB_OFFICE2007_RIBBON_BTN_GROUP_M&BLUE_IDB_OFFICE2007_RIBBON_BTN_GROUP_S%BLUE_IDB_OFFICE2007_RIBBON_BTN_LAUNCH*BLUE_IDB_OFFICE2007_RIBBON_BTN_LAUNCH_ICON#BLUE_IDB_OFFICE2007_RIBBON_BTN_MAIN'BLUE_IDB_OFFICE2007_RIBBON_BTN_MENU_H_C'BLUE_IDB_OFFICE2007_RIBBON_BTN_MENU_H_M'BLUE_IDB_OFFICE2007_RIBBON_BTN_MENU_V_C'BLUE_IDB_OFFICE2007_RIBBON_BTN_MENU_V_M'BLUE_IDB_OFFICE2007_RIBBON_BTN_NORMAL_B'BLUE_IDB_OFFICE2007_RIBBON_BTN_NORMAL_S%BLUE_IDB_OFFICE2007_RIBBON_BTN_PAGE_L%BLUE_IDB_OFFICE2007_RIBBON_BTN_PAGE_R(BLUE_IDB_OFFICE2007_RIBBON_BTN_PALETTE_B(BLUE_IDB_OFFICE2007_RIBBON_BTN_PALETTE_M(BLUE_IDB_OFFICE2007_RIBBON_BTN_PALETTE_T)BLUE_IDB_OFFICE2007_RIBBON_BTN_PANEL_MAIN*BLUE_IDB_OFFICE2007_RIBBON_BTN_STATUS_PANE%BLUE_IDB_OFFICE2007_RIBBON_CAPTION_QA+BLUE_IDB_OFFICE2007_RIBBON_CAPTION_QA_GLASS(BLUE_IDB_OFFICE2007_RIBBON_CATEGORY_BACK'BLUE_IDB_OFFICE2007_RIBBON_CATEGORY_TAB+BLUE_IDB_OFFICE2007_RIBBON_CATEGORY_TAB_SEP0BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_B_BTN_DEFAULT2BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_BACK5BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_CAPTION1BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_TAB0BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_G_BTN_DEFAULT2BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_BACK5BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_CAPTION1BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_TAB0BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_I_BTN_DEFAULT2BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_BACK5BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_CAPTION1BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_TAB0BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_O_BTN_DEFAULT2BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_BACK5BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_CAPTION1BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_TAB/BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_PANEL_BACK_B/BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_PANEL_BACK_T0BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_R_BTN_DEFAULT2BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_BACK5BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_CAPTION1BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_TAB,BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_SEPARATOR0BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_V_BTN_DEFAULT2BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_BACK5BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_CAPTION1BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_TAB0BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_Y_BTN_DEFAULT2BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_BACK5BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_CAPTION1BLUE_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_TAB&BLUE_IDB_OFFICE2007_RIBBON_KEYTIP_BACK'BLUE_IDB_OFFICE2007_RIBBON_PANEL_BACK_B'BLUE_IDB_OFFICE2007_RIBBON_PANEL_BACK_T%BLUE_IDB_OFFICE2007_RIBBON_PANEL_MAIN,BLUE_IDB_OFFICE2007_RIBBON_PANEL_MAIN_BORDER$BLUE_IDB_OFFICE2007_RIBBON_PANEL_QAT*BLUE_IDB_OFFICE2007_RIBBON_PANEL_SEPARATOR(BLUE_IDB_OFFICE2007_RIBBON_PROGRESS_BACK,BLUE_IDB_OFFICE2007_RIBBON_PROGRESS_INFINITY*BLUE_IDB_OFFICE2007_RIBBON_PROGRESS_NORMAL.BLUE_IDB_OFFICE2007_RIBBON_PROGRESS_NORMAL_EXT+BLUE_IDB_OFFICE2007_RIBBON_SLIDER_BTN_MINUS*BLUE_IDB_OFFICE2007_RIBBON_SLIDER_BTN_PLUS'BLUE_IDB_OFFICE2007_RIBBON_SLIDER_THUMB"BLUE_IDB_OFFICE2007_STATUSBAR_BACK&BLUE_IDB_OFFICE2007_STATUSBAR_BACK_EXT(BLUE_IDB_OFFICE2007_STATUSBAR_PANEBORDER%BLUE_IDB_OFFICE2007_STATUSBAR_SIZEBOX BLUE_IDB_OFFICE2007_SYS_BTN_BACK"BLUE_IDB_OFFICE2007_SYS_BTN_BACK_S!BLUE_IDB_OFFICE2007_SYS_BTN_CLOSE#BLUE_IDB_OFFICE2007_SYS_BTN_CLOSE_S$BLUE_IDB_OFFICE2007_SYS_BTN_MAXIMIZE&BLUE_IDB_OFFICE2007_SYS_BTN_MAXIMIZE_S$BLUE_IDB_OFFICE2007_SYS_BTN_MINIMIZE&BLUE_IDB_OFFICE2007_SYS_BTN_MINIMIZE_S#BLUE_IDB_OFFICE2007_SYS_BTN_RESTORE%BLUE_IDB_OFFICE2007_SYS_BTN_RESTORE_S
+SILVER_IDB_OFFICE2007_MENU_BTN'SILVER_IDB_OFFICE2007_MENU_BTN_DISABLED'SILVER_IDB_OFFICE2007_MENU_BTN_SCROLL_T-SILVER_IDB_OFFICE2007_MENU_BTN_VERT_SEPARATOR$SILVER_IDB_OFFICE2007_MENU_ITEM_BACK(SILVER_IDB_OFFICE2007_MENU_ITEM_MARKER_C(SILVER_IDB_OFFICE2007_MENU_ITEM_MARKER_R&SILVER_IDB_OFFICE2007_OUTLOOK_BAR_BACK&SILVER_IDB_OFFICE2007_OUTLOOK_BTN_PAGE&SILVER_IDB_OFFICE2007_POPUPMENU_BORDER)SILVER_IDB_OFFICE2007_POPUPMENU_RESIZEBAR1SILVER_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_HV2SILVER_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_HVT0SILVER_IDB_OFFICE2007_POPUPMENU_RESIZEBAR_ICON_V*SILVER_IDB_OFFICE2007_RIBBON_BORDER_FLOATY'SILVER_IDB_OFFICE2007_RIBBON_BORDER_QAT&SILVER_IDB_OFFICE2007_RIBBON_BTN_CHECK(SILVER_IDB_OFFICE2007_RIBBON_BTN_DEFAULT-SILVER_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_ICON.SILVER_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_IMAGE,SILVER_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_QAT1SILVER_IDB_OFFICE2007_RIBBON_BTN_DEFAULT_QAT_ICON.SILVER_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_F_C.SILVER_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_F_M.SILVER_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_L_C.SILVER_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_L_M.SILVER_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_M_C.SILVER_IDB_OFFICE2007_RIBBON_BTN_GROUPMENU_M_M(SILVER_IDB_OFFICE2007_RIBBON_BTN_GROUP_F(SILVER_IDB_OFFICE2007_RIBBON_BTN_GROUP_L(SILVER_IDB_OFFICE2007_RIBBON_BTN_GROUP_M(SILVER_IDB_OFFICE2007_RIBBON_BTN_GROUP_S'SILVER_IDB_OFFICE2007_RIBBON_BTN_LAUNCH,SILVER_IDB_OFFICE2007_RIBBON_BTN_LAUNCH_ICON%SILVER_IDB_OFFICE2007_RIBBON_BTN_MAIN)SILVER_IDB_OFFICE2007_RIBBON_BTN_MENU_H_C)SILVER_IDB_OFFICE2007_RIBBON_BTN_MENU_H_M)SILVER_IDB_OFFICE2007_RIBBON_BTN_MENU_V_C)SILVER_IDB_OFFICE2007_RIBBON_BTN_MENU_V_M)SILVER_IDB_OFFICE2007_RIBBON_BTN_NORMAL_B)SILVER_IDB_OFFICE2007_RIBBON_BTN_NORMAL_S'SILVER_IDB_OFFICE2007_RIBBON_BTN_PAGE_L'SILVER_IDB_OFFICE2007_RIBBON_BTN_PAGE_R*SILVER_IDB_OFFICE2007_RIBBON_BTN_PALETTE_B*SILVER_IDB_OFFICE2007_RIBBON_BTN_PALETTE_M*SILVER_IDB_OFFICE2007_RIBBON_BTN_PALETTE_T+SILVER_IDB_OFFICE2007_RIBBON_BTN_PANEL_MAIN,SILVER_IDB_OFFICE2007_RIBBON_BTN_STATUS_PANE'SILVER_IDB_OFFICE2007_RIBBON_CAPTION_QA-SILVER_IDB_OFFICE2007_RIBBON_CAPTION_QA_GLASS*SILVER_IDB_OFFICE2007_RIBBON_CATEGORY_BACK)SILVER_IDB_OFFICE2007_RIBBON_CATEGORY_TAB-SILVER_IDB_OFFICE2007_RIBBON_CATEGORY_TAB_SEP2SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_B_BTN_DEFAULT4SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_BACK7SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_CAPTION3SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_B_CATEGORY_TAB2SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_G_BTN_DEFAULT4SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_BACK7SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_CAPTION3SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_G_CATEGORY_TAB2SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_I_BTN_DEFAULT4SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_BACK7SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_CAPTION3SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_I_CATEGORY_TAB2SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_O_BTN_DEFAULT4SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_BACK7SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_CAPTION3SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_O_CATEGORY_TAB1SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_PANEL_BACK_B1SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_PANEL_BACK_T2SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_R_BTN_DEFAULT4SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_BACK7SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_CAPTION3SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_R_CATEGORY_TAB.SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_SEPARATOR2SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_V_BTN_DEFAULT4SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_BACK7SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_CAPTION3SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_V_CATEGORY_TAB2SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_Y_BTN_DEFAULT4SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_BACK7SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_CAPTION3SILVER_IDB_OFFICE2007_RIBBON_CONTEXT_Y_CATEGORY_TAB(SILVER_IDB_OFFICE2007_RIBBON_KEYTIP_BACK)SILVER_IDB_OFFICE2007_RIBBON_PANEL_BACK_B)SILVER_IDB_OFFICE2007_RIBBON_PANEL_BACK_T'SILVER_IDB_OFFICE2007_RIBBON_PANEL_MAIN.SILVER_IDB_OFFICE2007_RIBBON_PANEL_MAIN_BORDER&SILVER_IDB_OFFICE2007_RIBBON_PANEL_QAT,SILVER_IDB_OFFICE2007_RIBBON_PANEL_SEPARATOR*SILVER_IDB_OFFICE2007_RIBBON_PROGRESS_BACK.SILVER_IDB_OFFICE2007_RIBBON_PROGRESS_INFINITY,SILVER_IDB_OFFICE2007_RIBBON_PROGRESS_NORMAL0SILVER_IDB_OFFICE2007_RIBBON_PROGRESS_NORMAL_EXT-SILVER_IDB_OFFICE2007_RIBBON_SLIDER_BTN_MINUS,SILVER_IDB_OFFICE2007_RIBBON_SLIDER_BTN_PLUS)SILVER_IDB_OFFICE2007_RIBBON_SLIDER_THUMB$SILVER_IDB_OFFICE2007_STATUSBAR_BACK(SILVER_IDB_OFFICE2007_STATUSBAR_BACK_EXT*SILVER_IDB_OFFICE2007_STATUSBAR_PANEBORDER'SILVER_IDB_OFFICE2007_STATUSBAR_SIZEBOX"SILVER_IDB_OFFICE2007_SYS_BTN_BACK$SILVER_IDB_OFFICE2007_SYS_BTN_BACK_S#SILVER_IDB_OFFICE2007_SYS_BTN_CLOSE%SILVER_IDB_OFFICE2007_SYS_BTN_CLOSE_S&SILVER_IDB_OFFICE2007_SYS_BTN_MAXIMIZE(SILVER_IDB_OFFICE2007_SYS_BTN_MAXIMIZE_S&SILVER_IDB_OFFICE2007_SYS_BTN_MINIMIZE(SILVER_IDB_OFFICE2007_SYS_BTN_MINIMIZE_S%SILVER_IDB_OFFICE2007_SYS_BTN_RESTORE'SILVER_IDB_OFFICE2007_SYS_BTN_RESTORE_S
+api-ms-win-core-synch-l1-2-0
+[0m
+Let me extract the HTML resources and string tables from the installer to check for sync-related UI text and download URLs.
+[0m$ [0mcd /tmp/opencode && python3 -c "
+data = open('WhaleSetup.exe', 'rb').read()
+# Search for 'Cdn' context and nearby strings
+import re
+for m in re.finditer(b'Cdn', data):
+    s = max(0, m.start()-100)
+    e = min(len(data), m.end()+200)
+    snippet = data[s:e]
+    # Show printable chars
+    text = ''
+    for b in snippet:
+        if 32 <= b < 127 or b in (10, 13, 9):
+            text += chr(b)
+        else:
+            text += '.'
+    print(text)
+    print('---')
+" 2>/dev/null | head -60
+}.+=...p
+K..K
+
+...8H."t.rI4t0..m.....$T.P..P.0.-....:2xNR.m9.KS..Lll.5........,.>.L?@...";Bv..D2B>8.Cdn^..(=.9.+\2..-.
+.8].-&....e0.m$3,..
+.F.w.3l....E..*.P...*..........*....F..^.+_........S.}......J..........>.....4.....&....3s.K..t$P...C...t...U..4....Sjd.G...mJ.T..~3.'..........%.\3!....hT*...te..H
+---
+[0m
+[0m$ [0mwhich upx 2>/dev/null; echo "---"; cd /tmp/opencode && python3 -c "
+data = open('WhaleSetup.exe', 'rb').read()
+# Search for URL-like patterns including partial
+import re
+# Look for any URL fragments
+for m in re.finditer(b'https?://[a-zA-Z0-9]', data):
+    s = max(0, m.start()-20)
+    e = min(len(data), m.end()+200)
+    text = data[s:e]
+    printable = ''.join(chr(b) if 32 <= b < 127 else '.' for b in text)
+    if printable.strip('.: '):
+        print(f'offset {m.start():#x}: {printable}')
+" 2>/dev/null | head -40
+/usr/bin/upx
+---
+offset 0xabb75a: gs><dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns=
+offset 0xabc31f: ...k0i0$..+.....0...http://ocsp.digicert.com0A..+.....0..5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0...U. ..0.0...g....0...g.....0...*.H...........
+offset 0xabc345: rt.com0A..+.....0..5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0...U. ..0.0...g....0...g.....0...*.H.............:#D=..v...:..V.....H4.,..tf..r....l0
+offset 0xabc38d: t0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0...U. ..0.0...g....0...g.....0...*.H.............:#D=..v...:..V.....H4.,..tf..r....l0'....D.K...|&.7.:]Hm..?I.'...EP......v~7q.".Z.....j.. ..Py........H.~...
+offset 0xabca2d: ....0)0'..+.........http://www.digicert.com/CPS0...U...........0...U.%..0...+.......0....U.....0..0S.Q.O.Mhttp://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S.Q.O.Mhttp://crl4.digicert.com/DigiCertTrus
+offset 0xabca83: ...U.....0..0S.Q.O.Mhttp://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S.Q.O.Mhttp://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0....+..........0..0$..+.....0...http://ocsp.d
+offset 0xabcad8: 42021CA1.crl0S.Q.O.Mhttp://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0....+..........0..0$..+.....0...http://ocsp.digicert.com0\..+.....0..Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4
+offset 0xabcb46: ...0..0$..+.....0...http://ocsp.digicert.com0\..+.....0..Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0...U....0.0...*.H.............T?YcbP...I.........]Z..2.n.-...............7.0..3...}1@..h|
+offset 0xabcb6c: rt.com0\..+.....0..Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0...U....0.0...*.H.............T?YcbP...I.........]Z..2.n.-...............7.0..3...}1@..h|......./.R...M......I>.7....a.Mk..V...
+offset 0xabcf11: .e.r. .W.h.a.l.e....http://whale.naver.com0...*.H.............l.^.#.....5.d....x.w.$.&........9>k.4p`.....T:.......%...T/.k.Jb..7XeV....t4........9ex."I.U.'V.......\...&...mL....m..l Rjz:.....Q..h.e]..<..C<I......_d....nU]..^..q
+offset 0xabd5de: ...0..0$..+.....0...http://ocsp.digicert.com0]..+.....0..Qhttp://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crt0_..U...X0V0T.R.P.Nhttp://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA256202
+offset 0xabd604: rt.com0]..+.....0..Qhttp://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crt0_..U...X0V0T.R.P.Nhttp://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0 ..U. ..0.0...g.....0...`.H..
+offset 0xabd668: t0_..U...X0V0T.R.P.Nhttp://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0 ..U. ..0.0...g.....0...`.H...l..0...*.H.............e*...'...`A...D.c@r!..."O.5....o...|..........h....!..&D7.O....T..a..!.....#
+offset 0xabdcce: ...k0i0$..+.....0...http://ocsp.digicert.com0A..+.....0..5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 ..U. ..0.0...g.....0...`.H...l..0...*.H.......
+offset 0xabdcf4: rt.com0A..+.....0..5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 ..U. ..0.0...g.....0...`.H...l..0...*.H.....................=.vq0.....4........0.O..
+offset 0xabdd3c: t0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 ..U. ..0.0...g.....0...`.H...l..0...*.H.....................=.vq0.....4........0.O..\.s....Lci.]....Pk...3j.$...<.H..K..~.wa8.!.P....E..+I.y..........,.-..r
+offset 0xabe36a: ...m0k0$..+.....0...http://ocsp.digicert.com0C..+.....0..7http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0E..U...>0<0:.8.6.4http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0...U. ..0.0...U. .0...*.H.............p..C\
+offset 0xabe390: rt.com0C..+.....0..7http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0E..U...>0<0:.8.6.4http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0...U. ..0.0...U. .0...*.H.............p..C\U.8_..t.=.....W......,..^..."...iT"...
+offset 0xabe3da: t0E..U...>0<0:.8.6.4http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0...U. ..0.0...U. .0...*.H.............p..C\U.8_..t.=.....W......,..^..."...iT"...wm.....Jz/-.8.........r.$.R..N.*..-V.....0z...^...CD.C!..r.H....O....w'D..
+offset 0xb20e77: ...k0i0$..+.....0...http://ocsp.digicert.com0A..+.....0..5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0...U. ..0.0...g....0...g.....0...*.H...........
+offset 0xb20e9d: rt.com0A..+.....0..5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0...U. ..0.0...g....0...g.....0...*.H.............:#D=..v...:..V.....H4.,..tf..r....l0
+offset 0xb20ee5: t0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0...U. ..0.0...g....0...g.....0...*.H.............:#D=..v...:..V.....H4.,..tf..r....l0'....D.K...|&.7.:]Hm..?I.'...EP......v~7q.".Z.....j.. ..Py........H.~...
+offset 0xb21585: ....0)0'..+.........http://www.digicert.com/CPS0...U...........0...U.%..0...+.......0....U.....0..0S.Q.O.Mhttp://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S.Q.O.Mhttp://crl4.digicert.com/DigiCertTrus
+offset 0xb215db: ...U.....0..0S.Q.O.Mhttp://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S.Q.O.Mhttp://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0....+..........0..0$..+.....0...http://ocsp.d
+offset 0xb21630: 42021CA1.crl0S.Q.O.Mhttp://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0....+..........0..0$..+.....0...http://ocsp.digicert.com0\..+.....0..Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4
+offset 0xb2169e: ...0..0$..+.....0...http://ocsp.digicert.com0\..+.....0..Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0...U....0.0...*.H.............T?YcbP...I.........]Z..2.n.-...............7.0..3...}1@..h|
+offset 0xb216c4: rt.com0\..+.....0..Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0...U....0.0...*.H.............T?YcbP...I.........]Z..2.n.-...............7.0..3...}1@..h|......./.R...M......I>.7....a.Mk..V...
+offset 0xb21a69: .e.r. .W.h.a.l.e....http://whale.naver.com0...*.H............AuQ.L..L....=.@..N.(X......./>X...o.......K..*.f.lF-!..Zk......W?..p.RH..{....3...-.'..UcR.S...NcC....v.......>....._....i/..h?....dO*...1..^..1p..'M.t...J...........)
+offset 0xb22135: ...0..0$..+.....0...http://ocsp.digicert.com0]..+.....0..Qhttp://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crt0_..U...X0V0T.R.P.Nhttp://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA256202
+offset 0xb2215b: rt.com0]..+.....0..Qhttp://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crt0_..U...X0V0T.R.P.Nhttp://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0 ..U. ..0.0...g.....0...`.H..
+offset 0xb221bf: t0_..U...X0V0T.R.P.Nhttp://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0 ..U. ..0.0...g.....0...`.H...l..0...*.H.............e*...'...`A...D.c@r!..."O.5....o...|..........h....!..&D7.O....T..a..!.....#
+offset 0xb22825: ...k0i0$..+.....0...http://ocsp.digicert.com0A..+.....0..5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 ..U. ..0.0...g.....0...`.H...l..0...*.H.......
+offset 0xb2284b: rt.com0A..+.....0..5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 ..U. ..0.0...g.....0...`.H...l..0...*.H.....................=.vq0.....4........0.O..
+offset 0xb22893: t0C..U...<0:08.6.4.2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 ..U. ..0.0...g.....0...`.H...l..0...*.H.....................=.vq0.....4........0.O..\.s....Lci.]....Pk...3j.$...<.H..K..~.wa8.!.P....E..+I.y..........,.-..r
+offset 0xb22ec1: ...m0k0$..+.....0...http://ocsp.digicert.com0C..+.....0..7http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0E..U...>0<0:.8.6.4http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0...U. ..0.0...U. .0...*.H.............p..C\
+offset 0xb22ee7: rt.com0C..+.....0..7http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0E..U...>0<0:.8.6.4http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0...U. ..0.0...U. .0...*.H.............p..C\U.8_..t.=.....W......,..^..."...iT"...
+offset 0xb22f31: t0E..U...>0<0:.8.6.4http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0...U. ..0.0...U. .0...*.H.............p..C\U.8_..t.=.....W......,..^..."...iT"...wm.....Jz/-.8.........r.$.R..N.*..-V.....0z...^...CD.C!..r.H....O....w'D..
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+data = open('WhaleSetup.exe', 'rb').read()
+# Search for version strings and installer metadata
+import re
+# Look for version-like patterns
+for m in re.finditer(b'[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+', data):
+    s = max(0, m.start()-40)
+    e = min(len(data), m.end()+40)
+    text = data[s:e]
+    printable = ''.join(chr(b) if 32 <= b < 127 else '.' for b in text)
+    if printable.strip('.: '):
+        print(f'offset {m.start():#x}: {printable}')
+" 2>/dev/null | sort -u | head -40
+offset 0xabb599: osoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="x86" publicKeyT
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+data = open('WhaleSetup.exe', 'rb').read()
+import re
+# Search for download/install related keywords in raw binary
+keywords = ['download', 'install', 'update', 'component', 'whale', 'naver', 'sync', 'passphrase', 'key', 'token', 'encrypt', 'decrypt', 'PBKDF', 'scrypt', 'bcrypt', 'salt', 'iteration', 'Local State', 'Preferences']
+for kw in keywords:
+    pattern = kw.encode('utf-8') if not kw.lower() == kw else kw.encode('utf-8')
+    found = False
+    for m in re.finditer(re.escape(pattern), data, re.IGNORECASE):
+        s = max(0, m.start()-30)
+        e = min(len(data), m.end()+60)
+        text = data[s:e]
+        printable = ''.join(chr(b) if 32 <= b < 127 else '.' for b in text)
+        print(f'[{kw}] offset {m.start():#x}: {printable}')
+        found = True
+        break
+    if not found:
+        print(f'[{kw}] NOT FOUND')
+" 2>/dev/null
+[download] NOT FOUND
+[install] offset 0x12a15: I.k....rG....D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb..................
+[update] NOT FOUND
+[component] NOT FOUND
+[whale] offset 0x12a07: ...RSDS.......I.k....rG....D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb..
+[naver] offset 0x9a1eed: 1) X...0..&..r..*0Ds.Zl..u..i.NAVER Co...j[b1..ny.w.%\..cU(.G\j]..i....6sk..+.j`.mo8.*...0..ely
+[sync] NOT FOUND
+[passphrase] NOT FOUND
+[key] offset 0xbd404: .z.>dowF.U.. g.v..f5.i.RegOpenKeyo.5.9/-.8`.3..s...%.....(..K.....^u ....6...>xG4.S...I.B....
+[token] offset 0xabb5c7: orArchitecture="x86" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity></depend
+[encrypt] NOT FOUND
+[decrypt] NOT FOUND
+[PBKDF] NOT FOUND
+[scrypt] NOT FOUND
+[bcrypt] NOT FOUND
+[salt] NOT FOUND
+[iteration] NOT FOUND
+[Local State] NOT FOUND
+[Preferences] NOT FOUND
+[0m
+[0m$ [0mcd /tmp/opencode && upx -t WhaleSetup.exe 2>&1 | head -10; echo "=== upx info ==="; upx -l WhaleSetup.exe 2>&1 | head -10
+Ultimate Packer for eXecutables
+                          Copyright (C) 1996 - 2024
+UPX 4.2.2       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 3rd 2024
+
+upx: WhaleSetup.exe: NotPackedException: not packed by UPX
+
+Tested 0 files.
+=== upx info ===
+                       Ultimate Packer for eXecutables
+                          Copyright (C) 1996 - 2024
+UPX 4.2.2       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 3rd 2024
+
+        File size         Ratio      Format      Name
+   --------------------   ------   -----------   -----------
+upx: WhaleSetup.exe: NotPackedException: not packed by UPX
+[0m
+[0m$ [0mcurl -s -m 15 "https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js" 2>/dev/null | grep -oiE 'https?://[^"'\'') ]*\.apk|com\.naver\.whale[^"'\'') ]*|naver.whale[^"'\'') ]*|whale.*apk[^"'\'') ]*' | head -20; echo "=== checking play store ==="; curl -sI -m 15 "https://play.google.com/store/apps/details?id=com.naver.whale" 2>/dev/null | head -5
+Naver Whale
+naver_whale/
+naver-whale-stable_amd64.deb
+com.naver.whale&referrer=utm_source%3Dwhale%2520home%26utm_medium%3Ddownload%26utm_campaign%3D
+naver-whale-BHttDOWH.svg
+naver-whale-qhh4KCv7.svg
+NAVER whale
+com.naver.whale
+naver_whale
+Naver Whale
+Naver Whale(PC설치형
+Naver Whale
+Naver Whale
+Naver Whale
+NAVER Whale
+naver-whale-stable_amd64.deb
+com.naver.whale&referrer=utm_source%3Dwhale%2520home%26utm_medium%3Ddownload%26utm_campaign%3D
+=== checking play store ===
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+vary: Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site
+x-ua-compatible: IE=edge
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+[0m
+Critical finding: the installer is an **online stub** — no sync-related strings (`sync`, `passphrase`, `PBKDF`, `PBKDF2`, `scrypt`, `key_deriv`, `Local State`, `Preferences`, etc.) are present. The sync module lives in the browser binary, not the installer stub. Let me try UPX decompression and search for the Android APK as a fallback path.
+[0m$ [0mwhich apktool jadx 2>/dev/null; echo "---apt---"; apt list --installed 2>/dev/null | grep -iE '(apktool|jadx|dex2jar)' || echo "no apk tools"; echo "---java---"; which java 2>/dev/null || echo "no java"
+---apt---
+no apk tools
+---java---
+/usr/bin/java
+[0m
+[0m$ [0mcurl -s -m 15 "https://www.apkmirror.com/apk/naver-corporation/whale-browser/" 2>/dev/null | grep -oiE 'href="[^"]*\.apk[^"]*"' | head -10
+(no output)
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 6 -e s WhaleSetup.exe | grep -iE '(installer-whale|psstatic|cdn|download|installers|\.whale|browser)' | sort -u | head -30; echo "=== also checking for base64/encoded URLs ==="; strings -n 10 WhaleSetup.exe | grep -E '[A-Za-z0-9+/]{20,}=' | head -10
+h"cDn!ZF~
+=== also checking for base64/encoded URLs ===
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"><dependency><dependentAssembly><assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="x86" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity></dependentAssembly></dependency><trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"><security><requestedPrivileges><requestedExecutionLevel level="requireAdministrator" uiAccess="false"></requestedExecutionLevel></requestedPrivileges></security></trustInfo><application xmlns="urn:schemas-microsoft-com:asm.v3"><windowsSettings><dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:application xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"></ms_compatibility:supportedOS></ms_compatibility:application></ms_compatibility:compatibility></assembly>
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+data = open('WhaleSetup.exe', 'rb').read()
+# Search for the Inno Setup signature
+if b'Inno Setup' in data:
+    print('Inno Setup installer detected')
+else:
+    print('NOT Inno Setup')
+# Search for NSIS
+if b'Makensis' in data or b'NSIS' in data:
+    print('NSIS installer detected')
+else:
+    print('NOT NSIS')
+# Try to find what kind of installer this is
+# Check PE characteristics
+import struct
+# Parse PE header
+if data[:2] == b'MZ':
+    pe_offset = struct.unpack_from('<I', data, 0x3C)[0]
+    if pe_offset < len(data) and data[pe_offset:pe_offset+4] == b'PE\x00\x00':
+        print(f'Valid PE file at offset {pe_offset:#x}')
+        # Check optional header
+        opt_hdr_offset = pe_offset + 24
+        magic = struct.unpack_from('<H', data, opt_hdr_offset)[0]
+        if magic == 0x10b:
+            print('PE32 (32-bit)')
+        elif magic == 0x20b:
+            print('PE32+ (64-bit)')
+        # Check sections
+        sect_offset = opt_hdr_offset + 224 if magic == 0x20b else opt_hdr_offset + 144
+        num_sections = struct.unpack_from('<H', data, pe_offset + 6)[0]
+        print(f'Number of sections: {num_sections}')
+        for i in range(num_sections):
+            s = sect_offset + i * 40
+            name = data[s:s+8].rstrip(b'\x00').decode('ascii', errors='replace')
+            vsize = struct.unpack_from('<I', data, s+8)[0]
+            vaddr = struct.unpack_from('<I', data, s+12)[0]
+            raw_size = struct.unpack_from('<I', data, s+16)[0]
+            raw_offset = struct.unpack_from('<I', data, s+20)[0]
+            print(f'  [{i}] {name:8s} vsize={vsize:#x} vaddr={vaddr:#x} raw_size={raw_size:#x} raw_offset={raw_offset:#x}')
+" 2>/dev/null
+NOT Inno Setup
+NOT NSIS
+Valid PE file at offset 0x100
+PE32 (32-bit)
+Number of sections: 5
+  [0] @= p    vsize=0x0 vaddr=0x0 raw_size=0x0 raw_offset=0x0
+  [1]          vsize=0xf000 vaddr=0x160 raw_size=0x1499c raw_offset=0x40
+  [2] .text    vsize=0xd55f vaddr=0x1000 raw_size=0xd600 raw_offset=0x400
+  [3] .rdata   vsize=0x620c vaddr=0xf000 raw_size=0x6400 raw_offset=0xda00
+  [4] .data    vsize=0x154c vaddr=0x16000 raw_size=0xa00 raw_offset=0x13e00
+[0m
+The installer is NOT UPX-packed (just a standard PE). The sync strings aren't in the stub because the browser binary is downloaded at runtime. Let me pivot to the Android APK approach — APKs are statically analyzable as ZIP archives even without decompilation tools.
+[0m$ [0mcurl -s -m 15 -L -H "User-Agent: Mozilla/5.0 (Android; Linux; Android 13)" "https://www.apkmirror.com/apk/naver-corporation/whale-browser/" 2>/dev/null | grep -oiE 'href="[^"]*whale[^"]*\.apk[^"]*"' | head -10; echo "==="; curl -s -m 15 "https://apkmirror.com/apps/google-android/?query=whale" 2>/dev/null | head -5
+===
+<!DOCTYPE html><html lang="en-US"><head><title>Just a moment...</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="content-security-policy" content="default-src &#39;none&#39;; script-src &#39;nonce-u3iCNzsxwXp8H3FBkqh9Q4&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com; connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39; https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+");background-repeat:no-repeat;background-size:contain;padding-left:34px}</style><meta http-equiv="refresh" content="360"></head><body><div class="main-wrapper" role="main"><div class="main-content"><noscript><div class="h2"><span id="challenge-error-text">Enable JavaScript and cookies to continue</span></div></noscript></div></div><script nonce="u3iCNzsxwXp8H3FBkqh9Q4">(function(){window._cf_chl_opt = {cFPWv: 'b',cH: 'BHFxT2unb4srQ4HBgHNq0krQdeJ8oiQM2JBHeU61FZQ-1786139237-1.2.1.1-mLV2Anc1zEM9Q0yuchIsPXLmcM8Oib3A10u7k4x5iRDnupatXdnr2glQU67cTlaP',cITimeS: '1786139237',cN: 'u3iCNzsxwXp8H3FBkqh9Q4',cRay: 'a2797a9bd980e619',cTplB: '0',cTplC:0,cTplO:0,cTplV:5,cType: 'managed',cUPMDTk:"/apps/google-android/?query=whale\u0026__cf_chl_tk=dY7gL2VQpJJYYjR58jiPxhWD7fmozlOxBxNxAymosQM-1786139237-1.0.1.1-SvhsWFWM2si4dgAqqUPJypkD3ksc6PBy4UoyTs85toI",cvId: '3',cZone: 'apkmirror.com',fa:"/apps/google-android/?query=whale\u0026__cf_chl_f_tk=dY7gL2VQpJJYYjR58jiPxhWD7fmozlOxBxNxAymosQM-1786139237-1.0.1.1-SvhsWFWM2si4dgAqqUPJypkD3ksc6PBy4UoyTs85toI",md: 'blVW4j9cJWoaAHxX3JsHkO3GCkPdUQH3njZcAT.tjQM-1786139237-1.2.1.1-0tezBqrxRPjgkxNNAnJZsLCHUErBNZdFjko0wm_i3j9sy_dBlgk2PapWnsTBTF4vGFtu52AOghf6_xjrzGUAYfH1pWZpM5VVOc0XDwyTMkizGc76bJ3ePNigr8YCHKJkK.ExrzebIne2Yn7vSw8xGENgq.Yg2qa397qJiE7PwHpN2tg1QY.ZhzhCrwqR1fZ2sXrCkNq3BsnQzjx06dF2GBiYjQZJc5HJvg.Q9vO.nhhG.XE.3.gARYOjtfVXCZFF1.yYbZKLdaFlLGlFFX5wON5yERGqne53.m_3I6smFcSiy5qdQbqpE1gc5I10L8dmtrmNeI6vEwyu.ye9RzZCFX6kfJSEZb6ZJH60yUYeB6Dtf9YM74Ht.MKuM3mYjAeVaNeV1CwHmp9tbk5pvhDHKoCFTwkFgrdwEro8NEnbeJx2EflOWkR6jZHlvZ4D.pXmHFjdcjlx1hmBkaj7qaPfqtkSpa8xTXY17s4Z1JbWdaSwJFGj1cLmjUzy1X8DndDZ2bNGk_A_LjY27CFSDjJKZOcT9aqIMlmXIIiH38MUaQ9EVRAcbuIIWEFC4IukWcnKS6D6WR4pyYR8x.QQJRlT9mv4fyL6N3od2vK6MvzMl8o__4ZvK1bXknyYNRnjxmf3fVppaVHAsqxEcEXE6aXeIijMmW1MH3g4J_aIA.1bzaW8dZ8Ctp3pf2Ww8AbiOBO_h1GdEUPwD2PN79q0i7ODGUMtN_biPK7oC_qcXkWyV22MykQ0DU9.3WcEnWW_F7mgSxUyi7Iq6IKKTkTfvZ0p44tOOdkSH1Lc_o6yXvVZJZ4VcsuXa6..zVC.PSU3SPy2aMANY80EvxtKmZrSq81V5NLnQR9fFgTQj9_EdbSAEQBtsH5UCb2tRmwOrfHFJ4bdUVagS9tOdStK6T_dC4eycwKlzWn2FU7dN4gjFETDyxG5YwcVZqsfZwVVHNBUBl1R52TwGxR6xm_JD3uH_6a91wpluCQ6g8rbZ9yYYxOSNy1VnV8WNzWut6QhisaikSpHoq5kJ0bQnh0VuuI4xIOBSjJBmFdRTnaKqvPBBloFuxuskwg1BpzZzc2looMNX6.N',mdrd: '.Dk.7jEr5B2OGa0OU50hng5t5kvJ9574qhof.2FJntU-1786139237-1.2.1.1-J5NzgWwBXHOXSg6K4LlM90cNKnW_BwLC6JlVawwfUOO2F6bQXcQXArz_EUCKPS5Qkp_8HEz3O_dR.mVKttxzqwMRn1mr0KGvl88Ql3txZZ2FZ6c8eiPX2Tk7QIKc3FFTGFz4qFs56QNyGn8D0NkrQXQWMwBrw1wbdY925hnwHw_aKuhv19VfJgzPUaXYTxFizcQOeIHCRzDfMtHwI_ESPw',};var a = document.createElement('script');a.nonce = 'u3iCNzsxwXp8H3FBkqh9Q4';a.src = '/cdn-cgi/challenge-platform/h/b/orchestrate/chl_page/v1?ray=a2797a9bd980e619';window._cf_chl_opt.cOgUHash = location.hash === '' && location.href.indexOf('#') !== -1 ? '#' : location.hash;window._cf_chl_opt.cOgUQuery = location.search === '' && location.href.slice(0, location.href.length - window._cf_chl_opt.cOgUHash.length).indexOf('?') !== -1 ? '?' : location.search;if (window.history && window.history.replaceState) {var ogU = location.pathname + window._cf_chl_opt.cOgUQuery + window._cf_chl_opt.cOgUHash;history.replaceState(null, null,"/apps/google-android/?query=whale\u0026__cf_chl_rt_tk=dY7gL2VQpJJYYjR58jiPxhWD7fmozlOxBxNxAymosQM-1786139237-1.0.1.1-SvhsWFWM2si4dgAqqUPJypkD3ksc6PBy4UoyTs85toI"+ window._cf_chl_opt.cOgUHash);a.onload = function() {history.replaceState(null, null, ogU);}}document.getElementsByTagName('head')[0].appendChild(a);}());</script></body></html>
+[0m
+[0m$ [0mcurl -s -m 15 "https://apkpure.com/search?q=com.naver.whale" 2>/dev/null | grep -oiE 'href="[^"]*com/naver/whale[^"]*"|href="[^"]*whale[^"]*.apk[^"]*"' | head -10
+(no output)
+[0m
+The installer is a custom 32-bit PE online installer — not Inno Setup or NSIS. The sync module is in the runtime browser binary it downloads, not in the stub itself. Let me pivot to acquiring the Android APK for static analysis of sync code.
+[0m$ [0mcd /tmp/opencode && python3 -c "
+data = open('WhaleSetup.exe', 'rb').read()
+# Check for common installer frameworks
+for sig in [b'Inno', b'NSIS', b'Nullsoft', b'InstallAware', b'InstallShield', b'Wise', b'Advanced Installer', b'WiX', b'ClickOnce', b'Squirrel']:
+    if sig in data:
+        idx = data.index(sig)
+        ctx = data[max(0,idx-20):idx+50]
+        print(f'Found: {sig.decode()} at {idx:#x}: {ctx[:50]}')
+# Also look for HTTP user agent strings
+for ua in [b'Mozilla', b'Whale/', b'Chrome/', b'curl/', b'Python', b'libcurl']:
+    count = data.count(ua)
+    if count > 0:
+        print(f'User-Agent pattern \"{ua.decode()}\" found {count} times')
+        idx = data.index(ua)
+        ctx = data[max(0,idx-10):idx+50]
+        print(f'  at offset {idx:#x}: {ctx[:60]}')
+" 2>/dev/null
+Found: WiX at 0x9b409f: b'\x15A\xf2|\x02.K\xf0\xd3X\x04\x0f\xd9\xc4Jo\xff\xff\xff\xffWiXE\x0b \xe4\xe2u\xbb\xef/23J\x05X\xa3$\xb6h\xf8s\x13\xff<\x8c\xa2}5'
+[0m
+[0m$ [0mpip3 install apkutils3 2>/dev/null | tail -3; pip3 install apk-analyzer 2>/dev/null | tail -2; echo "=== trying to install apktool ==="; apt-get list --installed 2>/dev/null | grep -iE 'apktool|jadx'; echo "=== check for jadx download ==="; ls /usr/local/bin/jadx* 2>/dev/null || echo "no jadx"
+Downloading xmltodict-0.13.0-py2.py3-none-any.whl (10.0 kB)
+Installing collected packages: pyelftools, cigam, xmltodict, apkutils3
+Successfully installed apkutils3-2.0.14 cigam-0.0.3 pyelftools-0.30 xmltodict-0.13.0
+Installing collected packages: asn1crypto, lxml, pyaxmlparser, apk-analyzer
+Successfully installed apk-analyzer-1.32.0 asn1crypto-1.5.1 lxml-6.1.1 pyaxmlparser-0.3.31
+=== trying to install apktool ===
+=== check for jadx download ===
+no jadx
+[0m
+[0m$ [0mcurl -s -m 15 -L "https://www.upce.uhk.cz/ffw/WhaleBrowser.apk" 2>/dev/null | head -1; echo "=== try uptodown ==="; curl -s -m 15 "https://naver-whale-browser.en.uptodown.com/android" 2>/dev/null | grep -oiE 'href="[^"]*\.apk[^"]*"' | head -5; echo "=== try direct CDN path ==="; for path in "whale_browser.apk" "WhaleBrowser.apk" "whale-stable.apk"; do echo "=== $path ==="; curl -sI -m 10 "https://installer-whale.pstatic.net/downloads/$path" 2>/dev/null | head -3; done
+=== try uptodown ===
+=== try direct CDN path ===
+=== whale_browser.apk ===
+HTTP/2 404 
+date: Fri, 07 Aug 2026 21:48:07 GMT
+content-length: 225
+=== WhaleBrowser.apk ===
+HTTP/2 404 
+date: Fri, 07 Aug 2026 21:48:08 GMT
+content-length: 196
+=== whale-stable.apk ===
+HTTP/2 404 
+date: Fri, 07 Aug 2026 21:48:10 GMT
+content-length: 224
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import struct
+data = open('WhaleSetup.exe', 'rb').read()
+# Parse PE import table
+pe_offset = struct.unpack_from('<I', data, 0x3C)[0]
+opt_hdr_offset = pe_offset + 24
+num_dirs = struct.unpack_from('<I', data, opt_hdr_offset + 108)[0]
+# Import table is directory 1
+import_rva = struct.unpack_from('<I', data, opt_hdr_offset + 104)[0]  # DataDirectory[1].VirtualAddress
+import_size = struct.unpack_from('<I', data, opt_hdr_offset + 108)[0]  # DataDirectory[1].Size
+print(f'Import table RVA: {import_rva:#x}, Size: {import_size:#x}')
+
+# Map RVA to file offset
+# Parse section table
+num_sections = struct.unpack_from('<H', data, pe_offset + 6)[0]
+sect_offset = opt_hdr_offset + 224 if struct.unpack_from('<H', data, opt_hdr_offset)[0] == 0x20b else opt_hdr_offset + 144
+sections = {}
+for i in range(num_sections):
+    s = sect_offset + i * 40
+    name = data[s:s+8].rstrip(b'\x00').decode('ascii', errors='replace')
+    vsize = struct.unpack_from('<I', data, s+8)[0]
+    vaddr = struct.unpack_from('<I', data, s+12)[0]
+    raw_size = struct.unpack_from('<I', data, s+16)[0]
+    raw_offset = struct.unpack_from('<I', data, s+20)[0]
+    sections[name] = (vaddr, vsize, raw_offset, raw_size)
+    
+# Convert import RVA to file offset
+for name, (vaddr, vsize, raw_offset, raw_size) in sections.items():
+    if import_rva >= vaddr and import_rva < vaddr + vsize:
+        file_offset = raw_offset + (import_rva - vaddr)
+        print(f'Import table in section \"{name}\" at file offset {file_offset:#x}')
+        # Parse import descriptors
+        import_data = data[file_offset:file_offset+import_size]
+        # Each import descriptor is 20 bytes
+        for j in range(0, len(import_data)-20, 20):
+            name_rva = struct.unpack_from('<I', import_data, j+12)[0]
+            if name_rva == 0:
+                break
+            # Convert name RVA to file offset
+            if name_rva == 0:
+                continue
+            for sec_name, (svaddr, svsize, sroff, srsz) in sections.items():
+                if name_rva >= svaddr and name_rva < svaddr + svsize:
+                    name_offset = sroff + (name_rva - svaddr)
+                    dll_name = data[name_offset:name_offset+100].split(b'\x00')[0].decode('ascii', errors='replace')
+                    print(f'  Imports from: {dll_name}')
+                    break
+        break
+" 2>/dev/null | head -50
+Import table RVA: 0x14a30, Size: 0x50
+Import table in section ".rdata" at file offset 0x13430
+  Imports from: KERNEL32.dll
+  Imports from: USER32.dll
+  Imports from: SHELL32.dll
+[0m
+APKMirror is behind Cloudflare, and the installer doesn't contain sync strings (confirmed dead end for the stub PROBE). Let me try to install APK analysis tools and search for the APK on alternative mirrors.
+[0m$ [0mcurl -s -m 15 -L -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "https://apkmirror.com/apps/google-android/?query=whale" 2>/dev/null | grep -oiE 'href="[^"]*com/naver/whale[^"]*"|href="[^"]*whale[^"]*"|apkpure|apkcombo|uptodown' | head -10; echo "=== try apkcombo ==="; curl -s -m 15 "https://apkcombo.com/search/?q=com.naver.whale" 2>/dev/null | grep -oiE 'href="/app/com\.naver\.whale[^"]*"|href="[^"]*com/naver/whale[^"]*\.apk[^"]*"' | head -10
+=== try apkcombo ===
+[0m
+APK analysis tools (`apkutils3`, `apk-analyzer`) are now installed but I still need the APK itself. The installer only imports KERNEL32/USER32/SHELL32 — it launches a download via shell. Let me search for the APK download URL on alternative mirrors.
+[0m$ [0mcurl -s -m 15 "https://whale.naver.com/en/download/" 2>/dev/null | grep -oiE 'href="[^"]*"|src="[^"]*"' | grep -iE 'apk|android|download' | head -20
+href="https://whale.naver.com/ko/download/"
+href="https://whale.naver.com/en/download/"
+[0m
+[0m$ [0mcurl -s -m 15 "https://whale.naver.com/en/download/" 2>/dev/null | python3 -c "
+import sys
+html = sys.stdin.read()
+# Find all JS files
+import re
+for m in re.finditer(r'src=\"([^\"]+\.js)\"', html):
+    print('JS:', m.group(1))
+for m in re.finditer(r'href=\"([^\"]+)\"', html):
+    u = m.group(1)
+    if 'play' in u.lower() or 'apk' in u.lower() or 'android' in u.lower():
+        print('Link:', u)
+"
+JS: /vendor/lcslog.v0.14.0.js
+JS: https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js
+[0m
+Let me try to find the Android APK download link from the Whale download page's JavaScript, and try web search for APK mirrors.
+[0m$ [0mpython3 -c "
+import apkutils
+try:
+    result = apkutils.ApkLib().search('com.naver.whale', market='play')
+    print('Search result:', result)
+except Exception as e:
+    print(f'apkutils search error: {e}')
+" 2>&1 | head -10
+Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ModuleNotFoundError: No module named 'apkutils'
+[0m
+[0m$ [0mcurl -s -m 15 "https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js" 2>/dev/null | grep -oiE '.{0,100}(play\.google\.com|apk|apkcombo|apkpure|uptodown|apkmirror|apkpure).{0,50}' | head -20
+{url:"https://apps.apple.com/app/id1374073304",label:"Download on App Store"},android:{url:"https://play.google.com/store/apps/details?id=com.naver.whale&referrer=ut
+s://whale.naver.com/"},{labelKey:"footer.groups.products.mobileBrowser",nclk:"mobile",href:"https://play.google.com/store/apps/details?id=com.naver.whale"},{labelKey
+staller-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb",ANDROID_STORE="https://play.google.com/store/apps/details?id=com.naver.whale&referrer=ut
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md" 2>/dev/null | head -60; echo "==="; curl -s -m 15 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(t['path']) for t in d.get('tree',[]) if 'sync' in t['path'].lower() or 'storage' in t['path'].lower() or 'pass' in t['path'].lower() or 'key' in t['path'].lower() or 'auth' in t['path'].lower()]" 2>/dev/null | head -20
+## 웨일 확장앱이란 무엇인가?
+**extension을 확장앱으로 번역했습니다
+
+웨일 확장앱은 웨일 브라우저의 기능을 강화하는 작은 소프트웨어들입니다. 
+
+웨일 확장앱은 기본적으로 크롬 확장앱(https://developer.chrome.com/extensions)의 구조를 공유하고, 구글 확장 API (https://developer.chrome.com/extensions/api_index)와 모두 호환됩니다. ‘chrom.*’ 네임스페이스를 사용하는 대신에 웨일확장앱은 ‘whale.*’이라는 네임스페이스로 모든 확장기능에 접근하도록 제공다.
+
+```javascript
+whale.runtime.XXX
+whale.bookmakrs.XXX
+whale.browserAction.XXX
+whale.windows.XXX
+whale.tabs.XXX
+whale.storage.XXX
+...
+```
+
+## 사이드 바?
+
+사이드바는 확장앱의 하나의 기능이면서 브라우저의 한쪽 면에서 나오는 웹 패널(슬라이드바가 속한 부분)입니다. 사용자는 다양한 확장앱과 사이드 바의 웹 패널을 자신의 요구대로(자신이 원하는 대로) 추가할 수 있습니다.
+
+![NCapture005.PNG](docs/f6ad8410-0808-11e7-8942-1cab765a9168.png)
+
+사이드 바의 확장과 웹 패널은 웨일 브라우저의 같은 공간을 공유하지만(같은 공간에서 동작하지만) 다음과 같은 다른 점들이 있다 :
+  * 웹 패널은 브라우저 UI를 통해 더해지지만 사이드 바 확장앱은 확장앱 설치를 통해서 더해진다.
+
+![NCapture008.PNG](docs/7b2e651a-0809-11e7-8d33-7fe5093d0132.png)
+
+  * 웹 패널은 웹 상의 리소스를 HTTP와 HTTPS를 통해 원격으로 서버에서 로드하지만(가져오지만), 사이드 바는 확장 앱 패키지에서 설치된 로컬 리소스를 로드합니다(가져옵니다).
+
+![NCapture007.PNG](docs/989e7932-0809-11e7-908c-7e3b96867080.png)
+
+  * ● 웹 패널은 네비게이션 메뉴를 제공하여, 사용자가 전에 웨일 브라우저에서 웹서핑하던 곳으로 되돌아갈 수 있습니다. (내비게이션 메뉴를 제공하여 웹서핑을 할 때, 이전 페이지나 앞의 페이지로 이동할 수 있습니다 – 웹의 뒤로 가기 앞으로 가기 기능을 제공해 줍니다.) 
+
+
+마지막으로 사이드 바의 경계에 마우스포인터를 놓으면 사이드 바의 너비은 390픽셀에서 590픽셀까지 조절할 수 있습니다.
+
+![NCapture009.PNG](docs/1765d6e4-0809-11e7-89ee-d88ac06318be.png)
+
+## 다음은?
+이제 웨일 확장앱이 어떻게 보이고, 어떻게 설치되는지, 어디에 설치되는지 압니다. 이제는 어떻게 구축되었는지를 살펴보겠습니다.
+
+### 파일
+각 확장앱에는 다음의 파일이 있습니다. :
+
+* 매니페스트파일
+* 하나 혹은 더 많은 html파일들 (확장앱이 사이드 바 확장앱인 경우에, html파일은 필수 사항)
+* 선택 사항 : 하나 이상의 자바스크립트 파일
+* 선택 사항 : 확장앱에서 필요한 다른 파일들(ex. 이미지파일 등)
+
+### 사이드바의동작
+만약 당신이 사이드 바 확장앱을 만들길 원한다면, 너는 매니 페스트 파일에서 사이드 바 액션(동작)을 선언해주어야 합니다.
+```javascript
+{
+  ...
+  "sidebar_action": {
+    "default_icon": {                      // required
+      "16": "images/icon16.png"
+    },
+    "default_page": "popup.html",          // required
+===
+[0m
+The APK is only available via Play Store (auth required). Let me check the GitHub repo's `translate` branch for sync API documentation, and try to acquire the APK via `pip`-installed tools.
+[0m$ [0mpip3 show apkutils3 2>/dev/null | head -5; echo "==="; python3 -c "
+import apkutils3
+print(dir(apkutils3))
+" 2>&1 | head -5; echo "=== try apk-analyzer ==="; apk-analyzer --help 2>&1 | head -5
+Name: apkutils3
+Version: 2.0.14
+Summary: Utils for parsing apk. Type hinting supported.
+Home-page: https://github.com/Young-Lord/apkutils3
+Author: LY
+===
+['APK', 'ARSCParser', 'AXML', 'ChildItem', 'DexFile', 'Dict', 'Final', 'List', 'MANIFEST_XMLTODICT_FORCE_LIST', 'Magic', 'Manifest', 'NAME_ATTRIBUTE_NAME', 'OpCodeItem', 'Optional', 'Path', 'RESOURCE_XMLTODICT_FORCE_LIST', 'Set', 'TYPE_CHECKING', 'Union', 'ZipFile', '__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__path__', '__spec__', '__version__', 'axml', 'binascii', 'consts', 'custom_typing', 'dex', 'make_sth_a_list_if_it_is_not_a_list', 'manifest', 're', 'warnings', 'xml', 'xmltodict']
+=== try apk-analyzer ===
+usage: apk-analyzer [-h] [--batch DIR] [--signatures-dir SIGNATURES_DIR]
+                    [--so-db-file SO_DB_FILE] [--output-dir OUTPUT_DIR]
+                    [--output-json OUTPUT_JSON] [--output-html OUTPUT_HTML]
+                    [--format {json,html,both}] [--categories CATEGORIES]
+                    [--verbose] [--version]
+[0m
+[0m$ [0mcurl -s -m 15 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" 2>/dev/null | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+for t in d.get('tree',[]):
+    p = t['path']
+    if 'sync' in p.lower() or 'storage' in p.lower() or 'pass' in p.lower() or 'key' in p.lower() or 'auth' in p.lower() or 'encr' in p.lower() or 'secur' in p.lower():
+        print(t['path'])
+" 2>/dev/null
+(no output)
+[0m
+Let me search the GitHub repo for sync-related documentation and try web search for APK alternatives.
+[0m$ [0mcurl -s -m 15 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(t['path']) for t in d.get('tree',[]) if t['path'].endswith('.md')]" 2>/dev/null | head -40
+README.ko.md
+[0m
+[0m$ [0mcurl -s -m 15 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(t['path'], t['type'], t.get('size','')) for t in d.get('tree',[])]" 2>/dev/null | head -60
+README.ko.md blob 4608
+docs tree 
+docs/0a3101a4-0e2d-11e7-8eb5-0fb2bab6ba77.png blob 10040
+docs/1765d6e4-0809-11e7-89ee-d88ac06318be.png blob 34999
+docs/253a55b2-0fc8-11e7-9b7d-4afddeff04f8.png blob 753
+docs/25eb21f8-0e2e-11e7-8c6f-1c71d9cfab07.png blob 16188
+docs/34650d96-080e-11e7-815c-854ab8a52ad9.png blob 56956
+docs/40bc5c1e-0e2d-11e7-80ec-4137936a3bff.png blob 23986
+docs/5dcfef0e-0e2e-11e7-9527-cabe957718d3.png blob 20841
+docs/74c4ad62-0e2e-11e7-9831-c77bfa0808f9.png blob 66404
+docs/7b2e651a-0809-11e7-8d33-7fe5093d0132.png blob 54864
+docs/7fa170fe-0e2d-11e7-9402-538293aacb71.png blob 85394
+docs/989e7932-0809-11e7-908c-7e3b96867080.png blob 774
+docs/NCapture004.PNG blob 31499
+docs/NCapture005.PNG blob 98303
+docs/contextmenu.png blob 115461
+docs/e0d26564-0e2c-11e7-94b1-6d47c4edead0.png blob 2237
+docs/f11076b4-0e2c-11e7-993b-3aba86b416e3.png blob 29967
+docs/f6ad8410-0808-11e7-8942-1cab765a9168.png blob 1406581
+docs/fec442d6-080f-11e7-9a1c-f0d550f01d6e.png blob 5009
+docs/wiki_image1.png blob 2237
+docs/wiki_image2.png blob 23749
+docs/wiki_image3.png blob 10040
+docs/wiki_image4.png blob 23986
+docs/wiki_image5.png blob 85394
+docs/wiki_image6.png blob 16188
+docs/wiki_image7.png blob 20841
+docs/wiki_image8.png blob 66404
+src tree 
+src/sidebar-sample tree 
+src/sidebar-sample/css tree 
+src/sidebar-sample/css/style.css blob 1080
+src/sidebar-sample/icons tree 
+src/sidebar-sample/icons/icon128.png blob 5146
+src/sidebar-sample/icons/icon16.png blob 1353
+src/sidebar-sample/icons/icon48.png blob 2537
+src/sidebar-sample/img tree 
+src/sidebar-sample/img/img01.png blob 7730
+src/sidebar-sample/img/img02.png blob 15100
+src/sidebar-sample/img/img03.png blob 22324
+src/sidebar-sample/index.html blob 2699
+src/sidebar-sample/js tree 
+src/sidebar-sample/js/background.js blob 1772
+src/sidebar-sample/js/contentscript.js blob 3002
+src/sidebar-sample/js/index.js blob 2512
+src/sidebar-sample/manifest.json blob 835
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md" 2>/dev/null | grep -iA5 -B2 -iE 'storage|sync|passphrase|encryp|key|token' | head -60
+whale.windows.XXX
+whale.tabs.XXX
+whale.storage.XXX
+...
+```
+
+## 사이드 바?
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>/dev/null
+{
+  "manifest_version": 2,
+  "name": "Whale Sidebar Extension",
+  "description": "Helloworld sample test for Whale browser sidebar extension",
+  "version": "1.0",
+  "icons": {
+    "16": "icons/icon16.png", /* used in context menu icon */
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png" 
+  },
+  "sidebar_action": {
+    "default_icon": {
+      "16": "icons/icon16.png" /* used in sidebar menu icon */
+    },
+    "default_page": "index.html",
+    "default_title": "Whale Sidebar Extension"
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "js/contentscript.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "permissions": [
+    "tabs"
+  ]
+}
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" 2>/dev/null
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message === 'sidebarAction.show') {
+    whale.sidebarAction.show({
+      reload : false
+    }, () => {
+
+    });
+  } else if (message === 'sidebarAction.hide') {
+    whale.sidebarAction.hide(() => {
+    });
+  } else if (message === 'sidebarAction.show2') {
+    whale.windows.create((windowInfo) => {
+      whale.sidebarAction.show(windowInfo.id, () => {
+
+      });
+    });
+  } else if (message === 'sidebarAction.hideAll') {
+    whale.windows.getAll((windowList) => {
+      for(let i = 0, len = windowList.length ; i < len ; i++) {
+        whale.sidebarAction.hide(windowList[i].id, () => {
+        });
+      }
+    });
+  }
+});
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js" 2>/dev/null
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+if (navigator.userAgent.includes('sidebar') === false) {
+  let a = document.createElement('button');
+  a.innerHTML = 'Show sidebar';
+  a.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:0;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid red;
+    color: red;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(a);
+  a.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show');
+  }, false);
+
+  let c = document.createElement('button');
+  c.innerHTML = 'Show sidebar in new window';
+  c.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:40px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid green;
+    color: green;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(c);
+  c.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show2');
+  }, false);
+
+  let b = document.createElement('button');
+  b.innerHTML = 'Hide sidebar';
+  b.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:80px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid blue;
+    color: blue;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(b);
+  b.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hide');
+  }, false);
+
+  let d = document.createElement('button');
+  d.innerHTML = 'Hide all sidebars';
+  d.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:120px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid black;
+    color: black;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(d);
+  d.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hideAll');
+  }, false);
+}
+[0m
+Let me read the sidebar-sample extension files — this is the extension referenced for the sidebar SOP bypass hypothesis.
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/index.js" 2>/dev/null
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+(function () {
+  'use strict';
+
+  whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log(message);
+  });
+
+  /* sidebarAction.getTitle() / sidebarAction.setTitle() */
+  let defaultTitle;
+  whale.sidebarAction.getTitle((result) => {
+    defaultTitle = result;
+  });
+  document.getElementById('setTitle1').addEventListener('click', () => {
+    whale.sidebarAction.setTitle({
+      title: 'ABC'
+    });
+  }, false);
+  document.getElementById('setTitle2').addEventListener('click', () => {
+    whale.sidebarAction.setTitle({
+      title: defaultTitle
+    });
+  }, false);
+
+  /* sidebarAction.getBadgeText() / sidebarAction.setBadgeText() */
+  let badgeCnt = 0;
+  document.getElementById('setBadgeText1').addEventListener('click', () => {
+    badgeCnt ++;
+    whale.sidebarAction.setBadgeText({
+      text: badgeCnt + ''
+    });
+
+    whale.sidebarAction.setBadgeBackgroundColor({
+      color: '#'+Math.floor(Math.random()*16777215).toString(16)
+    });
+  }, false);
+  document.getElementById('setBadgeText2').addEventListener('click', () => {
+    badgeCnt = 0;
+    whale.sidebarAction.setBadgeText({
+      text: ''
+    });
+  }, false);
+
+  /* whale.sidebarAction.onClicked.addListener() */
+  whale.sidebarAction.onClicked.addListener((result) => {
+    document.getElementById('clicklog').innerHTML += 'windowId:' + result.windowId + ', ' + (result.opened ? 'sidebar OPENED' : 'sidebar CLOSED') + '<br/>';
+  });
+})();
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/index.html" 2>/dev/null
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta charset="UTF-8">
+  <title>Whale Sidebar Extension</title>
+  <link href="css/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Whale Sidebar Extension Test</div>
+
+    <div class="section">
+      <div class="title">sidebarAction.show() /<br> sidebarAction.hide()</div>
+      <div class="description">
+        If you want to open or hide sidebar from some action from the web content,
+        you can call show() and hide() method using content scripts and background scripts.
+        Refer to contentscript.js and backgorund.js.
+        Test buttons are injected to all website to test this feature.
+      </div>
+      <div class="image">
+        <img src="img/img01.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">sidebarAction.getTitle() /<br> sidebarAction.setTitle()</div>
+      <div class="description">
+        You can update or retrieve the tooltip text using setTitle() and getTitle() method,
+        Refer to index.js. Test buttons are available below:
+      </div>
+      <div class="buttons">
+        <button id="setTitle1">Set title to 'ABC'</button>
+        <button id="setTitle2">Reset title</button>
+      </div>
+      <div class="image">
+        <img src="img/img02.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">
+        sidebarAction.setBadgeText() /<br>
+        sidebarAction.getBadgeText()
+      </div>
+      <div class="description">
+        You can update or retrieve the badge text or badge background color using
+        setBadgeText(), getBadgeText(), setBadgeBackgroundColor(), getBadgeBackgroundColor() method.
+        Refer to index.js. Test buttons are available below:
+      </div>
+      <div class="buttons">
+        <button id="setBadgeText1">Update badge text and color</button>
+        <button id="setBadgeText2">Reset badge</button>
+      </div>
+      <div class="image">
+        <img src="img/img03.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">
+        sidebarAction.onClicked
+      </div>
+      <div class="description">
+        sidebarAction.onClicked.addListener() is used to listen to the extension icon click events.
+        The result callback passes the window id and boolean flag whether the sidebar is opened or closed.
+        Refer to index.js. Event log:
+      </div>
+      <div id="clicklog" class="log">
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/index.js" type="text/javascript"></script>
+</body>
+</html>
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md" 2>/dev/null | grep -iA10 -E 'storage|sync|sidebar_action|sidebarAction'
+whale.storage.XXX
+...
+```
+
+## 사이드 바?
+
+사이드바는 확장앱의 하나의 기능이면서 브라우저의 한쪽 면에서 나오는 웹 패널(슬라이드바가 속한 부분)입니다. 사용자는 다양한 확장앱과 사이드 바의 웹 패널을 자신의 요구대로(자신이 원하는 대로) 추가할 수 있습니다.
+
+![NCapture005.PNG](docs/f6ad8410-0808-11e7-8942-1cab765a9168.png)
+
+사이드 바의 확장과 웹 패널은 웨일 브라우저의 같은 공간을 공유하지만(같은 공간에서 동작하지만) 다음과 같은 다른 점들이 있다 :
+--
+  "sidebar_action": {
+    "default_icon": {                      // required
+      "16": "images/icon16.png"
+    },
+    "default_page": "popup.html",          // required
+    "default_title": "Sidebar Extension",   // optional; shown in tooltip
+    "use_navigation_bar": true   // optional; true is default
+  }
+  ...
+}
+```
+[whale.sidebarAction](https://github.com/naver/whale-developers/wiki/whale.sidebarAction) 인터페이스는 사이드 바 확장앱을 조작할 수 있는 강력한 API를 제공합니다.
+
+### 크롬 확장앱 개요
+마지막으로, 크롬 확장앱 개발자 가이드(https://developer.chrome.com/extensions/overview)에는 당신이 흥미로워할만한 서류에 대한 수십개의 추가적인 링크들이 있다. 당신은 크롬 확장앱 API(https://developer.chrome.com/extensions/api_index) 및 패키징(https://developer.chrome.com/extensions/packaging) 사양을 사용할 수 있습니다.
+
+## 더읽을거리
+* [How to avoid my extension from changing urls](https://github.com/naver/whale-developers/wiki/How-to-avoid-my-extension-from-changing-urls)
+* [Client-side-application-vs-Server-side-application](https://github.com/naver/whale-developers/wiki/Client-side-application-vs-Server-side-application)
+* [Testing and debugging my extension](https://github.com/naver/whale-developers/wiki/How-to-test-and-debug-my-extension)
+* [Registering my whale extension](https://store.whale.naver.com/developers)
+[0m
+Important findings from the extension code. Let me read the sidebar panel script and the full README for API details.
+[0m◈ [0mParallel Web Search "Whale browser WhaleSetup.exe download URL installer-whale.pstatic.net browser binary 2026"
+Good evidence from the extension docs. The installer PROBE confirmed: no sync strings in the stub (it's an online installer). Let me try web search for the Android APK download and sync implementation details.
+[0m◈ [0mParallel Web Search "com.naver.whale Whale browser APK download sync encryption passphrase PBKDF2 key derivation"
+[0m
+[0m$ [0mcurl -s -m 15 "https://api.github.com/repos/naverwhale/installer" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('name:', d.get('name','')); print('desc:', d.get('description','')); print('default_branch:', d.get('default_branch','')); print('private:', d.get('private','')); print('created:', d.get('created_at','')); print('updated:', d.get('updated_at',''))" 2>/dev/null
+name: installer
+desc: None
+default_branch: main
+private: False
+created: 2022-12-08T03:16:30Z
+updated: 2024-09-13T09:29:36Z
+[0m
+[0m$ [0mcurl -s -m 15 "https://api.github.com/repos/naverwhale/installer/git/trees/main?recursive=1" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(t['path'], t['type']) for t in d.get('tree',[])]" 2>/dev/null; echo "=== try master ==="; curl -s -m 15 "https://api.github.com/repos/naverwhale/installer/git/trees/master?recursive=1" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(t['path'], t['type']) for t in d.get('tree',[])]" 2>/dev/null
+.gitignore blob
+LICENSE.md blob
+README.md blob
+package-lock.json blob
+package.json blob
+src tree
+src/config.ts blob
+src/core.ts blob
+src/index.ts blob
+src/types.ts blob
+tsconfig.json blob
+=== try master ===
+[0m
+Excellent finds from the web search! There's a `github.com/naverwhale/installer` repo with a `getInstallURL` function, and APKPure has the APK (v3.9.14.9, 364.2MB) with direct download URLs. Let me check the installer repo and download the APK.
+[0m$ [0mcurl -sI -m 15 "https://d.apkpure.com/b/XAPK/com.naver.whale?versionCode=15966" 2>/dev/null | head -10
+HTTP/2 403 
+date: Fri, 07 Aug 2026 21:53:08 GMT
+content-type: text/html; charset=UTF-8
+content-length: 5518
+accept-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+cf-mitigated: challenge
+content-security-policy: default-src 'none'; script-src 'nonce-3zjGWJjjRjIXAB2jBUuBZW' 'unsafe-eval' https://challenges.cloudflare.com; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'self' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com blob:; child-src 'self' https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri 'self'
+server: cloudflare
+critical-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+cross-origin-embedder-policy: require-corp
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naverwhale/installer/main/src/config.ts" 2>/dev/null
+/**
+ * @naverwhale/installer
+ * Copyright (c) 2022-present NAVER Corp.
+ * MIT License
+ */
+
+import { Platform } from './types';
+
+export const installUrls: Record<Platform, string> = {
+    win: 'https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe',
+    win_32: 'https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX86.exe',
+    win_64: 'https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe',
+    win_arm:
+        'https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupARM64.exe',
+    win_beta:
+        'https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe',
+    mac: 'https://installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg',
+    mac_arm:
+        'https://installer-whale.pstatic.net/downloads/installers/NaverWhaleARM64.dmg',
+    linux: 'https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb',
+    iphone: 'https://itunes.apple.com/app/id1374073304?mt=8',
+    ipad: 'https://itunes.apple.com/app/id1374073304#?platform=ipad',
+    android:
+        'https://play.google.com/store/apps/details?id=com.naver.whale&referrer=utm_source%3Dwhale%2520home%26utm_medium%3Ddownload%26utm_campaign%3D',
+};
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naverwhale/installer/main/src/core.ts" 2>/dev/null
+/**
+ * @naverwhale/installer
+ * Copyright (c) 2022-present NAVER Corp.
+ * MIT License
+ */
+
+import { Installer } from './types';
+import { installUrls } from './config';
+
+export const installer: Installer = {
+    _currentPlatform: undefined,
+    getCurrentPlatform(this: Installer) {
+        if (this._currentPlatform) return this._currentPlatform;
+        const userAgent = navigator.userAgent.toLowerCase();
+        if (userAgent.includes('beta')) {
+            this._currentPlatform = 'win_beta';
+        } else if (userAgent.includes('winarm')) {
+            this._currentPlatform = 'win_arm';
+        } else if (userAgent.includes('win64')) {
+            this._currentPlatform = 'win_64';
+        } else if (userAgent.includes('win32')) {
+            this._currentPlatform = 'win_32';
+        } else if (userAgent.includes('win')) {
+            this._currentPlatform = 'win';
+        } else if (userAgent.includes('macm1')) {
+            this._currentPlatform = 'mac_arm';
+        } else if (userAgent.includes('mac')) {
+            this._currentPlatform = 'mac';
+        } else if (userAgent.includes('linux')) {
+            this._currentPlatform = 'linux';
+        } else if (userAgent.includes('android')) {
+            this._currentPlatform = 'android';
+        } else if (userAgent.includes('ipad')) {
+            this._currentPlatform = 'ipad';
+        } else if (userAgent.includes('iphone')) {
+            this._currentPlatform = 'iphone';
+        } else {
+            throw new Error(
+                `[@naverwhale/installer] can not detect current environment. but you can pass the parameter as a workaround.`
+            );
+        }
+        return this._currentPlatform;
+    },
+    install(this: Installer, platform) {
+        const installUrl = this.getInstallURL(platform);
+        window.open(installUrl);
+    },
+    getInstallURL(this: Installer, platform) {
+        if (
+            platform &&
+            !Object.prototype.hasOwnProperty.call(installUrls, platform)
+        ) {
+            const availablePlatform = Object.keys(installUrls).join(', ');
+            throw new Error(
+                `[@naverwhale/installer] unknown platform parameter. the parameter value must be one of [${availablePlatform}]`
+            );
+        }
+        const _platform = platform ?? this.getCurrentPlatform();
+        return installUrls[_platform];
+    },
+};
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naverwhale/installer/main/src/index.ts" 2>/dev/null
+/**
+ * @naverwhale/installer
+ * Copyright (c) 2022-present NAVER Corp.
+ * MIT License
+ */
+
+export { installer as default } from './core';
+[0m
+The `naverwhale/installer` repo is PUBLIC with TypeScript source code! This is a goldmine for static analysis. Let me read the source files.
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naverwhale/installer/main/src/types.ts" 2>/dev/null
+/**
+ * @naverwhale/installer
+ * Copyright (c) 2022-present NAVER Corp.
+ * MIT License
+ */
+
+export interface Installer {
+    _currentPlatform: Platform | undefined;
+    getCurrentPlatform: () => Platform;
+    install: (platform?: Platform) => void;
+    getInstallURL: (platform?: Platform) => string;
+}
+
+export type Platform =
+    | 'win'
+    | 'win_32'
+    | 'win_64'
+    | 'win_arm'
+    | 'win_beta'
+    | 'mac'
+    | 'mac_arm'
+    | 'linux'
+    | 'iphone'
+    | 'ipad'
+    | 'android';
+[0m
+[0m$ [0mcurl -s -m 15 "https://raw.githubusercontent.com/naverwhale/installer/main/README.md" 2>/dev/null
+# @naverwhale/installer
+
+Naver Whale installler for web application.
+
+## Installation
+
+```shell
+npm i @naverwhale/installer
+```
+
+## Usage
+
+```tsx
+import installer from '@naverwhale/installer';
+
+// Install the Whale browser for the current environment.
+installer.install();
+
+// Get installation url for the current environment.
+installer.getInstallURL();
+```
+
+## API
+
+### install
+
+Install the Whale browser. You can specify the environment to install with parameter, if not, it will be set as the current environment.
+
+```tsx
+// current environment.
+installer.install();
+// or window
+installer.install('win');
+```
+
+### getInstallURL
+
+Returns the Whale browser install url. You can specify the environment to install with parameter, if not, it will be set as the current environment.
+
+```tsx
+// current environment.
+installer.getInstallURL();
+// or window
+installer.getInstallURL('win');
+```
+
+## Types
+
+```tsx
+interface Installer {
+    install: (platform?: Platform) => void;
+    getInstallURL: (platform?: Platform) => string;
+}
+
+type Platform =
+    | 'win'
+    | 'win_32'
+    | 'win_64'
+    | 'win_arm'
+    | 'win_beta'
+    | 'mac'
+    | 'mac_arm'
+    | 'linux'
+    | 'iphone'
+    | 'ipad'
+    | 'android';
+```
+[0m
+[0m$ [0mcurl -s -m 15 "https://api.github.com/orgs/naverwhale/repos?per_page=100" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(r['name'], '|', r.get('description',''), '|', r.get('default_branch','')) for r in d if isinstance(r, dict)]" 2>/dev/null
+whaleos-chromiumos-overlay | None | main
+whaleos-factory | None | main
+whaleos-platform2 | None | main
+whaleos-manifest | None | main
+whaleos-kernel | None | main
+whaleos-tlsdate | None | main
+whaleos-portage-stable | None | main
+whaleos-flashrom | None | main
+whaleos-crosutils | None | main
+whaleos-xorg-conf | None | main
+whaleos-vpd | None | main
+whaleos-frecon | None | main
+whaleos-factory_installer | None | main
+whaleos-platform-chromiumos-assets | None | main
+whaleos-overlays | None | main
+whaleos-update_engine | None | main
+whaleos-chromite | None | main
+whaleos-platform-assets | None | main
+whaleos | None | main
+eslint-config-whale-web | 네이버 웨일 자바스크립트 코딩 컨벤션  | main
+installer | None | main
+whale-brave | None | master
+whaleos-initramfs | None | main
+whaleos-linux-firmware | None | main
+overlay-whalebook | None | main
+whale-ios-mpl | NAVER Whale iOS 앱이 차용한 MPL-2.0 라이선스 파일 공개 저장소 | main
+[0m
+The installer repo is just URL routing — no sync code. The actual browser binary is downloaded at runtime by WhaleSetup.exe. Let me pivot to acquiring the Android APK from Uptodown (no Cloudflare) and check the naverwhale org for sync-related repos.
+[0m$ [0mcurl -sI -m 15 -L "https://naver-whale-browser.en.uptodown.com/android/download" 2>/dev/null | grep -iE 'content-length|content-type|location|content-disposition|x-file' | head -10
+content-type: text/html
+content-length: 83
+[0m
+[0m$ [0mcurl -s -m 15 -L -o /dev/null -w "%{url_effective}" "https://naver-whale-browser.en.uptodown.com/android/download" 2>/dev/null; echo ""; echo "=== try following redirect ==="; curl -s -m 15 -L "https://naver-whale-browser.en.uptodown.com/android/download" 2>/dev/null | grep -oiE 'href="[^"]*\.apk[^"]*"|https://[^"'\'') ]*\.apk[^"'\'') ]*' | head -10
+https://naver-whale-browser.en.uptodown.com/android/download
+=== try following redirect ===
+[0m
+[0m$ [0mcurl -s -m 15 "https://naver-whale-browser.en.uptodown.com/android" 2>/dev/null | grep -oiE 'href="[^"]*download[^"]*"|https://[^"'\'') ]*apk[^"'\'') ]*|data_id="[^"]*"' | head -20
+(no output)
+[0m
+Let me follow the Uptodown redirect to find the actual APK URL, and check the whale-brave repo — it might be a Chromium fork with sync code.
+[0m$ [0mcurl -s -m 15 "https://api.github.com/repos/naverwhale/whale-brave" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('name:', d.get('name','')); print('desc:', d.get('description','')); print('homepage:', d.get('homepage','')); print('language:', d.get('language','')); print('default_branch:', d.get('default_branch','')); print('size:', d.get('size',''))" 2>/dev/null
+name: whale-brave
+desc: None
+homepage: None
+language: C++
+default_branch: master
+size: 41
+[0m
+[0m$ [0mcurl -s -m 15 -L -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" -H "Referer: https://naver-whale-browser.en.uptodown.com/android" "https://naver-whale-browser.en.uptodown.com/android/download" 2>/dev/null | grep -oiE 'href="[^"]*\.apk[^"]*"|https://[^"'\'') ]+\.apk[^"'\'') ]*' | head -10
+(no output)
+[0m
+[0m$ [0mcurl -s -m 15 "https://apkmirror.com/apk/naver-corp/naver-whale-browser/naver-whale-browser-3-9-14-9-release" 2>/dev/null | grep -oiE 'href="[^"]*download[^"]*"' | head -20
+(no output)
+[0m
+Let me try alternative APK download paths and also search for the APK more directly.
+[0m$ [0mpip3 install apk-downloader 2>/dev/null; pip3 install apk_downloader 2>/dev/null; pip3 install pure-python-adb 2>/dev/null; echo "=== pyapk ==="; pip3 install pyapk 2>/dev/null | tail -3; echo "=== check google-play-scraper ==="; pip3 install google-play-scraper 2>/dev/null | tail -3
+Defaulting to user installation because normal site-packages is not writeable
+Defaulting to user installation because normal site-packages is not writeable
+Defaulting to user installation because normal site-packages is not writeable
+Collecting pure-python-adb
+  Downloading pure-python-adb-0.3.0.dev0.tar.gz (25 kB)
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Building wheels for collected packages: pure-python-adb
+  Building wheel for pure-python-adb (setup.py): started
+  Building wheel for pure-python-adb (setup.py): finished with status 'done'
+  Created wheel for pure-python-adb: filename=pure_python_adb-0.3.0.dev0-py3-none-any.whl size=33578 sha256=a6b345359e42eeb009cba948f67c05235c9d89eb7cd7a086138025da4fa79820
+  Stored in directory: /home/runner/.cache/pip/wheels/d8/13/d9/a03605e2d2282817060a185dbaf38f055a10f04fe40b77c0df
+Successfully built pure-python-adb
+Installing collected packages: pure-python-adb
+Successfully installed pure-python-adb-0.3.0.dev0
+=== pyapk ===
+Downloading pyapk-1.0-py3-none-any.whl (5.7 kB)
+Installing collected packages: pyapk
+Successfully installed pyapk-1.0
+=== check google-play-scraper ===
+Downloading google_play_scraper-1.2.7-py3-none-any.whl (28 kB)
+Installing collected packages: google-play-scraper
+Successfully installed google-play-scraper-1.2.7
+[0m
+[0m$ [0mpython3 -c "
+import google_play_scraper
+# Try to get app details
+try:
+    details = google_play_scraper.app_details('com.naver.whale')
+    print('Found app:', details.get('appId'), details.get('version'))
+    print('Download URL:', details.get('downloadUrl', 'N/A'))
+    # Try to get download URL
+    if 'downloadUrl' in details:
+        print('Direct download URL found!')
+except Exception as e:
+    print(f'Error: {e}')
+" 2>&1 | head -20
+Error: module 'google_play_scraper' has no attribute 'app_details'
+[0m
+[0m$ [0mpython3 -c "
+import apkutils3
+# Check if it has download capability
+print(dir(apkutils3.APK))
+" 2>&1 | head -10; echo "==="; python3 -c "
+import inspect
+import apkutils3
+# Check APK class for download methods
+for name in dir(apkutils3.APK):
+    if not name.startswith('_'):
+        print(name)
+" 2>&1 | head -20
+['DEEP_LEVEL_3_SET', '__annotations__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_init_activities', '_init_app_icon', '_init_app_name', '_init_arsc', '_init_certs', '_init_dex_files', '_init_files_in_apk', '_init_libraries_for_arch', '_init_manifest', '_init_opcodes', '_init_org_manifest', '_init_strings', '_init_strings_refx', 'activities', 'activity_alias', 'all_app_icons', 'app_icon', 'app_name', 'app_names', 'arsc', 'certs', 'dex_classes', 'dex_classes_for_libchecker', 'dex_files', 'exported_activities', 'files', 'get_proto_string', 'home_activities', 'home_activity', 'is_jetpack_compose', 'libraries', 'library_filenames', 'manifest_dict', 'manifest_object', 'opcodes', 'orig_manifest', 'orig_strings', 'package_name', 'strings', 'strings_refx']
+===
+DEEP_LEVEL_3_SET
+activities
+activity_alias
+all_app_icons
+app_icon
+app_name
+app_names
+arsc
+certs
+dex_classes
+dex_classes_for_libchecker
+dex_files
+exported_activities
+files
+get_proto_string
+home_activities
+home_activity
+is_jetpack_compose
+libraries
+library_filenames
+[0m
+Let me try `google-play-scraper` and `apkutils3` to acquire the APK.
+[0m$ [0mpython3 -c "
+import google_play_scraper
+# List apps from developer
+try:
+    results = google_play_scraper.developer('NAVER Corp.', 10)
+    for r in results:
+        if 'whale' in r.get('appId','').lower() or 'whale' in r.get('title','').lower():
+            print(f\"Found: {r['appId']} - {r['title']} - {r.get('version', 'N/A')}\")
+            print(f\"  URL: {r.get('url', 'N/A')}\")
+            print(f\"  Download: {r.get('downloadUrl', 'N/A')}\")
+except Exception as e:
+    print(f'Error: {e}')
+" 2>&1 | head -20
+Error: module 'google_play_scraper' has no attribute 'developer'
+[0m
+[0m$ [0mpython3 -c "import google_play_scraper; print([x for x in dir(google_play_scraper) if not x.startswith('_')])" 2>&1
+['Device', 'Sort', 'app', 'constants', 'exceptions', 'features', 'permissions', 'reviews', 'reviews_all', 'search', 'utils']
+[0m
+[0m$ [0mpython3 -c "
+import apkutils3
+help_str = apkutils3.APK.__init__.__doc__
+print('APK init doc:', help_str)
+# Try to see if APK accepts a URL
+import inspect
+sig = inspect.signature(apkutils3.APK.__init__)
+print('Signature:', sig)
+" 2>&1 | head -10
+APK init doc: None
+Signature: (self, apk_path: Union[str, pathlib.Path])
+[0m
+[0m$ [0mpython3 -c "
+import google_play_scraper
+try:
+    result = google_play_scraper.app('com.naver.whale')
+    print('App ID:', result.get('appId'))
+    print('Version:', result.get('version'))
+    print('Title:', result.get('title'))
+    print('Download URL:', result.get('downloadUrl', 'N/A'))
+    print('Full keys:', list(result.keys()))
+except Exception as e:
+    print(f'Error: {e}')
+" 2>&1 | head -20
+App ID: com.naver.whale
+Version: 3.9.12.4
+Title: Naver Whale Browser
+Download URL: N/A
+Full keys: ['title', 'description', 'descriptionHTML', 'summary', 'installs', 'minInstalls', 'realInstalls', 'score', 'ratings', 'reviews', 'histogram', 'price', 'free', 'currency', 'sale', 'saleTime', 'originalPrice', 'saleText', 'offersIAP', 'inAppProductPrice', 'developer', 'developerId', 'developerEmail', 'developerWebsite', 'developerAddress', 'privacyPolicy', 'genre', 'genreId', 'categories', 'icon', 'headerImage', 'screenshots', 'video', 'videoImage', 'contentRating', 'contentRatingDescription', 'adSupported', 'containsAds', 'released', 'lastUpdatedOn', 'updated', 'version', 'comments', 'appId', 'url']
+[0m
+[0m$ [0mpython3 -c "
+import google_play_scraper
+try:
+    results = google_play_scraper.search('com.naver.whale')
+    for r in results[:5]:
+        print(r)
+except Exception as e:
+    print(f'Error: {e}')
+" 2>&1 | head -20
+{'appId': None, 'icon': 'https://play-lh.googleusercontent.com/hHqo1Xju3XPyWvn3URjuOGljZCl1u-dEX4jUQgz8Hzj8R3683YvPFyNFPkvMmAd6EySxNm2Utm4R0eHWdttQuNw', 'screenshots': ['https://play-lh.googleusercontent.com/D65MlmUgZP19CRkTl8HyrQpG1JPYuLKc-NPpZksbzEz19fOuhsyFf1oDSN0yHfhgxePG11nOpvKmqEebwevf', 'https://play-lh.googleusercontent.com/o2JoNyqr7nuDC3tuFaRYW97VDjEzMS9SHWSJE538QjJgjQISrYOXU6CS7F4HuHEi8rASQGQSlXaq0FUqylUcIw', 'https://play-lh.googleusercontent.com/2VS8GX2CMcyB3OM9hAa1xADL90Ve_7ZtcSTElykAibDTJYmfU8c6DFOBRiM-APlOcyBiZaUzWy6R1R5vAOKI3pM', 'https://play-lh.googleusercontent.com/_ACjDwclgUegykHDwMy2Y3sR4Zrk7uNZhY-G1ocCuH4P9GnOvH0vkiUucMKj02qmru4ThK_a1WzQBAm6nGbOXsY', 'https://play-lh.googleusercontent.com/o3zwqFMZEVrJeL9Zduvet-aFUAC9t72JCvPp6TNZT8VNm5f2pYPR9qQZQbe863WLrQvsLHqCuioDAs_8TN78', 'https://play-lh.googleusercontent.com/qk1ykkU9Mnzz03JZRGFiufWMzgAa3ljYRmbj3AYzI20616NL9NDMX1CPJmF6Ui9_VyLS2F03C06IRdBEoSr_qA', 'https://play-lh.googleusercontent.com/iKf7K_o5HRQLmrqRO-J2LmTN6CkDpgQkYCseuddM7eSNIjOTaEEYmzbJQo1-WROgU-0SY9E0bN-r08DNj54fYsY', 'https://play-lh.googleusercontent.com/_2HXmTiVqHL89JStF7cwjaHXQ3LigOdDKuDk7S2PweSI4E4nOv08C2RvWGsGKoZr2HFBv8Y9AQM3bB5ddLqlUw', 'https://play-lh.googleusercontent.com/80u-DRAGQP-Nb46G4_W1Xih3yhIq-iIfdbnu_Ffq2-JQ7zyaYqz9x5BQZu8fGQTZQVmrfVuyEQeCMyAsSIdg', 'https://play-lh.googleusercontent.com/VmXJBzQ_-kRNTI71Kss9nfGzRdaQiXH-4bFjoILiF9rWz9MEySGSoBK6FAoe-KNheCV4RwsPAYLAJpTauSsliA', 'https://play-lh.googleusercontent.com/UZwq9uOtD77jZBaZSBtqibXjYdZs3xzsu-kwLG82H375DyH-iBXJahJO6XIX9W5qx1cQxb-34dIm_yP0M646tw', 'https://play-lh.googleusercontent.com/xomV-earPaljXwAEUKsHq2XghhwbPtZN3aXXtvDIpgGUc9WoQQaYX3yQ-dMufDJ9q_ri6vvk--MdMODVJhmm1WM', 'https://play-lh.googleusercontent.com/ojnWvIFbuvUYuuhYn38kI4LjMIz5skZnHzc3-BCTZs4pRuaeDdVsG_t-hZgNajQKh4CwXukyMW38VUufFxppfxc', 'https://play-lh.googleusercontent.com/iKf7K_o5HRQLmrqRO-J2LmTN6CkDpgQkYCseuddM7eSNIjOTaEEYmzbJQo1-WROgU-0SY9E0bN-r08DNj54fYsY', 'https://play-lh.googleusercontent.com/_2HXmTiVqHL89JStF7cwjaHXQ3LigOdDKuDk7S2PweSI4E4nOv08C2RvWGsGKoZr2HFBv8Y9AQM3bB5ddLqlUw', 'https://play-lh.googleusercontent.com/80u-DRAGQP-Nb46G4_W1Xih3yhIq-iIfdbnu_Ffq2-JQ7zyaYqz9x5BQZu8fGQTZQVmrfVuyEQeCMyAsSIdg', 'https://play-lh.googleusercontent.com/VmXJBzQ_-kRNTI71Kss9nfGzRdaQiXH-4bFjoILiF9rWz9MEySGSoBK6FAoe-KNheCV4RwsPAYLAJpTauSsliA', 'https://play-lh.googleusercontent.com/UZwq9uOtD77jZBaZSBtqibXjYdZs3xzsu-kwLG82H375DyH-iBXJahJO6XIX9W5qx1cQxb-34dIm_yP0M646tw', 'https://play-lh.googleusercontent.com/xomV-earPaljXwAEUKsHq2XghhwbPtZN3aXXtvDIpgGUc9WoQQaYX3yQ-dMufDJ9q_ri6vvk--MdMODVJhmm1WM', 'https://play-lh.googleusercontent.com/ojnWvIFbuvUYuuhYn38kI4LjMIz5skZnHzc3-BCTZs4pRuaeDdVsG_t-hZgNajQKh4CwXukyMW38VUufFxppfxc'], 'title': 'Naver Whale Browser', 'score': 4.3, 'genre': 'Communication', 'price': 0, 'free': True, 'currency': 'USD', 'video': None, 'videoImage': None, 'description': 'Searching in easy and fast, Syncing to every devices, Blocking abusive ads!\r\nHere is Naver Whale browser!\r\n\r\n<b>※QuickSearch</b>\r\n- Without making a new tab, you can search and use website on instant panel.\r\n\r\n<b>※QuickBar</b>\r\n- Swipe on bottom toolbar. QuickBar is like a bookmark  bar on desktop browser.\r\n\r\n<b>※Scrapbook</b>\r\n- You can save the website, images you want into Whale. \r\n- Scrapbook is the most easy way to save and re-visit the website.\r\n\r\n<b>※Sync</b>\r\n- When you sign in Whale, you can sync your data like history, bookmarks on every devices.\r\n\r\n<b>※CleanWeb</b>\r\n- Whale blocks abusive ads to make a fast and clean usage a web.\r\n\r\n<b>Learn more about Naver Whale</b>\r\n- Contact us through whaleteam@naver.com\r\n- Please visit us : https://whale.naver.com\r\n- This is the from for whale, let us know your opinion : https://forum.whale.naver.com/forum/25/\r\n\r\n<b>※ Required app permissions</b>\r\n- Camera: to upload images and access Whale ON video meeting\r\n- Contacts: to provide contact information on websites\r\n- Location: to provide location information on websites\r\n- Microphone: to use your voice and access Whale ON video meeting\r\n- Nearby devices: to connect and use your bluetooth device\r\n- Phone: to make call on websites and access Whale ON video meeting\r\n\r\n<b>Privacy Policy</b>\r\nYou can read privacy policy of Whale browser : https://whale.naver.com/legal/privacy/', 'descriptionHTML': 'Searching in easy and fast, Syncing to every devices, Blocking abusive ads!<br>Here is Naver Whale browser!<br><br><b>※QuickSearch</b><br>- Without making a new tab, you can search and use website on instant panel.<br><br><b>※QuickBar</b><br>- Swipe on bottom toolbar. QuickBar is like a bookmark  bar on desktop browser.<br><br><b>※Scrapbook</b><br>- You can save the website, images you want into Whale. <br>- Scrapbook is the most easy way to save and re-visit the website.<br><br><b>※Sync</b><br>- When you sign in Whale, you can sync your data like history, bookmarks on every devices.<br><br><b>※CleanWeb</b><br>- Whale blocks abusive ads to make a fast and clean usage a web.<br><br><b>Learn more about Naver Whale</b><br>- Contact us through whaleteam@naver.com<br>- Please visit us : https://whale.naver.com<br>- This is the from for whale, let us know your opinion : https://forum.whale.naver.com/forum/25/<br><br><b>※ Required app permissions</b><br>- Camera: to upload images and access Whale ON video meeting<br>- Contacts: to provide contact information on websites<br>- Location: to provide location information on websites<br>- Microphone: to use your voice and access Whale ON video meeting<br>- Nearby devices: to connect and use your bluetooth device<br>- Phone: to make call on websites and access Whale ON video meeting<br><br><b>Privacy Policy</b><br>You can read privacy policy of Whale browser : https://whale.naver.com/legal/privacy/', 'developer': 'NAVER Corp.', 'installs': '10,000,000+'}
+{'appId': 'com.sec.android.app.sbrowser', 'icon': 'https://play-lh.googleusercontent.com/mOALIZAY5JGaI1txlkeVvluM3QTRGmTbjGZcmrjqYdlz2f7asSPko05A5xCHZ_uczulElA_kOJq2rfjgoCyN', 'screenshots': ['https://play-lh.googleusercontent.com/rEQqC0ki1ykR-Ecn89_e0RtpAoerhgxlZBsM1OY5YAGFBbo0nDULNEbKj9VTgrRUWQBhaMDY-NHGMGJlmd1jxA', 'https://play-lh.googleusercontent.com/GVdeqzu7CfLJy5PUyIVjkEDN392yUuUdUUY973GF5QTSSo6Pmo_jcyN-Oggbz4lX2jirucBiNP_ILTzAwwVs1w', 'https://play-lh.googleusercontent.com/aszxBMbfBPqfvm6wQ6pKXf24ScPO993pQZ-GrryXGRD7KqNnrKiJrDVoySMBwfGYNXJ9fq1OF9flmeoDrSBTdg', 'https://play-lh.googleusercontent.com/pK5ZwcnacPYsyxnIAZ7V0KY4bh2eanCNS8sf5K5ocoZK7durkVWDRtK2tjEvJKGOmxZuBfc8O7_IHffjjuWy2lU', 'https://play-lh.googleusercontent.com/TwhY5dZXiSZE5v3vefF80ujpm3aTf6wF35RC5l_tz7qqOmMITxfvIXs12K18Rq8FHzn3R0CEbkxDEpMNddJhjQ', 'https://play-lh.googleusercontent.com/Ndwb0Wu_P-6ESsR1bnJBwSBT33QuJTjVWoG_JylzGia2mTyh_QBnt3VYuTlP1rEKGt7D7FOEJLlttFkm2--m', 'https://play-lh.googleusercontent.com/gJP7r-p7TmoV6XPGapXFaQGl_-5y_LUL_PDMQ3L2HwcL2TpnKPTsTt0Ul9tu0cHLsNke2qChsTlip1sw2VTw', 'https://play-lh.googleusercontent.com/KI5AN-OkRz4TN9S0ZChwdVwRuiwSti8vDFUmF8dnfDFAFTVyrRbdhr5CDs3TfOw9VTwsjUnzcJTaTi8cHzf1', 'https://play-lh.googleusercontent.com/4LtQFmXDJoJKi_SsET7ck2DWZRZFxYxtH4FPPuN6Ttx-zrtBYHRkDSh5bfyuTsBdIv7LS7FKS93g1dGcmERhfA', 'https://play-lh.googleusercontent.com/LE4jhDkrMKB44-wQQ9OufA5RcaHvdSXbZcGBMbIWWOhrq8XWyBty9y-iKr39VkVVV6N7BaR6d99U0Ct5SYxl', 'https://play-lh.googleusercontent.com/qnPOt0CdigI1fxo0x9k9HM5KS1X2ec4aC-KZPGDQMKYCWn5KdjzL4FT2_SZ8oPwySRwM24OvLsfbUuNp-jASOLo', 'https://play-lh.googleusercontent.com/focM1zajHyI6zrbQ0p5ejbyBK112OOAfYGwa432w-4pJpc-o9WliEzpDyY455dqSZpdoCSBrsM_yA83eAlASzZA', 'https://play-lh.googleusercontent.com/jDzIqouZwdflaJceLjFvTOSPJ-KLRU8WePS_kepkaTaoY1PMCuq41aVxp3fq9t3XChwrFvSSAGNYj2S1JZGRHw', 'https://play-lh.googleusercontent.com/YYq3S87nc5ymRDE9xcwIQwIqVGpQ_a_VybX6BxLPtzxnVhGKCMBAZ8K_XJHcIujfWfLpWWPRg64N43D6nTqE4w', 'https://play-lh.googleusercontent.com/IS0myvievUXd-x5S5Uyc6-mrkktrioV2m9f9yuBnNyjE4IigX4NgevmS6fENpA-XYXjsBTceAMCI6CHJIj63SQ', 'https://play-lh.googleusercontent.com/QcHh90I797LWibCble1ov2jpcC7Cj1VjiKN4_3Q-Xl9nJQyY4_uMeUwfoNdNS6SR2iC9OgHUjhPr2k5Mwhh9', 'https://play-lh.googleusercontent.com/3OjPq4MhrOtp3rDLxRFIgblF70E_pXqDC4_qrwB2qQgKVNrWmtrrPyc9HkykD4VhIGCF6sH3GZM528PWIjxwcAA', 'https://play-lh.googleusercontent.com/IHs206wp0ZzTMKNyl20JQHgl9QkoBXlcZnSTO3my7l_TYp6xtboFiaCJE00U7LhTWVDCxqtBZEvui-J2EJDe', 'https://play-lh.googleusercontent.com/u8gttF4GpQ-ADEYPTAgaY3lTItCr49OYaZSbVugHGFJUG6becG6Xw3fm56m4JXkkL7LyHfh6up-zSNJ7CuOOpg', 'https://play-lh.googleusercontent.com/0yCPOm8eVjowqg1Svh5RYTDHYLpcUybrYv_pweV9nkijpXBjbUxjLBvcVBxy5ws6WL8DBBc8sCnnaL7mnYZYrA', 'https://play-lh.googleusercontent.com/sIzt5jE3KXQXuSz6753Zez-oxZu2-ePrhaTDaRq1yfvuWrzokeAIN-gPiDXoWJ5CFgVzvPliADNUgauQpstkWw'], 'title': 'Samsung Browser', 'score': 3.581483, 'genre': 'Communication', 'price': 0, 'free': True, 'currency': 'USD', 'video': None, 'videoImage': None, 'description': 'Samsung Browser provides the best web browsing experience for you with Video Assistant, Dark Mode, Customize menu, Extensions such as Translator, and by protecting your privacy with Secret mode, Smart Anti-Tracking and Smart Protection.\r\n\r\nSamsung Browser with tiles and complication feature is available on Galaxy Watch devices that support Wear OS (※ Galaxy Watch 4 series and models released later)\r\n\r\n■ New Features for you\r\n* Supports text search within images\r\nYou can search for text included in images in the Find on page menu.\r\n\r\n■ Security & Privacy\r\nSamsung Browser helps you protect your security and privacy while browsing the Internet.\r\n\r\n* Smart Anti-Tracking\r\nIntelligently identify domains which have cross-site tracking ability and block storage (cookie) access.\r\n\r\n* Protected Browsing\r\nWe will warn you before you can view known malicious sites to prevent you from visiting web sites which may try to steal your data.\r\n\r\n* Content Blockers\r\nSamsung Browser for Android allows 3rd party apps to provide filters for content blocking, making browsing safer and more streamlined.\r\n\r\nThe following permissions are required for the app service.\r\nFor optional permissions, the default functionality of the service is turned on, but not allowed.\r\n\r\n[Required permissions]\r\nnone\r\n\r\n[Optional permissions]\r\nLocation: Used to provide location-based content requested by the user or location information requested by the webpage in use\r\nCamera: Used to provide webpage shooting function and QR code shooting function\r\nMicrophone: Used to provide recording function on webpage\r\nPhone: (Android 11) Requires access permission to check the mobile phone information in order to provide country-specific feature optimization\r\nNearby devices: (Android 12 or higher) To find and connect to nearby Bluetooth devices when requested by the website\r\nMusic and audio: (Android 13 or higher) To upload audio files on webpages\r\nPhotos and videos: (Android 13 or higher) To upload photos and videos on webpages\r\nFiles and media: (Android 12) To upload files stored in storage spaces on webpages\r\nStorage: (Android 11 or lower) To upload files stored in storage spaces on webpages\r\nNotifications: (Android 13 or higher) To display the download progress and website notifications\r\n\r\n[Wear OS Optional permissions]\r\nLocation: Used to provide location-based content requested by the user or location information requested by the webpage in use\r\nMicrophone: Used to provide recording function on webpage', 'descriptionHTML': 'Samsung Browser provides the best web browsing experience for you with Video Assistant, Dark Mode, Customize menu, Extensions such as Translator, and by protecting your privacy with Secret mode, Smart Anti-Tracking and Smart Protection.<br><br>Samsung Browser with tiles and complication feature is available on Galaxy Watch devices that support Wear OS (※ Galaxy Watch 4 series and models released later)<br><br>■ New Features for you<br>* Supports text search within images<br>You can search for text included in images in the Find on page menu.<br><br>■ Security &amp; Privacy<br>Samsung Browser helps you protect your security and privacy while browsing the Internet.<br><br>* Smart Anti-Tracking<br>Intelligently identify domains which have cross-site tracking ability and block storage (cookie) access.<br><br>* Protected Browsing<br>We will warn you before you can view known malicious sites to prevent you from visiting web sites which may try to steal your data.<br><br>* Content Blockers<br>Samsung Browser for Android allows 3rd party apps to provide filters for content blocking, making browsing safer and more streamlined.<br><br>The following permissions are required for the app service.<br>For optional permissions, the default functionality of the service is turned on, but not allowed.<br><br>[Required permissions]<br>none<br><br>[Optional permissions]<br>Location: Used to provide location-based content requested by the user or location information requested by the webpage in use<br>Camera: Used to provide webpage shooting function and QR code shooting function<br>Microphone: Used to provide recording function on webpage<br>Phone: (Android 11) Requires access permission to check the mobile phone information in order to provide country-specific feature optimization<br>Nearby devices: (Android 12 or higher) To find and connect to nearby Bluetooth devices when requested by the website<br>Music and audio: (Android 13 or higher) To upload audio files on webpages<br>Photos and videos: (Android 13 or higher) To upload photos and videos on webpages<br>Files and media: (Android 12) To upload files stored in storage spaces on webpages<br>Storage: (Android 11 or lower) To upload files stored in storage spaces on webpages<br>Notifications: (Android 13 or higher) To display the download progress and website notifications<br><br>[Wear OS Optional permissions]<br>Location: Used to provide location-based content requested by the user or location information requested by the webpage in use<br>Microphone: Used to provide recording function on webpage', 'developer': 'Samsung Electronics Co.,  Ltd.', 'installs': '1,000,000,000+'}
+{'appId': 'com.heytap.browser', 'icon': 'https://play-lh.googleusercontent.com/CSasiEF0nz8ARtiJY9MhzyRytJR9QahFoz6l89zZOXeuW60_iWJHSdAlgdaynU3mPWy5TO6KtF7Wg1YsRCdx', 'screenshots': ['https://play-lh.googleusercontent.com/ORSnfL7tTCd3Um6NouprCDiUNy1xW0MABHAlyrnEOQdD58agCKMW0_Gf5OgNugEXfdm1cf2I8M-RwAHTeHvzkw0', 'https://play-lh.googleusercontent.com/RlwUQFLE1OU5CjkhiSkH8wvsGJHI6oGEmcctAnDbEObY6dDqbxaJ67TlBSOHvK3C8hw4kCXre2xcyWqM00A7', 'https://play-lh.googleusercontent.com/M2CD1geSoAvKLCyd-Td1Q4IjBrdEPHn7_ui--q6yEiVW30lZN5geM6de2ex2WH8ceaeTkYTEQzu8Vxp2sVAXQw', 'https://play-lh.googleusercontent.com/952VJmQw2iJUXa9KuSSwsRDt5ot49tsGY52lgpEcY_RbJjkXqnhmsFseFvJwz_68CjxUU0YTMFn8mQYb_wXf0Q', 'https://play-lh.googleusercontent.com/wjXJD2mE0nXAsrLxssn06G8U5kTgZpmB3LjDikuSjMY8jXu7kUQRxX84ighDHvr7rsz0v-h08uUv2EniZdml'], 'title': 'Internet Browser', 'score': 4.245098, 'genre': 'Tools', 'price': 0, 'free': True, 'currency': 'USD', 'video': None, 'videoImage': None, 'description': "Internet browser, security and stability guaranteed, and the perfect Combination of the system, give you the best experience, provide a wealth of news and information and powerful search capabilities, bring you a new online experience.\r\nCore features: \r\n1.Internet surfing, include fast downloading\r\n2.Files cleaning & management(all files access permission required)\r\n3.Tools like QR scanner, What's app status saver, etc.", 'descriptionHTML': 'Internet browser, security and stability guaranteed, and the perfect Combination of the system, give you the best experience, provide a wealth of news and information and powerful search capabilities, bring you a new online experience.<br>Core features: <br>1.Internet surfing, include fast downloading<br>2.Files cleaning &amp; management(all files access permission required)<br>3.Tools like QR scanner, What&#39;s app status saver, etc.', 'developer': 'HeyTap', 'installs': '1,000,000,000+'}
+{'appId': 'com.androidbull.incognito.browser', 'icon': 'https://play-lh.googleusercontent.com/SciHpZxNBsbiPPVpXn6rNkXG3bI3w_oJqIw_r4tvt8Yn4AaFczkBNfGuzDZ-ZFgJBS3nLs_T9u2xpF36dm6eXg', 'screenshots': ['https://play-lh.googleusercontent.com/6gACuYhSudvYEIfHs_dNu6cLXtZHmivOFI1GFLrVA2Naageag1t1Z-tl3bRgaz7VbZWOYs81Pvh5R8rYCtWdPQ', 'https://play-lh.googleusercontent.com/YuQCSu_e_UlFJ1PfwUiAaw5tYXC9FcT3_HBZPmWdBNFOGJE3QcC_AnSX1z-Ozdy6HaSMcR8bBd7xYvUtM96GUw', 'https://play-lh.googleusercontent.com/JUwG6lDydB68J6trAU74DplbJLvOBY6QDkTpfWi32yqrXUYo6aGPhrkw7RYdGY0AEb0xpyEwR8niwjo4dJ7B3w', 'https://play-lh.googleusercontent.com/Yrhc6vjkhyI0Z1xyzjBMvLnyHSaWatBf1GlYToE1nJXeIW1e5DbyU1R9HtUX102qR1fRICwPVsniDrR4altM', 'https://play-lh.googleusercontent.com/3mrM2FjQTYT-t7_s9Y1U1s3ZUmaiKpM34GKySCfWiIGr6eCITIo8g2LNI3TFJRPanBuZxiMqk52Rj64Am3ipXw', 'https://play-lh.googleusercontent.com/pmt4LMSXgkmRo42kSuCPw8F18p_knBU1WtKljJBY145GVfbtMtUOswaWU9R4qWKoGiTD9qMS5AosF-gFhgyRwXs', 'https://play-lh.googleusercontent.com/RTaQ3QorlNvTcLO_DejT9Zs6yRmTPL6Dw8eLeS_89Sa4z2ANzP3JDciWgUYI8_U0DPqmAjghKVY0dxsIgcTuRg', 'https://play-lh.googleusercontent.com/2l7QmDlaBE39EyHFytcl9ccqkTQVcexoBEqeK7PnIDNgf1kK5cpgfIwUkhZYdHxMa5aQjbwFzYDlOn2cFSCkduk', 'https://play-lh.googleusercontent.com/T7bjoklx53mkRu4xdbSOMdXDgOLj037a2uqD3RwOn94nkDE9kr710c2B5ebpgepxm9sscIhI9_VGVngDmxnDHY4', 'https://play-lh.googleusercontent.com/7SlFz6yUfmJ_c88-VifWlP6vYoghOVa1QRigpkZLpOYgRxFkGaXmfedPX7XBh9Sfjo3AbzA8Usflq9IF-eD_', 'https://play-lh.googleusercontent.com/4IOXqwxJZOROF-X2dzvOMUk8DABBr0CsbUJZLGXfXPHvuUVkP4dsI0_ZbulVLV-BusgvRX3edetNKeh0LhAiaQg', 'https://play-lh.googleusercontent.com/SRxONnwfP2lsp4Ful3tAvn9o8UNDyFpsSP0O6qO5g2ybu96EaMHrDdee4fhQFXss9ys1gx8pwnU5IqsgMu5N', 'https://play-lh.googleusercontent.com/eCT3OKpGpqpfTISuYQikoTLTL6y-D69BZMbNwTdTNtYbk5Rq_jLw_LTg6dHFiRAG2r5M8tSwb6U2YKUCuTlp', 'https://play-lh.googleusercontent.com/S8no_ZgMef-OXcm7F-vZWpWuGb-4bKZe1hcLP8VxlFJn6F3Hts4Y_bz3tRKZ6tYi9VYomRH9Btb90YVo2EK7iA', 'https://play-lh.googleusercontent.com/Mw8HgNYxARoTIKdZ8cdNyRl0Dxoe9psBcxwMOuYHYJK41Y2kWJHRtV-V7ZpDKlbS-ejWHIuMWGvBiyiV4fqRMQ', 'https://play-lh.googleusercontent.com/BwQnEcxZ0S51pMi0zPm3IRZsyV3nvvMfukrwdE3N_keqCXHrsjKedZtdkzGZaQeDjIw536YIIywhs59j1hdfLl0', 'https://play-lh.googleusercontent.com/Hw487vlyhBuI7exMcJQqGpXrO3IluvQcG6Bw9oihHmfhzFF8nM1FI6kY56g84EijTuxcWuzTATW1P4yfSJJm4w', 'https://play-lh.googleusercontent.com/DrTcE6Vdd664Z6yhv0SNDRLvrn33o5ZEnt9Zo659zZeKIwUfIKc4bsb1fF9ZO1mBGmwAKTNfI5Q4wed9Q9dYDA', 'https://play-lh.googleusercontent.com/RP7O-2JHWP512HDiP7sv1Tgz25hZi78SYVJO2Q6mrr9RAtdx4KCEjJZhqjKRQT__tQZxIwj9k9p0A8UEFi4TfA', 'https://play-lh.googleusercontent.com/XLkbVUvgCA5HjGYhXs8owihvBbuDWRqJHwkMWlb5NV0pXicHOX3lXImEfyj-4VWRhOybrvxEMCaLX7skrdV3bA', 'https://play-lh.googleusercontent.com/D2plFkkMvarxBRkVxh1A0wZA243xqVbtmJY3Od4yLCKsiWhVsiCI7BiV0aqIc4_-IHEx_y9ThZVRWQYcvNRiQw', 'https://play-lh.googleusercontent.com/jEnGdVoxaGiny1Oq5UJ60kw-M3y6soOaz06uiKFIjraFpjug8sj5BLU4vWbyYQx_GZTpGky82agIL2pAbKQv2Q', 'https://play-lh.googleusercontent.com/fWxM0zKWIyh4f233ClMJwrc5ulm2XBodKILH_PFnX0-0nyk9nunqzblToAcfwWWq0ilwEXORkpjmxHen90wNARk', 'https://play-lh.googleusercontent.com/-Pa-FoPrFWbqtj_txvrAQg-0W37ZlR2pogXy5LSoMN1pIItU0Fa-GjiAbAfvYvuDGM2t8GLdC3M1UHPJvXQKjw', 'https://play-lh.googleusercontent.com/Hw487vlyhBuI7exMcJQqGpXrO3IluvQcG6Bw9oihHmfhzFF8nM1FI6kY56g84EijTuxcWuzTATW1P4yfSJJm4w', 'https://play-lh.googleusercontent.com/DrTcE6Vdd664Z6yhv0SNDRLvrn33o5ZEnt9Zo659zZeKIwUfIKc4bsb1fF9ZO1mBGmwAKTNfI5Q4wed9Q9dYDA', 'https://play-lh.googleusercontent.com/D2plFkkMvarxBRkVxh1A0wZA243xqVbtmJY3Od4yLCKsiWhVsiCI7BiV0aqIc4_-IHEx_y9ThZVRWQYcvNRiQw', 'https://play-lh.googleusercontent.com/XLkbVUvgCA5HjGYhXs8owihvBbuDWRqJHwkMWlb5NV0pXicHOX3lXImEfyj-4VWRhOybrvxEMCaLX7skrdV3bA', 'https://play-lh.googleusercontent.com/RP7O-2JHWP512HDiP7sv1Tgz25hZi78SYVJO2Q6mrr9RAtdx4KCEjJZhqjKRQT__tQZxIwj9k9p0A8UEFi4TfA', 'https://play-lh.googleusercontent.com/jEnGdVoxaGiny1Oq5UJ60kw-M3y6soOaz06uiKFIjraFpjug8sj5BLU4vWbyYQx_GZTpGky82agIL2pAbKQv2Q', 'https://play-lh.googleusercontent.com/fWxM0zKWIyh4f233ClMJwrc5ulm2XBodKILH_PFnX0-0nyk9nunqzblToAcfwWWq0ilwEXORkpjmxHen90wNARk', 'https://play-lh.googleusercontent.com/-Pa-FoPrFWbqtj_txvrAQg-0W37ZlR2pogXy5LSoMN1pIItU0Fa-GjiAbAfvYvuDGM2t8GLdC3M1UHPJvXQKjw', 'https://play-lh.googleusercontent.com/w0evryo15bzMz225O9i0RE-RQ8KLbHmO2WeOZZJXmL0au9XmTWMNRca5UN4IVwX8NUYdmKtbpjyC8nysGbVgyx8'], 'title': 'Incognito Browser - Go Private', 'score': 4.7162952, 'genre': 'Communication', 'price': 0, 'free': True, 'currency': 'USD', 'video': 'https://www.youtube.com/embed/dIRFzjM3psE?vq=large&rel=0&autohide=1&showinfo=0', 'videoImage': 'https://i.ytimg.com/vi/dIRFzjM3psE/hqdefault.jpg', 'description': 'Surf the internet anonymously and protect your privacy. Incognito Browser is a 100% free, fast private browser and secure safe web privacy browser for surfing the internet privately on Android with a robust free AdBlocker, fast downloads, dark mode and advanced privacy features. All 100% free. Voted best Android privacy browser by AA. Now with Web3 & IPFS support!\r\n\r\n<b>✨Why choose Incognito Browser?✨</b>\r\n\r\n<b>✓  Absolute Privacy</b>\r\nAutomatic incognito mode ensures all data - including history, cookies, and sessions -  are instantly wiped when you exit the app. No digital footprints left behind. \r\n\r\n<b>✓  Private Browsing</b>\r\nPerfect for sensitive tasks like checking dating sites or using social media discreetly.\r\n\r\n<b>✓  History-Free</b>\r\nYour device remains clean; no browser history or cache.\r\n\r\n<b>✓ Tracker-Free</b>\r\nNo sneaky first or third-party trackers. Keep your browsing genuinely anonymous.\r\n\r\n\r\n<b>FEATURES</b>\r\n\r\n<b>🛑 Robust AdBlocker</b>\r\nView your favorite content without getting interrupted by ads.\r\n\r\n<b>⚡ Web3 & IPFS support</b>\r\nIncognito Browser now supports IPFS, .eth & .crypto Web3 addresses.\r\n\r\n<b>🌓 Dark Mode</b>\r\nNighttime browsing without eye strain - Incognito Browser provides the actual dark UI for browsing through the internet at night.\r\n\r\n<b>📲 Fast Downloads</b>\r\nDownload files at lightning speed while staying anonymous.\r\n\r\n<b>🔎 Multiple Search Engines</b>\r\nChoose which search engine to use. Incognito Browser supports multiple search engines including Google, DuckDuckGo & Bing.\r\n\r\n<b>🖥️ Agent Cloaking</b>\r\nHide your browser & device identity. Access desktop site versions on your mobile device.\r\n\r\n<b>✓ Tabbed Browsing</b>\r\nQuickly switch between several open web pages within a single browsing session.\r\n\r\n<b>✓ Clean UI</b>\r\nNo junk, no extra bars - Incognito Browser has a minimalist design that maximizes your viewing space.\r\n\r\n<b>✓ Multiple Language Support</b>\r\nIncognito Browser supports 13 different languages, including English, Spanish & Portuguese.\r\n\r\n<b>✓ Customizable Settings</b>\r\nCustomize your browsing experience with our advanced settings. Set your preferences for images, JavaScript, cookies & more.\r\n\r\nExperience the next level of online privacy. Download the best private browser app for Android!', 'descriptionHTML': 'Surf the internet anonymously and protect your privacy. Incognito Browser is a 100% free, fast private browser and secure safe web privacy browser for surfing the internet privately on Android with a robust free AdBlocker, fast downloads, dark mode and advanced privacy features. All 100% free. Voted best Android privacy browser by AA. Now with Web3 &amp; IPFS support!<br><br><b>✨Why choose Incognito Browser?✨</b><br><br><b>✓  Absolute Privacy</b><br>Automatic incognito mode ensures all data - including history, cookies, and sessions -  are instantly wiped when you exit the app. No digital footprints left behind. <br><br><b>✓  Private Browsing</b><br>Perfect for sensitive tasks like checking dating sites or using social media discreetly.<br><br><b>✓  History-Free</b><br>Your device remains clean; no browser history or cache.<br><br><b>✓ Tracker-Free</b><br>No sneaky first or third-party trackers. Keep your browsing genuinely anonymous.<br><br><br><b>FEATURES</b><br><br><b>🛑 Robust AdBlocker</b><br>View your favorite content without getting interrupted by ads.<br><br><b>⚡ Web3 &amp; IPFS support</b><br>Incognito Browser now supports IPFS, .eth &amp; .crypto Web3 addresses.<br><br><b>🌓 Dark Mode</b><br>Nighttime browsing without eye strain - Incognito Browser provides the actual dark UI for browsing through the internet at night.<br><br><b>📲 Fast Downloads</b><br>Download files at lightning speed while staying anonymous.<br><br><b>🔎 Multiple Search Engines</b><br>Choose which search engine to use. Incognito Browser supports multiple search engines including Google, DuckDuckGo &amp; Bing.<br><br><b>🖥️ Agent Cloaking</b><br>Hide your browser &amp; device identity. Access desktop site versions on your mobile device.<br><br><b>✓ Tabbed Browsing</b><br>Quickly switch between several open web pages within a single browsing session.<br><br><b>✓ Clean UI</b><br>No junk, no extra bars - Incognito Browser has a minimalist design that maximizes your viewing space.<br><br><b>✓ Multiple Language Support</b><br>Incognito Browser supports 13 different languages, including English, Spanish &amp; Portuguese.<br><br><b>✓ Customizable Settings</b><br>Customize your browsing experience with our advanced settings. Set your preferences for images, JavaScript, cookies &amp; more.<br><br>Experience the next level of online privacy. Download the best private browser app for Android!', 'developer': 'CoinCircle, Inc.', 'installs': '5,000,000+'}
+{'appId': 'com.vivaldi.browser', 'icon': 'https://play-lh.googleusercontent.com/RNTChezdp-FkUkw6pldhlIi3uCeP_J6fQ0x5NwWfVV9tTdFZidR-z1V9MNVHww4sNdNLOQLw0yW6NJjVF1H0Fw', 'screenshots': ['https://play-lh.googleusercontent.com/aCuu6KfaEtZPiL6lKKX2mVvfP4ESVl6KasdC3uFJjB4PfITorH7TxgMSQp9beBFAnIb8I0m10Qlb_lCnyF50', 'https://play-lh.googleusercontent.com/K9gbfi9F94wQCcWjGIhvryIiRbvV4Q8aQG7MR7a2Pkn16naOjmvhOBGQfmx0qDnfO1oSCh83QGGzyAB6EuhBmTg', 'https://play-lh.googleusercontent.com/YW5coEt54C6-skDErzf6tChBDiG3825Ip75UKqnDlsrcEtj41lwZenTx8fTiFY02mmuxf2-Ou7Uq6hEd4f2WagE', 'https://play-lh.googleusercontent.com/xQGVNbwBCxb00RXLtDyZfR-n7aOoyDAxaPGh0HdVBgnMV11EsIp7zpm1HtOAmScYTTzoNRxq1AZ3Byekm-iFQQ', 'https://play-lh.googleusercontent.com/ObQOgZBzlQflCezNlGZIUpRtDwF8B6gw6gzywm5-IKQpaf1K3OXO6-EDpQqE7AIky9GWDCRhCUvPChG7UAEK_w', 'https://play-lh.googleusercontent.com/dBKUKE6Ty0OyzEHWZcsjkBTr1r2KsC1xDnEJFeulwm169bF4ZhP_W4f4xYQhTKKg9mJSeM5J2Gm_ANavrC44DNE', 'https://play-lh.googleusercontent.com/pQ78lwWJ050FW2wqvwgOXdrOlmA9khlBy8nLqjtu6Ysa17cXQPsvx8eJEJZ-SEa3Q23p8MZmU5mgCEyp40snSQ', 'https://play-lh.googleusercontent.com/7gBwisiHnpwep83R73BoDGOGcmpqJgOWrExwMhUeboV4KuYIT9_5WJHOyYYK5tmnzdl4R9uriRstZpaiou2dx3Y', 'https://play-lh.googleusercontent.com/II9EC36uGS1OjNr7SNUDaJkzhNLpj-MvLOMoeZp_zqMAUM_QQ-Kx8VATSWgmfzc0h-OsSGI_upukorw--VoL', 'https://play-lh.googleusercontent.com/w5kTAyrK8TBJn_ZTDgWXjD3HpuFOpQg-Rq3oS6Pn_rhmorDIqaqUEXA4j-tP62YolcANw0SXJbWgjX6c6jkukw', 'https://play-lh.googleusercontent.com/31YT1lYYX4kgwHOwZWC0kj0vHCFO4vr6LfMHJ1ToQ5Eh7_623hvBdZFP-l2VKhkg_jIJW67gGWZu_oK-i-3jqHk', 'https://play-lh.googleusercontent.com/U2Bg4XNSRdajQuMlxnz6nn9CTFkLxpNOZLsHq5RW-SWZAeK4cooFOHgFP4dSzYIusPFdpNsOQr6vbeT3fELt', 'https://play-lh.googleusercontent.com/mViE_K7HZbbYjAzFBoDdXjKnKVfaAjUZwTA5R3RhMSQA9oOuMVREeWEYq0ZdOuPGqMkZJOcYRfyuyV80BKEqM9M', 'https://play-lh.googleusercontent.com/hHtnW2X6KUA37GsnNI9AFaoo9kH4qu4ZrnwInlIjktHgcWtTDzKO6gCTVW6A8pI6v8J_UHhiSawynMtljCKL', 'https://play-lh.googleusercontent.com/JkR4s-9Qps76uIC7fyJGmYWIOb-gJjZJfGzajKLbj3oPh-0gEJmcz1rGfcQwwrQA18J9Sdn5_IA2IogF56y6LC0', 'https://play-lh.googleusercontent.com/_h4YdeJdvlH8vW3Jc0jZeCC1sm_bfsg1kbXMg0gqnuAjPXm_NHknWS0aUtNUueydrFppPKMCKsmVaS3ntHlr', 'https://play-lh.googleusercontent.com/gED0MKueRgAw3WV5Vyxj4MGhD7joIoTdndI55kiXop9ZzrbfdJIyNhs9tS4RTLGfosRj-ewWIxO30vHIN8ykFg'], 'title': 'Vivaldi Browser - Fast & Safe', 'score': 4.624801, 'genre': 'Communication', 'price': 0, 'free': True, 'currency': 'USD', 'video': None, 'videoImage': None, 'description': '<b> We’re building a fast, ultra customizable browser that prioritizes your privacy (not our own profit).</b> An Internet browser that adapts to you, not the other way around. Vivaldi browser comes packed with smart features including desktop-style tabs, a built-in Ad Blocker, protection against trackers, and a private translator. Browser options like themes and layout choices help you make Vivaldi your own.\r\n\r\n<b>Personalized Speed Dial</b> \r\n\r\nBrowse faster by adding your favorite bookmarks as Speed Dials on the new tab page, to keep them one tap away. Sort them into folders, pick from a bunch of layout options, and make it your own. You can also switch Search Engines on the fly using Search Engine Nicknames while typing in Vivaldi’s Address Field (like ""d"" for DuckDuckGo or ""w"" for Wikipedia).\r\n\r\n<b>Tab Bar with Two-Level Tab Stacks</b> \r\n\r\nVivaldi is the world’s first browser on Android to introduce two rows of mobile browser tabs. Long-press the New Tab button & select “New Tab Stack” to check it out! Choose between using a Tab Bar (which works great on larger screens and tablets) or a Tab Switcher to manage tabs.\r\n\r\n<b>Genuine Privacy and Security</b> \r\n\r\nVivaldi doesn’t track your behavior. And we try to block other trackers that are trying to follow you around the internet. Keep your Internet browsing history to yourself with Private Tabs. When you use private browser tabs, searches, links, sites visited, cookies, and temporary files won\'t be stored.\r\n\r\n<b>Built-in Ad- & Tracker blocker</b> \r\n\r\nPopups and ads are among the most annoying things about browsing the Internet. Now you can get rid of them in a few clicks. A built-in Ad Blocker blocks privacy-invading ads and stops trackers from following you around the web - no extensions needed. P.S. Ad Blocker and pop-up blockers also make your browsing experience faster and safer.\r\n\r\n<b>Smart Tools</b> 🛠 \r\n\r\nVivaldi comes with built-in tools, so you get better app performance and spend less jumping between apps to get things done. Here\'s a taste:\r\n\r\n- Get private translations of websites using Vivaldi Translate (powered by Lingvanex).\r\n- Take Notes as you browse and sync them securely between all your devices.\r\n- Capture screenshots of a full-page (or just the visible area) and share them quickly.\r\n- Scan QR Codes to share links between devices.\r\n- Use Page Actions to adjust web page content with filters.\r\n\r\n <b>Keep your browsing data with you</b> \r\n\r\nVivaldi is also available on Windows, Mac, and Linux! Pick up where you left off by syncing data across devices. Open tabs, saved logins, Bookmarks and Notes seamlessly sync to all your devices using end-to-end encryption and can be further secured by an encryption password.\r\n\r\n<b>All Vivaldi Browser Features</b> \r\n\r\n- Internet browser with encrypted Sync\r\n- Free built-in Ad Blocker with pop-up blocker\r\n- Page Capture\r\n- Speed Dial shortcuts for favorites\r\n- Tracker Blocker to protect your privacy\r\n- Notes with rich text support\r\n- Private tabs (for incognito private browsing)\r\n- Dark Mode\r\n- Bookmarks Manager\r\n- QR Code Scanner\r\n- External Download manager support\r\n- Recently closed tabs\r\n- Search engine nicknames\r\n- Reader View\r\n- Clone tab\r\n- Page Actions\r\n- Language Selector\r\n- Downloads Manager\r\n- Auto-clear browsing data on exit\r\n- WebRTC leak protection (for privacy)\r\n- Cookie banner blocking\r\n- 🕹 Built-in Arcade\r\n\r\nSome links in Vivaldi are affiliate links. As an Amazon Associate and an eBay Partner, Vivaldi may be compensated if you make a qualifying purchase via a website you open in Vivaldi. This helps support Vivaldi and keeps it independent.\r\n\r\n<b>About Vivaldi</b> \r\n\r\nTo get the most out of Vivaldi, sync up with our desktop version (available on Windows, macOS, and Linux). It\'s free and has a lot of cool stuff that we think you\'ll love. Get it at: http://vivaldi.com\r\n\r\n—\r\nExperience internet browsing with more privacy and power using the Vivaldi browser.', 'descriptionHTML': '<b> We’re building a fast, ultra customizable browser that prioritizes your privacy (not our own profit).</b> An Internet browser that adapts to you, not the other way around. Vivaldi browser comes packed with smart features including desktop-style tabs, a built-in Ad Blocker, protection against trackers, and a private translator. Browser options like themes and layout choices help you make Vivaldi your own.<br><br><b>Personalized Speed Dial</b> <br><br>Browse faster by adding your favorite bookmarks as Speed Dials on the new tab page, to keep them one tap away. Sort them into folders, pick from a bunch of layout options, and make it your own. You can also switch Search Engines on the fly using Search Engine Nicknames while typing in Vivaldi’s Address Field (like &quot;&quot;d&quot;&quot; for DuckDuckGo or &quot;&quot;w&quot;&quot; for Wikipedia).<br><br><b>Tab Bar with Two-Level Tab Stacks</b> <br><br>Vivaldi is the world’s first browser on Android to introduce two rows of mobile browser tabs. Long-press the New Tab button &amp; select “New Tab Stack” to check it out! Choose between using a Tab Bar (which works great on larger screens and tablets) or a Tab Switcher to manage tabs.<br><br><b>Genuine Privacy and Security</b> <br><br>Vivaldi doesn’t track your behavior. And we try to block other trackers that are trying to follow you around the internet. Keep your Internet browsing history to yourself with Private Tabs. When you use private browser tabs, searches, links, sites visited, cookies, and temporary files won&#39;t be stored.<br><br><b>Built-in Ad- &amp; Tracker blocker</b> <br><br>Popups and ads are among the most annoying things about browsing the Internet. Now you can get rid of them in a few clicks. A built-in Ad Blocker blocks privacy-invading ads and stops trackers from following you around the web - no extensions needed. P.S. Ad Blocker and pop-up blockers also make your browsing experience faster and safer.<br><br><b>Smart Tools</b> 🛠 <br><br>Vivaldi comes with built-in tools, so you get better app performance and spend less jumping between apps to get things done. Here&#39;s a taste:<br><br>- Get private translations of websites using Vivaldi Translate (powered by Lingvanex).<br>- Take Notes as you browse and sync them securely between all your devices.<br>- Capture screenshots of a full-page (or just the visible area) and share them quickly.<br>- Scan QR Codes to share links between devices.<br>- Use Page Actions to adjust web page content with filters.<br><br> <b>Keep your browsing data with you</b> <br><br>Vivaldi is also available on Windows, Mac, and Linux! Pick up where you left off by syncing data across devices. Open tabs, saved logins, Bookmarks and Notes seamlessly sync to all your devices using end-to-end encryption and can be further secured by an encryption password.<br><br><b>All Vivaldi Browser Features</b> <br><br>- Internet browser with encrypted Sync<br>- Free built-in Ad Blocker with pop-up blocker<br>- Page Capture<br>- Speed Dial shortcuts for favorites<br>- Tracker Blocker to protect your privacy<br>- Notes with rich text support<br>- Private tabs (for incognito private browsing)<br>- Dark Mode<br>- Bookmarks Manager<br>- QR Code Scanner<br>- External Download manager support<br>- Recently closed tabs<br>- Search engine nicknames<br>- Reader View<br>- Clone tab<br>- Page Actions<br>- Language Selector<br>- Downloads Manager<br>- Auto-clear browsing data on exit<br>- WebRTC leak protection (for privacy)<br>- Cookie banner blocking<br>- 🕹 Built-in Arcade<br><br>Some links in Vivaldi are affiliate links. As an Amazon Associate and an eBay Partner, Vivaldi may be compensated if you make a qualifying purchase via a website you open in Vivaldi. This helps support Vivaldi and keeps it independent.<br><br><b>About Vivaldi</b> <br><br>To get the most out of Vivaldi, sync up with our desktop version (available on Windows, macOS, and Linux). It&#39;s free and has a lot of cool stuff that we think you&#39;ll love. Get it at: http://vivaldi.com<br><br>—<br>Experience internet browsing with more privacy and power using the Vivaldi browser.', 'developer': 'Vivaldi Technologies', 'installs': '5,000,000+'}
+[0m

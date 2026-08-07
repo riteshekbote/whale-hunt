@@ -295,3 +295,4 @@ evidence_needed: crafted HTML/web-panel escaping sidebar iframe sandbox or readi
 verify_steps: AUTH_HELPED: install v4.38.386.14, load crafted extension/page into sidebar web-panel and devtools-in-sidebar; test sandbox escape / cross-origin XHR-fetch / CSP bypass; repro-first on latest; zero server interaction
 impact: cross-origin data theft or script execution in browser UI; High–Critical (escalation to renderer)
 testability: AUTH_HELPED
+## 2026-08-07 21:40:18 UTC [sync] (model bigpickle)
