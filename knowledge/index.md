@@ -32,3 +32,8 @@
 - 2026-08-07 REJECTED @ naver/whale-browser-developers: Repo remains documentation-only (last real commit 2019-09-23; 2025-10-22 metadata-only refresh) — no browser binary source, sync flow code, or library manifests available for static analysis
 - 2026-08-07 REJECTED @ naver web services (developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com): All excluded per scope rules
 - 2026-08-07 CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability disclosure gap
+- 2026-08-07 REJECTED class @ lead: 1 (Lead 2/6/14 — Sync KDF/bootstrap-token/OSCrypt):
+- 2026-08-07 REJECTED class @ lead: 2 (Lead 5 — Bundled library inventory):
+- 2026-08-07 REJECTED class @ lead: 3 (Lead 7/13 — socket.io push channel):
+- 2026-08-07 REJECTED class @ lead: 4 (Leads 2/6/14 consolidated as sync analysis; Lead 5 as lib inventory;
+- 2026-08-07 REJECTED class @ lead: 10 (speculative variant hunting, HUMAN_ONLY-only, or no evidence)
