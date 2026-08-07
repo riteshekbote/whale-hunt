@@ -1,1 +1,29 @@
-## 2026-08-07 21:40:18 UTC [sync] (model bigpickle)
+## 2026-08-07 22:21:50 UTC [sync] (model bigpickle)
+[HYP] Sync bootstrap-token storage / per-account migration — Whale-only prefs deviation
+class: AUTH
+asset: whalesync client engine (api.whale.naver.com/whalesync) + profile prefs `sync.encryption_bootstrap_token_per_account`
+confidence: 55
+reasoning: Binary v4.38.386.14 strings show Whale syncs passwords+cookies+autofill+tabs over custom `/whalesync`; encryption uses `nigori-key` + `sync_pb.EncryptionKeys` with Whale-only prefs keys (`_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) absent from upstream Chromium; passphrase help page (help.whale.naver.com/desktop/sync_passphrase) and `SyncSetupSetEncryptionPassphrase` UI strings confirm custom passphrase is offered
+evidence_needed: whether per-account token is stored encrypted vs plaintext in `Preferences`, passphrase KDF constants (salt/iterations) in whale_sync_util, whether `whale_need_encryption_key_forced_time` downgrades encryption
+verify_steps: PASSIVE: ghidra/strings on `whale_sync_util.cc`/`whale_sync_auth_manager.cc` call sites for `/whalesync/reset` (method+body) and bootstrap-token envelope; compare prefs key set against upstream Chromium `sync.encryption_bootstrap_token` handling
+impact: local attacker / infostealer with profile access decrypts synced passwords, cookies, bookmarks → full-account compromise; High
+testability: PASSIVE
+[HYP] whale_sync_push socket.io push channel — unsanitized event → engine mutation (injection precedent)
+class: XSS
+asset: whale_sync_push extension (service_worker.js + socket.io.slim.js), bundled Whale-only
+confidence: 45
+reasoning: CVE-2022-24072 / CVE-2024-40618 prove built-in-extension processing is a prior Whale injection vector; push channel is socket.io (unusual in browser core, Whale-only), and its events feed tab/typedUrls sync surfaces; payloads arriving via a WebSocket/engine.io transport create a trust boundary worth auditing
+evidence_needed: onmessage/event handlers in the extracted service worker, whether remote events reach chrome.tabs/history or bypass message validation
+verify_steps: PASSIVE: extract `whale_sync_push/*.js` from resources.pak; audit socket.io handlers for remote-origin event data reaching privileged APIs unsanitized
+impact: remote push message mutating synced tabs/history or executing in extension context; Medium–High
+testability: PASSIVE
+[HYP] `/whalesync/reset` trigger — auth binding / confirmation weakness
+class: BUSLOGIC
+asset: api.whale.naver.com/whalesync/reset (client trigger = sync-wipe + log-out-all-devices per help doc)
+confidence: 40
+reasoning: client-initiated reset deletes server data and signs out every device; if the client sends only `NEO_SES` cookie (no reauth/confirm token), a stale/misused session or CSRFable request wipes sync state
+evidence_needed: exact method, body, and headers the client sends to `/whalesync/reset`; whether reauth is required
+verify_steps: PASSIVE: static call-site analysis of `/whalesync/reset` in `whale_sync_util` (request shape, auth headers); server probing out of scope
+impact: sync data destruction, device log-out spam; DoS on account
+testability: PASSIVE
+[NEXT] PROBE: Extract `whale_sync_push/service_worker.js` + `socket.io.slim.js` from `/tmp/opencode/whale_x/opt/naver/whale/resources.pak` (local static), then audit socket.io onmessage handlers for remote event data reaching chrome.tabs/history APIs unsanitized — advances HYP-2 and the sync push surface with zero server interaction.
