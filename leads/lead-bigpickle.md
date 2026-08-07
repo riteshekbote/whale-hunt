@@ -325,3 +325,91 @@ verify_steps: PASSIVE: static call-site analysis of `/whalesync/reset` in `whale
 impact: sync data destruction, device log-out spam; DoS on account
 testability: PASSIVE
 [NEXT] PROBE: Extract `whale_sync_push/service_worker.js` + `socket.io.slim.js` from `/tmp/opencode/whale_x/opt/naver/whale/resources.pak` (local static), then audit socket.io onmessage handlers for remote event data reaching chrome.tabs/history APIs unsanitized — advances HYP-2 and the sync push surface with zero server interaction.
+## 2026-08-07 23:05:37 UTC [sync] (model bigpickle)
+[HYP] Sync bootstrap-token storage / per-account migration — Whale-only prefs deviation
+class: AUTH
+asset: whalesync client engine (api.whale.naver.com/whalesync) + profile prefs `sync.encryption_bootstrap_token_per_account`
+confidence: 55
+reasoning: Binary v4.38.386.14 strings show Whale syncs passwords+cookies+autofill+tabs over custom `/whalesync`; encryption uses `nigori-key` + `sync_pb.EncryptionKeys` with Whale-only prefs keys (`_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) absent from upstream Chromium; passphrase help page (help.whale.naver.com/desktop/sync_passphrase) and `SyncSetupSetEncryptionPassphrase` UI strings confirm custom passphrase is offered
+evidence_needed: whether per-account token is stored encrypted vs plaintext in `Preferences`, passphrase KDF constants (salt/iterations) in whale_sync_util, whether `whale_need_encryption_key_forced_time` downgrades encryption
+verify_steps: PASSIVE: ghidra/strings on `whale_sync_util.cc`/`whale_sync_auth_manager.cc` call sites for `/whalesync/reset` (method+body) and bootstrap-token envelope; compare prefs key set against upstream Chromium `sync.encryption_bootstrap_token` handling
+impact: local attacker / infostealer with profile access decrypts synced passwords, cookies, bookmarks → full-account compromise; High
+testability: PASSIVE
+[HYP] whale_sync_push socket.io push channel — unsanitized event → engine mutation (injection precedent)
+class: XSS
+asset: whale_sync_push extension (service_worker.js + socket.io.slim.js), bundled Whale-only
+confidence: 45
+reasoning: CVE-2022-24072 / CVE-2024-40618 prove built-in-extension processing is a prior Whale injection vector; push channel is socket.io (unusual in browser core, Whale-only), and its events feed tab/typedUrls sync surfaces; payloads arriving via a WebSocket/engine.io transport create a trust boundary worth auditing
+evidence_needed: onmessage/event handlers in the extracted service worker, whether remote events reach chrome.tabs/history or bypass message validation
+verify_steps: PASSIVE: extract `whale_sync_push/*.js` from resources.pak; audit socket.io handlers for remote-origin event data reaching privileged APIs unsanitized
+impact: remote push message mutating synced tabs/history or executing in extension context; Medium–High
+testability: PASSIVE
+[HYP] `/whalesync/reset` trigger — auth binding / confirmation weakness
+class: BUSLOGIC
+asset: api.whale.naver.com/whalesync/reset (client trigger = sync-wipe + log-out-all-devices per help doc)
+confidence: 40
+reasoning: client-initiated reset deletes server data and signs out every device; if the client sends only `NEO_SES` cookie (no reauth/confirm token), a stale/misused session or CSRFable request wipes sync state
+evidence_needed: exact method, body, and headers the client sends to `/whalesync/reset`; whether reauth is required
+verify_steps: PASSIVE: static call-site analysis of `/whalesync/reset` in `whale_sync_util` (request shape, auth headers); server probing out of scope
+impact: sync data destruction, device log-out spam; DoS on account
+testability: PASSIVE
+[NEXT] PROBE: Extract `whale_sync_push/service_worker.js` + `socket.io.slim.js` from `/tmp/opencode/whale_x/opt/naver/whale/resources.pak` (local static), then audit socket.io onmessage handlers for remote event data reaching chrome.tabs/history APIs unsanitized — advances HYP-2 and the sync push surface with zero server interaction.
+reasoning: Vendor help center states passphrase never sent to/stored on Naver server; must be re-entered on every new device → client-side key derivation + local key store. Android sync encryption added in 3.8.6.2 (2025-04); prior sync was TLS-only. No public client code exists for desktop or Android.
+evidence_needed: KDF algorithm + iteration counts, per-OS storage of derived key/passphrase (Preferences/Local State/OS keychain/EncryptedSharedPreferences), whether key/passphrase ever leaves device (reset/recovery flows), sync auth token storage/scope
+verify_steps: PASSIVE: Acquire latest desktop installer and Android XAPK 3.9.14.9 from non-Naver mirror; extract/decompile; static grep for sync module strings: "passphrase", "PBKDF2", "scrypt", "sync", "key", "token", "EncryptedSharedPreferences", "Local State", "Preferences" — zero network requests to naver infra. AUTH_HELPED: Authorized test login to observe token/key lifecycle in filesystem.
+impact: Weak KDF or plaintext-adjacent key/passphrase storage → local attacker or infostealer decrypts synced bookmarks+site passwords → PII cascade (High)
+testability: AUTH_HELPED
+[HYP] Dual-tab environment SOP bypass and CSP scheme bypass — new variant post-CVE-2025-62585 on v4.38.386.14
+class: OTHER
+asset: Whale browser dual-tab context (Whale-specific feature, not in Chromium) — latest v4.38.386.14
+confidence: 45
+reasoning: 4 CVEs in Jul–Oct 2025: CVE-2025-53600 (CWE-346 SOP bypass), CVE-2025-62583 (CWE-358 iframe sandbox escape), CVE-2025-62584 (CWE-346 SOP bypass), CVE-2025-62585 (CWE-358 CSP bypass via specific scheme) — all fixed in v4.33.325.17 (Oct 2025). Current stable v4.38.386.14 is ~8 months ahead with 0 published CVEs. Dual-tab is a Whale-specific feature with no Chromium equivalent, recurring boundary issues.
+evidence_needed: Running browser binary v4.38.386.14 demonstrating SOP/CSP bypass in dual-tab mode — cross-origin access between dual-tab panels or CSP bypass via javascript:/data: schemes
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 → open dual-tab mode → load cross-origin iframes in each tab panel → test cross-origin read between panels → test javascript: and data: scheme CSP bypass in dual-tab context → confirm if isolation enforced
+impact: Same-origin policy bypass in dual-tab environment → credential theft, CSRF token exfiltration, potential sandbox escape (Critical if escalates to renderer code execution)
+testability: HUMAN_ONLY
+[PARKED] Dual-tab environment SOP bypass and CSP scheme bypass — new variant post-CVE-2025-62585 on v4.38.386.14: confidence 45 meets threshold but verify_steps are HUMAN_ONLY with no passive-first path; requires binary install + dual-tab testing which is not passive — deferred until binary available
+[FINAL] 1. Sidebar context SOP bypass — new variant post-CVE-2025-69235 on v4.38.386.14 (confidence 60, class OTHER, testability HUMAN_ONLY) 2. Whale sync passphrase KDF weakness / plaintext-adjacent key storage (confidence 58, class AUTH, testability AUTH_HELPED)
+[NEXT] PROBE: Acquire latest Whale desktop installer (non-Naver mirror) and Android XAPK 3.9.14.9; extract and decompile; static grep for sync module strings: "passphrase", "PBKDF2", "scrypt", "sync", "key", "token", "EncryptedSharedPreferences", "Local State", "Preferences" — zero network requests to naver infra
+[LEARN] REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+[LEARN] ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+[LEARN] ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+[LEARN] ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+[LEARN] REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+[LEARN] REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+[LEARN] ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+[LEARN] ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CVEs published
+[LEARN] CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+[LEARN] CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+[RISK] sync: 55 — whale.storage extension API exists and may sync via Whale account; passphrase KDF/key-storage design entirely client-side with no public code; Android sync encryption added 2025-04 (late); moderate-high exposure due to source-unavailable constraint
+[RISK] browser: 78 — sidebar + dual-tab environments have 6 confirmed CVEs in 2025 (SOP bypass CWE-346, iframe sandbox escape CWE-358, CSP bypass CWE-358); these are Whale-specific features not inherited from Chromium; latest stable v4.38.386.14 is 3 minor version bumps ahead of last CVE-fix v4.35.351.12 with ZERO published CVEs in 6-month gap; wiki docs confirm additional attack surface (show() URL loading, drag-navigation exposure); high priority for new variant discovery
+[RISK] libs: 30 — Whale bundles Chromium (inherits all Chromium CVEs), but no Whale-only third-party library manifests or version lists are publicly available; the repo contains only translated documentation from 2019; the extension API surface (whale.*) uses CWE-79-inherited patterns but library-level version drift cannot be assessed without binary access; low visibility, moderate inherent risk
+[HYP] Sync bootstrap-token storage / per-account migration — Whale-only prefs deviation
+class: AUTH
+asset: whalesync client engine (`https://api.whale.naver.com/whalesync`) + profile `Preferences` keys `sync.encryption_bootstrap_token{,_per_account,_per_account_migration_done}`, `sync.whale_need_encryption_key_forced_time`
+confidence: 62
+reasoning: v4.38.386.14 binary (sha256 `6dd7ebc4...`) confirms the Whale-only prefs keys, `/whalesync`+`/whalesync/reset`, and `Sync.NigoriStorage{En,De}cryptionResult`/`sync_pb.EncryptionKeys` custom nigori storage; `sync.whale_need_encryption_key_forced_time` is a Whale-only rekey gate with undocumented downgrade semantics
+evidence_needed: whether per-account bootstrap token is stored plaintext vs OSCrypt (`v10`/`v11` prefix) in `Preferences`, scrypt N/r/p constants reachable from `whale_sync_util`, whether `forced_time` weakens key freshness
+verify_steps: PASSIVE: objdump/strings around `WhaleSyncAuthManager`/`whale_sync_util` for the bootstrap-token envelope and `/whalesync/reset` request shape; diff prefs set vs upstream Chromium `sync.encryption_bootstrap_token` (upstream stores OSCrypt-encrypted in same file); zero network
+impact: local attacker/infostealer with profile access decrypts synced passwords, cookies, autofill → full-account compromise; High
+testability: PASSIVE
+[HYP] Multiplay login-page exclusion bypass — server-tweakable heuristic + token-bearing URL sync
+class: AUTH
+asset: Multiplay session (`https://multiplay.whale.naver.com/`, invite via `multiplayPrivate.getJoinUrl`, real-time tab/scroll sync via `multiplay_session_io`)
+confidence: 58
+reasoning: binary confirms exclusion list is server-fetched pref `whale.tweak.multiplay_login_pages` (ua_tweak.json), scroll sync injects DOM (`isWhaleMultiplayScroll`), join binds `sessionToken`+`multiplayId`; URLs sync verbatim (incl. query strings) while only listed login pages are filtered
+evidence_needed: on v4.38.386.14 whether joiner receives host's login-gated URLs or token-bearing query strings; whether unlisted login-like pages (OAuth consent/SSO) leak session params; invite-link reuse after host leaves
+verify_steps: AUTH_HELPED: two authorized accounts join via copied `getJoinUrl`; host opens login-gated page + token-in-query page; capture file-local joiner-observed tab URLs/scroll/DOM; test link replay post-revocation; zero requests beyond client's own session
+impact: cross-session disclosure of host's open-tab URLs incl. token-bearing query strings / session ids; Medium-High
+testability: AUTH_HELPED
+[HYP] `/whalesync/reset` trigger — auth binding / confirmation weakness
+class: BUSLOGIC
+asset: `https://api.whale.naver.com/whalesync/reset` (client trigger = server data wipe + all-device logout)
+confidence: 45
+reasoning: `/whalesync/reset` confirmed in v4.38.386.14 binary; whale auth uses `/oauth2/v1/nid/{login,refresh}` tokens — if reset needs only a bearer/refresh token without reauth confirm, token theft or a CSRFable client request wipes sync state
+evidence_needed: exact method, body, headers the client sends to `/whalesync/reset`; whether reauth/confirmation is required
+verify_steps: PASSIVE: objdump call-site analysis of `/whalesync/reset` in the WhalesyncRequest/`whale_sync_util` path to recover request shape; server probing out of scope
+impact: sync data destruction + all-device log-out on token theft; DoS on account
+testability: PASSIVE
+[NEXT] PROBE: objdump/strings disassembly of the `/whalesync/reset` + `sync.encryption_bootstrap_token_per_account` call sites in `/tmp/opencode/whale_x/extract/opt/naver/whale/whale` (sha256 `6dd7ebc4...`) to recover the reset request method/body/auth-header shape and the bootstrap-token envelope storage (plaintext vs OSCrypt `v10/v11`), plus enumerate remaining embedded extension API schemas (`multiplayPrivate`, sync-related) for invite/session token entropy — local static only, zero network
+[RISK] sync: 65 — custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 78 — sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; binary now available enables repro-first variant hunting | libs: 35 — paks now parseable for a bundled-lib inventory, and Whale-only `socket.io.slim.js` is confirmed bundled (content runtime-fetched); version-drift assessment still requires upstream comparison

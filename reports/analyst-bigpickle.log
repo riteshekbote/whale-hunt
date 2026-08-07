@@ -2942,3 +2942,1539 @@ testability: PASSIVE
 - [RISK] sync: 78 — passwords/cookies/tabs transit a custom whalesync transport on NID OAuth; no 2026 CVEs, 3 minor bumps since last fix; local key-storage and token-migration deltas unpatched/undisclosed
 - [RISK] browser: 78 — sidebar/dual-tab SOP+iframe-sandbox CVEs fixed v4.35.351.12, 3 minor bumps and ~6 months with zero published CVEs on v4.38.386.14
 - [RISK] libs: 62 — `whale_sync_push` (socket.io) and other Whale-only bundled libs now extractable for version-drift diffing; no manifest evidence yet, drift status unknown
+===== ANALYST bigpickle 2026-08-07 23:07:05 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/ 2>/dev/null; echo "---"; ls -la /tmp/opencode/whale_x/opt/naver/whale/ 2>/dev/null; echo "---"; ls -la /home/runner/work/whale-hunt/whale-hunt/ 2>/dev/null
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 .
+drwxrwxrwt 15 root   root   12288 Aug  7 22:59 ..
+---
+---
+total 132
+drwxr-xr-x 11 runner runner  4096 Aug  7 22:59 .
+drwxr-xr-x  3 runner runner  4096 Aug  7 22:59 ..
+drwxr-xr-x  7 runner runner  4096 Aug  7 22:59 .git
+drwxr-xr-x  3 runner runner  4096 Aug  7 22:59 .github
+-rw-r--r--  1 runner runner  1057 Aug  7 22:59 README.md
+-rw-r--r--  1 runner runner    32 Aug  7 22:59 analyst-out.txt
+-rw-r--r--  1 runner runner 27561 Aug  7 22:59 analyst-prompt.txt
+-rw-r--r--  1 runner runner 24589 Aug  7 22:59 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 leads
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 reports
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  7 22:59 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 scripts
+-rw-r--r--  1 runner runner    34 Aug  7 22:59 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  7 22:59 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  7 22:59 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  7 22:59 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  7 22:59 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 triage
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && for d in inventory knowledge leads reports triage reposcan-raw scripts; do echo "=== $d ==="; ls -la "$d" 2>/dev/null; done; echo "=== state ==="; cat state_bigpickle.json; echo; cat scope.yml
+=== inventory ===
+total 20
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 22:59 ..
+-rw-r--r--  1 runner runner 11651 Aug  7 22:59 whale.md
+=== knowledge ===
+total 12
+drwxr-xr-x  2 runner runner 4096 Aug  7 22:59 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 22:59 ..
+-rw-r--r--  1 runner runner 3302 Aug  7 22:59 index.md
+=== leads ===
+total 200
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 22:59 ..
+-rw-r--r--  1 runner runner 40778 Aug  7 22:59 lead-bigpickle.md
+-rw-r--r--  1 runner runner 29318 Aug  7 22:59 lead-laguna.md
+-rw-r--r--  1 runner runner  5304 Aug  7 22:59 lead-ling3.md
+-rw-r--r--  1 runner runner   432 Aug  7 22:59 lead-longcat.md
+-rw-r--r--  1 runner runner 44746 Aug  7 22:59 lead-nemotron3.md
+-rw-r--r--  1 runner runner  2883 Aug  7 22:59 reposcan-2026-08-07-18-44.md
+-rw-r--r--  1 runner runner  1240 Aug  7 22:59 reposcan-2026-08-07-18-59.md
+-rw-r--r--  1 runner runner  6783 Aug  7 22:59 reposcan-2026-08-07-19-19.md
+-rw-r--r--  1 runner runner  2370 Aug  7 22:59 reposcan-2026-08-07-19-22.md
+-rw-r--r--  1 runner runner   366 Aug  7 22:59 reposcan-2026-08-07-19-28.md
+-rw-r--r--  1 runner runner   466 Aug  7 22:59 reposcan-2026-08-07-20-06.md
+-rw-r--r--  1 runner runner   617 Aug  7 22:59 reposcan-2026-08-07-20-11.md
+-rw-r--r--  1 runner runner   948 Aug  7 22:59 reposcan-2026-08-07-20-59.md
+-rw-r--r--  1 runner runner  5763 Aug  7 22:59 reposcan-2026-08-07-21-09.md
+-rw-r--r--  1 runner runner  4346 Aug  7 22:59 reposcan-2026-08-07-21-58.md
+-rw-r--r--  1 runner runner  3025 Aug  7 22:59 reposcan-2026-08-07-22-05.md
+-rw-r--r--  1 runner runner  2764 Aug  7 22:59 reposcan-2026-08-07-22-23.md
+-rw-r--r--  1 runner runner  2764 Aug  7 22:59 reposcan-latest.md
+=== reports ===
+total 840
+drwxr-xr-x  2 runner runner   4096 Aug  7 22:59 .
+drwxr-xr-x 11 runner runner   4096 Aug  7 22:59 ..
+-rw-r--r--  1 runner runner 240114 Aug  7 22:59 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 572380 Aug  7 22:59 analyst-laguna.log
+-rw-r--r--  1 runner runner   8269 Aug  7 22:59 analyst-ling3.log
+-rw-r--r--  1 runner runner    630 Aug  7 22:59 analyst-longcat.log
+-rw-r--r--  1 runner runner  53192 Aug  7 22:59 analyst-nemotron3.log
+-rw-r--r--  1 runner runner   3509 Aug  7 22:59 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner     52 Aug  7 22:59 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner     48 Aug  7 22:59 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner     50 Aug  7 22:59 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner   9230 Aug  7 22:59 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  16012 Aug  7 22:59 hypotheses.md
+-rw-r--r--  1 runner runner    136 Aug  7 22:59 valid-bugs.md
+=== triage ===
+total 80
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 .
+drwxr-xr-x 11 runner runner  4096 Aug  7 22:59 ..
+-rw-r--r--  1 runner runner  8463 Aug  7 22:59 run-2026-08-07-19-23.md
+-rw-r--r--  1 runner runner 14983 Aug  7 22:59 run-2026-08-07-21-01.md
+-rw-r--r--  1 runner runner  7882 Aug  7 22:59 run-2026-08-07-21-04.md
+-rw-r--r--  1 runner runner 20203 Aug  7 22:59 run-2026-08-07-21-57.md
+-rw-r--r--  1 runner runner 14629 Aug  7 22:59 run-2026-08-07-22-02.md
+=== reposcan-raw ===
+total 32
+drwxr-xr-x  2 runner runner 4096 Aug  7 22:59 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 22:59 ..
+-rw-r--r--  1 runner runner 2634 Aug  7 22:59 analysis.txt
+-rw-r--r--  1 runner runner   40 Aug  7 22:59 grep-delta.txt
+-rw-r--r--  1 runner runner   50 Aug  7 22:59 grep-hits.prev.txt
+-rw-r--r--  1 runner runner   50 Aug  7 22:59 grep-hits.txt
+-rw-r--r--  1 runner runner 6717 Aug  7 22:59 rag.txt
+=== scripts ===
+total 16
+drwxr-xr-x  2 runner runner 4096 Aug  7 22:59 .
+drwxr-xr-x 11 runner runner 4096 Aug  7 22:59 ..
+-rw-r--r--  1 runner runner 7506 Aug  7 22:59 sync-issues.py
+=== state ===
+{"phase": "POC", "target": "sync"}
+programs:
+  whale:
+    name: Naver Whale Browser
+    disclosure_policy: TBD - operator-provided program scope (update once public channel confirmed)
+    assets:
+      - name: "Whale browser - latest version (reproducible at time of reporting)"
+        priority: In
+      - name: "Third-party libraries used ONLY by Whale (not Chromium)"
+        priority: In
+      - name: "Synchronization"
+        priority: In
+    out_of_scope:
+      - "All Naver web services (*.naver.com, *.navercorp.com)"
+      - "Web servers of built-in extensions (Papago, Belli)"
+      - "URL preview spoofing in status bar"
+      - "Bypassing XSS Auditor"
+      - "IETab extension"
+      - "SafeBrowsing false positives / false negatives"
+    github_orgs:
+      - naver
+
+rules:
+  passive_first: true          # GET/HEAD reads first; client-side scope: static analysis + repro-first
+  max_requests_per_second: 1   # never hammer
+  no_doom: true                # no DoS/DDoS
+  no_account_creation: true
+  no_data_modification: true
+  no_pre_disclosure: true
+  latest_version_required: true  # bug must reproduce on the LATEST Whale version at report time
+  redact_secrets_in_commits: true
+
+# Multi-model ensemble: every hunt run picks a rotation of the 5 models.
+models:
+  - { id: opencode/big-pickle, name: bigpickle }
+  - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+  - { id: opencode/longcat-2.0-free, name: longcat }
+  - { id: opencode/ling-3.0-flash-free, name: ling3 }
+  - { id: opencode/laguna-s-2.1-free, name: laguna }
+[0m
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m→ [0mRead inventory/whale.md
+[0m→ [0mRead leads/reposcan-latest.md
+[0m→ [0mRead knowledge/index.md
+[0m→ [0mRead reports/hypotheses-bigpickle.txt
+[0m
+[0m$ [0mls -la /tmp/opencode/ 2>/dev/null; echo "---find whale resources---"; find / -maxdepth 6 \( -name "resources.pak" -o -iname "*whale*" -type d \) 2>/dev/null | grep -v proc | grep -v "^/usr/share" | head -50; echo "---reposcan dirs---"; ls /home/runner/work/whale-hunt/ 2>/dev/null
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  7 22:59 .
+drwxrwxrwt 15 root   root   12288 Aug  7 22:59 ..
+---find whale resources---
+/opt/google/chrome/resources.pak
+/opt/microsoft/msedge/resources.pak
+/home/runner/work/_PipelineMapping/riteshekbote/whale-hunt
+/home/runner/work/whale-hunt
+/home/runner/work/whale-hunt/whale-hunt
+/usr/local/share/chromium/chrome-linux/resources.pak
+---reposcan dirs---
+whale-hunt
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && git log --oneline -15 2>/dev/null; echo "=== status ==="; git status --short 2>/dev/null; echo "=== analysis.txt ==="; cat reposcan-raw/analysis.txt 2>/dev/null; echo "=== rag.txt head ==="; head -30 reposcan-raw/rag.txt 2>/dev/null
+9df9480 reposcan 2026-08-07-22-23
+=== status ===
+?? analyst-out.txt
+?? analyst-prompt.txt
+?? ctx.txt
+=== analysis.txt ===
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[0m$ [0mls -la
+total 664
+drwxr-xr-x 11 runner runner   4096 Aug  7 22:23 .
+drwxr-xr-x  3 runner runner   4096 Aug  7 22:22 ..
+drwxr-xr-x  7 runner runner   4096 Aug  7 22:23 .git
+drwxr-xr-x  3 runner runner   4096 Aug  7 22:22 .github
+-rw-r--r--  1 runner runner   1057 Aug  7 22:22 README.md
+-rw-r--r--  1 runner runner      0 Aug  7 22:23 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug  7 22:22 inventory
+drwxr-xr-x  2 runner runner   4096 Aug  7 22:22 knowledge
+drwxr-xr-x  2 runner runner   4096 Aug  7 22:22 leads
+drwxr-xr-x  2 runner runner   4096 Aug  7 22:22 reports
+-rw-r--r--  1 runner runner 597907 Aug  7 22:23 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug  7 22:23 reposcan-raw
+-rw-r--r--  1 runner runner   7946 Aug  7 22:23 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug  7 22:22 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug  7 22:22 scripts
+-rw-r--r--  1 runner runner     34 Aug  7 22:22 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug  7 22:22 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug  7 22:22 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug  7 22:22 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug  7 22:22 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Aug  7 22:22 triage
+[0m
+The knowledge base and inventory you provided are about **Whale browser (naver/whale-browser-developers)**, but you're asking me to triage **gladiaio/** repos and **@gladiaio/sdk** npm package. These are completely different targets.
+
+Let me check what's actually in the workspace first.
+[0m✱ [0mGlob "**/*"[90m 56 matches[0m
+[0m→ [0mRead scan-prompt.txt
+[0m→ [0mRead reposcan-raw/grep-hits.txt
+[0m→ [0mRead reposcan-raw/grep-delta.txt
+The scan prompt mentions **gladiaio** but the actual workspace/target is **Whale browser (naver/whale-browser-developers)**. The scan results show **0 hits** — no code/config files scanned, no findings.
+
+### Triage Result
+
+| Category | Count | Details |
+|----------|-------|---------|
+| REAL_SECRET | 0 | — |
+| TEST_OR_EXAMPLE | 0 | — |
+| ENDPOINT_LEAK | 0 | — |
+| INTERESTING | 0 | — |
+
+### Verdict
+**REPORT_CANDIDATE: no** — The reposcan of `naver/whale-browser-developers` (documentation-only repo) yielded zero grep hits. No secrets, endpoints, or interesting patterns detected in this scan cycle.
+
+---
+
+**Note:** The scan prompt template references `gladiaio/` but the actual target in this workspace is Whale browser. If you intended to scan gladiaio repos, that would require a separate reposcan run against the gladiaio GitHub org.
+=== rag.txt head ===
+=== KNOWLEDGE BASE (RAG) ===
+# Knowledge Base (seed)
+
+## Program rules (from scope.yml)
+- Eligible: latest-version Whale browser bugs (must reproduce on latest at report time); third-party libraries used ONLY by Whale (not Chromium); synchronization bugs
+- NOT eligible: all Naver web services (*.naver.com, *.navercorp.com), web servers of built-in extensions (Papago, Belli), URL preview spoofing in status bar, bypassing XSS Auditor, IETab extension, SafeBrowsing FP/FN
+- Client-side software: static source analysis + repro-first validation; no server probing
+- Secrets in commits: sha256 only, never raw
+
+## Baseline surface (2026-08-07 passive recon)
+- Official GitHub repo: naver/whale-browser-developers (no public releases API; repo is developers channel)
+- Naver org is HUGE: reposcan clones ONLY whale-name repos
+- Known excluded classes to never report: XSS Auditor bypass, status-bar URL preview spoofing, SafeBrowsing FP/FN, anything in IETab
+
+## Rejected / parked
+- (none yet)
+- 2026-08-07 REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- 2026-08-07 REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+- 2026-08-07 REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CVEs published
+- 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+- 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+- 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo remains documentation-only (last commit 2019-09-23; 2025-10-22 metadata-only refresh) — no source code, sync implementation, or library manifests available for static analysis
+- 2026-08-07 CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability disclosure gap
+=== INVENTORY gladia ===
+# Inventory: whale
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && rg -l "whale_sync_util|nigori|whalesync|socket.io|resources.pak|whale_sync_push" leads/ reports/ triage/ 2>/dev/null; echo "---"; rg -n "whale_sync_util|nigori-key|whalesync|encryption_bootstrap_token" leads/ reports/ triage/ 2>/dev/null | head -40
+---
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt && rg -c "whale_sync_util|nigori|whalesync|socket.io|resources.pak" reports/*.log 2>/dev/null; echo "---check other models' latest hyps---"; for f in reports/hypotheses-*.txt; do echo "=== $f ==="; tail -30 "$f"; done 2>/dev/null | head -120
+---check other models' latest hyps---
+=== reports/hypotheses-bigpickle.txt ===
+## 2026-08-07 22:21:50 UTC [sync] (model bigpickle)
+[HYP] Sync bootstrap-token storage / per-account migration — Whale-only prefs deviation
+class: AUTH
+asset: whalesync client engine (api.whale.naver.com/whalesync) + profile prefs `sync.encryption_bootstrap_token_per_account`
+confidence: 55
+reasoning: Binary v4.38.386.14 strings show Whale syncs passwords+cookies+autofill+tabs over custom `/whalesync`; encryption uses `nigori-key` + `sync_pb.EncryptionKeys` with Whale-only prefs keys (`_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) absent from upstream Chromium; passphrase help page (help.whale.naver.com/desktop/sync_passphrase) and `SyncSetupSetEncryptionPassphrase` UI strings confirm custom passphrase is offered
+evidence_needed: whether per-account token is stored encrypted vs plaintext in `Preferences`, passphrase KDF constants (salt/iterations) in whale_sync_util, whether `whale_need_encryption_key_forced_time` downgrades encryption
+verify_steps: PASSIVE: ghidra/strings on `whale_sync_util.cc`/`whale_sync_auth_manager.cc` call sites for `/whalesync/reset` (method+body) and bootstrap-token envelope; compare prefs key set against upstream Chromium `sync.encryption_bootstrap_token` handling
+impact: local attacker / infostealer with profile access decrypts synced passwords, cookies, bookmarks → full-account compromise; High
+testability: PASSIVE
+[HYP] whale_sync_push socket.io push channel — unsanitized event → engine mutation (injection precedent)
+class: XSS
+asset: whale_sync_push extension (service_worker.js + socket.io.slim.js), bundled Whale-only
+confidence: 45
+reasoning: CVE-2022-24072 / CVE-2024-40618 prove built-in-extension processing is a prior Whale injection vector; push channel is socket.io (unusual in browser core, Whale-only), and its events feed tab/typedUrls sync surfaces; payloads arriving via a WebSocket/engine.io transport create a trust boundary worth auditing
+evidence_needed: onmessage/event handlers in the extracted service worker, whether remote events reach chrome.tabs/history or bypass message validation
+verify_steps: PASSIVE: extract `whale_sync_push/*.js` from resources.pak; audit socket.io handlers for remote-origin event data reaching privileged APIs unsanitized
+impact: remote push message mutating synced tabs/history or executing in extension context; Medium–High
+testability: PASSIVE
+[HYP] `/whalesync/reset` trigger — auth binding / confirmation weakness
+class: BUSLOGIC
+asset: api.whale.naver.com/whalesync/reset (client trigger = sync-wipe + log-out-all-devices per help doc)
+confidence: 40
+reasoning: client-initiated reset deletes server data and signs out every device; if the client sends only `NEO_SES` cookie (no reauth/confirm token), a stale/misused session or CSRFable request wipes sync state
+evidence_needed: exact method, body, and headers the client sends to `/whalesync/reset`; whether reauth is required
+verify_steps: PASSIVE: static call-site analysis of `/whalesync/reset` in `whale_sync_util` (request shape, auth headers); server probing out of scope
+impact: sync data destruction, device log-out spam; DoS on account
+testability: PASSIVE
+[NEXT] PROBE: Extract `whale_sync_push/service_worker.js` + `socket.io.slim.js` from `/tmp/opencode/whale_x/opt/naver/whale/resources.pak` (local static), then audit socket.io onmessage handlers for remote event data reaching chrome.tabs/history APIs unsanitized — advances HYP-2 and the sync push surface with zero server interaction.
+=== reports/hypotheses-laguna.txt ===
+## 2026-08-07 22:22:37 UTC [browser] (model laguna)
+=== reports/hypotheses-ling3.txt ===
+## 2026-08-07 22:17:58 UTC [sync] (model ling3)
+=== reports/hypotheses-longcat.txt ===
+## 2026-08-07 22:18:09 UTC [libs] (model longcat)
+=== reports/hypotheses-nemotron3.txt ===
+reasoning: Vendor help center states passphrase never sent to/stored on Naver server; must be re-entered on every new device → client-side key derivation + local key store. Android sync encryption added in 3.8.6.2 (2025-04); prior sync was TLS-only. No public client code exists for desktop or Android.
+evidence_needed: KDF algorithm + iteration counts, per-OS storage of derived key/passphrase (Preferences/Local State/OS keychain/EncryptedSharedPreferences), whether key/passphrase ever leaves device (reset/recovery flows), sync auth token storage/scope
+verify_steps: PASSIVE: Acquire latest desktop installer and Android XAPK 3.9.14.9 from non-Naver mirror; extract/decompile; static grep for sync module strings: "passphrase", "PBKDF2", "scrypt", "sync", "key", "token", "EncryptedSharedPreferences", "Local State", "Preferences" — zero network requests to naver infra. AUTH_HELPED: Authorized test login to observe token/key lifecycle in filesystem.
+impact: Weak KDF or plaintext-adjacent key/passphrase storage → local attacker or infostealer decrypts synced bookmarks+site passwords → PII cascade (High)
+testability: AUTH_HELPED
+[HYP] Dual-tab environment SOP bypass and CSP scheme bypass — new variant post-CVE-2025-62585 on v4.38.386.14
+class: OTHER
+asset: Whale browser dual-tab context (Whale-specific feature, not in Chromium) — latest v4.38.386.14
+confidence: 45
+reasoning: 4 CVEs in Jul–Oct 2025: CVE-2025-53600 (CWE-346 SOP bypass), CVE-2025-62583 (CWE-358 iframe sandbox escape), CVE-2025-62584 (CWE-346 SOP bypass), CVE-2025-62585 (CWE-358 CSP bypass via specific scheme) — all fixed in v4.33.325.17 (Oct 2025). Current stable v4.38.386.14 is ~8 months ahead with 0 published CVEs. Dual-tab is a Whale-specific feature with no Chromium equivalent, recurring boundary issues.
+evidence_needed: Running browser binary v4.38.386.14 demonstrating SOP/CSP bypass in dual-tab mode — cross-origin access between dual-tab panels or CSP bypass via javascript:/data: schemes
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 → open dual-tab mode → load cross-origin iframes in each tab panel → test cross-origin read between panels → test javascript: and data: scheme CSP bypass in dual-tab context → confirm if isolation enforced
+impact: Same-origin policy bypass in dual-tab environment → credential theft, CSRF token exfiltration, potential sandbox escape (Critical if escalates to renderer code execution)
+testability: HUMAN_ONLY
+[PARKED] Dual-tab environment SOP bypass and CSP scheme bypass — new variant post-CVE-2025-62585 on v4.38.386.14: confidence 45 meets threshold but verify_steps are HUMAN_ONLY with no passive-first path; requires binary install + dual-tab testing which is not passive — deferred until binary available
+[FINAL] 1. Sidebar context SOP bypass — new variant post-CVE-2025-69235 on v4.38.386.14 (confidence 60, class OTHER, testability HUMAN_ONLY) 2. Whale sync passphrase KDF weakness / plaintext-adjacent key storage (confidence 58, class AUTH, testability AUTH_HELPED)
+[NEXT] PROBE: Acquire latest Whale desktop installer (non-Naver mirror) and Android XAPK 3.9.14.9; extract and decompile; static grep for sync module strings: "passphrase", "PBKDF2", "scrypt", "sync", "key", "token", "EncryptedSharedPreferences", "Local State", "Preferences" — zero network requests to naver infra
+[LEARN] REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+[LEARN] ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+[LEARN] ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+[LEARN] ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+[LEARN] REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+[LEARN] REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+[LEARN] ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+[LEARN] ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CVEs published
+[LEARN] CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+[LEARN] CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+[RISK] sync: 55 — whale.storage extension API exists and may sync via Whale account; passphrase KDF/key-storage design entirely client-side with no public code; Android sync encryption added 2025-04 (late); moderate-high exposure due to source-unavailable constraint
+[RISK] browser: 78 — sidebar + dual-tab environments have 6 confirmed CVEs in 2025 (SOP bypass CWE-346, iframe sandbox escape CWE-358, CSP bypass CWE-358); these are Whale-specific features not inherited from Chromium; latest stable v4.38.386.14 is 3 minor version bumps ahead of last CVE-fix v4.35.351.12 with ZERO published CVEs in 6-month gap; wiki docs confirm additional attack surface (show() URL loading, drag-navigation exposure); high priority for new variant discovery
+[RISK] libs: 30 — Whale bundles Chromium (inherits all Chromium CVEs), but no Whale-only third-party library manifests or version lists are publicly available; the repo contains only translated documentation from 2019; the extension API surface (whale.*) uses CWE-79-inherited patterns but library-level version drift cannot be assessed without binary access; low visibility, moderate inherent risk
+[0m
+[0m$ [0mtimeout 12 curl -sS -o /dev/null -w "%{http_code}\n" -I https://example.com 2>&1; echo "---"; timeout 12 curl -sS -o /dev/null -w "%{http_code}\n" -I https://installer.whale.naver.com/whale/latest/win/WhaleSetup.exe 2>&1 | head -3
+200
+---
+404
+[0m
+Network is live. Let me locate the real installer endpoint passively via the official download page (read-only GET).
+[0m% [0mWebFetch https://whale.naver.com/download
+[0m% [0mWebFetch https://whale.naver.com/ko/download/
+[0m
+[0m$ [0mcd /tmp/opencode && timeout 60 curl -sS "https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js" -o whale-home.js && ls -la whale-home.js && rg -o "https?://[^\"' )]+\.(exe|dmg|pkg|apk|xapk)" whale-home.js | sort -u | head; echo "---installer refs---"; rg -o "installer[^\"']{0,80}" whale-home.js | sort -u | head -20; echo "---exe---"; rg -o "[a-zA-Z0-9_./:-]*Whale[A-Za-z]*\.(exe|dmg|pkg)" whale-home.js | sort -u | head
+-rw-r--r-- 1 runner runner 840257 Aug  7 23:00 whale-home.js
+/bin/bash: line 1: rg: command not found
+/bin/bash: line 1: rg: command not found
+---installer refs---
+---exe---
+/bin/bash: line 1: rg: command not found
+[0m
+[0m$ [0mcd /tmp/opencode && grep -oE 'https?://[^"'"'"' )\\]+\.(exe|dmg|pkg|apk|xapk)' whale-home.js | sort -u | head; echo "---installer urls---"; grep -oE '"[^"]*installer[^"]*"' whale-home.js | sort -u | head -20; echo "---versioned---"; grep -oE 'installer-whale[^"'"'"' ]*' whale-home.js | sort -u | head
+https://installer-whale.pstatic.net/downloads/beta/installers/NaverWhaleBeta.dmg
+https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+https://installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg
+https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupARM64.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX86.exe
+---installer urls---
+":return{...a,url:`https://installer-whale.pstatic.net/downloads/banner/${encodeURIComponent(s)}/WhaleSetup.exe`};case"
+"https://installer-whale.pstatic.net/downloads/beta/installers/NaverWhaleBeta.dmg"
+"https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe"
+"https://installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg"
+"https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe"
+"https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb"
+"https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupARM64.exe"
+"https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe"
+"https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX86.exe"
+---versioned---
+installer-whale.pstatic.net/downloads/banner/${encodeURIComponent(s)}/WhaleSetup.exe`};case
+installer-whale.pstatic.net/downloads/beta/installers/NaverWhaleBeta.dmg
+installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg
+installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb
+installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupARM64.exe
+installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe
+installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX86.exe
+[0m
+Real installer URLs found on the pstatic.net CDN. Checking the Linux package size (HEAD only, passive).
+[0m$ [0mtimeout 20 curl -sS -I "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" | grep -iE "HTTP/|content-length|content-type|last-modified|etag"
+HTTP/2 200 
+content-length: 164163916
+last-modified: Thu, 25 Jun 2026 06:25:01 GMT
+content-type: application/x-debian-package
+[0m
+The 164 MB `.deb` is the full v4.38.386.14 Linux binary (last-modified 2026-06-25 = release date). This unblocks the entire sync-target static analysis. Downloading for local analysis.
+[0m$ [0mcd /tmp/opencode && mkdir -p whale_x && timeout 300 curl -sS "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" -o whale_x/whale.deb && ls -la whale_x/ && sha256sum whale_x/whale.deb
+total 160328
+drwxr-xr-x 2 runner runner      4096 Aug  7 23:00 .
+drwxr-xr-x 3 runner runner      4096 Aug  7 23:00 ..
+-rw-r--r-- 1 runner runner 164163916 Aug  7 23:01 whale.deb
+6dd7ebc47d7e8f21da1108ad5b0e17fcd562fd92e684da206564b51476e0b47e  whale_x/whale.deb
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x && dpkg-deb -x whale.deb extract/ 2>/dev/null || ar x whale.deb; ls -la extract/opt/naver/whale/ 2>/dev/null | head -40; echo "---size---"; du -sh extract/ 2>/dev/null
+total 413032
+drwxr-xr-x 8 runner runner      4096 Jun 24 09:34 .
+drwxr-xr-x 3 runner runner      4096 Jun 24 09:34 ..
+-rw-r--r-- 1 runner runner         7 Jun 24 09:34 CHROME_VERSION_EXTRA
+drwxr-xr-x 2 runner runner      4096 Jun 24 09:34 MEIPreload
+drwxr-xr-x 2 runner runner      4096 Jun 24 09:34 PrivacySandboxAttestationsPreloaded
+drwxr-xr-x 3 runner runner      4096 Jun 24 09:34 WidevineCdm
+-rwxr-xr-x 1 runner runner   4869288 Jun 24 09:34 chrome-management-service
+-rwxr-xr-x 1 runner runner   1623616 Jun 24 09:34 chrome_crashpad_handler
+drwxr-xr-x 2 runner runner      4096 Jun 24 09:34 cron
+-rw-r--r-- 1 runner runner       462 Jun 24 09:34 default-app-block
+-rw-r--r-- 1 runner runner  10876560 Jun 24 09:34 icudtl.dat
+-rw-r--r-- 1 runner runner    269992 Jun 24 09:34 libEGL.so
+-rw-r--r-- 1 runner runner   6684896 Jun 24 09:34 libGLESv2.so
+-rw-r--r-- 1 runner runner     27872 Jun 24 09:34 libqt5_shim.so
+-rw-r--r-- 1 runner runner     30248 Jun 24 09:34 libqt6_shim.so
+-rw-r--r-- 1 runner runner   4401528 Jun 24 09:34 libvk_swiftshader.so
+-rw-r--r-- 1 runner runner    681888 Jun 24 09:34 libvulkan.so.1
+drwxr-xr-x 2 runner runner     12288 Jun 24 09:34 locales
+-rwxr-xr-x 1 runner runner      1028 Jun 24 09:34 naver-whale
+-rw-r--r-- 1 runner runner     12759 Jun 24 09:34 product_logo_128.png
+-rw-r--r-- 1 runner runner       783 Jun 24 09:34 product_logo_16.png
+-rw-r--r-- 1 runner runner      1469 Jun 24 09:34 product_logo_24.png
+-rw-r--r-- 1 runner runner     41352 Jun 24 09:34 product_logo_256.png
+-rw-r--r-- 1 runner runner      2033 Jun 24 09:34 product_logo_32.png
+-rw-r--r-- 1 runner runner      3586 Jun 24 09:34 product_logo_48.png
+-rw-r--r-- 1 runner runner      4810 Jun 24 09:34 product_logo_64.png
+drwxr-xr-x 7 runner runner      4096 Jun 24 09:34 resources
+-rw-r--r-- 1 runner runner  41262698 Jun 24 09:34 resources.pak
+-rw-r--r-- 1 runner runner    722568 Jun 24 09:34 v8_context_snapshot.bin
+-rw-r--r-- 1 runner runner       107 Jun 24 09:34 vk_swiftshader_icd.json
+-rwxr-xr-x 1 runner runner 319511768 Jun 24 09:34 whale
+-rwsr-xr-x 1 runner runner     15368 Jun 24 09:34 whale-sandbox
+-rw-r--r-- 1 runner runner  14289590 Jun 24 09:34 whale_100_percent.pak
+-rw-r--r-- 1 runner runner  17507540 Jun 24 09:34 whale_200_percent.pak
+---size---
+468M	extract/
+[0m
+The actual binary now exists at the exact path my prior NEXT referenced. Running the real static analysis on the sync surface.
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "version: $(cat CHROME_VERSION_EXTRA)"; echo "---"; strings -n 8 whale 2>/dev/null | grep -iE "whalesync|whale_sync|sync_pb|nigori|encryption_bootstrap" | sort -u | head -60
+version: stable
+---
+	/whalesync/reset
+../../components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.cc
+../../components/sync/nigori/cross_user_sharing_keys.cc
+../../components/sync/nigori/cryptographer_impl.cc
+../../components/sync/nigori/nigori_data_type_processor.cc
+../../components/sync/nigori/nigori_sync_bridge_impl.cc
+../../whale/components/sync/engine/whale_sync_util.cc
+../../whale/components/sync/service/whale_sync_auth_manager.cc
+/whalesync
+ClearNigoriDataForMigration
+GetNigoriNodeForDebugging
+Nigori.bin
+NigoriClH
+NigoriClientTagHash
+NigoriDataTypeProcessor::ModelReadyToSync
+NigoriStorageKey
+RecordNigoriMemoryUsageAndCountsHistograms
+Sync.Crypto.NigoriKeyDerivationDuration.%s
+Sync.NigoriStorageDecryptionResult
+Sync.NigoriStorageEncryptionResult
+WhaleSyncAuthManager
+https://api.whale.naver.com/whalesync
+https://api.whale.naver.com/whalesync/whalesync
+https://dev-api.whale.naver.com/whalesync
+nigori-kH
+nigori-key
+sync.encryption_bootstrap_token
+sync.encryption_bootstrap_token_per_account
+sync.encryption_bootstrap_token_per_account_migration_done
+sync_pb.AccessibilityAnnotationSpecifics
+sync_pb.AccessibilityAnnotationSpecifics.CalendarSource
+sync_pb.AccessibilityAnnotationSpecifics.DriversLicense
+sync_pb.AccessibilityAnnotationSpecifics.FlightReservation
+sync_pb.AccessibilityAnnotationSpecifics.GmailSource
+sync_pb.AccessibilityAnnotationSpecifics.NaiveDate
+sync_pb.AccessibilityAnnotationSpecifics.NationalId
+sync_pb.AccessibilityAnnotationSpecifics.Order
+sync_pb.AccessibilityAnnotationSpecifics.Passport
+sync_pb.AccessibilityAnnotationSpecifics.PhotosSource
+sync_pb.AccessibilityAnnotationSpecifics.Shipment
+sync_pb.AccessibilityAnnotationSpecifics.Source
+sync_pb.AccessibilityAnnotationSpecifics.Vehicle
+sync_pb.AccountSettingSpecifics
+sync_pb.AiThreadSpecifics
+sync_pb.Any
+sync_pb.AppListSpecifics
+sync_pb.AppListSpecifics.IconColor
+sync_pb.AppNotificationSettings
+sync_pb.AppSettingSpecifics
+sync_pb.AppSpecifics
+sync_pb.ArcPackageSpecifics
+sync_pb.AttributionMetadata
+sync_pb.AttributionMetadata.Attribution
+sync_pb.AttributionMetadata.Attribution.AttributionDeviceInfo
+sync_pb.AutofillOfferSpecifics
+sync_pb.AutofillOfferSpecifics.CardLinkedOfferData
+sync_pb.AutofillOfferSpecifics.DisplayStrings
+sync_pb.AutofillOfferSpecifics.FixedAmountReward
+sync_pb.AutofillOfferSpecifics.PercentageReward
+sync_pb.AutofillOfferSpecifics.PromoCodeOfferData
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && ls -la resources/ 2>/dev/null | head; echo "=== sync_push refs in binary ==="; strings -n 6 whale 2>/dev/null | grep -iE "sync_push|syncpush|socket\.io|socket.io.slim|engine.io" | sort -u | head -30; echo "=== in resources.pak ==="; strings -n 6 resources.pak 2>/dev/null | grep -iE "sync_push|socket\.io|engine.io|service_worker" | sort -u | head -30
+total 28
+drwxr-xr-x 7 runner runner 4096 Jun 24 09:34 .
+drwxr-xr-x 8 runner runner 4096 Jun 24 09:34 ..
+drwxr-xr-x 3 runner runner 4096 Jun 24 09:34 accessibility
+drwxr-xr-x 2 runner runner 4096 Jun 24 09:34 inspector_overlay
+drwxr-xr-x 3 runner runner 4096 Jun 24 09:34 naver_smartlens
+drwxr-xr-x 3 runner runner 4096 Jun 24 09:34 quicksearch
+drwxr-xr-x 3 runner runner 4096 Jun 24 09:34 toolbox
+=== sync_push refs in binary ===
+kColorPointcolorSearchEngineViolet
+kColorSysSearchEngineViolet
+sync_push_server_url_fetcher
+whale_sync_push
+whale_sync_push/service_worker.js
+whale_sync_push/socket.io.slim.js
+=== in resources.pak ===
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && xxd resources.pak | head -5; echo "---"; ls -la resources.pak whale_100_percent.pak; echo "---python?---"; python3 -c "import brotli; print('brotli ok')" 2>&1 | head -1
+00000000: 0500 0000 0100 0000 5017 7c01 f346 e291  ........P.|..F..
+00000010: 0000 f446 03bd 0000 f546 d6cf 0000 f646  ...F.....F.....F
+00000020: dcdf 0000 f746 2206 0100 f846 af27 0100  .....F"....F.'..
+00000030: f946 7d31 0100 fa46 f23f 0100 fb46 b945  .F}1...F.?...F.E
+00000040: 0100 fc46 dc6a 0100 fd46 4e7f 0100 fe46  ...F.j...FN....F
+---
+-rw-r--r-- 1 runner runner 41262698 Jun 24 09:34 resources.pak
+-rw-r--r-- 1 runner runner 14289590 Jun 24 09:34 whale_100_percent.pak
+---python?---
+Traceback (most recent call last):
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && python3 - <<'EOF'
+import struct
+for f in ["resources.pak","whale_100_percent.pak","whale_200_percent.pak"]:
+    with open(f,'rb') as fh:
+        h=fh.read(32)
+    v,e,rc,ac = struct.unpack('<IIII', h[:16])
+    print(f, "version",v,"encoding",e,"res_count",rc,"alias_count",ac)
+    if v>=5:
+        hs = struct.unpack('<I', h[16:20])[0]
+        print("   header_size", hs, "data_start", hs*2 if v==5 and hs!=20 else hs)
+EOF
+pip install brotli 2>&1 | tail -1
+resources.pak version 5 encoding 1 res_count 24909648 alias_count 2447525619
+   header_size 1190395904 data_start 2380791808
+whale_100_percent.pak version 5 encoding 1 res_count 4916058 alias_count 358238096
+   header_size 1200685056 data_start 2401370112
+whale_200_percent.pak version 5 encoding 1 res_count 4916058 alias_count 358238096
+   header_size 1200685056 data_start 2401370112
+Successfully installed brotli-1.2.0
+[0m
+[0m$ [0mfor f in /usr/local/share/chromium/chrome-linux/resources.pak /opt/google/chrome/resources.pak; do echo "== $f"; python3 -c "
+import struct
+h=open('$f','rb').read(32)
+print(' '.join(f'{b:02x}' for b in h[:20]))
+"; done
+== /usr/local/share/chromium/chrome-linux/resources.pak
+05 00 00 00 01 00 00 00 5f 15 69 01 2e 3b f0 85 00 00 2f 3b
+== /opt/google/chrome/resources.pak
+05 00 00 00 01 00 00 00 90 16 79 00 2e 3b 56 89 00 00 2f 3b
+[0m
+The pak v5 header doesn't parse with my assumption. Let me get the exact Chromium `data_pack` format to write a correct parser.
+[0m% [0mWebFetch https://chromium.googlesource.com/chromium/src/+/refs/heads/main/ui/base/resource/data_pack.cc?format=TEXT
+Pak v5 format decoded (12-byte header, uint16 counts, 6-byte entries). Now I'll write a proper parser and scan every resource for the sync-push content.
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x && python3 - <<'EOF'
+import struct, brotli, os
+
+def parse_pak(path):
+    with open(path,'rb') as fh:
+        data = fh.read()
+    version = struct.unpack_from('<I', data, 0)[0]
+    enc = data[4]
+    res_count = struct.unpack_from('<H', data, 8)[0]
+    alias_count = struct.unpack_from('<H', data, 10)[0]
+    header_len = 12
+    index_size = (res_count+1)*6
+    alias_size = alias_count*4
+    entries = []
+    for i in range(res_count+1):
+        rid, off = struct.unpack_from('<HI', data, header_len + i*6)
+        entries.append((rid, off))
+    data_start = header_len + index_size + alias_size
+    # compute each resource bytes
+    out = []
+    for i in range(res_count):
+        rid, off = entries[i]
+        nxt = entries[i+1][1]
+        if off > nxt or nxt > len(data):
+            continue
+        out.append((rid, data[off:nxt]))
+    return out, enc
+
+for pak in ["extract/opt/naver/whale/resources.pak"]:
+    res, enc = parse_pak(pak)
+    print(f"{pak}: {len(res)} resources")
+    hits = 0
+    for rid, blob in res:
+        text = None
+        raw = blob
+        try:
+            text = brotli.decompress(blob).decode('utf-8', 'replace')
+        except Exception:
+            text = blob.decode('utf-8','replace')
+        low = text.lower()
+        if any(k in low for k in ["socket.io","socket_io","engine.io","whale_sync_push","service_worker","whalesync","/whalesync"]):
+            hits += 1
+            print(f"  HIT rid={rid} len={len(blob)} dl={len(text)} keys={[k for k in ['socket.io','socket_io','engine.io','whale_sync_push','service_worker','whalesync'] if k in low]}")
+            os.makedirs("pak_out", exist_ok=True)
+            with open(f"pak_out/{rid}.dat","wb") as f:
+                f.write(text.encode('utf-8'))
+    print(f"  total hits: {hits}")
+EOF
+extract/opt/naver/whale/resources.pak: 5968 resources
+  total hits: 0
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && find . -name "*.pak" -exec ls -la {} \; 2>/dev/null; echo "=== search all pak for socket.io/whalesync ==="; for f in $(find . -name "*.pak"); do c=$(strings -n 6 "$f" 2>/dev/null | grep -ciE "socket\.io|whale_sync_push|/whalesync"); echo "$f : $c"; done
+-rw-r--r-- 1 runner runner 41262698 Jun 24 09:34 ./resources.pak
+-rw-r--r-- 1 runner runner 17507540 Jun 24 09:34 ./whale_200_percent.pak
+-rw-r--r-- 1 runner runner 14289590 Jun 24 09:34 ./whale_100_percent.pak
+-rw-r--r-- 1 runner runner 965687 Jun 24 09:34 ./locales/ja.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/et_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/en-US_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/hr_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/lv_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fil_NEUTER.pak
+-rw-r--r-- 1 runner runner 715724 Jun 24 09:34 ./locales/af.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/en-GB_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/zh-TW_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/hr_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ro_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/nl_NEUTER.pak
+-rw-r--r-- 1 runner runner 806270 Jun 24 09:34 ./locales/es-419.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/hu_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/am_MASCULINE.pak
+-rw-r--r-- 1 runner runner 756636 Jun 24 09:34 ./locales/nl.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/it_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sl_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/nl_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/de_NEUTER.pak
+-rw-r--r-- 1 runner runner 718212 Jun 24 09:34 ./locales/nb.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/th_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/bg_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/cs_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/it_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/uk_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/af_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/et_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/el_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/tr_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sl_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/es-419_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/es_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ur_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ms_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/gu_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/uk_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/en-GB_FEMININE.pak
+-rw-r--r-- 1 runner runner 1359474 Jun 24 09:34 ./locales/uk.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/th_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/es-419_MASCULINE.pak
+-rw-r--r-- 1 runner runner 825031 Jun 24 09:34 ./locales/de.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/el_NEUTER.pak
+-rw-r--r-- 1 runner runner 1253644 Jun 24 09:34 ./locales/sr.pak
+-rw-r--r-- 1 runner runner 734288 Jun 24 09:34 ./locales/sv.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/mr_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/bn_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sk_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/he_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/et_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/af_NEUTER.pak
+-rw-r--r-- 1 runner runner 664334 Jun 24 09:34 ./locales/en-US.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/kn_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/bn_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/hi_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/nb_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/vi_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/lt_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/es_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/bg_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/lt_MASCULINE.pak
+-rw-r--r-- 1 runner runner 1013385 Jun 24 09:34 ./locales/he.pak
+-rw-r--r-- 1 runner runner 664067 Jun 24 09:34 ./locales/zh-TW.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/lt_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/te_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/tr_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/am_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/mr_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ja_MASCULINE.pak
+-rw-r--r-- 1 runner runner 824619 Jun 24 09:34 ./locales/ro.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/pt-PT_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fr_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ar_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sl_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ms_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/da_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fa_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ml_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/en-GB_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/hi_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/da_NEUTER.pak
+-rw-r--r-- 1 runner runner 1925213 Jun 24 09:34 ./locales/kn.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ur_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ml_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/es-419_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/pl_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/id_FEMININE.pak
+-rw-r--r-- 1 runner runner 794617 Jun 24 09:34 ./locales/pt-PT.pak
+-rw-r--r-- 1 runner runner 756937 Jun 24 09:34 ./locales/da.pak
+-rw-r--r-- 1 runner runner 714198 Jun 24 09:34 ./locales/id.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sw_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/he_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sr_FEMININE.pak
+-rw-r--r-- 1 runner runner 836978 Jun 24 09:34 ./locales/pl.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/zh-CN_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fr_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/hi_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/lv_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ru_NEUTER.pak
+-rw-r--r-- 1 runner runner 756514 Jun 24 09:34 ./locales/ms.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ca_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/gu_NEUTER.pak
+-rw-r--r-- 1 runner runner 1268769 Jun 24 09:34 ./locales/ar.pak
+-rw-r--r-- 1 runner runner 1645491 Jun 24 09:34 ./locales/mr.pak
+-rw-r--r-- 1 runner runner 869615 Jun 24 09:34 ./locales/lv.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fr_FEMININE.pak
+-rw-r--r-- 1 runner runner 822822 Jun 24 09:34 ./locales/ko.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/vi_NEUTER.pak
+-rw-r--r-- 1 runner runner 794566 Jun 24 09:34 ./locales/it.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/id_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ta_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/nl_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/da_MASCULINE.pak
+-rw-r--r-- 1 runner runner 1985956 Jun 24 09:34 ./locales/ml.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/af_FEMININE.pak
+-rw-r--r-- 1 runner runner 868967 Jun 24 09:34 ./locales/fr.pak
+-rw-r--r-- 1 runner runner 1158606 Jun 24 09:34 ./locales/am.pak
+-rw-r--r-- 1 runner runner 937278 Jun 24 09:34 ./locales/vi.pak
+-rw-r--r-- 1 runner runner 1195369 Jun 24 09:34 ./locales/fa.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/zh-CN_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/es_FEMININE.pak
+-rw-r--r-- 1 runner runner 1537380 Jun 24 09:34 ./locales/th.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ar_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/he_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ko_MASCULINE.pak
+-rw-r--r-- 1 runner runner 1354361 Jun 24 09:34 ./locales/ru.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ca_FEMININE.pak
+-rw-r--r-- 1 runner runner 1151434 Jun 24 09:34 ./locales/hi.pak
+-rw-r--r-- 1 runner runner 1989450 Jun 24 09:34 ./locales/ta.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ca_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sk_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/nb_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ja_FEMININE.pak
+-rw-r--r-- 1 runner runner 789267 Jun 24 09:34 ./locales/pt-BR.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/th_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/bn_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/hr_MASCULINE.pak
+-rw-r--r-- 1 runner runner 800444 Jun 24 09:34 ./locales/es.pak
+-rw-r--r-- 1 runner runner 771642 Jun 24 09:34 ./locales/sw.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/pt-BR_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/kn_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ar_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/lv_NEUTER.pak
+-rw-r--r-- 1 runner runner 1121341 Jun 24 09:34 ./locales/ur.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fa_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ml_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ta_MASCULINE.pak
+-rw-r--r-- 1 runner runner 1676651 Jun 24 09:34 ./locales/gu.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/cs_NEUTER.pak
+-rw-r--r-- 1 runner runner 1460540 Jun 24 09:34 ./locales/el.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/kn_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/cs_FEMININE.pak
+-rw-r--r-- 1 runner runner 833692 Jun 24 09:34 ./locales/cs.pak
+-rw-r--r-- 1 runner runner 1329244 Jun 24 09:34 ./locales/bg.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ta_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/te_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fi_NEUTER.pak
+-rw-r--r-- 1 runner runner 845792 Jun 24 09:34 ./locales/sk.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/pt-PT_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/el_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/vi_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/gu_FEMININE.pak
+-rw-r--r-- 1 runner runner 876436 Jun 24 09:34 ./locales/lt.pak
+-rw-r--r-- 1 runner runner 1836119 Jun 24 09:34 ./locales/te.pak
+-rw-r--r-- 1 runner runner 657727 Jun 24 09:34 ./locales/en-GB.pak
+-rw-r--r-- 1 runner runner 1703982 Jun 24 09:34 ./locales/bn.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ko_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sw_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ro_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sv_NEUTER.pak
+-rw-r--r-- 1 runner runner 744081 Jun 24 09:34 ./locales/fi.pak
+-rw-r--r-- 1 runner runner 732195 Jun 24 09:34 ./locales/et.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sw_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ru_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fi_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sk_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/pt-PT_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sv_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ru_FEMININE.pak
+-rw-r--r-- 1 runner runner 789812 Jun 24 09:34 ./locales/tr.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/mr_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fil_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/bg_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fi_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/it_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sv_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/nb_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/hu_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/en-US_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/en-US_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sr_NEUTER.pak
+-rw-r--r-- 1 runner runner 807692 Jun 24 09:34 ./locales/hr.pak
+-rw-r--r-- 1 runner runner 821563 Jun 24 09:34 ./locales/ca.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/pt-BR_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ur_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/zh-TW_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fa_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ms_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ro_NEUTER.pak
+-rw-r--r-- 1 runner runner 812905 Jun 24 09:34 ./locales/sl.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/pl_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/hu_MASCULINE.pak
+-rw-r--r-- 1 runner runner 669307 Jun 24 09:34 ./locales/zh-CN.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/sr_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/zh-CN_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/id_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/de_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/tr_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/fil_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ja_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/te_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/de_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/am_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/pt-BR_NEUTER.pak
+-rw-r--r-- 1 runner runner 841394 Jun 24 09:34 ./locales/fil.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/uk_NEUTER.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/ko_FEMININE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/pl_MASCULINE.pak
+-rw-r--r-- 1 runner runner 18 Jun 24 09:34 ./locales/zh-TW_NEUTER.pak
+-rw-r--r-- 1 runner runner 867478 Jun 24 09:34 ./locales/hu.pak
+=== search all pak for socket.io/whalesync ===
+./resources.pak : 0
+./whale_200_percent.pak : 0
+./whale_100_percent.pak : 0
+./locales/ja.pak : 0
+./locales/et_FEMININE.pak : 0
+./locales/en-US_MASCULINE.pak : 0
+./locales/hr_NEUTER.pak : 0
+./locales/lv_MASCULINE.pak : 0
+./locales/fil_NEUTER.pak : 0
+./locales/af.pak : 0
+./locales/en-GB_NEUTER.pak : 0
+./locales/zh-TW_FEMININE.pak : 0
+./locales/hr_FEMININE.pak : 0
+./locales/ro_FEMININE.pak : 0
+./locales/nl_NEUTER.pak : 0
+./locales/es-419.pak : 0
+./locales/hu_FEMININE.pak : 0
+./locales/am_MASCULINE.pak : 0
+./locales/nl.pak : 0
+./locales/it_NEUTER.pak : 0
+./locales/sl_NEUTER.pak : 0
+./locales/nl_MASCULINE.pak : 0
+./locales/de_NEUTER.pak : 0
+./locales/nb.pak : 0
+./locales/th_FEMININE.pak : 0
+./locales/bg_FEMININE.pak : 0
+./locales/cs_MASCULINE.pak : 0
+./locales/it_FEMININE.pak : 0
+./locales/uk_FEMININE.pak : 0
+./locales/af_MASCULINE.pak : 0
+./locales/et_MASCULINE.pak : 0
+./locales/el_MASCULINE.pak : 0
+./locales/tr_FEMININE.pak : 0
+./locales/sl_MASCULINE.pak : 0
+./locales/es-419_NEUTER.pak : 0
+./locales/es_NEUTER.pak : 0
+./locales/ur_NEUTER.pak : 0
+./locales/ms_MASCULINE.pak : 0
+./locales/gu_MASCULINE.pak : 0
+./locales/uk_MASCULINE.pak : 0
+./locales/en-GB_FEMININE.pak : 0
+./locales/uk.pak : 0
+./locales/th_MASCULINE.pak : 0
+./locales/es-419_MASCULINE.pak : 0
+./locales/de.pak : 0
+./locales/el_NEUTER.pak : 0
+./locales/sr.pak : 0
+./locales/sv.pak : 0
+./locales/mr_FEMININE.pak : 0
+./locales/bn_FEMININE.pak : 0
+./locales/sk_FEMININE.pak : 0
+./locales/he_MASCULINE.pak : 0
+./locales/et_NEUTER.pak : 0
+./locales/af_NEUTER.pak : 0
+./locales/en-US.pak : 0
+./locales/kn_FEMININE.pak : 0
+./locales/bn_MASCULINE.pak : 0
+./locales/hi_FEMININE.pak : 0
+./locales/nb_MASCULINE.pak : 0
+./locales/vi_FEMININE.pak : 0
+./locales/lt_NEUTER.pak : 0
+./locales/es_MASCULINE.pak : 0
+./locales/bg_MASCULINE.pak : 0
+./locales/lt_MASCULINE.pak : 0
+./locales/he.pak : 0
+./locales/zh-TW.pak : 0
+./locales/lt_FEMININE.pak : 0
+./locales/te_FEMININE.pak : 0
+./locales/tr_NEUTER.pak : 0
+./locales/am_NEUTER.pak : 0
+./locales/mr_MASCULINE.pak : 0
+./locales/ja_MASCULINE.pak : 0
+./locales/ro.pak : 0
+./locales/pt-PT_NEUTER.pak : 0
+./locales/fr_NEUTER.pak : 0
+./locales/ar_MASCULINE.pak : 0
+./locales/sl_FEMININE.pak : 0
+./locales/ms_FEMININE.pak : 0
+./locales/da_FEMININE.pak : 0
+./locales/fa_NEUTER.pak : 0
+./locales/ml_FEMININE.pak : 0
+./locales/en-GB_MASCULINE.pak : 0
+./locales/hi_NEUTER.pak : 0
+./locales/da_NEUTER.pak : 0
+./locales/kn.pak : 0
+./locales/ur_MASCULINE.pak : 0
+./locales/ml_MASCULINE.pak : 0
+./locales/es-419_FEMININE.pak : 0
+./locales/pl_NEUTER.pak : 0
+./locales/id_FEMININE.pak : 0
+./locales/pt-PT.pak : 0
+./locales/da.pak : 0
+./locales/id.pak : 0
+./locales/sw_MASCULINE.pak : 0
+./locales/he_FEMININE.pak : 0
+./locales/sr_FEMININE.pak : 0
+./locales/pl.pak : 0
+./locales/zh-CN_NEUTER.pak : 0
+./locales/fr_MASCULINE.pak : 0
+./locales/hi_MASCULINE.pak : 0
+./locales/lv_FEMININE.pak : 0
+./locales/ru_NEUTER.pak : 0
+./locales/ms.pak : 0
+./locales/ca_NEUTER.pak : 0
+./locales/gu_NEUTER.pak : 0
+./locales/ar.pak : 0
+./locales/mr.pak : 0
+./locales/lv.pak : 0
+./locales/fr_FEMININE.pak : 0
+./locales/ko.pak : 0
+./locales/vi_NEUTER.pak : 0
+./locales/it.pak : 0
+./locales/id_NEUTER.pak : 0
+./locales/ta_NEUTER.pak : 0
+./locales/nl_FEMININE.pak : 0
+./locales/da_MASCULINE.pak : 0
+./locales/ml.pak : 0
+./locales/af_FEMININE.pak : 0
+./locales/fr.pak : 0
+./locales/am.pak : 0
+./locales/vi.pak : 0
+./locales/fa.pak : 0
+./locales/zh-CN_MASCULINE.pak : 0
+./locales/es_FEMININE.pak : 0
+./locales/th.pak : 0
+./locales/ar_NEUTER.pak : 0
+./locales/he_NEUTER.pak : 0
+./locales/ko_MASCULINE.pak : 0
+./locales/ru.pak : 0
+./locales/ca_FEMININE.pak : 0
+./locales/hi.pak : 0
+./locales/ta.pak : 0
+./locales/ca_MASCULINE.pak : 0
+./locales/sk_MASCULINE.pak : 0
+./locales/nb_FEMININE.pak : 0
+./locales/ja_FEMININE.pak : 0
+./locales/pt-BR.pak : 0
+./locales/th_NEUTER.pak : 0
+./locales/bn_NEUTER.pak : 0
+./locales/hr_MASCULINE.pak : 0
+./locales/es.pak : 0
+./locales/sw.pak : 0
+./locales/pt-BR_FEMININE.pak : 0
+./locales/kn_NEUTER.pak : 0
+./locales/ar_FEMININE.pak : 0
+./locales/lv_NEUTER.pak : 0
+./locales/ur.pak : 0
+./locales/fa_FEMININE.pak : 0
+./locales/ml_NEUTER.pak : 0
+./locales/ta_MASCULINE.pak : 0
+./locales/gu.pak : 0
+./locales/cs_NEUTER.pak : 0
+./locales/el.pak : 0
+./locales/kn_MASCULINE.pak : 0
+./locales/cs_FEMININE.pak : 0
+./locales/cs.pak : 0
+./locales/bg.pak : 0
+./locales/ta_FEMININE.pak : 0
+./locales/te_NEUTER.pak : 0
+./locales/fi_NEUTER.pak : 0
+./locales/sk.pak : 0
+./locales/pt-PT_MASCULINE.pak : 0
+./locales/el_FEMININE.pak : 0
+./locales/vi_MASCULINE.pak : 0
+./locales/gu_FEMININE.pak : 0
+./locales/lt.pak : 0
+./locales/te.pak : 0
+./locales/en-GB.pak : 0
+./locales/bn.pak : 0
+./locales/ko_NEUTER.pak : 0
+./locales/sw_NEUTER.pak : 0
+./locales/ro_MASCULINE.pak : 0
+./locales/sv_NEUTER.pak : 0
+./locales/fi.pak : 0
+./locales/et.pak : 0
+./locales/sw_FEMININE.pak : 0
+./locales/ru_MASCULINE.pak : 0
+./locales/fi_MASCULINE.pak : 0
+./locales/sk_NEUTER.pak : 0
+./locales/pt-PT_FEMININE.pak : 0
+./locales/sv_FEMININE.pak : 0
+./locales/ru_FEMININE.pak : 0
+./locales/tr.pak : 0
+./locales/mr_NEUTER.pak : 0
+./locales/fil_FEMININE.pak : 0
+./locales/bg_NEUTER.pak : 0
+./locales/fi_FEMININE.pak : 0
+./locales/it_MASCULINE.pak : 0
+./locales/sv_MASCULINE.pak : 0
+./locales/nb_NEUTER.pak : 0
+./locales/hu_NEUTER.pak : 0
+./locales/en-US_FEMININE.pak : 0
+./locales/en-US_NEUTER.pak : 0
+./locales/sr_NEUTER.pak : 0
+./locales/hr.pak : 0
+./locales/ca.pak : 0
+./locales/pt-BR_MASCULINE.pak : 0
+./locales/ur_FEMININE.pak : 0
+./locales/zh-TW_MASCULINE.pak : 0
+./locales/fa_MASCULINE.pak : 0
+./locales/ms_NEUTER.pak : 0
+./locales/ro_NEUTER.pak : 0
+./locales/sl.pak : 0
+./locales/pl_FEMININE.pak : 0
+./locales/hu_MASCULINE.pak : 0
+./locales/zh-CN.pak : 0
+./locales/sr_MASCULINE.pak : 0
+./locales/zh-CN_FEMININE.pak : 0
+./locales/id_MASCULINE.pak : 0
+./locales/de_MASCULINE.pak : 0
+./locales/tr_MASCULINE.pak : 0
+./locales/fil_MASCULINE.pak : 0
+./locales/ja_NEUTER.pak : 0
+./locales/te_MASCULINE.pak : 0
+./locales/de_FEMININE.pak : 0
+./locales/am_FEMININE.pak : 0
+./locales/pt-BR_NEUTER.pak : 0
+./locales/fil.pak : 0
+./locales/uk_NEUTER.pak : 0
+./locales/ko_FEMININE.pak : 0
+./locales/pl_MASCULINE.pak : 0
+./locales/zh-TW_NEUTER.pak : 0
+./locales/hu.pak : 0
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== socket.io-like content in whale binary ==="; strings -n 8 whale 2>/dev/null | grep -iE "socket|engine.io|websocket|heartbeat|polling|transport" | grep -viE "colorSearchEngine|searchEngine" | sort -u | head -40
+=== socket.io-like content in whale binary ===
+ Transport 
+ attempted to convert itself into a WebTransport data stream, but it already has HTTP data on it
+ attempted to convert itself into a WebTransport data stream, but only the initiator of the stream can do that
+ is a WebTransport data stream, but has no scheduler for the associated group
+ on WebTransport data stream
+ on WebTransport data stream 
+ received WEBTRANSPORT_STREAM at a non-zero offset
+ socket.H
+!(opts & PacketSocketFactory::OPT_STUN)
+%s => (WARNING: no room in socket buffer, dropped data)
+' in 'Sec-WebSocket-Extensions' header
+' was loaded over HTTPS, but attempted to connect to the insecure WebSocket endpoint '
+'). Fragment identifiers are not allowed in WebSocket URLs.
+'). Fragment identifiers are not allowed in WebTransport URLs.
+'Sec-WebSocket-Extensions' header value is rejected by the parser: 
+'Sec-WebSocket-Protocol' header value '
+'Upgrade' header value is not 'WebSocket': 
+(Transport)
+(socket) == (socket_.get())
+): Can't change ports on already started transport.
+): Can't change sctp-init on already started transport.
+, destroying socket
+, send_transport: 
+->SendData(...): Transport is not started.
+->max_message_size(...): Transport is not started.
+-socketsH
+../../base/posix/unix_domain_socket.cc
+../../base/sync_socket_posix.cc
+../../chrome/browser/devtools/device/android_web_socket.cc
+../../chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event.cc
+../../components/media_router/common/providers/cast/channel/cast_socket.cc
+../../components/media_router/common/providers/cast/channel/cast_transport.cc
+../../components/private_ai/websocket_client.cc
+../../components/webrtc/fake_ssl_client_socket.cc
+../../content/browser/compositor/viz_process_transport_factory.cc
+../../content/browser/direct_sockets/direct_sockets_service_impl.cc
+../../content/browser/webtransport/web_transport_throttle_context.cc
+../../device/bluetooth/bluetooth_socket_net.cc
+../../device/bluetooth/bluez/bluetooth_socket_bluez.cc
+../../device/bluetooth/floss/bluetooth_socket_floss.cc
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== scrypt/PBKDF2/KDF ==="; strings -n 6 whale 2>/dev/null | grep -iE "scrypt|pbkdf2|key_derivation|keyderivation|derived_key|hash_salt|salted" | sort -u | head -25; echo "=== whale prefs keys ==="; strings -n 6 whale 2>/dev/null | grep -E "sync\.|whale_" | grep -iE "encryption|bootstrap|migration|key|forced|need" | sort -u | head -30; echo "=== whalesync urls ==="; strings -n 8 whale 2>/dev/null | grep -oE "https?://[a-zA-Z0-9./_-]*whale[a-zA-Z0-9./_-]*" | sort -u | head -30
+=== scrypt/PBKDF2/KDF ===
+%s: Pre-salted RTCP IV = %s
+%s: Pre-salted RTP IV = %s
+../../components/webcrypto/algorithms/pbkdf2.cc
+../../third_party/boringssl/src/crypto/evp/scrypt.cc
+.ReencryptedWithAsyncOSCrypt
+Length for PBKDF2 key derivation must be a multiple of 8 bits.
+No length was specified for the PBKDF2 Derive Bits operation.
+OSCrypt did not initialize a backend.
+OSCrypt found more than one encryption keys.
+OSCrypt generated a new password.
+OSCrypt tried KWallet but couldn't initialise.
+OSCrypt tried Libsecret but couldn't initialise.
+OSCrypt using KWallet as backend.
+OSCrypt using Libsecret as backend.
+OSCrypt.Async.DecryptionFallbackToSync
+OSCrypt.Async.EncryptionFallbackToSync
+OSCrypt.AsyncInitialization.Time
+OSCrypt.BackendUsage
+OSCrypt.EncryptionPrefixVersion
+OSCrypt.EncryptorKeyCount
+OSCrypt.EncryptorKeyCount.Available
+OSCrypt.EncryptorKeyCount.PermanentlyUnavailable
+OSCrypt.EncryptorKeyCount.TemporarilyUnavailable
+OSCrypt.FreedesktopSecretKeyProvider.$1.ErrorDetail
+OSCrypt.FreedesktopSecretKeyProvider.InitStatus
+=== whale prefs keys ===
+../../whale/whale/browser/ui/views/profiles/migration_from_whale_space_to_works_complete_dialog.h
+OSCrypt.Async.EncryptionFallbackToSync
+sync.encryption_bootstrap_token
+sync.encryption_bootstrap_token_per_account
+sync.encryption_bootstrap_token_per_account_migration_done
+sync.passwords_per_account_pref_migration_done
+sync.sync_to_signin_migration_state
+sync.whale_need_encryption_key_forced_time
+=== whalesync urls ===
+http://apis.naver.com/whale/whale/seed
+http://service.whale.naver.com/whale-variations/seed
+http://update2.whale.naver.com/service/update2/json
+http://whale.com/foo.html
+https://account.whalebrowser.com/
+https://account.whalespace.io
+https://account.whalespace.io/
+https://alpha-account.whalespace.io
+https://alpha-authn.whalespace.io
+https://alpha-enterprise.whale.naver.com
+https://alpha-enterprise.whale.naver.com/devicemanagement/data/api
+https://alpha-update.whale.naver.com
+https://api.scopic.naver.com/whale
+https://api.whale.naver.com/v1/membership
+https://api.whale.naver.com/whalesync
+https://api.whale.naver.com/whalesync/whalesync
+https://apis.naver.com/whale-papago/papago_public/n2mt/translate/bulk
+https://apis.naver.com/whale/belli/
+https://apis.naver.com/whale/labsapi/tts/makeTTS
+https://apis.naver.com/whale/naver_keep/
+https://apis.naver.com/whale/scrapbook-whalebrowser/
+https://apis.naver.com/whale/whale
+https://apis.naver.com/whale/whale/getLocation
+https://apis.naver.com/whale/whale/getLocation2
+https://apis.naver.com/whale/whale/seed
+https://authn.whalespace.io
+https://beta-update.whale.naver.com
+https://canary-update.whale.naver.com
+https://chat.whale.mu/
+https://cv.whale.naver.com
+[0m
+Real sync evidence confirmed. Digging into the reset endpoint, scrypt params, and the per-account key handling.
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== around /whalesync/reset ==="; strings -n 5 whale 2>/dev/null | grep -iE "whalesync|/reset|reset\b" | sort -u | head -30; echo "=== scrypt params (chromium uses N=16384 r=8 p=1) ==="; strings -n 5 whale 2>/dev/null | grep -iE "16384|scrypt|SetScryptParams|key_derivation_params" | sort -u | head -15; echo "=== encryption forced ==="; strings -n 5 whale 2>/dev/null | grep -iE "forced|encryption_key|need_encryption" | sort -u | head -20
+=== around /whalesync/reset ===
+	/whalesync/reset
+  GLES2DecoderImpl: Context reset detected after MakeCurrent.
+  GLES2DecoderImpl: Context reset detected after initialization.
+  GLES2DecoderPassthroughImpl: Context reset detected after MakeCurrent.
+ This can be reset in Page Info which can be accessed by clicking the tune icon next to the URL. See https://www.chromestatus.com/feature/6443143280984064 for more information.
+ context lost via ARB/EXT_robustness. Reset status = 
+ mismatches with the preset value
+ received reliable reset with offset: 
+" value for intercept()'s focusReset option will override the previously-passed value of "
+->OnIncomingStreamsReset(...): Incoming stream reset
+->OnStreamsResetFailed(...): Outgoing stream reset failed
+->OnStreamsResetPerformed(...): Outgoing stream reset
+. Assuming sequence numbers were reset, reset state and next sequence number in feedback from 
+../../chrome/browser/profile_resetter/resettable_settings_snapshot.cc
+.CommitErrorCountAtReset
+/whalesync
+<?xml version="1.0" encoding="UTF-8"?><request    version="chromeprofilereset-1.1"    protocol="3.0"    installsource="profilereset">  <app appid="{EC6C623E-7243-4340-9955-CDFDBFED69A7}">    <data name="install" index="__BRANDCODE_PLACEHOLDER__"/>  </app></request>
+Aborted by reset.
+Aborted due to reset()
+ActivatePendingFrameReset
+Attempt to reset crypto stream
+Attempt to reset field on directory not already on disk.
+Attempt to reset headers stream
+AutofillAgentReset
+Bad stateless reset token length
+Bad stateless reset token length 
+Buttons with an explicit type=reset will always reset a form, so command or commandfor attributes will be ignored.
+Can not read new connection ID frame reset token.
+Can not write New Connection ID Reset Token
+Can't reset streams as the peer doesn't support it
+=== scrypt params (chromium uses N=16384 r=8 p=1) ===
+) must be 0 or a power of two between 256 and 16384.
+../../third_party/boringssl/src/crypto/evp/scrypt.cc
+.ReencryptedWithAsyncOSCrypt
+OSCrypt did not initialize a backend.
+OSCrypt found more than one encryption keys.
+OSCrypt generated a new password.
+OSCrypt tried KWallet but couldn't initialise.
+OSCrypt tried Libsecret but couldn't initialise.
+OSCrypt using KWallet as backend.
+OSCrypt using Libsecret as backend.
+OSCrypt.Async.DecryptionFallbackToSync
+OSCrypt.Async.EncryptionFallbackToSync
+OSCrypt.AsyncInitialization.Time
+OSCrypt.BackendUsage
+OSCrypt.EncryptionPrefixVersion
+=== encryption forced ===
+  they can beback to thesome of hisexposure toare similarform of theaddFavoritecitizenshippart in thepeople within practiceto continue&amp;minus;approved by the first allowed theand for thefunctioningplaying thesolution toheight="0" in his bookmore than afollows thecreated thepresence in&nbsp;</td>nationalistthe idea ofa characterwere forced class="btndays of thefeatured inshowing theinterest inin place ofturn of thethe head ofLord of thepoliticallyhas its ownEducationalapproval ofsome of theeach other,behavior ofand becauseand anotherappeared onrecorded inblack&quot;may includethe world'scan lead torefers to aborder="0" government winning theresulted in while the Washington,the subjectcity in the></div>
+ FORCED_REDRAW_WAITING_FOR_COMMIT
+ forced extensions.
+". Strict MIME type checking is enforced for module scripts per HTML spec.
+"CC_SCHEDULER_ACTION_V2_DRAW_FORCED
+$FORCED_REDRAW_WAITING_FOR_ACTIVATION
+' has an integrity attribute, but the resource requires the request to be CORS enabled to check the integrity, and it is not. The resource has been blocked because the integrity cannot be enforced.
+(is_forced=
+-internal-forced-background-color
+-internal-forced-border-color
+-internal-forced-color
+-internal-forced-outline-color
+-internal-forced-visited-color
+../../chrome/browser/extensions/forced_extensions/force_installed_metrics.cc
+.ByForceDelete
+.EnterpriseForced
+.gif" onloadloaderOxfordsistersurvivlistenfemaleDesignsize="appealtext">levelsthankshigherforcedanimalanyoneAfricaagreedrecentPeople<br />wonderpricesturned|| {};main">inlinesundaywrap">failedcensusminutebeaconquotes150px|estateremoteemail"linkedright;signalformal1.htmlsignupprincefloat:.png" forum.AccesspaperssoundsextendHeightsliderUTF-8"&amp; Before. WithstudioownersmanageprofitjQueryannualparamsboughtfamousgooglelongeri++) {israelsayingdecidehome">headerensurebranchpiecesblock;statedtop"><racingresize--&gt;pacitysexualbureau.jpg" 10,000obtaintitlesamount, Inc.comedymenu" lyricstoday.indeedcounty_logo.FamilylookedMarketlse ifPlayerturkey);var forestgivingerrorsDomain}else{insertBlog</footerlogin.fasteragents<body 10px 0pragmafridayjuniordollarplacedcoversplugin5,000 page">boston.test(avatartested_countforumsschemaindex,filledsharesreaderalert(appearSubmitline">body">
+0 doesn't satisfy the grammar; forced bytes: got 
+1APP_EXIT_SUBREASON_CACHED_IDLE_FORCED_APP_STANDBY
+2S.perfetto.protos.ChromeCompositorStateMachine.MajorState.ForcedRedrawOnTimeoutStateR
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== passphrase/derive ==="; strings -n 5 whale 2>/dev/null | grep -iE "passphrase|derivekeyfrompassword|derived_key" | grep -v "\.md\|\.txt\|\.h\b" | sort -u | head -25; echo "=== multiplay ==="; strings -n 6 whale 2>/dev/null | grep -iE "multiplay|multi_play" | sort -u | head -25; echo "=== push urls ==="; strings -n 8 whale 2>/dev/null | grep -iE "push" | grep -iE "http|url|server|socket" | sort -u | head -20
+=== passphrase/derive ===
+.WithCustomPassphrase
+.WithoutCustomPassphrase
+Can not set explicit passphrase when decryption is needed.
+Explicit Passphrase
+Explicit passphrase Time
+GetUpdates is manipulated to simluate PASSPHRASE_ERROR
+NEEDS_PASSPHRASE
+Needs passphrase
+OnPassphraseAccepted
+OnPassphraseRequired
+OnPassphraseTypeChanged
+PASSPHRASE_ACCEPTED
+PASSPHRASE_REQUIRED
+PASSPHRASE_TYPE_CHANGED
+PassPhraseHelpIcon
+Passphrase Required
+Passphrase Type
+PassphraseType::kCustomPassphrase
+PassphraseType::kFrozenImplicitPassphrase
+PassphraseType::kImplicitPassphrase
+PassphraseType::kKeystorePassphrase
+PassphraseType::kTrustedVaultPassphrase
+ReplaceSyncPromosWithSignInPromos,IPH_SignInBenefits,SyncEnableContactInfoDataTypeForCustomPassphraseUsers
+SetExplicitPassphraseDecryptionKey
+Sync.Crypto.CustomPassphraseKeyDerivationMethodOnSuccessfulDecryption
+=== multiplay ===
+    "multiplayId": "f9f3e16d4b594c6fb825c0f20c866c45",
+ * (scrollWidth - element.clientWidth);                      element.scrollTo({ left: scrollXPos, top: scrollYPos, isWhaleMultiplayScroll: true});                  }
+ * scrollableHeight,                  isWhaleMultiplayScroll: true});
+ multiplay.last_join_info
+../../whale/whale/browser/multiplay/multiplay.cc
+../../whale/whale/browser/multiplay/multiplay_chat_notification_manager.cc
+../../whale/whale/browser/multiplay/multiplay_cursor_data_throttler.cc
+../../whale/whale/browser/multiplay/multiplay_cursor_message_handler.cc
+../../whale/whale/browser/multiplay/multiplay_element_highlight_data_throttler.cc
+../../whale/whale/browser/multiplay/multiplay_element_highlight_message_handler.cc
+../../whale/whale/browser/multiplay/multiplay_error.cc
+../../whale/whale/browser/multiplay/multiplay_follow_data_throttler.cc
+../../whale/whale/browser/multiplay/multiplay_highlight_manager.cc
+../../whale/whale/browser/multiplay/multiplay_host.cc
+../../whale/whale/browser/multiplay/multiplay_push_manager.cc
+../../whale/whale/browser/multiplay/multiplay_service.cc
+../../whale/whale/browser/multiplay/multiplay_session_io_message_router.cc
+../../whale/whale/browser/multiplay/multiplay_session_io_tab_message_handler.cc
+../../whale/whale/browser/multiplay/multiplay_tab_syncer.cc
+../../whale/whale/browser/multiplay/multiplay_util.cc
+../../whale/whale/browser/ui/multiplay/multiplay_prompt_manager.cc
+../../whale/whale/browser/ui/multiplay/multiplay_ui_controller.cc
+../../whale/whale/browser/ui/views/multiplay/already_running_dialog.h
+../../whale/whale/browser/ui/views/multiplay/audio_setting_button.h
+../../whale/whale/browser/ui/views/multiplay/audio_setting_menu_view.cc
+=== push urls ===
+(?s:.*)backtracking not supportedEnd number in range cannot be 0Expected name (RULE or TOKEN)lark grammar too deeply nestedExpected valueExpected '{' after %larkUnmatched %lark { ... }iexpected '_' or '[start_bit:stop_bit]'expecting rule, token or statementExpected at least one name after %declaresuffixtemperatureCannot have multiple stop/suffix conditionsCannot have multiple stop_capture namesflags not allowed in this contextgrammar must have either lark_grammar or json_schemacannot have both lark_grammar and json_schemaadditionalItemsadditionalPropertiesformatitemsmaxLengthmaxPropertiesmaximumminLengthminPropertiesminimummultipleOfpatternpatternPropertiespropertiesprefixItemshttps://json-schema.org/draft/2020-12/schemahttps://json-schema.org/draft/2019-09/schemahttp://json-schema.org/draft-07/schemahttp://json-schema.org/draft-06/schemahttp://json-schema.org/draft-04/schemaincompatible boolean valuesincompatible typesSchema intersection stack level exceededx-guidanceoverride statement not supported yetdeclare statement not supported yetparams not supported yetpriority not supported yetempty grammars arraystartno tokenizer - can't validate <[...]>no tokenizer - can't validate <special_token>no tokenizer - can't validate <[^...]>no tokenizer - can't validate <any_token>true|falserequired item is unsatisfiableAll options in anyOf are unsatisfiableNo options in anyOfoneOf not fully supported, falling back to anyOf. This may cause validation errors in some cases.oneOf constraints are not supported. Enable 'coerce_one_of' option to approximate oneOf with anyOfmin/maxProperties only supported when all keys listed in "properties" are required(\\([\"\\\/bfnrt]|u[a-fA-F0-9]{4})|[^\"\\\x00-\x1F\x7F])[\x20\x0A\x0D\x09]+rollback not supported with max_tokens=... or stop=... lexemes; suffix=... is OKtoken_lens and token_bytes must be settokenizer_jsonsliceEither tokenize_fn or use_approximate_greedy_tokenize_fn must be setforce_bytes_emptyregexllguidanceEmpty grammarTokenizer is nullff_tokensfailed to advance parser after adding bytes ignoring lexerInternal error: initial push failedlexer precomputation failed; either increase limits.initial_lexer_fuel or disable limits.precompute_large_lexemesrollback: parser errorbacktrack sampled
+../../net/third_party/quiche/src/quiche/http2/decoder/payload_decoders/push_promise_payload_decoder.cc
+../../whale/components/invalidation/impl/push_server_url_fetcher_base.cc
+A "push" navigation was explicitly requested, but only a "replace" navigation is possible when navigating to a javascript: URL.
+Chrome currently does not support the Push API in incognito mode (https://crbug.com/41124656). There is deliberately no way to feature-detect this, since incognito mode needs to be undetectable by websites.
+Chrome currently only supports the Push API for subscriptions that will result in user-visible messages. You can indicate this by calling pushManager.subscribe({userVisibleOnly: true}) instead. See https://goo.gl/yqv4Q4 for more details.
+Failed to get push server url: 
+GetPushServerURL called: 
+GetPushServerURL failed: 
+GetPushServerURL succeeded: 
+HTTP3_CANCEL_PUSH_RECEIVED
+HTTP3_MAX_PUSH_ID_RECEIVED
+HTTP3_MAX_PUSH_ID_SENT
+HTTP3_PUSH_PROMISE_SENT
+QUIC_HTTP_INVALID_MAX_PUSH_ID
+QUIC_HTTP_RECEIVE_SERVER_PUSH
+Received server push stream
+Registration failed - could not connect to push server
+StreamingSearchPrefetchURLLoader::PushData
+StreamingSearchPrefetchURLLoader::ResponseReader::PushData
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== version ==="; cat /tmp/opencode/whale_x/extract/opt/naver/whale/CHROME_VERSION_EXTRA 2>/dev/null; python3 - <<'EOF'
+import re,glob
+# find version in binary
+data=open("whale","rb").read()
+m=re.findall(rb'(\d+\.\d+\.\d+\.\d+)', data)
+from collections import Counter
+c=Counter(x.decode() for x in m)
+print("top version-like strings:", c.most_common(8))
+EOF
+echo "=== multiplay login exclusion ==="; strings -n 6 whale 2>/dev/null | grep -iE "multiplay" | grep -iE "login|exclu|password|공유|벗어났|exclude" | sort -u | head -15; echo "=== session_io ==="; strings -n 6 whale 2>/dev/null | grep -iE "session_io|sio|socket_io|sessionio" | sort -u | head -15
+=== version ===
+stable
+top version-like strings: [('127.0.0.1', 7), ('1.3.6.1', 6), ('0.0.0.0', 5), ('4.1.3704.1', 5), ('7.3.11.4', 3), ('1.1.1.1', 3), ('9.9.9.9', 2), ('8.8.8.8', 2)]
+=== multiplay login exclusion ===
+kColorMultiplayProfileDialogInkDrop
+multiplay_login_pages
+whale.tweak.multiplay_login_pages
+=== session_io ===
+		<a href="close to theexamples of is about the(see below)." id="searchprofessionalis availablethe official		</script>
+		<div id="accelerationthrough the Hall of Famedescriptionstranslationsinterference type='text/recent yearsin the worldvery popular{background:traditional some of the connected toexploitationemergence ofconstitutionA History ofsignificant manufacturedexpectations><noscript><can be foundbecause the has not beenneighbouringwithout the added to the	<li class="instrumentalSoviet Unionacknowledgedwhich can bename for theattention toattempts to developmentsIn fact, the<li class="aimplicationssuitable formuch of the colonizationpresidentialcancelBubble Informationmost of the is describedrest of the more or lessin SeptemberIntelligencesrc="http://px; height: available tomanufacturerhuman rightslink href="/availabilityproportionaloutside the astronomicalhuman beingsname of the are found inare based onsmaller thana person whoexpansion ofarguing thatnow known asIn the earlyintermediatederived fromScandinavian</a></div>
+		reflect theto completebecame moreradioactiverejected bywithout anyhis father,which couldcopy of theto indicatea politicalaccounts ofconstitutesworked wither</a></li>of his lifeaccompaniedclientWidthprevent theLegislativedifferentlytogether inhas severalfor anothertext of thefounded thee with the is used forchanged theusually theplace wherewhereas the> <a href=""><a href="themselves,although hethat can betraditionalrole of theas a resultremoveChilddesigned bywest of theSome peopleproduction,side of thenewslettersused by thedown to theaccepted bylive in theattempts tooutside thefrequenciesHowever, inprogrammersat least inapproximatealthough itwas part ofand variousGovernor ofthe articleturned into><a href="/the economyis the mostmost widelywould laterand perhapsrise to theoccurs whenunder whichconditions.the westerntheory thatis producedthe city ofin which heseen in thethe centralbuilding ofmany of hisarea of theis the onlymost of themany of thethe WesternThere is noextended toStatisticalcolspan=2 |short storypossible totopologicalcritical ofreported toa Christiandecision tois equal toproblems ofThis can bemerchandisefor most ofno evidenceeditions ofelements in&quot;. Thecom/images/which makesthe processremains theliterature,is a memberthe popularthe ancientproblems intime of thedefeated bybody of thea few yearsmuch of thethe work ofCalifornia,served as agovernment.concepts ofmovement in		<div id="it" value="language ofas they areproduced inis that theexplain thediv></div>
+	<div id="illustratedengineeringterritoriesauthoritiesdistributed6" height="sans-serif;capable of disappearedinteractivelooking forit would beAfghanistanwas createdMath.floor(surroundingcan also beobservationmaintenanceencountered<h2 class="more recentit has beeninvasion of).getTime()fundamentalDespite the"><div id="inspirationexaminationpreparationexplanation<input id="</a></span>versions ofinstrumentsbefore the  = 'http://Descriptionrelatively .substring(each of theexperimentsinfluentialintegrationmany peopledue to the combinationdo not haveMiddle East<noscript><copyright" perhaps theinstitutionin Decemberarrangementmost famouspersonalitycreation oflimitationsexclusivelysovereignty-content">
+	<title>versionssaturdayterminalitempropengineersectionsdesignerproposal="false"Espa
+	SSRC collision
+	diplomaticcontainingperformingextensionsmay not beconcept of onclick="It is alsofinancial making theLuxembourgadditionalare calledengaged in"script");but it waselectroniconsubmit="
+	sponsoreddocument.or &quot;there arethose whomovementsprocessesdifficultsubmittedrecommendconvincedpromoting" width=".replace(classicalcoalitionhis firstdecisionsassistantindicatedevolution-wrapper"enough toalong thedelivered-->
+                      saturate(4.0 * pixelsPerDimension.x - 1.0));
+            varyings.pixelsPerDimension,
+          let uv = vec2u(in.uv.xy * vec2f(textureDimensions(source)));
+          targetAntialiasingPixelOutset(pixelsPerDimension.x);
+        out float2 pixelsPerDimension,
+      float targetOutset = targetAntialiasingPixelOutset(pixelsPerDimension.x);
+      float2 adjustedPixels = pixelsPerDimension + outset.xz + outset.yw;
+[0m
+Major find: `multiplay_login_pages` + `whale.tweak.multiplay_login_pages` — the exact client-side exclusion heuristic. Extracting the pattern list.
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && strings -n 5 whale 2>/dev/null | grep -iE "multiplay_login_pages" | sort -u; echo "=== nearby login patterns ==="; strings -n 6 whale 2>/dev/null | grep -iE "login|signin|sign_in|account/|auth/" | grep -iE "naver\.com|\.naver|google|kakao|github|apple|microsoft|facebook|/login|login\." | sort -u | head -40
+multiplay_login_pages
+whale.tweak.multiplay_login_pages
+=== nearby login patterns ===
+../../chrome/browser/password_manager/password_change/login_state_checker.cc
+../../chrome/browser/ui/login/http_auth_coordinator.cc
+../../chrome/browser/ui/login/login_handler.cc
+../../chrome/browser/ui/login/login_tab_helper.cc
+../../chrome/browser/ui/views/login_view.h
+../../chrome/browser/ui/views/profiles/login_status_check_helper.cc
+../../chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_response_capture_navigation_throttle.cc
+../../chrome/browser/ui/webui/signin/login_utils.cc
+../../chrome/browser/web_applications/os_integration/web_app_run_on_os_login.cc
+../../components/password_manager/core/browser/password_store/login_database.cc
+../../components/password_manager/core/browser/password_store/login_database_async_helper.cc
+../../google_apis/gaia/oauth_multilogin_result.cc
+../../whale/components/signin/public/identity_manager/login_auth_fetcher.cc
+../../whale/components/signin/public/identity_manager/login_cookie_service.cc
+../../whale/google_apis/login_oauth2_access_token_fetcher_immediate_error.cc
+../../whale/google_apis/login_urls.cc
+../../whale/whale/renderer/login_cookie_url_loader_throttle.cc
+.gif" onloadloaderOxfordsistersurvivlistenfemaleDesignsize="appealtext">levelsthankshigherforcedanimalanyoneAfricaagreedrecentPeople<br />wonderpricesturned|| {};main">inlinesundaywrap">failedcensusminutebeaconquotes150px|estateremoteemail"linkedright;signalformal1.htmlsignupprincefloat:.png" forum.AccesspaperssoundsextendHeightsliderUTF-8"&amp; Before. WithstudioownersmanageprofitjQueryannualparamsboughtfamousgooglelongeri++) {israelsayingdecidehome">headerensurebranchpiecesblock;statedtop"><racingresize--&gt;pacitysexualbureau.jpg" 10,000obtaintitlesamount, Inc.comedymenu" lyricstoday.indeedcounty_logo.FamilylookedMarketlse ifPlayerturkey);var forestgivingerrorsDomain}else{insertBlog</footerlogin.fasteragents<body 10px 0pragmafridayjuniordollarplacedcoversplugin5,000 page">boston.test(avatartested_countforumsschemaindex,filledsharesreaderalert(appearSubmitline">body">
+/oauth2/v1/nid/login
+/org/freedesktop/login1
+Actor.Login.AccountAutoSelected
+Actor.Login.AccountTypesShown
+Actor.Login.DeduplicationOccurred
+Actor.Login.Federated.ContinuationShown
+Actor.Login.Federated.HangingFedCmRequestExists
+Actor.Login.Federated.LoginResult
+Actor.Login.GetCredentialsCompletedToAccountChosen
+Actor.Login.GetCredentialsLatency
+Actor.Login.NumAccountsShown
+Actor.Login.SelectedAccountType
+EXTENSIONHOSTED_APPLEGACY_PACKAGED_APPLOGIN_SCREEN_EXTENSIONPLATFORM_APPSHARED_MODULETHEMEUNKNOWN_TYPEUSER_SCRIPT
+Enterprise.ReportingEvent.Login.
+Failed to retrieve a token for multilogin. account=
+GOOGLE_METRICS_SIGNING_KEY
+Google-synced OIDC profile can't be created because browser signin is disabled.
+IDR_PROFILE_GOOGLE_LOGIN
+Login.PageLoad.DetectionType
+Microsoft Commercial Code Signing
+Microsoft Individual Code Signing
+Microsoft Smartcardlogin
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== whale.tweak keys ==="; strings -n 5 whale 2>/dev/null | grep -oE "whale\.tweak\.[a-z_.0-9]+" | sort -u | head -25; echo "=== nid login / auth ==="; strings -n 5 whale 2>/dev/null | grep -iE "nid|login/oauth|scapi|oauth2/v1" | sort -u | head -15; echo "=== whale sync datatype hints ==="; strings -n 6 whale 2>/dev/null | grep -iE "WhaleSync|whale_sync" | sort -u | head -25
+=== whale.tweak keys ===
+whale.tweak.force_dark_mode_excludes
+whale.tweak.multiplay_login_pages
+whale.tweak.whale_free_hosts
+=== nid login / auth ===
+  aa RFA  ba KBA  fa KFA  ka AKA  ma HMA  na GRA  ra ARA  sa MSA  va RVA  ya MYA  za EZA  ab HSB  eb LEB  gb RGB  ib SIB  ib PPC  mb BMB  nb NEB  ob BIT  rb ERB  sb SOB  ac TAC  ec EHC  hc AHC  oc SOC  rc ERC  sc YSC  uc LSC  vc UHC  yc LEW  ad NAD  ed UED  vd VID  vd VHD  zd NZD  ee EWE  le LLE  ne GNE  oe OTN  se PSE  te ITE  ue QUE  af RAF  ff LUF  if NIF  jf IJF  of SOF  rf ARF  yf IRF  ag IRI  ag TRI  dg EAG  lg LAG  ng AUG  ug JUG  vg XNM  ah UAH  eh RWI  ih NIH  oh OMH  oh PPC  rh VRH  th IAH  th PPC  uh NUH  yh0EYH  yh EYH  zh REH  ai ANI  di DNI  di YLM  ei ELI  gi OBI  ii MIY  ki KPI  ni DNI  ni YLM  oi ODI  si LSI  ti ATI  ui UNI  uiKUNI  wi RWI  aj NAJ  ij IIJ  vj VAJ  wj VAJ  ak TAK  gk0NOK  ik KIK  jk AUK  kk ZAK  lk NRG  mk MHK  nk NAK  ok ROK  ok HOK  rk RNK  sk HSK  uk RUK  vk MOK  wk ROC  yk RIK  al TAL  bl ZTL  gl GUL  il MIL  nl NIL  ol OAL  tl HTL  ul BUL  vl IVL  gm GLM  hm HAM  im IRM  km DKM  lm LAM  lm RLM  nm GNM  om LOM  om MOR  rm RAM  sm YLM  tm STM  ym MRB  an UAN  bn RON  dn BDN  en PEN  gn GDN  ln DLN  nn NYN  on RON  rn BDN  vn VAN  vn HTA  yn IHC  co ICO  jo BJO  mo ORO  ro IRO  so SSO  ap NAP  ip LAP  lp KLP  sp SAP  tp GTP  uq ZUQ  mr SMR  nr NUR  or MOR  ur SUR  wr AUR  as NAS  cs DRS  ds DNS  es MSN  gs OGS  hs SOB  hs VRH  hs BRS  is HNS  ks YKS  ls VLS  ms OMS  ns0ANS  os LMS  qs IQS  rs BRS  ss ZWS  ts TOS  us NUS  vs EVS  ws KWS  at MAT  et LET  gt JAT  ht AHT  it YGT  kt MKT  lt LGT  nt ANT  ot NGT  rt KRT  st GST  tt TAT  wt IWT  wt AKA  yt THT  gu GYU  ku RKU  ru DRU  zu BZU  ev NEV  iv TIV  ov LOV  aw NLW  ow FLW  hx SHX  iy IIJ  oy ABY  az AHZ  hz SHZ  uz LUZ eaa IQS oaa ARA taa IQS hba ARA qba ABA sba PPC vba ARA mca ARA qca ARA wca ARA xca ARA ada GND fda ARA pda NZD bea ARA cea ARA bfa ARA sfa PPC uga NYM gha WGA tha HTA gia PPC wia IRA pja ARA tja ARA nla IQS sla IQS fma NBH wma RYS aoa PPC apa HTA cpa ARA dpa ARA jpa HTA kpa HTA lpa HTA mpa HTA wpa HTA bra ARA nra PAM qra ARA sra ARA zra ARA jta RCR vta TLA jua RBB zua ARA lva ARA cya MYA hya ARA lya ARA nya ARA pya ARA rya MYA dza HAN jza EZA nza HAN zza HAN dab0DAB hab PPC iab LMB lab ILB jbb LMB pbb0DAB zbb ARA ccb ILB icb UAB lcb KIB qcb HCB rcb HTA aeb HTA beb ITB reb RBB web PPC lfb0DAB qfb DAB tfb TLB ufb HAL yfb GAB ngb ILB pgb ILB rgb NIQ bhb IHB khb KIB rhb GLM nib ODE uib NIQ njb YLM ojb0DAB qjb GLM sjb PPC tjb NLB okb LMB alb FKB elb NLB glb ABI nlb KIB mmb GLM dpb0DAB lpb PPC qpb PPC iqb CRL kqb0DAB arb IRB crb PPC btb ITB jtb YLM otb KIB mub ITB evb YLM uvb YLM ewb NRK kxb HUL oxb PPC pxb ITB rxb UBR nyb LIB czb GLM jzb PPC kzb PPC aac NYM cac NYM lbc NIQ lcc PPC mcc PPC occNHCC qcc KRA odc SHZ kec NIQ yec NIQ fhc NYM jhcNHCC khc0KHC nhc PPC qhcNHCC zhcNHCC wic BJO yjc SHZ akc NIQ bkc RUK nkc NIQ skc PPC tkc KHC zkc NYM clc HTA dlc RYS elcNHCC jlc NIQ slc NAS tlc NIQ nmc SHZ rmc NIQ bnc NIQ hnc NIQ knc NIQ lncNHCC pnc SHZ rnc BRS tncNHCC unc RBB wnc NIQ aoc YLM boc NYM qoc HTA apcNHCC epc PPC fpc PPC ipc PPC xpc SHZ dqc NMH hrc TRC irc PPC prc PPC src PPC ascNHCC hsc NIQ jsc NIQ oscNHCC psc SHZ vsc NIQ ysc NIQ ctc HTA dtc NIQ etcNHCC htc NIQ ltcNHCC stc KIB utc NYM cucNHCC nvcNHCC hzc SHZ ozc SHZ tzc NIQ oad NIQ pad SIN rcd PPC ped PPC rgd HTA dhd WAM bid KND kid KND nid KND pid KND wid KND ejd RJD kjd PPC rjd0RJD skd KND gnd NUD iod RGD hrd GNM bsd BSL ytd PEN pud YLM kwd IUK uwd JUD ywd JUD uyd LUJ kke ITE yke NRK yme NYM bne LAK fne ENF hne ENT gse NOG ise KPI kse KPI ote ITB eve NVE nve KVE owe ITB oye LAK baf PPC lbf KIB mff LUF lif LIP gnf PPC epf PPC buf LUF cuf LUF euf LUF huf LUF iuf LUF quf LUF ruf LRF aag DAG cag PPC nag SHZ xag ORO zag ORO mbg WAG ecg HTA fcg PPC lcg PPC rcg PPC adg JAR ogg NOG ahg RBB chg TRI khg NRK ohg RBB big PPC lig0LIG ujg JAR dlg NAN bng NIQ ong NOG wng AUG mog KOK qog PPC xog0DAB epg PPC rrg RBB trg ORG urg GOS wsg SLA gug AUG iug AUG kug ZMG lug PPC nug AUG iwg HTA nyg PPC aah HTA eah ORO iah0IAH kah SHZ rah IRH xah0IAH ach PPC ndh0IAH aeh NMH ijh YLM tlh NIQ amh NMH cmh NMH emh NMH gmh NMH hmh NMH imh NMH jmh NMH lmh NMH mmh NMH pmh NMH qmh NMH rmh NIQ smh NMH wmh NMH ymh NMH enh HHC jnh NMH mnh SHZ onh DNH coh  OH ioh HTA arh NIQ mrh NMH bsh BSU nsh SHZ juh NMH puh HTA suh NYM cwh PPC wyh EYH ybi OJI rci PPC adi HUL bdi PPC bgi IBE bhi PPC cji OJI eji OJI nji OJI sji OJI tki UNI gni HTA hni GNI zti NYM lxi NYM caj NYM kaj YLM xaj YLM ebj RBB nbj RBB ogj LMB mkj NRK pkj NRK dvj PPC aak KRK mak BMK rak NRK dbk BAK ybk RNK nck PPC rdk MRK tdk YUK xek NKK afk DOK rfk CAK xfk LUK yfk NMK ahk ISK bhk DBX khk GNM bjk NYM hjk AHK tjk NRK zkk HTA nlk LAK bmk NBM rmk RUK vmk PPC wmk OMK cnk RNK gnk0NOK jnk NYM nnk KOK yok HTA epk LPK ppk NRK ypk KYK sqk SIK yqk TRK trk RNK urk UUK hsk0HSK ssk SIK btk BEK utk NOK wtk HTA uuk HTA wuk0DAB bvk YLM lvk NRK rvk YLM tvk NRK uvk NRK yvk NRK wwk PPC ywk0NOK cxk SMK dxk YLM fxk NRK kxk NRK lxk UUK uxk IUK cal NYM dal DUJ ebl KAL jbl KDL lbl KIB ecl YLM fcl YLM idl0NOK fil BML ril PPC wil YLM yil0DAB bkl HUL okl HUL skl HUL dll DAL nml MAL anl0DAB lnl0DAB uol PPC irl HUL mrl HUL trl PPC msl HUL gtl IVL otl HUL stl HUL hul SHZ yul HUL zul CRL svl IVL gwl HUL hzl THZ zzl ZAL iam HTM kam RKM nam KNM fbm PPC mcm PPC tcm ITB fdm KOM ydm ELM nem EDM oem YLM bfm YLM pfm PPC agm AGS chm NYM rhm AML vhm KRA nkm PPC ukm KNM rmm NMH cnm HCM hnm0DAB pnm SHZ snm NAM dom PPC pom NYM epm JAM gqm YLM hrm NIQ jrm AMH csm KNM hsm GLM rtm WAM dum PPC ium YLM pum JAR qum NMH bvm HTA evm WAM fvm GNM kwm KNM qwm NIQ rwm WAM mym NEM qym KNM vym ZRE bzm RBB szm PPC nan SHZ zan HAN hcn HAN icn HAN jcn HAN lcn HAN xcn HAN fen PPC lgn WML mgn PPC ogn TXS ugn HAN chn HAN dhn AUG ehn HAN ghn HAN ihn HAN khn HAN mhn HAN nhn HAN phn HAN qhn HAN thn HAN vhn HAN whn HAN xhn HAN yhn HAN zhn HAN qin LAK vin LIG tjn PPC zjn SIN xkn OJI aln LMB eln HUL nln HAN vln HAN hnn LMB znn LMB don ATN ipn PEN lpn HAN oqn OKN ksn SAN usn HAN eun0DAB uun0DAB zun HAN ewn LMB dyn HUL nyn LKN cjo BJO gjo BJO wjo BJO dko OJI iko LAK mko HOK rko OJI xno PPC roo PPC cro ORO nro YLM rro OJI sro YLM yro IRO wto BJO auo RBB tbp SAP ubp SAP ecp GLP kcp NIQ mcp PPC udp NRK aep PPC lep YLM sep RAF yep PPC sip PPC hkp NIQ okp LAK glp0GLP llp GLP nlp PPC plp PAP tlp GLM lmp PPC ymp PPC cop NYM vop PPC app GAB erp PPC prp JUG esp YLM tsp SAP bup NIQ zup NIQ wwp NRK fuq ZUQ kuq ZUQ muq NYM vuq NYM yuq ZUQ cvq ZUQ evq ZUQ svq ZUQ cwq ZUQ twq HTA pxq ZUQ uxq ZUQ gar HUL lar NIQ bbr GLP lbr KIB fcr PPC ikr KRA cmr YOR fmr YOR lmr YOR nmr YOR omr YOR wmr YOR zmr KRA mor YOR por PPC ctr NIQ eur YSR rwr WAM has KAY mas AAP fcs PPC hcs NIQ ics PPC kcs DAS cds DRS hds RUK nds DRS sds RBB hes ANS kes HTA zes NIQ cgs LAK wgs GHC lhs NIQ uhs ARA yhs RBB zis RBB cjs SHZ djs MSK ojs BIS sjs RBB gks GLM rks KRS wks PPC ams MSS dms NBM jms MSL nms MSI sms SKS tms NIQ bns ABI vps IRO yps LAK crs DRS mrs PPC nrs PPC ors DRS srs HTA hss ARA ats PPC vts GIS qus RUS cvs PPC bws RMC cws KWS hws KWS nws RBB vws WAM cys RYS aat HTA sat PPC uat HTA bct HTA ect HTA hct PPC pct NIQ sct PPC yct LUT zct NIQ xdt GLM cet LAK met NMT zet RBB nft HTA hgt PPC jgt SIN xgt HTA tht HTA ait RBB git RGT ojt RBB gkt GLM gmt PPC wmt YLM dot0DOT iot GNT jot NYM lot HTA rot0DAB frt PPC ctt NYM mtt HTA uut HTA yut LAK yvt PPC cxt HTA yxt GLM vyt VUT hzt NYM jzt NYM lbu KIB iku IUK nlu PPC rnu NUM kru YLM psu NYM nzu BZU szu BZU pav NIQ civ PPC kkv YLM pkv PPC tkv YLM slv ELF wmv KAM nsv NAS mbw  AW aew NRK sew PPC uew NIQ clw RMC elw GIS klw HTA inw RMC yrw WAM gsw NOG uuw SHZ nax KES gmx LMB vmx GLM wmx GLM jnx TXS qnx TXS rnx RGD tsx GIS pux HTA owx DOT jay0DAB bby LMB dby KRA rcy PPC ddy IIJ hiy IIJ soy NIQ auy NYM euy HHZ hcz AHZ jdz RMC hez AHZ nez RBB bgz AHZ mgz AHZ ngz AHZ dhz AHZ nhz AHZ bkz AHK jlz AHZ mlz YLM nlz AHZ qlz AHZ imz YLM zmz0DAB enz DNZ moz NIQ eqz AHZ msz YLM muz CRL byz AHZ gyz AHZ jyz AHZ nyz AHZ pyz NIQ jzz AHZ
+, unidirectional }
+. This can happen when different versions of the ActionId are added to the prefs object.
+../../chrome/browser/devtools/devtools_connection_dialog.cc::22::kCancelButtonId
+../../chrome/browser/devtools/devtools_ui_bindings.cc::2620::kCancelButtonId
+../../chrome/browser/file_select_helper.cc::67::kCancelButtonId
+../../chrome/browser/ui/file_system_access/file_system_access_permission_dialog.cc::22::kCancelButtonId
+../../chrome/browser/ui/views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.cc::33::kContinueButtonId
+../../third_party/abseil-cpp/absl/strings/internal/escaping.cc
+/oauth2/v1/nid/epoch/v1
+/oauth2/v1/nid/login
+/oauth2/v1/nid/refresh
+2".perfetto.protos.ChromeExtensionIdR
+; NID_AUH
+; NID_AUT=
+=== whale sync datatype hints ===
+	/whalesync/reset
+../../whale/components/sync/engine/whale_sync_util.cc
+../../whale/components/sync/service/whale_sync_auth_manager.cc
+/whalesync
+WhaleSyncAuthManager
+https://api.whale.naver.com/whalesync
+https://api.whale.naver.com/whalesync/whalesync
+https://dev-api.whale.naver.com/whalesync
+whale_sync_push
+whale_sync_push/service_worker.js
+whale_sync_push/socket.io.slim.js
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && python3 - <<'EOF'
+import re
+data=open("whale","rb").read()
+for pat in [rb'4\.38\.\d+\.\d+', rb'4\.\d+\.\d+\.\d+']:
+    s=set(m.decode() for m in re.findall(pat, data))
+    print(pat, sorted(s)[:12])
+EOF
+echo "=== update/brand ==="; strings -n 4 whale 2>/dev/null | grep -iE "^4\.38\.|386\.14|4\.37|4\.36" | sort -u | head; echo "=== version from deb control ==="; dpkg-deb -f /tmp/opencode/whale_x/whale.deb Version 2>/dev/null; dpkg-deb -I /tmp/opencode/whale_x/whale.deb 2>/dev/null | grep -iE "Version|Package|Installed-Size" | head
+b'4\\.38\\.\\d+\\.\\d+' ['4.38.386.14']
+b'4\\.\\d+\\.\\d+\\.\\d+' ['4.0.0.251', '4.04.15.05', '4.1.3704.1', '4.1.4788.2', '4.10.2391.0', '4.2.5.4', '4.38.386.14', '4.8.178.33']
+=== update/brand ===
+4.38.386.14
+4.38.386H
+4.38.386H3
+8.386.14H3P
+na_a2_4.375x5.75in
+=== version from deb control ===
+4.38.386.14-1
+ new Debian package, version 2.0.
+ Package: naver-whale-stable
+ Version: 4.38.386.14-1
+ Installed-Size: 478090
+[0m
+Confirmed v4.38.386.14-1. One more targeted probe for the Multiplay exclusion list contents and available disassembly tooling.
+[0m$ [0mwhich objdump ghidra r2 rizin 2>/dev/null; echo "---tweak default list?---"; cd /tmp/opencode/whale_x/extract/opt/naver/whale && strings -n 5 whale 2>/dev/null | grep -iE "feature_tweak|tweak|multiplay" | grep -iE "naver\.com|http|accounts\.|kakao|google|exclude|url" | sort -u | head -20
+/usr/bin/objdump
+---tweak default list?---
+MultiplayHttpErrorDialog
+dev-multiplay.whale.naver.com
+https://dev-multiplay.whale.naver.com/
+https://multiplay.whale.naver.com/
+https://service.whale.naver.com/user_agent/ua_tweak.json
+multiplay-chat-url
+multiplayPrivate.getJoinUrl
+whale.tweak.force_dark_mode_excludes
+{"namespace":"multiplayPrivate","types":[{"id":"multiplayPrivate.Peer","type":"object","properties":{"id":{"type":"string"},"name":{"type":"string"},"profile_color":{"type":"string"},"isMe":{"type":"boolean"},"profile_url":{"type":"string","optional":true}}},{"id":"multiplayPrivate.ChatInfo","type":"object","properties":{"multiplayId":{"type":"string"},"sessionToken":{"type":"string"},"myId":{"type":"string"},"targetId":{"type":"string","optional":true},"peers":{"type":"array","items":{"$ref":"multiplayPrivate.Peer"}}}}],"functions":[{"name":"initialize","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"chatInfo","$ref":"multiplayPrivate.ChatInfo"}]}},{"name":"getJoinUrl","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"url","type":"string"}]}},{"name":"getPeers","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"peers","type":"array","items":{"$ref":"multiplayPrivate.Peer"}}]}},{"name":"closeWindow","type":"function","parameters":[]},{"name":"openChatWith","type":"function","parameters":[{"name":"id","type":"string"}]},{"name":"setChatWindowAlwaysOnTop","type":"function","parameters":[{"name":"alwaysOnTop","type":"boolean"}]},{"name":"isChatWindowAlwaysOnTop","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"result","type":"boolean"}]}},{"name":"getMultiplayName","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"name","type":"string"}]}},{"name":"setMultiplayName","type":"function","parameters":[{"name":"name","type":"string"}]},{"name":"isCreatedByMeAndFirstRun","type":"function","parameters":[],"returns_async":{"name":"callback","parameters":[{"name":"first_run","type":"boolean"}]}}],"events":[{"name":"onPeerAdded","type":"function","parameters":[{"name":"peerIds","type":"array","items":{"type":"string"}}]},{"name":"onPeerRemoved","type":"function","parameters":[{"name":"peerIds","type":"array","items":{"type":"string"}}]},{"name":"onMultiplayStartButtonClicked","type":"function","parameters":[]},{"name":"onMultiplayStarted","type":"function","parameters":[]},{"name":"onMultiplayNameChanged","type":"function","parameters":[{"name":"name","type":"string"}]}]}
+[0m
+[0m$ [0mcd /tmp/opencode/whale_x/extract/opt/naver/whale && echo "=== ws/wss endpoints ==="; strings -n 8 whale 2>/dev/null | grep -oE "wss?://[a-zA-Z0-9./_-]+" | sort -u | head -20; echo "=== socket.io / sio refs ==="; strings -n 5 whale 2>/dev/null | grep -iE "socket\.io|/sio|engine\.io|socket_io" | grep -viE "\.h\b|\.cc\b" | sort -u | head -15; echo "=== nid oauth full ==="; strings -n 5 whale 2>/dev/null | grep -oE "/oauth2/v1/nid/[a-z0-9_/]+" | sort -u
+=== ws/wss endpoints ===
+wss://enclave.ua5v.com/enclave
+wss://generativelanguage.googleapis.com
+=== socket.io / sio refs ===
+whale_sync_push/socket.io.slim.js
+=== nid oauth full ===
+/oauth2/v1/nid/epoch/v1
+/oauth2/v1/nid/login
+/oauth2/v1/nid/refresh
+[0m
+**STEP 1 — DELTA:**
+- [NEW] Acquired latest Whale Linux stable binary v4.38.386.14-1 (naver-whale-stable_amd64.deb, sha256 `6dd7ebc47d7e8f21da1108ad5b0e17fcd562fd92e684da206564b51476e0b47e`, installer-whale.pstatic.net CDN) — sync target is now statically analyzable for the first time
+- [NEW] Confirmed in-binary Whale-only sync endpoints: `/whalesync`, `/whalesync/reset`, `https://api.whale.naver.com/whalesync` (+ `/whalesync` suffix variant), `https://dev-api.whale.naver.com/whalesync`
+- [NEW] Confirmed Whale-only prefs keys absent upstream: `sync.encryption_bootstrap_token`, `sync.encryption_bootstrap_token_per_account`, `sync.encryption_bootstrap_token_per_account_migration_done`, `sync.whale_need_encryption_key_forced_time`, `sync.passwords_per_account_pref_migration_done`
+- [NEW] Confirmed Whale-only NID OAuth2 endpoints: `/oauth2/v1/nid/login`, `/oauth2/v1/nid/refresh`, `/oauth2/v1/nid/epoch/v1` (whale/login_auth_fetcher.cc, login_cookie_service.cc)
+- [NEW] Multiplay: embedded `multiplayPrivate` API schema (`getJoinUrl` invite-link, `sessionToken`, `multiplayId`, `openChatWith`), server `https://multiplay.whale.naver.com/`, exclusion pref `whale.tweak.multiplay_login_pages` served from `https://service.whale.naver.com/user_agent/ua_tweak.json` (server-tweakable), `isWhaleMultiplayScroll` DOM-injection string, `multiplay_session_io_message_router.cc`
+- [NEW] `whale_sync_push/service_worker.js` + `socket.io.slim.js` exist as resource paths but content is NOT embedded — push server URL is runtime-fetched (whale/components/invalidation/impl/push_server_url_fetcher_base.cc)
+- [CHANGED] Prior "binary strings" sync-prefs claims are now verifiably REAL in sha256 `6dd7ebc4...` binary (previously untraceable)
+
+**STEP 2 — PRIORITIZE:**
+- [PRIO] whalesync per-account bootstrap-token / key migration (profile `Preferences` + `/whalesync`), 6.85 (attack:7 business:9 tech:8 gate:3 cloud:4 fresh:8)
+- [PRIO] Multiplay session scoping (login-page exclusion + token-bearing URL sync), 6.60 (attack:7 business:8 tech:7 gate:2 cloud:6 fresh:9)
+- [PRIO] api.whale.naver.com/whalesync/reset trigger (auth binding/confirmation), 6.15 (attack:5 business:7 tech:6 gate:5 cloud:7 fresh:8)
+
+**STEP 3 — HYPOTHESES:**
+[HYP] Sync bootstrap-token storage / per-account migration — Whale-only prefs deviation
+class: AUTH
+asset: whalesync client engine (`https://api.whale.naver.com/whalesync`) + profile `Preferences` keys `sync.encryption_bootstrap_token{,_per_account,_per_account_migration_done}`, `sync.whale_need_encryption_key_forced_time`
+confidence: 62
+reasoning: v4.38.386.14 binary (sha256 `6dd7ebc4...`) confirms the Whale-only prefs keys, `/whalesync`+`/whalesync/reset`, and `Sync.NigoriStorage{En,De}cryptionResult`/`sync_pb.EncryptionKeys` custom nigori storage; `sync.whale_need_encryption_key_forced_time` is a Whale-only rekey gate with undocumented downgrade semantics
+evidence_needed: whether per-account bootstrap token is stored plaintext vs OSCrypt (`v10`/`v11` prefix) in `Preferences`, scrypt N/r/p constants reachable from `whale_sync_util`, whether `forced_time` weakens key freshness
+verify_steps: PASSIVE: objdump/strings around `WhaleSyncAuthManager`/`whale_sync_util` for the bootstrap-token envelope and `/whalesync/reset` request shape; diff prefs set vs upstream Chromium `sync.encryption_bootstrap_token` (upstream stores OSCrypt-encrypted in same file); zero network
+impact: local attacker/infostealer with profile access decrypts synced passwords, cookies, autofill → full-account compromise; High
+testability: PASSIVE
+[HYP] Multiplay login-page exclusion bypass — server-tweakable heuristic + token-bearing URL sync
+class: AUTH
+asset: Multiplay session (`https://multiplay.whale.naver.com/`, invite via `multiplayPrivate.getJoinUrl`, real-time tab/scroll sync via `multiplay_session_io`)
+confidence: 58
+reasoning: binary confirms exclusion list is server-fetched pref `whale.tweak.multiplay_login_pages` (ua_tweak.json), scroll sync injects DOM (`isWhaleMultiplayScroll`), join binds `sessionToken`+`multiplayId`; URLs sync verbatim (incl. query strings) while only listed login pages are filtered
+evidence_needed: on v4.38.386.14 whether joiner receives host's login-gated URLs or token-bearing query strings; whether unlisted login-like pages (OAuth consent/SSO) leak session params; invite-link reuse after host leaves
+verify_steps: AUTH_HELPED: two authorized accounts join via copied `getJoinUrl`; host opens login-gated page + token-in-query page; capture file-local joiner-observed tab URLs/scroll/DOM; test link replay post-revocation; zero requests beyond client's own session
+impact: cross-session disclosure of host's open-tab URLs incl. token-bearing query strings / session ids; Medium-High
+testability: AUTH_HELPED
+[HYP] `/whalesync/reset` trigger — auth binding / confirmation weakness
+class: BUSLOGIC
+asset: `https://api.whale.naver.com/whalesync/reset` (client trigger = server data wipe + all-device logout)
+confidence: 45
+reasoning: `/whalesync/reset` confirmed in v4.38.386.14 binary; whale auth uses `/oauth2/v1/nid/{login,refresh}` tokens — if reset needs only a bearer/refresh token without reauth confirm, token theft or a CSRFable client request wipes sync state
+evidence_needed: exact method, body, headers the client sends to `/whalesync/reset`; whether reauth/confirmation is required
+verify_steps: PASSIVE: objdump call-site analysis of `/whalesync/reset` in the WhalesyncRequest/`whale_sync_util` path to recover request shape; server probing out of scope
+impact: sync data destruction + all-device log-out on token theft; DoS on account
+testability: PASSIVE
+
+**STEP 4 — SELF-CRITIQUE:**
+- [PARKED] whale_sync_push socket.io (XSS): verify premise falsified — pak extraction of `whale_sync_push/*.js` returned zero hits across all 3 paks; JS is runtime-fetched (push_server_url_fetcher_base), so the static-audit path is dead on this binary
+- [FINAL] 1. Sync bootstrap-token/per-account key storage (62, AUTH) 2. Multiplay session scoping / login-exclusion bypass (58, AUTH) 3. `/whalesync/reset` auth binding (45, BUSLOGIC)
+
+**STEP 5 — NEXT ACTION:**
+[NEXT] PROBE: objdump/strings disassembly of the `/whalesync/reset` + `sync.encryption_bootstrap_token_per_account` call sites in `/tmp/opencode/whale_x/extract/opt/naver/whale/whale` (sha256 `6dd7ebc4...`) to recover the reset request method/body/auth-header shape and the bootstrap-token envelope storage (plaintext vs OSCrypt `v10/v11`), plus enumerate remaining embedded extension API schemas (`multiplayPrivate`, sync-related) for invite/session token entropy — local static only, zero network
+
+**STEP 6 — LEARNING:**
+- ACCEPTED AUTH @ whalesync client: per-account bootstrap-token prefs keys + custom `/whalesync` endpoint confirmed present in v4.38.386.14 binary
+- ACCEPTED AUTH @ Multiplay: `sessionToken`/`getJoinUrl` + server-tweakable `whale.tweak.multiplay_login_pages` exclusion confirmed in v4.38.386.14 binary
+- ACCEPTED BUSLOGIC @ api.whale.naver.com/whalesync/reset: endpoint string confirmed in v4.38.386.14 binary; request shape pending static call-site analysis
+- ACCEPTED AUTH @ NID OAuth: Whale-only `/oauth2/v1/nid/{login,refresh,epoch/v1}` confirmed
+- REJECTED XSS @ whale_sync_push: pak extraction zero hits; socket.io JS runtime-fetched, not embedded — static audit path dead for this binary
+
+**STEP 7 — RISK SCORE:**
+[RISK] sync: 65 — custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 78 — sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; binary now available enables repro-first variant hunting | libs: 35 — paks now parseable for a bundled-lib inventory, and Whale-only `socket.io.slim.js` is confirmed bundled (content runtime-fetched); version-drift assessment still requires upstream comparison
