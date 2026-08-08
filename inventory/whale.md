@@ -224,3 +224,30 @@
 
 ## 2026-08-08 13:59:13 UTC
 - NEW NO_DELTA — inventory, knowledge, and leads unchanged since last aggregated hypotheses (2026-08-08 13:16:20 UTC); no new public CVEs, no new GitHub commits, no new wiki edits, all binary acquisition pa
+
+## 2026-08-08 14:37:43 UTC
+- NEW NO_DELTA — inventory, knowledge, and leads unchanged since last aggregated hypotheses (2026-08-08 13:59:13 UTC); no new public CVEs, no new GitHub commits, no new wiki edits, all binary acquisition pa
+- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest v4.38.386.14 has 3 minor ver
+- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- NEW 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- NEW 2026-08-07 REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+- NEW 2026-08-07 REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- NEW 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vu
+- NEW 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+- NEW 2026-08-08 REJECTED @ naver/whale-browser-developers: Static analysis path dead; binary acquisition only vector
+- NEW 2026-08-08 REJECTED passive binary acquisition @ APKMirror/APKCombo/apkpure: Cloudflare 403 on all paths — dead in-sandbox
+- NEW 2026-08-08 ACCEPTED Android sync asset @ com.naver.whale 3.9.14.9: version + SHA256 pinned via non-Naver mirror metadata — in-scope sync surface confirmed real
+- NEW 2026-08-08 CONFIRMED desktop latest @ changelog.whale.naver.com: Page is fully JS-rendered (empty text fetch) — no server-side version assertion available passively
+- NEW 2026-08-08 ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + Whale-forked `os_crypt
+- NEW 2026-08-08 REJECTED passive binary acquisition @ APKMirror/APKCombo/apkpure: Cloudflare 403 returns on all paths — dead in-sandbox
+- NEW 2026-08-08 ACCEPTED @ socket.io.slim.js bundled: Confirmed Whale-only in `resources.pak`; non-Chromium runtime-bundled lib worth auditing
+- NEW 2026-08-08 REJECTED @ cloudfront CDN binary acquisition: DNS resolution fails for `*.cloudfront.net` (nslookup: No answer) — all binary acquisition paths blocked
+- NEW 2026-08-08 ACCEPTED @ GitHub wiki documentation: `whale.sidebarAction` page accessible via `raw.githubusercontent.com/wiki/` — confirms `show({url})` loads arbitrary URL, `use_navigation_bar=false` ex
+- NEW 2026-08-08 ACCEPTED @ GitHub sample extension source: `manifest.json` declares `content_scripts` matching `http://*/*` + `https://*/*`; `contentscript.js` detects sidebar context; `background.js` call
+- NEW 2026-08-08 REJECTED @ APKMirror: Only hosts legacy versions (01.0.0.48/49), not latest 3.9.14.9
+- NEW 2026-08-08 REJECTED @ uptodown: `whale-browser.en.uptodown.com` now returns HTTP 404 (was 410 Gone) — passive path permanently dead
+- NEW 2026-08-08 CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — 8-month disclosure gap
+- NEW 2026-08-08 CONFIRMED @ GitHub: `naver/whale-browser-developers` remains documentation-only — 0 releases, 0 commits since 2019-09-23
+- NEW 2026-08-08 CONFIRMED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` resolve `No answer` (127.0.0.53) — all binary acquisition paths blocked
+- NEW 2026-08-08 CONFIRMED @ GitHub sample extension manifest: HTTP 200 — `content_scripts` matching ALL origins confirmed live on translate branch
+- NEW 2026-08-08 REJECTED GitHub wiki sidebarAction docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` returns HTTP 404 — stale/unverified
