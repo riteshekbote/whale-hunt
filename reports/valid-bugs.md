@@ -43,3 +43,8 @@
 - 11 lead(s) triaged at 2026-08-08 14:00 UTC — **0 VALID / 0 HOLD / 11 INVALID**
   - All leads fail Q4 (no passive GET/HEAD proof) and Q7 (no evidence of actual vulnerability)
   - See `triage/run-2026-08-08-14-00.md` for full 7Q analysis per lead
+
+- 14 lead(s) triaged at 2026-08-08 14:38 UTC — **0 VALID / 0 HOLD / 14 INVALID**
+  - Full 7Q analysis per lead; uniform killer is Q4 (no passive proof) + Q7 (no evidence)
+  - All binary-acquisition channels blocked; most leads require HUMAN_ONLY interactive testing
+  - See `triage/run-2026-08-08-14-38.md` for full analysis
