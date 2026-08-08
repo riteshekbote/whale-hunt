@@ -14602,3 +14602,377 @@ STEP 7 — RISK SCORE:
 - [RISK] sync: 56 — sync encryption is the only genuinely Whale-only cryptographic deviation (xv10 OSCrypt fork, local-only passphrase KDF, server-side bootstrap token), design confirmed live via Help Center; but binary access is fully blocked so the KDF/envelope deviation stays unverifiable; moderate-high, unchanged in kind
 - [RISK] browser: 78 — 6 confirmed 2025 CVEs in sidebar/dual-tab envs (CWE-346/358), v4.38.386.14 is 3 minor bumps past last fix with 0 CVEs in the 6-month gap; DevTools-in-sidebar added surface; the 69235 fix only claims Windows/MacOS
 - [RISK] libs: 30 — no Whale-only manifests public; repo documentation-only; inventory impossible without binary access; low visibility, moderate inherent risk
+===== ANALYST bigpickle 2026-08-08 09:11:38 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale+naver" -o /tmp/opencode/nvd_whale.json; echo "exit=$?"; wc -c /tmp/opencode/nvd_whale.json
+exit=0
+5141 /tmp/opencode/nvd_whale.json
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers" -o /tmp/opencode/repo.json; echo "exit=$?"; head -c 600 /tmp/opencode/repo.json
+exit=0
+{
+  "id": 87390266,
+  "node_id": "MDEwOlJlcG9zaXRvcnk4NzM5MDI2Ng==",
+  "name": "whale-browser-developers",
+  "full_name": "naver/whale-browser-developers",
+  "private": false,
+  "owner": {
+    "login": "naver",
+    "id": 6589568,
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjY1ODk1Njg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/6589568?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/naver",
+    "html_url": "https://github.com/naver",
+    "followers_url": "https://api.github.com/users/naver/followers",
+    "following_url": "https://api.github.com/users/naver/foll
+[0m
+[0m$ [0mcurl -sI --max-time 20 "https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb" -o /tmp/opencode/cdn.head -D -; echo "exit=$?"
+exit=6
+[0m
+[0m$ [0mpython3 -c "
+import json
+d=json.load(open('/tmp/opencode/nvd_whale.json'))
+print('totalResults:', d['totalResults'])
+for v in d['vulnerabilities']:
+    c=v['cve']
+    print(c['id'], c['published'], c.get('vulnStatus'))
+"
+totalResults: 2
+CVE-2018-9859 2018-06-16T01:29:09.680 Modified
+CVE-2020-9754 2022-06-27T02:15:06.977 Modified
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/commits?per_page=5" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+for c in d:
+    print(c['sha'][:8], c['commit']['author']['date'], c['commit']['message'].split('\n')[0])
+" 2>/dev/null || echo "commits api failed"
+e5ee01f8 2019-09-23T08:03:12Z Update how cc works.
+d2879e50 2019-09-23T07:58:43Z Merge pull request #19 from naver/jdkim/update_documents
+25787dee 2019-09-23T07:57:42Z Initial documents.
+a1adb1d0 2019-08-22T08:25:29Z clean up obsolete resources.
+69de03bb 2017-05-24T02:46:10Z Add files via upload
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/releases?per_page=5" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+print('releases count:', len(d) if isinstance(d,list) else d)
+" 2>/dev/null || echo "releases api failed"
+releases count: 0
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/master?recursive=1" -o /tmp/opencode/tree.json; python3 -c "
+import json
+d=json.load(open('/tmp/opencode/tree.json'))
+paths=[t['path'] for t in d.get('tree',[])]
+print('total entries:', len(paths))
+for p in paths:
+    print(p)
+"
+total entries: 8
+translation
+translation/chromium
+translation/chromium/docs
+translation/chromium/docs/how_cc_works.md
+translation/chromium/docs/images
+translation/chromium/docs/images/how_cc_works-commit_flow.png
+translation/chromium/docs/images/how_cc_works-compositor_frame.png
+translation/chromium/docs/images/how_cc_works-data_flow.png
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://api.github.com/repos/naver/whale-browser-developers/wiki/pages" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+for p in d:
+    print(p.get('name'), '|', p.get('url',''))
+" 2>/dev/null || echo "wiki pages api failed"
+wiki pages api failed
+[0m
+[0m$ [0mgit ls-remote "https://github.com/naver/whale-browser-developers.wiki.git" 2>&1 | head -20; echo "---"; curl -s --max-time 20 "https://github.com/naver/whale-browser-developers/wiki" -o /tmp/opencode/wiki.html; echo "wiki html exit=$? size=$(wc -c </tmp/opencode/wiki.html)"
+539b1626a65d8b06647c7268b3f9cce3d1df1ef1	HEAD
+539b1626a65d8b06647c7268b3f9cce3d1df1ef1	refs/heads/master
+---
+wiki html exit=0 size=201400
+[0m
+[0m$ [0mgit clone --depth 1 --quiet "https://github.com/naver/whale-browser-developers.wiki.git" /tmp/opencode/whale-wiki 2>&1 | tail -2; ls /tmp/opencode/whale-wiki/
+Client-side-application-vs-Server-side-application.md
+Home.md
+How-to-avoid-my-extension-from-changing-urls.md
+How-to-test-and-debug-my-extension.md
+whale.sidebarAction.md
+[0m
+[0m$ [0mcd /tmp/opencode/whale-wiki && for f in *.md; do echo "=== $f ($(wc -l <$f) lines) ==="; done; echo; echo "--- sync mentions ---"; grep -ril "sync\|passphrase\|encrypt\|bootstrap\|token\|whaleon" *.md || echo none; echo "--- sidebar mentions ---"; grep -il "sidebar" *.md
+=== Client-side-application-vs-Server-side-application.md (109 lines) ===
+=== Home.md (1 lines) ===
+=== How-to-avoid-my-extension-from-changing-urls.md (18 lines) ===
+=== How-to-test-and-debug-my-extension.md (34 lines) ===
+=== whale.sidebarAction.md (182 lines) ===
+
+--- sync mentions ---
+none
+--- sidebar mentions ---
+Client-side-application-vs-Server-side-application.md
+How-to-avoid-my-extension-from-changing-urls.md
+How-to-test-and-debug-my-extension.md
+whale.sidebarAction.md
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://hub.docker.com/v2/search/repositories/?query=whale%20browser&page_size=25" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+for r in d.get('results',[]):
+    print(r['repo_name'], r.get('star_count',0))
+" 2>/dev/null | head -30 || echo "dockerhub search failed"
+kasmweb/tor-browser 62
+newrelic/synthetics-node-browser-runtime 0
+docker/whalesay 760
+sitespeedio/browsertime 9
+acuvity/mcp-server-browserbase 2
+acuvity/mcp-server-browser-kit 1
+acuvity/mcp-server-apify-rag-web-browser 0
+portainer/volume-browser 4
+acuvity/mcp-server-browserstack 0
+sitespeedio/browsers 0
+sitespeedio/browsertime-autobuild 0
+selenium/standalone-all-browsers 0
+smartonfhir/patient-browser 1
+linuxserver/mullvad-browser 7
+selenium/node-all-browsers 0
+actiontestscript/linux-browsers 1
+actiontestscript/windows-browsers 1
+ersiliaos/ersilia-model-browser 0
+ensemblorg/ensembl-browser-fungi 0
+ensemblorg/ensembl-browser-plants 0
+ensemblorg/ensembl-browser-metazoa 0
+ensemblorg/ensembl-browser-bacteria 0
+ensemblorg/ensembl-browser-protists 0
+ensemblorg/ensembl-browser-vertebrates 1
+opencloudos/opencloudos9-browser-use 0
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://hub.docker.com/v2/search/repositories/?query=naver&page_size=25" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+for r in d.get('results',[]):
+    print(r['repo_name'], r.get('star_count',0))
+" 2>/dev/null | head -30 || echo "dockerhub naver search failed"
+controlnet/naver 0
+buianhduc/naver 0
+giggle1998/naver 0
+msr0506/naver 0
+jjhun0712/naver 0
+naverlinux/navix 3
+navernoe/booklibrary 0
+warcforceone/naver-matome-grab 0
+venetus/naver-btvn13 0
+infofun/rpi-naver-tts 0
+naverb/bwest 0
+naverdo/story-bytes 0
+navercare/bhb002 0
+naver0504/catch-culture-021 0
+naver0504/ws 0
+naver0504/catch-culture-020 0
+naveronen/rvwworker 0
+dudaji/share-mind-naver-band 0
+naverazafar/datawebpage 0
+naver0504/comprehensive-design-backend 0
+naverazafar/analytics 0
+naver7731/signlang 0
+stkang90/cast-web-api-with-naver-tts 0
+navereni/todo-app-frontend 0
+navernoe/in-memory-storage-service 0
+[0m
+[0m$ [0mnslookup d1vdt4q2qgdbji.cloudfront.net 2>&1 | tail -4; echo "---"; getent hosts github.com | head -2
+Non-authoritative answer:
+*** Can't find d1vdt4q2qgdbji.cloudfront.net: No answer
+
+---
+140.82.116.4    github.com
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+paths=[t['path'] for t in d.get('tree',[])]
+print('translate branch entries:', len(paths))
+for p in paths[:40]: print(' ', p)
+" 2>/dev/null
+translate branch entries: 46
+  README.ko.md
+  docs
+  docs/0a3101a4-0e2d-11e7-8eb5-0fb2bab6ba77.png
+  docs/1765d6e4-0809-11e7-89ee-d88ac06318be.png
+  docs/253a55b2-0fc8-11e7-9b7d-4afddeff04f8.png
+  docs/25eb21f8-0e2e-11e7-8c6f-1c71d9cfab07.png
+  docs/34650d96-080e-11e7-815c-854ab8a52ad9.png
+  docs/40bc5c1e-0e2d-11e7-80ec-4137936a3bff.png
+  docs/5dcfef0e-0e2e-11e7-9527-cabe957718d3.png
+  docs/74c4ad62-0e2e-11e7-9831-c77bfa0808f9.png
+  docs/7b2e651a-0809-11e7-8d33-7fe5093d0132.png
+  docs/7fa170fe-0e2d-11e7-9402-538293aacb71.png
+  docs/989e7932-0809-11e7-908c-7e3b96867080.png
+  docs/NCapture004.PNG
+  docs/NCapture005.PNG
+  docs/contextmenu.png
+  docs/e0d26564-0e2c-11e7-94b1-6d47c4edead0.png
+  docs/f11076b4-0e2c-11e7-993b-3aba86b416e3.png
+  docs/f6ad8410-0808-11e7-8942-1cab765a9168.png
+  docs/fec442d6-080f-11e7-9a1c-f0d550f01d6e.png
+  docs/wiki_image1.png
+  docs/wiki_image2.png
+  docs/wiki_image3.png
+  docs/wiki_image4.png
+  docs/wiki_image5.png
+  docs/wiki_image6.png
+  docs/wiki_image7.png
+  docs/wiki_image8.png
+  src
+  src/sidebar-sample
+  src/sidebar-sample/css
+  src/sidebar-sample/css/style.css
+  src/sidebar-sample/icons
+  src/sidebar-sample/icons/icon128.png
+  src/sidebar-sample/icons/icon16.png
+  src/sidebar-sample/icons/icon48.png
+  src/sidebar-sample/img
+  src/sidebar-sample/img/img01.png
+  src/sidebar-sample/img/img02.png
+  src/sidebar-sample/img/img03.png
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+paths=[t['path'] for t in d.get('tree',[])]
+for p in paths[40:]: print(' ', p)
+" 2>/dev/null
+src/sidebar-sample/index.html
+  src/sidebar-sample/js
+  src/sidebar-sample/js/background.js
+  src/sidebar-sample/js/contentscript.js
+  src/sidebar-sample/js/index.js
+  src/sidebar-sample/manifest.json
+[0m
+[0m$ [0mcd /tmp/opencode/whale-wiki && echo "=== How-to-avoid-my-extension-from-changing-urls.md ===" && cat How-to-avoid-my-extension-from-changing-urls.md && echo && echo "=== grep dual-tab across all ===" && grep -ri "dualtab\|dual-tab\|dualtab\|whale.dual" *.md || echo "no dual-tab API doc"
+=== How-to-avoid-my-extension-from-changing-urls.md ===
+Sidebar extensions may be developed as single page applications, which usually are not intended to change urls. Event if you get rid of all the anchors in your UI, you are still exposed to external factors like dropping links on the extension panel. If you want to avoid navigation in your sidebar extension by dropping links, you might want to add some code like follows:
+
+
+```javascript
+  window.addEventListener("dragover", function (e) {
+    e = e || event;
+    e.preventDefault();
+    e.dataTransfer.effectAllowed = "none";
+    e.dataTransfer.dropEffect = "none";
+
+  }, false);
+
+  window.addEventListener("drop", function (e) {
+    e = e || event;
+    e.preventDefault();
+    e.dataTransfer.effectAllowed = "none";
+    e.dataTransfer.dropEffect = "none";
+  }, false);
+```
+=== grep dual-tab across all ===
+no dual-tab API doc
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json"
+{
+  "manifest_version": 2,
+  "name": "Whale Sidebar Extension",
+  "description": "Helloworld sample test for Whale browser sidebar extension",
+  "version": "1.0",
+  "icons": {
+    "16": "icons/icon16.png", /* used in context menu icon */
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png" 
+  },
+  "sidebar_action": {
+    "default_icon": {
+      "16": "icons/icon16.png" /* used in sidebar menu icon */
+    },
+    "default_page": "index.html",
+    "default_title": "Whale Sidebar Extension"
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "js/contentscript.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "permissions": [
+    "tabs"
+  ]
+}
+[0m
+STEP 1 — DELTA
+- [NEW] Full repo enumeration via git-trees API: master = `translation/chromium/docs` (CC doc translation only); `translate` branch = `src/sidebar-sample` (5 files); total public code/doc surface = 46 files, ZERO sync content
+- [NEW] Wiki fully enumerated via `whale-browser-developers.wiki.git` clone: exactly 5 pages (Home, sidebarAction, How-to-avoid-urls, How-to-test-debug, Client-side-vs-Server-side); ZERO sync/passphrase/token/whaleon mentions; ZERO dual-tab API documentation
+- [NEW] Container registries searched (Docker Hub v2 API, `query=whale browser` and `query=naver`): no public Whale browser image — container binary-acquisition path confirmed dead
+- [CHANGED] CDN re-tested: `d1vdt4q2qgdbji.cloudfront.net` still DNS-dead (curl exit 6, nslookup `No answer`) — desktop `.deb` path remains closed
+- [CONFIRMED] NVD: `keywordSearch=whale+naver` still returns 2 (CVE-2018-9859, CVE-2020-9754), zero 2026
+- [CONFIRMED] Repo: last commit 2019-09-23, 0 releases, 46-file total surface unchanged
+
+STEP 2 — PRIORITIZE
+- [PRIO] whale sync binary (os_crypt_whale / whale_sync_util, bootstrap-token prefs) — score 6.25 — attack 6, business 9, tech 8, gate 2, cloud 3, fresh 7
+- [PRIO] whale OAuth refresh-token storage (whale_sync_auth_manager / revoker) — score 5.60 — attack 5, business 8, tech 7, gate 2, cloud 4, fresh 6
+- [PRIO] sidebar/dual-tab web-panel boundary on v4.38.386.14 — score 5.35 — attack 7, business 6, tech 5, gate 3, cloud 1, fresh 8
+
+STEP 3 — HYPOTHESES
+[HYP] Whale sync passphrase KDF + bootstrap-token envelope
+class: AUTH
+asset: whale binary os_crypt_whale.cc / whale_sync_util.cc; Local State + keyring (desktop), Keystore (Android)
+confidence: 65
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token[_per_account]`, `_migration_done`, `whale_need_encryption_key_forced_time`) + xv10-magic OSCrypt fork proven in v4.38.386.14 via prior runs. Public surface now exhaustively enumerated and contains ZERO sync docs (wiki 5 pages, repo 46 files) — sync analysis is binary-only. KDF params unextractable; all in-sandbox binary channels closed.
+evidence_needed: PBKDF2/scrypt alg + iteration count for passphrase→key; derived-key persistence location (keyring vs file vs Local State); brute-force resistance.
+verify_steps: BLOCKED in-sandbox (no binary). AUTH_HELPED: authorized Linux login, snapshot Preferences/Login Data/Secure Preferences + keyring pre/post encrypted-sync enable; enumerate KDF by instrumenting os_crypt path. HUMAN: deliver official .deb → PASSIVE objdump/.rodata scan for iteration constants.
+impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+
+[HYP] Sync refresh-token storage deviation in forked OAuth components
+class: AUTH
+asset: whale binary whale_sync_auth_manager.cc / whale_refresh_token_revoker.cc; .whaleon.us token scope
+confidence: 45
+reasoning: Whale forks stock OAuth (access_token_fetcher_immediate_refresh_token, revoker) — custom token lifecycle is the deviation; such forks historically persist tokens outside Chromium token_service (plaintext prefs/cookies). No static or doc path exists (public surface has zero sync content).
+evidence_needed: whether whale refresh/access tokens persist outside token_service, their scope and file perms.
+verify_steps: AUTH_HELPED: authorized login, inspect Preferences/Cookies for whale/*.whaleon.us token keys + file perms; diff vs Chromium token_service layout. Zero requests to Naver infra.
+impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
+testability: AUTH_HELPED
+
+[HYP] Sidebar/dual-tab boundary variant post-CVE-2025-69235
+class: OTHER
+asset: Latest desktop Whale (>=4.35.351.12) sidebar + dual-tab web panels
+confidence: 45
+reasoning: 6 confirmed 2025 CVEs in these Whale-only envs (CWE-346 SOP, iframe sandbox, CWE-358 CSP); v4.38.386.14 is 3 minor bumps past last fix with 0 CVEs. Reconfirmed wiki doc: `sidebarAction.show({url})` loads arbitrary URL; sample manifest (translate branch) = MV2, all-origin content_scripts, no extension CSP, `tabs` permission. NVD CPE fixes only claim Windows/MacOS for 69235.
+evidence_needed: crafted HTML escaping iframe sandbox / bypassing SOP/CSP in sidebar or dual-tab web panel on v4.38.386.14.
+verify_steps: AUTH_HELPED: install latest desktop Whale, load crafted HTML in sidebar + dual-tab panels, test sandbox escape / cross-origin read / CSP bypass. No server interaction.
+impact: sandbox escape / SOP bypass from webpage → arbitrary script or cross-origin data theft in browser UI; Critical if it escalates to renderer
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- All 3 survive (confidence ≥40, none on REJECTED list, concrete verify_steps). KDF hypothesis kept but flagged: verify_steps not executable in-sandbox until binary or authorized session — it remains the highest-value unblocked target, so no PARK.
+- [PARKED] none
+- [FINAL] 1) sync KDF [65] 2) refresh-token storage [45] 3) sidebar/dual-tab variant [45]
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: on an unrestricted machine, download the official desktop Whale stub `https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb` (~11.6 MB, v4.38.386.14), compute and report its sha256 (NEVER the raw value in-band — only the hash via a neutral channel), then deliver the binary so the PASSIVE objdump/.rodata scan can extract the OSCrypt-v10/xv10 KDF constants and iteration counts. This is the single action that re-opens the top-ranked sync hypothesis; no sync-backend requests at any point.
+
+STEP 6 — LEARNING
+- [LEARN] REJECTED binary acquisition @ container registries (Docker Hub v2 search, `naver` org): no public Whale browser image exists — container path dead; with cloudfront DNS, APKMirror 403, uptodown 410, apkpure 403, ALL binary channels now confirmed closed in-sandbox
+- [LEARN] CONFIRMED sync docs @ whale wiki + GitHub repo: full enumeration (wiki 5 pages; repo 46 files across master/translate) contains ZERO sync/passphrase/token/dual-tab content — the public sync documentation surface is empty; sync analysis is binary-only
+- [LEARN] CONFIRMED sidebar @ GitHub sample: `translate` branch `src/sidebar-sample/manifest.json` = MV2, all-origin content_scripts, `tabs` permission, no extension CSP; matches wiki `sidebarAction.show({url})` arbitrary-URL loading evidence
+
+STEP 7 — RISK SCORE
+- [RISK] sync: 60 — in-scope passphrase-KDF/bootstrap-token/refresh-token surface is high-value but fully opaque (no binary, no docs, no 2026 CVEs); unaudited high-value crypto surface
+- [RISK] browser: 55 — sidebar/dual-tab Whale-only envs generated 6 CVEs in 2025 with a 3-version/8-month disclosure gap; reproducible only via installed browser (AUTH_HELPED)
+- [RISK] libs: 30 — no manifests, no binary, no public inventory; historically low, unassessable
