@@ -1,1 +1,28 @@
-## 2026-08-08 07:48:14 UTC [sync] (model bigpickle)
+## 2026-08-08 08:21:09 UTC [sync] (model bigpickle)
+[HYP] Whale sync passphrase KDF + bootstrap-token envelope, v4.38.386.14 / Android 3.9.14.9
+class: AUTH
+asset: whale binary os_crypt_whale.cc / whale_sync_util.cc; Local State + keyring (desktop), Keystore/EncryptedSharedPreferences (Android)
+confidence: 65
+reasoning: Help Center (2026-08-08, live) confirms passphrase never leaves device and is unrecoverable server-side → server stores only ciphertext + bootstrap token, so local key/token storage is the whole attack surface. Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) and xv10-magic OSCrypt fork proven in binary via prior runs. KDF params unextractable — binary acquisition is now 100% dead in-sandbox.
+evidence_needed: PBKDF2/scrypt alg + iteration count for passphrase→key; whether derived key persists to keyring/file/Local State; EnvelopeKDF resist local brute force; Android Keystore vs plaintext fallback.
+verify_steps: AUTH_HELPED: authorized login on test device; snapshot Preferences/Login Data/Secure Preferences + keyring before/after enabling encrypted sync; enumerate KDF by instrumenting os_crypt path. HUMAN: cross-check against decrypted synced-data layout.
+impact: Weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords + bookmarks; High
+testability: AUTH_HELPED
+[HYP] Sync refresh-token storage deviation in forked OAuth components
+class: AUTH
+asset: whale binary whale_sync_auth_manager.cc / whale_refresh_token_revoker.cc; .whaleon.us token scope
+confidence: 45
+reasoning: Whale forks stock OAuth (access_token_fetcher_immediate_refresh_token.cc, revoker) — custom lifecycle code is the deviation; such forks historically persist tokens outside Chromium token_service (plaintext prefs/cookies). No static access possible; requires binary or authorized session.
+evidence_needed: whether whale refresh/access tokens persist outside token_service and their scope/file perms.
+verify_steps: AUTH_HELPED: authorized login, inspect Preferences/Cookies for whale token keys (whale.*, .whaleon.us) and file permissions; compare vs Chromium token_service layout.
+impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
+testability: AUTH_HELPED
+[HYP] Sidebar/dual-tab boundary variant post-CVE-2025-69235, latest desktop
+class: OTHER
+asset: Latest desktop Whale (>=4.35.351.12) sidebar + dual-tab web panels
+confidence: 45
+reasoning: 6 confirmed 2025 CVEs in these Whale-only envs (CWE-346 SOP, iframe sandbox, CWE-358 CSP), each fixed a release later; v4.38.386.14 is 3 minor bumps past the last fix with 0 CVEs; DevTools-in-sidebar (v4.38.386.12) added surface. NVD CPE confirms the 69235 fix only claims Windows/MacOS.
+evidence_needed: crafted HTML escaping iframe sandbox / bypassing SOP/CSP on v4.38.386.14 in sidebar or dual-tab web panel.
+verify_steps: AUTH_HELPED: install latest desktop Whale, load crafted HTML in sidebar + dual-tab panels, test sandbox escape / cross-origin read / CSP bypass. No server interaction.
+impact: sandbox escape / SOP bypass from webpage → arbitrary script or cross-origin data theft in browser UI; Critical if it escalates to renderer
+testability: AUTH_HELPED

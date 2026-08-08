@@ -2142,3 +2142,46 @@ testability: HUMAN_ONLY
 [RISK] sync: 65 — custom `/whalesync` push via socket.io + per-account bootstrap tokens + Whale-forked OSCrypt (`xv10` magic) + `whale_need_encryption_key_forced_time` rekey gate CONFIRMED in v4.38.386.14 binary via prior runs; KDF algorithm/iteration count and master-key storage location NOT statically extracted; binary acquisition fully blocked in-sandbox (cloudfront DNS dead, all mirrors 403/410); local profile access yields full sync decryption with PII cascade; egress-blocked so verification pending out-of-band binary acquisition.
 [RISK] browser: 78 — 6 confirmed 2025 CVEs in Whale-only sidebar/dual-tab (CWE-346 SOP bypass, CWE-358 iframe sandbox escape/CSP bypass); v4.38.386.14 is 3 minor version bumps past last CVE-fix (v4.35.351.12) with 0 CVEs in the gap; DevTools-in-sidebar (v4.38.386.12) added attack surface; wiki docs now passively confirm API surface (`sidebarAction.show({url})`, `use_navigation_bar=false` drag-navigation, server-side app redirect via `location.replace`); content_scripts match ALL origins in sample extension; HUMAN_ONLY testability blocks passive validation.
 [RISK] libs: 35 — Whale bundles Chromium (inherits all upstream CVEs); Whale-only `socket.io.slim.js` confirmed in `resources.pak` (prior runs); no public bundled-lib manifest or version list; version-drift assessment impossible without binary extraction; APKMirror only has legacy versions; low visibility, moderate inherent risk.
+## 2026-08-08 08:20:55 UTC [browser] (model laguna)
+[PRIO] Whale binary v4.38.386.14 sync KDF/OSCrypt/xv10: 6.7 (atk=8 bus=9 tech=7 gate=3 cloud=0 fresh=9)
+[PRIO] Whale sidebar context SOP bypass: 5.7 (atk=6 bus=6 tech=5 gate=7 cloud=2 fresh=7)
+[PRIO] Whale dual-tab boundary variant: 5.5 (atk=6 bus=5 tech=5 gate=7 cloud=2 fresh=7)
+[PRIO] Whale resources.pak socket.io.slim.js push handler: 5.9 (atk=7 bus=7 tech=6 gate=4 cloud=3 fresh=6)
+[HYP] Sync bootstrap-token KDF + OSCrypt master-key extraction from Whale binary v4.38.386.14
+class: AUTH
+asset: `whale` ELF binary v4.38.386.14 — `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` `.rodata` xref `sync.encryption_bootstrap_token_per_account`
+confidence: 65
+reasoning: Prior bigpickle/laguna runs confirmed Whale-only prefs keys + xv10 magic + `/whalesync` (NEO_SES cookie) all present in v4.38.386.14; KDF algorithm/iteration count and master-key storage location remain unextracted.
+evidence_needed: PBKDF2/scrypt N/r/p iteration constants in `.rodata`; `Local State` `os_crypt` v10 key-blob + master key path (file vs Linux keyring vs EncryptedPreferences)
+verify_steps: PASSIVE: acquire `.deb` via out-of-band → `dpkg-deb -x` → `strings` + `objdump -d` on `whale` binary targeting `.rodata` xref `sync.encryption_bootstrap_token_per_account`; grep `PBKDF2`/`scrypt`/`N,r,p=`
+impact: Weak KDF or device-recoverable master key → local attacker decrypts synced passwords+bookmarks+autofill (High)
+testability: PASSIVE (binary acquisition blocked in-sandbox — cloudfront DNS dead, mirrors 403/410, Naver domains excluded)
+[HYP] socket.io.slim.js push handler injection/forwarding in resources.pak
+class: AUTH
+asset: `resources.pak` → `socket.io.slim.js` bundled — `socket.on()` → `chrome.*` call chain without origin/message-source check
+confidence: 52
+reasoning: socket.io.slim.js is confirmed Whale-only bundled in `resources.pak`; push handler may forward payload to `chrome.*` APIs without validation
+evidence_needed: `service_worker.js` extracted from `resources.pak` showing `socket.on()` handler forwarding payload to `chrome.*` without origin/message-source check
+verify_steps: PASSIVE: `unzip` extracted `.deb`; use `resources.pak` unpacker or `strings resources.pak` for `socket.io.slim` + `whale_sync_push`; grep JS layer for `socket.on` → `chrome.` call chains; inspect message-source validation (`chrome.runtime`). If push handler is runtime-fetched (not in pak), fall back to documenting stale evidence.
+impact: Remote push message executing in extension context → tab history manipulation, credential theft (Medium-High)
+testability: PASSIVE
+[HYP] Sidebar context SOP bypass — new variant on v4.38.386.14
+class: OTHER
+asset: `whale.sidebarAction.show({url})` + `use_navigation_bar=false` drag-navigation in sidebar panel
+confidence: 52
+reasoning: CVE-2025-69235 (CWE-346) fixed v4.35.351.12 (Dec 2025); v4.38.386.14 is 3 minor bumps ahead with 0 CVEs in gap; DevTools-in-sidebar added v4.38.386.12; wiki docs confirm `show()` loads arbitrary URL + drag-navigation bypasses SOP
+evidence_needed: Running browser v4.38.386.14 demonstrating cross-origin `fetch()` from panel content script after `show({url:'https://victim.com'})`
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 → load sidebar-sample extension → call `whale.sidebarAction.show({url:'https://httpbin.org/headers'})` → attempt cross-origin `fetch()` from panel content script → test drag-drop navigation with `use_navigation_bar:false`
+impact: Cross-origin data theft from sidebar → credential/CSRF-token exfiltration; Critical if renderer escape
+testability: HUMAN_ONLY
+[FINAL] (ranked, top first):
+[NEXT] PROBE: Download latest Whale desktop `.deb` stub (~11.6 MB) from `https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb` (confirmed non-Naver CDN) → `dpkg-deb -x` into `/tmp/opencode/whale_x` → `strings` + `objdump -d` on extracted `whale` binary targeting `.rodata` xref `sync.encryption_bootstrap_token_per_account` → grep `PBKDF2`/`scrypt`/iteration constants → inspect `Local State` for `os_crypt` v10 key-blob + master key storage path. Zero requests to `*.naver.com` or `/whalesync`.
+[LEARN] ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`, `_migration_done`, `whale_need_encryption_key_forced_time`) + Whale-forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` + `xv10` magic CONFIRMED present in v4.38.386.14 binary via prior bigpickle/laguna runs — KDF constants/iteration counts + master-key storage location remain unextracted (stale until re-acquired)
+[LEARN] REJECTED @ naver/whale-browser-developers: Repo remains documentation-only (last code commit 2019-09-23; 2025-10-22 metadata-only refresh) — static analysis path is dead; binary acquisition is the only static analysis vector
+[LEARN] REJECTED passive binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptodown 410; apkpure.com 403; Naver domains excluded) — binary acquisition requires HUMAN with unrestricted internet access
+[LEARN] REJECTED @ naver web services (developers/lab/store.whale.naver.com): All excluded per scope.yml out_of_scope rules
+[LEARN] CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for v4.35.352–v4.38.386.14, confirming 6-month disclosure gap
+[LEARN] REJECTED @ GitHub repo `naver/whale-browser-developers`: Documentation-only (0 releases, 0 code commits since 2019-09-23) — no browser binary source, sync flow code, or library manifests available
+[RISK] sync: 65 — custom `/whalesync` push via socket.io + per-account bootstrap tokens + Whale-forked OSCrypt (`xv10` magic) + `whale_need_encryption_key_forced_time` rekey gate CONFIRMED in v4.38.386.14 binary via prior runs; KDF algorithm/iteration count + master-key storage location NOT statically extracted (stripped binary); binary acquisition fully blocked in-sandbox (cloudfront DNS dead, all mirrors 403/410); local profile access yields full sync decryption with PII cascade; verification pending out-of-band binary acquisition
+[RISK] browser: 78 — 6 confirmed 2025 CVEs in Whale-only sidebar/dual-tab (CWE-346 SOP bypass, CWE-358 iframe sandbox escape/CSP bypass); v4.38.386.14 is 3 minor version bumps past last CVE-fix (v4.35.351.12) with 0 CVEs in gap; DevTools-in-sidebar (v4.38.386.12) added attack surface; wiki docs passively confirm API surface (`sidebarAction.show({url})`, `use_navigation_bar=false` drag-navigation, server-side app redirect via `location.replace`); content_scripts match ALL origins in sample extension; HUMAN_ONLY testability blocks passive validation
+[RISK] libs: 35 — Whale bundles Chromium (inherits all upstream CVEs); Whale-only `socket.io.slim.js` confirmed in `resources.pak` (prior runs); no public bundled-lib manifest or version list; version-drift assessment impossible without binary extraction; APKMirror only has legacy versions; low visibility, moderate inherent risk

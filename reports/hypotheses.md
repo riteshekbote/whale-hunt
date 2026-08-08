@@ -425,3 +425,14 @@
 - LEARN: CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — NVD API (keywordSearch=naver+whale) returns 2 total results (CVE-2018-9859, CVE-2020-9754), both pre-2021;
 - LEARN: CONFIRMED @ GitHub repo: `naver/whale-browser-developers` remains documentation-only — last pushed 2019-09-23, updated 2025-10-22 (metadata-only), 4 branches (m
 - LEARN: ACCEPTED @ prior binary analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token[_per_account]`, `_migration_done`, `whale_need_encryption_key_forced_t
+
+## RANKED HYPOTHESES 2026-08-08 08:21:21 UTC
+- [65] whale: Whale sync passphrase KDF + bootstrap-token envelope, v4.38.386.14 / Android 3.9.14.9 (from reports/hypotheses-bigpickle.txt)
+- [65] `whale`: Sync bootstrap-token KDF + OSCrypt master-key extraction from Whale binary v4.38.386.14 (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-laguna.txt): PROBE: Download latest Whale desktop `.deb` stub (~11.6 MB) from `https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb` (confirmed non-Nave
+- LEARN: ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`, `_migration_done`, `whale_need_enc
+- LEARN: REJECTED @ naver/whale-browser-developers: Repo remains documentation-only (last code commit 2019-09-23; 2025-10-22 metadata-only refresh) — static analysis pat
+- LEARN: REJECTED passive binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 40
+- LEARN: REJECTED @ naver web services (developers/lab/store.whale.naver.com): All excluded per scope.yml out_of_scope rules
+- LEARN: CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for v4.35.352–v4.38.386.14, confirming 6-month disclosure gap
+- LEARN: REJECTED @ GitHub repo `naver/whale-browser-developers`: Documentation-only (0 releases, 0 code commits since 2019-09-23) — no browser binary source, sync flow 

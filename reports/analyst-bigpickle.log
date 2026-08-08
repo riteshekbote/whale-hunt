@@ -14502,3 +14502,103 @@ whale_sync_push/socket.io.slim.js
 0
 === find which pak has socket.io ===
 [0m
+===== ANALYST bigpickle 2026-08-08 08:21:21 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36" -c /tmp/opencode/utd2.jar "https://nvd.nist.gov/vuln/search/results?query=whale&search_type=all" -o /dev/null -w "nvd_http:%{http_code}\n"; curl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale%20browser&resultsPerPage=5" | head -c 2000
+nvd_http:301
+{"resultsPerPage":5,"startIndex":0,"totalResults":21,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-08T08:19:54.807","vulnerabilities":[{"cve":{"id":"CVE-2018-7635","sourceIdentifier":"cve@mitre.org","published":"2018-07-03T15:29:00.220","lastModified":"2026-06-17T02:03:27.067","vulnStatus":"Modified","cveTags":[],"descriptions":[{"lang":"en","value":"Whale Browser before 1.0.41.8 displays no URL information but only a title of a web page on the browser's address bar when visiting a blank page, which allows an attacker to display a malicious web page with a fake domain name."},{"lang":"es","value":"Whale Browser en versiones anteriores a la 1.0.41.8 no muestra información de URL, solo un título de una página web en la barra de direcciones del navegador cuando se visita una página en blanco, lo que permite a un atacante mostrar una página web maliciosa con un nombre de dominio falso."}],"affected":[{"source":"cve@mitre.org","affectedData":[{"vendor":"n/a","product":"n/a","versions":[{"version":"n/a","status":"affected"}]}]}],"metrics":{"cvssMetricV30":[{"source":"nvd@nist.gov","type":"Primary","cvssData":{"version":"3.0","vectorString":"CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N","baseScore":5.3,"baseSeverity":"MEDIUM","attackVector":"NETWORK","attackComplexity":"LOW","privilegesRequired":"NONE","userInteraction":"NONE","scope":"UNCHANGED","confidentialityImpact":"NONE","integrityImpact":"LOW","availabilityImpact":"NONE"},"exploitabilityScore":3.9,"impactScore":1.4}],"cvssMetricV2":[{"source":"nvd@nist.gov","type":"Primary","cvssData":{"version":"2.0","vectorString":"AV:N/AC:L/Au:N/C:N/I:P/A:N","baseScore":5.0,"accessVector":"NETWORK","accessComplexity":"LOW","authentication":"NONE","confidentialityImpact":"NONE","integrityImpact":"PARTIAL","availabilityImpact":"NONE"},"baseSeverity":"MEDIUM","exploitabilityScore":10.0,"impactScore":2.9,"acInsufInfo":false,"obtainAllPrivilege":false,"obtainUserPrivilege":false,"obtainOtherPrivilege":false,"userInterac
+[0m
+[0m$ [0mcurl -s -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36" -c /tmp/opencode/utd2.jar "https://naver-whale-browser.en.uptodown.com/android/download" -o /tmp/opencode/utd_page.html -w "utd_http:%{http_code}\n"; grep -o 'data-url="[^"]*"' /tmp/opencode/utd_page.html | head -3
+utd_http:200
+data-url="apps"
+data-url="https://play.google.com/store/apps/details?id=com.naver.whale"
+data-url="9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHxuBvUi2KcgcnxT3PP94fonAWCwSPQEhdkWKDN-xfjpbyz5JY_RsmmuFe/QjcuGlmSjULQuBWN8_ZgM-VMV78JZeVFpAoUNXdJNuhofAaMDLuxXGPiAUJrlOxM2PdJG20MrgyOki6lxCHl9cbxyKx_gALsSxxqZbc5OusNIqoFVyMZn2BWpB0vFzMv/xsgsQDaIEAODcOG-oY8ktN52doxhX1ziwIVvCyFl0HwlFLVdrth_hp6U3MpWkeSMnTUZB0rXIwQLV_2W38zlTMSvDJinNQv8598KOaHL9Ws=/"
+[0m
+[0m$ [0mcurl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale%20browser&resultsPerPage=100" | python3 -c "import sys,json; d=json.load(sys.stdin); cves=[(v['cve']['id'],v['cve']['published']) for v in d['vulnerabilities']]; cves.sort(); print(len(cves)); [print(c,p) for c,p in cves if p>='2025-01-01']"
+21
+CVE-2025-53599 2025-07-04T08:15:25.687
+CVE-2025-53600 2025-07-04T08:15:25.823
+CVE-2025-62583 2025-10-16T07:15:33.683
+CVE-2025-62584 2025-10-16T07:15:33.833
+CVE-2025-62585 2025-10-16T07:15:33.963
+CVE-2025-69234 2025-12-30T02:16:16.810
+CVE-2025-69235 2025-12-30T02:16:16.930
+[0m
+[0m$ [0mTOK=$(grep -o 'data-url="[^"]*"' /tmp/opencode/utd_page.html | grep -v 'apps\|play.google' | sed 's/data-url="//;s/"$//' | tr -d '\n'); echo "token_len:${#TOK}"; curl -s -b /tmp/opencode/utd2.jar -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36" -e "https://naver-whale-browser.en.uptodown.com/android/download" -o /tmp/opencode/whale_probe.xapk -w "dw_http:%{http_code} size:%{size_download}\n" "https://dw.uptodown.com/$TOK"
+token_len:733
+dw_http:404 size:548
+[0m
+[0m$ [0mgrep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' /tmp/opencode/utd_page.html | sort -u | head; grep -oE 'data-version="[^"]*"|Version [0-9][^<]*|version: *"[^"]*"' /tmp/opencode/utd_page.html | head
+3.9.14.5
+3.9.14.6
+3.9.14.7
+3.9.14.9
+data-version="13659252"
+data-version="13659252"
+[0m
+[0m◈ [0mExa Web Search "Naver Whale browser sync encryption 2026 vulnerability passphrase KDF"
+[0m
+[0m$ [0msleep 1; curl -s -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36" -o /tmp/opencode/apkpure.html -w "apkpure_net_http:%{http_code}\n" "https://apkpure.net/com.naver.whale/download" ; grep -oiE 'href="[^"]*com[.]naver[.]whale[^"]*"' /tmp/opencode/apkpure.html | head -5
+apkpure_net_http:403
+[0m
+STEP 1 — DELTA (vs 2026-08-08 07:48 aggregation, verified by live probes at 08:20 UTC):
+- [NEW] uptodown dw channel conclusively dead: fresh session-bound token (733 chars) still returns HTTP 404 (was 410) — the last remaining Android XAPK channel is gone
+- [NEW] apkpure.net direct download returns 403 (Cloudflare) — the JS-resolved fallback is also dead; ALL binary acquisition paths now confirmed blocked in-sandbox
+- [NEW] help.whale.naver.com sync-passphrase docs (desktop 2024-10-11; mobile 2025-05-09) confirm: passphrase is never sent to/saved by Naver; "forgot passphrase" requires server-side sync-data reset → KDF is fully local, server stores only ciphertext + bootstrap token
+- [NEW] program ops: bug bounty submissions moved from whale.naver.com to the NAVER Bug Bounty platform on 2025-11-14; scope language unchanged (sync + Whale-only libs + latest-version repro)
+- [CONFIRMED] NVD (live query, timestamp 2026-08-08T08:19:54Z): still 21 total, 0 in 2026; last published 2025-12-30 (CVE-2025-69234/69235, Windows/MacOS platforms)
+
+STEP 2 — PRIORITIZE:
+- [PRIO] Whale sync encryption client (desktop v4.38.386.14 + Android com.naver.whale 3.9.14.9 SHA256 3c723291…) — score 6.70 — attack7 business9 tech7 gate3 cloud5 fresh7 (local-only KDF + OSCrypt-xv10 token envelope; 0 CVEs in 15-month life)
+- [PRIO] Whale sync auth token storage (whale_sync_auth_manager fork, refresh-token lifecycle) — score 6.05 — attack6 business8 tech6 gate3 cloud6 fresh6
+- [PRIO] Sidebar/dual-tab boundary (web-accessible browser UI) — score 6.00 — attack7 business6 tech5 gate8 cloud0 fresh8
+
+STEP 3 — HYPOTHESES:
+[HYP] Whale sync passphrase KDF + bootstrap-token envelope, v4.38.386.14 / Android 3.9.14.9
+class: AUTH
+asset: whale binary os_crypt_whale.cc / whale_sync_util.cc; Local State + keyring (desktop), Keystore/EncryptedSharedPreferences (Android)
+confidence: 65
+reasoning: Help Center (2026-08-08, live) confirms passphrase never leaves device and is unrecoverable server-side → server stores only ciphertext + bootstrap token, so local key/token storage is the whole attack surface. Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) and xv10-magic OSCrypt fork proven in binary via prior runs. KDF params unextractable — binary acquisition is now 100% dead in-sandbox.
+evidence_needed: PBKDF2/scrypt alg + iteration count for passphrase→key; whether derived key persists to keyring/file/Local State; EnvelopeKDF resist local brute force; Android Keystore vs plaintext fallback.
+verify_steps: AUTH_HELPED: authorized login on test device; snapshot Preferences/Login Data/Secure Preferences + keyring before/after enabling encrypted sync; enumerate KDF by instrumenting os_crypt path. HUMAN: cross-check against decrypted synced-data layout.
+impact: Weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords + bookmarks; High
+testability: AUTH_HELPED
+[HYP] Sync refresh-token storage deviation in forked OAuth components
+class: AUTH
+asset: whale binary whale_sync_auth_manager.cc / whale_refresh_token_revoker.cc; .whaleon.us token scope
+confidence: 45
+reasoning: Whale forks stock OAuth (access_token_fetcher_immediate_refresh_token.cc, revoker) — custom lifecycle code is the deviation; such forks historically persist tokens outside Chromium token_service (plaintext prefs/cookies). No static access possible; requires binary or authorized session.
+evidence_needed: whether whale refresh/access tokens persist outside token_service and their scope/file perms.
+verify_steps: AUTH_HELPED: authorized login, inspect Preferences/Cookies for whale token keys (whale.*, .whaleon.us) and file permissions; compare vs Chromium token_service layout.
+impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
+testability: AUTH_HELPED
+[HYP] Sidebar/dual-tab boundary variant post-CVE-2025-69235, latest desktop
+class: OTHER
+asset: Latest desktop Whale (>=4.35.351.12) sidebar + dual-tab web panels
+confidence: 45
+reasoning: 6 confirmed 2025 CVEs in these Whale-only envs (CWE-346 SOP, iframe sandbox, CWE-358 CSP), each fixed a release later; v4.38.386.14 is 3 minor bumps past the last fix with 0 CVEs; DevTools-in-sidebar (v4.38.386.12) added surface. NVD CPE confirms the 69235 fix only claims Windows/MacOS.
+evidence_needed: crafted HTML escaping iframe sandbox / bypassing SOP/CSP on v4.38.386.14 in sidebar or dual-tab web panel.
+verify_steps: AUTH_HELPED: install latest desktop Whale, load crafted HTML in sidebar + dual-tab panels, test sandbox escape / cross-origin read / CSP bypass. No server interaction.
+impact: sandbox escape / SOP bypass from webpage → arbitrary script or cross-origin data theft in browser UI; Critical if it escalates to renderer
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE:
+- All 3 hypotheses pass filters (conf ≥40, class not on REJECTED list, concrete verify_steps). No drops.
+- Note: KDF hypothesis testability has degraded from PASSIVE→AUTH_HELPED: its original PASSIVE path (objdump of official binary) is conclusively dead, leaving only authorized-device verification.
+- [FINAL] 1. Sync KDF + bootstrap-token envelope (desktop + Android) — confidence 65, class AUTH. 2. Sidebar/dual-tab boundary variant on v4.38.386.14 — confidence 45, class OTHER. 3. Sync refresh-token storage deviation — confidence 45, class AUTH.
+
+STEP 5 — NEXT ACTION:
+- [NEXT] HUMAN: on an authorized test device, install latest desktop Whale (v4.38.386.14) and Android 3.9.14.9; enable sync WITH a passphrase; snapshot keyring/Local State/Secure Preferences/Keystore before/after to observe the xv10 envelope + bootstrap-token persistence and enumerate the KDF; simultaneously load crafted sandbox/SOP/CSP HTML in sidebar and dual-tab panels on the same build. No further passive channels remain — all binary acquisition is blocked (uptodown 404, apkpure.net 403, APKMirror/APKCombo 403, cloudfront DNS dead), and NVD shows no 2026 disclosures to pivot from.
+
+STEP 6 — LEARNING:
+- [LEARN] REJECTED binary acquisition @ uptodown dw.uptodown.com: fresh session-bound token still 404 (was 410) — last Android XAPK channel conclusively dead
+- [LEARN] REJECTED binary acquisition @ apkpure.net: Cloudflare 403 — final mirror fallback dead; ALL binary paths confirmed blocked in-sandbox
+- [LEARN] ACCEPTED sync encryption @ help.whale.naver.com: passphrase documented local-only (never sent/saved by Naver); reset requires server-side sync-data wipe → KDF fully local, server holds ciphertext + bootstrap token only; local key/token storage is the entire attack surface
+- [LEARN] ACCEPTED program ops @ bugbounty.whale.naver.com: submissions migrated to NAVER Bug Bounty platform 2025-11-14; scope unchanged (sync eligible, latest-version repro required)
+
+STEP 7 — RISK SCORE:
+- [RISK] sync: 56 — sync encryption is the only genuinely Whale-only cryptographic deviation (xv10 OSCrypt fork, local-only passphrase KDF, server-side bootstrap token), design confirmed live via Help Center; but binary access is fully blocked so the KDF/envelope deviation stays unverifiable; moderate-high, unchanged in kind
+- [RISK] browser: 78 — 6 confirmed 2025 CVEs in sidebar/dual-tab envs (CWE-346/358), v4.38.386.14 is 3 minor bumps past last fix with 0 CVEs in the 6-month gap; DevTools-in-sidebar added surface; the 69235 fix only claims Windows/MacOS
+- [RISK] libs: 30 — no Whale-only manifests public; repo documentation-only; inventory impossible without binary access; low visibility, moderate inherent risk
