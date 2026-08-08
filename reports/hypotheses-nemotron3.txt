@@ -1,4 +1,4 @@
-## 2026-08-08 18:55:36 UTC [browser] (model nemotron3)
+## 2026-08-08 19:26:56 UTC [browser] (model nemotron3)
 [PRIO] whalesync client engine (api.whale.naver.com/whalesync + profile prefs), 6.55, atk=7 biz=8 tech=9 gate=2 cloud=3 fresh=8
 [PRIO] Whale v4.38.386.14 desktop Linux sidebar (sidebarAction.show + ALL-origin content_scripts + background.js no origin check), 6.40, atk=8 biz=8 tech=8 gate=2 cloud=3 fresh=10
 [PRIO] com.naver.whale Android 3.9.14.9 sync engine (api.whale.naver.com/whalesync), 6.15, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=7
@@ -11,11 +11,11 @@ evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences
 verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util call sites for bootstrap-token envelope and /whalesync/reset request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network
 impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
 testability: PASSIVE
-[HYP] Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux
+[HYP] Sidebar SOP bypass via unvalidated origin in sidebarAction message handler (CVE-2025-69235 variant)
 class: OTHER
 asset: Whale v4.38.386.14 desktop Linux sidebar (sidebarAction.show({url})) + dual-tab web panel
-confidence: 58
-reasoning: CVE-2025-69235 (CWE-346) NVD CPE lists only Windows/macOS — Linux absent. v4.38.386.14 is 3 minor-version bumps past the fix with 0 published CVEs. Sample extension translate/src/sidebar-sample/manifest.json (HTTP 200) confirms content_scripts match ALL origins; background.js (HTTP 200) calls sidebarAction.show()/hide()/show2()/hideAll() from ANY sendMessage origin without validation.
+confidence: 65
+reasoning: CVE-2025-69235 (CWE-346) NVD CPE lists only Windows/macOS — Linux absent. v4.38.386.14 is 3 minor-version bumps past the fix with 0 published CVEs. Sample extension translate/src/sidebar-sample/manifest.json (HTTP 200) confirms content_scripts match ALL origins; background.js (HTTP 200) calls sidebarAction.show()/hide()/show2()/hideAll() from ANY sendMessage origin without validation; contentscript.js (HTTP 200) fires sidebarAction.show/show2 from ANY web page context (navigator.userAgent.includes('sidebar') === false branch)
 evidence_needed: Script execution or cross-origin fetch in sidebar/dual-tab panel on Linux; window.opener/parent readback from foreign origin; iframe sandbox escape; CSP bypass via non-http(s) scheme
 verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load sidebar-sample extension → whale.sidebarAction.show({url:'https://attacker.com/exploit.html'}) → attempt cross-origin fetch from panel content script → test drag-drop with use_navigation_bar:false → check opener/parent readback. Zero requests to Naver infra.
 impact: SOP bypass / script execution in privileged browser-UI context — cross-origin cookie/DOM/CSRF-token theft; Critical if escalates to renderer code execution
@@ -30,9 +30,9 @@ verify_steps: PASSIVE: objdump/strings on extracted libwhale_sync.so + os_crypt_
 impact: Weak KDF or predictable master-key storage → local attacker derives sync encryption key → decrypts all synced passwords/cookies/autofill across devices (High)
 testability: PASSIVE
 [PARKED] Android sync encryption key derivation/storage — com.naver.whale 3.9.14.9: confidence 55 but verify_steps requires binary acquisition which is blocked in-sandbox (all channels dead); no passive-first probe possible without binary — stale until HUMAN delivers binary
-[FINAL] 1. Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (confidence 62, class AUTH, testability PASSIVE)
-[FINAL] 2. Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux (confidence 58, class OTHER, testability HUMAN_ONLY)
-[NEXT] PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network — local static analysis of acquired binary only
+[FINAL] 1. Sidebar SOP bypass via unvalidated origin in sidebarAction message handler (CVE-2025-69235 variant) (confidence 65, class OTHER, testability HUMAN_ONLY)
+[FINAL] 2. Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (confidence 62, class AUTH, testability PASSIVE)
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/opencode/whale_binary/`) — all passive download paths confirmed dead (cloudfront DNS No-answer, APKMirror 403, Uptodown 404, pstatic 404)
 [LEARN] REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptodown 404 page removed; apkpure.com 403; Naver domains excluded) — binary acquisition requires HUMAN with unrestricted internet access
 [LEARN] REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
 [LEARN] REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` wiki documentation previously cited as "CONFIRMED accessible" is no longer reachable; wiki API also 404s

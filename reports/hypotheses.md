@@ -846,3 +846,13 @@
 - LEARN: REJECTED @ GitHub wiki sidebarAction docs: raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md returns HTTP 404 — wiki documentation 
 - LEARN: REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown): All blocked in-sandbox — DNS No-answer for *.cloudfront.net (general reso
 - LEARN: REJECTED @ naver/whale-browser-developers repo: Documentation-only (last commit 2019-09-23, 0 releases) — no browser binary source available for static analysis
+
+## RANKED HYPOTHESES 2026-08-08 19:31:15 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` w
+- LEARN: ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins)
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
+- LEARN: CONFIRMED @ GitHub search API: 1 whale-named repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of addi
