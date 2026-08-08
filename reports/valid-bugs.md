@@ -80,3 +80,14 @@
 
 - 1 lead(s) marked VALID at 2026-08-08 21:51:20 UTC
   - **Disclosure policy:** TBD (operator-provided channel not yet confirmed) — I'll note this in any VALID verdict until the channel is finalized.
+
+- 10 lead(s) triaged at 2026-08-08 22:13 UTC — **0 VALID / 4 INVALID / 6 HOLD**
+  - Full 7Q analysis per lead; uniform killer is Q4 (no passive proof) + Q7 (no evidence)
+  - 5 models de-duplicated to 10 distinct lead categories (longcat produced no hypotheses)
+  - 4 INVALID: Lead 02 (dupes CVE-2022-24072/2024-40618), Lead 05 (no specific vuln, best-practice), Lead 08 (out of scope, Naver web service)
+  - 6 HOLD: all require binary artifact absent from sandbox or HUMAN_ONLY/AUTH_HELPED verification
+  - Reposcan pipeline REGRESSED: scanning gladiaio/ instead of whale/ since ~17:57 UTC, returning 0 hits
+  - See `triage/run-2026-08-08-22-13.md` for full analysis
+
+- 1 lead(s) marked VALID at 2026-08-08 22:20:25 UTC
+  - - **Disclosure policy:** TBD (operator-provided channel not yet confirmed) — I'll note this in any VALID verdict until the channel is finalized.
