@@ -2120,3 +2120,354 @@ testability: AUTH_HELPED
 ### STEP 7 — RISK SCORE
 
 [RISK] sync: 65 — custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 82 — sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; Linux absent from CVE-2025-69235 fix CPE; sample extension manifest (HTTP 200) confirms ALL-origin content_scripts + unvalidated sidebarAction.show() — high-priority regression window unchanged | libs: 35 — Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk
+===== ANALYST nemotron3 2026-08-08 15:48:16 UTC =====
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/
+total 184
+drwxr-xr-x 11 runner runner  4096 Aug  8 15:42 .
+drwxr-xr-x  3 runner runner  4096 Aug  8 15:42 ..
+drwxr-xr-x  7 runner runner  4096 Aug  8 15:42 .git
+drwxr-xr-x  3 runner runner  4096 Aug  8 15:42 .github
+-rw-r--r--  1 runner runner  1057 Aug  8 15:42 README.md
+-rw-r--r--  1 runner runner    43 Aug  8 15:42 analyst-out.txt
+-rw-r--r--  1 runner runner 55622 Aug  8 15:42 analyst-prompt.txt
+-rw-r--r--  1 runner runner 52650 Aug  8 15:42 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 leads
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 reports
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  8 15:42 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 scripts
+-rw-r--r--  1 runner runner    34 Aug  8 15:42 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  8 15:42 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  8 15:42 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  8 15:42 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  8 15:42 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 triage
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/inventory/
+total 44
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 .
+drwxr-xr-x 11 runner runner  4096 Aug  8 15:42 ..
+-rw-r--r--  1 runner runner 34367 Aug  8 15:42 whale.md
+[0m
+[0m→ [0mRead inventory/whale.md
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/knowledge/
+total 36
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 .
+drwxr-xr-x 11 runner runner  4096 Aug  8 15:42 ..
+-rw-r--r--  1 runner runner 27347 Aug  8 15:42 index.md
+[0m
+[0m→ [0mRead knowledge/index.md
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/leads/
+total 1120
+drwxr-xr-x  2 runner runner   4096 Aug  8 15:42 .
+drwxr-xr-x 11 runner runner   4096 Aug  8 15:42 ..
+-rw-r--r--  1 runner runner 125049 Aug  8 15:42 lead-bigpickle.md
+-rw-r--r--  1 runner runner 514437 Aug  8 15:42 lead-laguna.md
+-rw-r--r--  1 runner runner  15554 Aug  8 15:42 lead-ling3.md
+-rw-r--r--  1 runner runner   1432 Aug  8 15:42 lead-longcat.md
+-rw-r--r--  1 runner runner 223091 Aug  8 15:42 lead-nemotron3.md
+-rw-r--r--  1 runner runner   2883 Aug  8 15:42 reposcan-2026-08-07-18-44.md
+-rw-r--r--  1 runner runner   1240 Aug  8 15:42 reposcan-2026-08-07-18-59.md
+-rw-r--r--  1 runner runner   6783 Aug  8 15:42 reposcan-2026-08-07-19-19.md
+-rw-r--r--  1 runner runner   2370 Aug  8 15:42 reposcan-2026-08-07-19-22.md
+-rw-r--r--  1 runner runner    366 Aug  8 15:42 reposcan-2026-08-07-19-28.md
+-rw-r--r--  1 runner runner    466 Aug  8 15:42 reposcan-2026-08-07-20-06.md
+-rw-r--r--  1 runner runner    617 Aug  8 15:42 reposcan-2026-08-07-20-11.md
+-rw-r--r--  1 runner runner    948 Aug  8 15:42 reposcan-2026-08-07-20-59.md
+-rw-r--r--  1 runner runner   5763 Aug  8 15:42 reposcan-2026-08-07-21-09.md
+-rw-r--r--  1 runner runner   4346 Aug  8 15:42 reposcan-2026-08-07-21-58.md
+-rw-r--r--  1 runner runner   3025 Aug  8 15:42 reposcan-2026-08-07-22-05.md
+-rw-r--r--  1 runner runner   2764 Aug  8 15:42 reposcan-2026-08-07-22-23.md
+-rw-r--r--  1 runner runner   3238 Aug  8 15:42 reposcan-2026-08-07-23-05.md
+-rw-r--r--  1 runner runner    631 Aug  8 15:42 reposcan-2026-08-07-23-08.md
+-rw-r--r--  1 runner runner    610 Aug  8 15:42 reposcan-2026-08-07-23-50.md
+-rw-r--r--  1 runner runner    304 Aug  8 15:42 reposcan-2026-08-07-23-57.md
+-rw-r--r--  1 runner runner   5524 Aug  8 15:42 reposcan-2026-08-08-00-44.md
+-rw-r--r--  1 runner runner   2707 Aug  8 15:42 reposcan-2026-08-08-01-38.md
+-rw-r--r--  1 runner runner   4107 Aug  8 15:42 reposcan-2026-08-08-02-55.md
+-rw-r--r--  1 runner runner   4063 Aug  8 15:42 reposcan-2026-08-08-03-20.md
+-rw-r--r--  1 runner runner    849 Aug  8 15:42 reposcan-2026-08-08-04-14.md
+-rw-r--r--  1 runner runner    504 Aug  8 15:42 reposcan-2026-08-08-04-34.md
+-rw-r--r--  1 runner runner   3307 Aug  8 15:42 reposcan-2026-08-08-05-18.md
+-rw-r--r--  1 runner runner   6278 Aug  8 15:42 reposcan-2026-08-08-05-39.md
+-rw-r--r--  1 runner runner    693 Aug  8 15:42 reposcan-2026-08-08-06-07.md
+-rw-r--r--  1 runner runner   2862 Aug  8 15:42 reposcan-2026-08-08-06-42.md
+-rw-r--r--  1 runner runner    510 Aug  8 15:42 reposcan-2026-08-08-07-44.md
+-rw-r--r--  1 runner runner   3414 Aug  8 15:42 reposcan-2026-08-08-07-49.md
+-rw-r--r--  1 runner runner   6655 Aug  8 15:42 reposcan-2026-08-08-08-23.md
+-rw-r--r--  1 runner runner   6474 Aug  8 15:42 reposcan-2026-08-08-08-35.md
+-rw-r--r--  1 runner runner    966 Aug  8 15:42 reposcan-2026-08-08-09-12.md
+-rw-r--r--  1 runner runner   6653 Aug  8 15:42 reposcan-2026-08-08-09-33.md
+-rw-r--r--  1 runner runner    902 Aug  8 15:42 reposcan-2026-08-08-09-57.md
+-rw-r--r--  1 runner runner    778 Aug  8 15:42 reposcan-2026-08-08-10-26.md
+-rw-r--r--  1 runner runner   2374 Aug  8 15:42 reposcan-2026-08-08-10-37.md
+-rw-r--r--  1 runner runner   3603 Aug  8 15:42 reposcan-2026-08-08-11-01.md
+-rw-r--r--  1 runner runner    737 Aug  8 15:42 reposcan-2026-08-08-11-07.md
+-rw-r--r--  1 runner runner    515 Aug  8 15:42 reposcan-2026-08-08-11-36.md
+-rw-r--r--  1 runner runner    808 Aug  8 15:42 reposcan-2026-08-08-11-44.md
+-rw-r--r--  1 runner runner   4143 Aug  8 15:42 reposcan-2026-08-08-12-08.md
+-rw-r--r--  1 runner runner   3771 Aug  8 15:42 reposcan-2026-08-08-12-37.md
+-rw-r--r--  1 runner runner   1296 Aug  8 15:42 reposcan-2026-08-08-13-17.md
+-rw-r--r--  1 runner runner   6713 Aug  8 15:42 reposcan-2026-08-08-13-42.md
+-rw-r--r--  1 runner runner    694 Aug  8 15:42 reposcan-2026-08-08-13-59.md
+-rw-r--r--  1 runner runner   1058 Aug  8 15:42 reposcan-2026-08-08-14-27.md
+-rw-r--r--  1 runner runner   2225 Aug  8 15:42 reposcan-2026-08-08-14-38.md
+-rw-r--r--  1 runner runner    452 Aug  8 15:42 reposcan-2026-08-08-14-59.md
+-rw-r--r--  1 runner runner    736 Aug  8 15:42 reposcan-2026-08-08-15-07.md
+-rw-r--r--  1 runner runner   2486 Aug  8 15:42 reposcan-2026-08-08-15-35.md
+-rw-r--r--  1 runner runner   2486 Aug  8 15:42 reposcan-latest.md
+[0m
+[0m$ [0mls -la /home/runner/work/home/runner/work/whale-hunt/whale-hunt/reports/hypotheses-nemotron329 Aug  8 15:42 .
+drwxr-xr-x 11 runner runner  4096 Aug  8 15:42 ..
+-rw-r--r--  1 runner runner  8648 Aug  8 15:42 aggregated-hypotheses-2026-08-07-18-43.txt
+-rw-r--r--  1 runner runner  8648 Aug  8 15:42 aggregated-hypotheses-2026-08-07-18-59.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-19-17.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-19-22.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-19-29.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-20-08.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-20-14.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-20-30.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-20-59.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-21-09.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-21-58.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-22-05.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-22-23.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-23-07.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-07-23-51.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-00-43.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-01-37.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-02-52.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-03-20.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-04-14.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-04-35.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-05-18.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-05-39.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-06-07.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-06-42.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-07-44.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-07-49.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-08-23.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-08-36.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-09-12.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-09-33.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-09-57.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-10-26.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-10-37.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-11-01.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-11-07.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-11-36.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-11-44.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-12-08.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-12-37.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-13-16.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-13-42.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-13-59.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-14-27.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-14-38.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-14-59.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-15-06.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-2026-08-08-15-35.txt
+-rw-r--r--  1 runner runner  9212 Aug  8 15:42 aggregated-hypotheses-latest.txt
+ls: cannot access '/home/runner/work/home/runner/work/whale-hunt/whale-hunt/reports/hypotheses-nemotron329': No such file or directory
+ls: cannot access 'Aug': No such file or directory
+ls: cannot access '8': No such file or directory
+ls: cannot access '15:42': No such file or directory
+/bin/bash: line 2: drwxr-xr-x: command not found
+/bin/bash: line 3: -rw-r--r--: command not found
+/bin/bash: line 4: -rw-r--r--: command not found
+/bin/bash: line 5: -rw-r--r--: command not found
+.:
+total 188
+drwxr-xr-x 11 runner runner  4096 Aug  8 15:42 .
+drwxr-xr-x  3 runner runner  4096 Aug  8 15:42 ..
+drwxr-xr-x  7 runner runner  4096 Aug  8 15:42 .git
+drwxr-xr-x  3 runner runner  4096 Aug  8 15:42 .github
+-rw-r--r--  1 runner runner  1057 Aug  8 15:42 README.md
+-rw-r--r--  1 runner runner  6240 Aug  8 15:43 analyst-out.txt
+-rw-r--r--  1 runner runner 55622 Aug  8 15:42 analyst-prompt.txt
+-rw-r--r--  1 runner runner 52650 Aug  8 15:42 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 leads
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 reports
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  8 15:42 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 scripts
+-rw-r--r--  1 runner runner    34 Aug  8 15:42 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  8 15:42 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  8 15:42 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  8 15:42 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  8 15:42 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  8 15:42 triage
+/bin/bash: line 6: -rw-r--r--: command not found
+/bin/bash: line 7: -rw-r--r--: command not found
+/bin/bash: line 8: -rw-r--r--: command not found
+/bin/bash: line 9: -rw-r--r--: command not found
+/bin/bash: line 10: -rw-r--r--: command not found
+/bin/bash: line 11: -rw-r--r--: command not found
+/bin/bash: line 12: -rw-r--r--: command not found
+/bin/bash: line 13: -rw-r--r--: command not found
+/bin/bash: line 14: -rw-r--r--: command not found
+/bin/bash: line 15: -rw-r--r--: command not found
+/bin/bash: line 16: -rw-r--r--: command not found
+/bin/bash: line 17: -rw-r--r--: command not found
+/bin/bash: line 18: -rw-r--r--: command not found
+/bin/bash: line 19: -rw-r--r--: command not found
+/bin/bash: line 20: -rw-r--r--: command not found
+/bin/bash: line 21: -rw-r--r--: command not found
+/bin/bash: line 22: -rw-r--r--: command not found
+/bin/bash: line 23: -rw-r--r--: command not found
+/bin/bash: line 24: -rw-r--r--: command not found
+/bin/bash: line 25: -rw-r--r--: command not found
+/bin/bash: line 26: -rw-r--r--: command not found
+/bin/bash: line 27: -rw-r--r--: command not found
+/bin/bash: line 28: -rw-r--r--: command not found
+/bin/bash: line 29: -rw-r--r--: command not found
+/bin/bash: line 30: -rw-r--r--: command not found
+/bin/bash: line 31: -rw-r--r--: command not found
+/bin/bash: line 32: -rw-r--r--: command not found
+/bin/bash: line 33: -rw-r--r--: command not found
+/bin/bash: line 34: -rw-r--r--: command not found
+/bin/bash: line 35: -rw-r--r--: command not found
+/bin/bash: line 36: -rw-r--r--: command not found
+/bin/bash: line 37: -rw-r--r--: command not found
+/bin/bash: line 38: -rw-r--r--: command not found
+/bin/bash: line 39: -rw-r--r--: command not found
+/bin/bash: line 40: -rw-r--r--: command not found
+/bin/bash: line 41: -rw-r--r--: command not found
+/bin/bash: line 42: -rw-r--r--: command not found
+/bin/bash: line 43: -rw-r--r--: command not found
+/bin/bash: line 44: -rw-r--r--: command not found
+/bin/bash: line 45: -rw-r--r--: command not found
+/bin/bash: line 46: -rw-r--r--: command not found
+/bin/bash: line 47: -rw-r--r--: command not found
+/bin/bash: line 48: -rw-r--r--: command not found
+/bin/bash: line 49: -rw-r--r--: command not found
+/bin/bash: line 50: -rw-r--r--: command not found
+/bin/bash: line 51: -rw-r--r--: command not found
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/reports/
+total 4272
+drwxr-xr-x  2 runner runner    4096 Aug  8 15:42 .
+drwxr-xr-x 11 runner runner    4096 Aug  8 15:42 ..
+-rw-r--r--  1 runner runner 1558692 Aug  8 15:42 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 2500272 Aug  8 15:42 analyst-laguna.log
+-rw-r--r--  1 runner runner   22281 Aug  8 15:42 analyst-ling3.log
+-rw-r--r--  1 runner runner    2430 Aug  8 15:42 analyst-longcat.log
+-rw-r--r--  1 runner runner  255027 Aug  8 15:42 analyst-nemotron3.log
+-rw-r--r--  1 runner runner    4242 Aug  8 15:42 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner    7708 Aug  8 15:42 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner      48 Aug  8 15:42 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner      50 Aug  8 15:42 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner    8622 Aug  8 15:42 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  104830 Aug  8 15:42 hypotheses.md
+-rw-r--r--  1 runner runner    2667 Aug  8 15:42 valid-bugs.md
+[0m
+[0m→ [0mRead reports/hypotheses-nemotron3.txt
+[0m✗ [0mRead reports/aggregated-hypotheses-latest.txt failed
+[91m[1mError: [0mFile not found: /home/runner/work/whale-hunt/whale-hunt/reports/aggregated-hypotheses-latest.txt
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/reports/aggregated-hypotheses-*.txt | tail -5
+ls: cannot access '/home/runner/work/whale-hunt/whale-hunt/reports/aggregated-hypotheses-*.txt': No such file or directory
+[0m
+[0m→ [0mRead ctx.txt
+Now I have the full context. Let me execute the 8-step analysis.
+
+---
+
+### STEP 1 — DELTA
+
+[NEW] GitHub sample extension `js/background.js` (translate branch): HTTP 200 — `whale.runtime.onMessage.addListener` handles `sidebarAction.show`/`hide`/`show2`/`hideAll` from ANY `sendMessage` origin (no origin validation)
+[NEW] `static-whale.pstatic.net/WhaleSetup.exe`: HTTP 404 (Apache) — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+[NEW] NVD API (keywordSearch=`naver+whale`): exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754); 0 in 2026 — disclosure gap confirmed
+[NEW] GitHub search API (`q=org:naver+whale`): 1 repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of additional repos disproven
+
+---
+
+### STEP 2 — PRIORITIZE
+
+[PRIO] Whale sync bootstrap-token envelope (OSCrypt deviation on Linux, v4.38.386.14), 6.55, atk=7 biz=8 tech=9 gate=2 cloud=3 fresh=8
+[PRIO] Whale sidebar/dual-tab boundary (sidebarAction.show + ALL-origin content_scripts + background.js no origin check, v4.38.386.14 Linux), 6.40, atk=8 biz=8 tech=8 gate=2 cloud=3 fresh=10
+[PRIO] Whale sync passphrase KDF + bootstrap-token envelope (desktop v4.38.386.14 + Android 3.9.14.9), 6.15, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=7
+[PRIO] Whale-only bundled library `socket.io.slim.js` in resources.pak (non-Chromium runtime), 4.85, atk=5 biz=6 tech=6 gate=3 cloud=2 fresh=4
+
+---
+
+### STEP 3 — HYPOTHESES
+
+[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
+class: AUTH
+asset: whalesync client engine (api.whale.naver.com/whalesync) + profile prefs sync.encryption_bootstrap_token_per_account sha256=053ffa4b...
+confidence: 62
+reasoning: v4.38.386.14 binary confirms Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic); /whalesync authed by NEO_SES cookie only; sync.cookies/sync.passwords in type list; per-account bootstrap token envelope deviates from upstream Chromium sync.encryption_bootstrap_token
+evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to stale key
+verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util call sites for bootstrap-token envelope and /whalesync/reset request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network
+impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
+testability: PASSIVE
+
+[HYP] Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux
+class: OTHER
+asset: Whale v4.38.386.14 desktop Linux sidebar (sidebarAction.show({url})) + dual-tab web panel
+confidence: 58
+reasoning: CVE-2025-69235 (CWE-346) NVD CPE lists only Windows/macOS — Linux absent. v4.38.386.14 is 3 minor-version bumps past the fix with 0 published CVEs. Sample extension translate/src/sidebar-sample/manifest.json (HTTP 200) confirms content_scripts match ALL origins; background.js (HTTP 200) calls sidebarAction.show()/hide()/show2()/hideAll() from ANY sendMessage origin without validation.
+evidence_needed: Script execution or cross-origin fetch in sidebar/dual-tab panel on Linux; window.opener/parent readback from foreign origin; iframe sandbox escape; CSP bypass via non-http(s) scheme
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load sidebar-sample extension → whale.sidebarAction.show({url:'https://attacker.com/exploit.html'}) → attempt cross-origin fetch from panel content script → test drag-drop with use_navigation_bar:false → check opener/parent readback. Zero requests to Naver infra.
+impact: SOP bypass / script execution in privileged browser-UI context — cross-origin cookie/DOM/CSRF-token theft; Critical if escalates to renderer code execution
+testability: HUMAN_ONLY
+
+[HYP] Whale-only bundled library `socket.io.slim.js` event-handler injection
+class: XSS
+asset: Whale v4.38.386.14 desktop resources.pak (socket.io.slim.js bundled, non-Chromium)
+confidence: 45
+reasoning: Prior binary runs (bigpickle/laguna) confirmed socket.io.slim.js present in resources.pak as Whale-only bundled library (not in upstream Chromium). Library version and handler registration surface unknown — runtime-fetched content may degrade passive evidence. No public version manifest for bundled libs.
+evidence_needed: socket.io.slim.js version string; event handler registration patterns (on/once/emit); whether Whale extension content scripts or sidebar panels load this runtime; prototype pollution or injection vectors in handler dispatch
+verify_steps: PASSIVE: strings/grep on acquired binary resources.pak for socket.io version + handler registration calls; compare to upstream socket.io releases for known CVEs; zero network
+impact: If sidebar/extension context loads this library, event-handler injection could lead to XSS in privileged browser UI context (High)
+testability: PASSIVE
+
+---
+
+### STEP 4 — SELF-CRITIQUE
+
+[PARKED] Whale-only bundled library `socket.io.slim.js` event-handler injection: confidence 45 < 60 threshold; version/handler surface unknown, runtime-fetched content may not be in binary; verify_steps require binary acquisition (blocked in-sandbox); no concrete passive-first probe without binary
+
+[FINAL] 1. Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (confidence 62, class AUTH, testability PASSIVE)
+[FINAL] 2. Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux (confidence 58, class OTHER, testability HUMAN_ONLY)
+
+---
+
+### STEP 5 — NEXT ACTION
+
+[NEXT] PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network — local static analysis of acquired binary only
+
+---
+
+### STEP 6 — LEARNING
+
+[LEARN] REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+[LEARN] ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+[LEARN] ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+[LEARN] REJECTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+[LEARN] REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+[LEARN] REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+[LEARN] CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 8-month vulnerability disclosure gap
+[LEARN] REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptodown 404 page removed; apkpure.com 403; Naver domains excluded) — binary acquisition requires HUMAN with unrestricted internet access
+[LEARN] ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=053ffa4b..., `_migration_done`, `whale_need_encryption_key_forced_time`) + Whale-forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` + `xv10` magic CONFIRMED present in v4.38.386.14 binary via prior bigpickle/laguna runs — KDF constants/iteration counts + master-key storage location remain unextracted (stale until re-acquired)
+[LEARN] REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` wiki documentation previously cited as "CONFIRMED accessible" is no longer reachable; wiki API also 404s
+[LEARN] CONFIRMED sample extension manifest @ raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json: still HTTP 200 — `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins) confirmed live on the translate branch
+[LEARN] CONFIRMED sample extension background.js @ raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js: HTTP 200 — `whale.runtime.onMessage.addListener` handles `sidebarAction.show`/`hide`/`show2`/`hideAll` from ANY `sendMessage` origin without validation
+[LEARN] CONFIRMED @ GitHub search API: 1 whale-named repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of additional repos disproven
+[LEARN] REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+
+---
+
+### STEP 7 — RISK SCORE
+
+[RISK] sync: 65 — custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 82 — sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; Linux absent from CVE-2025-69235 fix CPE; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show() message handling — high-priority regression window unchanged | libs: 35 — Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk

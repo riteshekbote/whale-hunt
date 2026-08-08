@@ -136,3 +136,4 @@ testability: PASSIVE
 [LEARN] REJECTED @ cloudfront CDN binary acquisition: DNS resolution fails for `*.cloudfront.net` (nslookup: No answer) — all binary acquisition paths blocked
 [LEARN] REJECTED GitHub wiki sidebarAction docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` returns HTTP 404 — wiki documentation remains unreachable
 ## 2026-08-08 15:02:21 UTC [sync] (model ling3)
+## 2026-08-08 15:43:02 UTC [sync] (model ling3)

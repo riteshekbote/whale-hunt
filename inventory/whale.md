@@ -257,3 +257,9 @@
 - NEW CONFIRMED @ `static-whale.pstatic.net/WhaleSetup.exe`: HTTP 404 (server: Apache) — the online installer CDN artifact URL from bigpickle hypotheses is also dead; Naver pstatic infra excluded per scope.
 - NEW CONFIRMED @ NVD API (keywordSearch=`naver+whale`, no date filter): returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754); 0 in 2026 — disclosure gap confirmed
 - NEW CONFIRMED @ GitHub search API (`q=org:naver+whale`): 1 repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of additional repos disproven
+
+## 2026-08-08 15:48:16 UTC
+- NEW GitHub sample extension `js/background.js` (translate branch): HTTP 200 — `whale.runtime.onMessage.addListener` handles `sidebarAction.show`/`hide`/`show2`/`hideAll` from ANY `sendMessage` origin (no 
+- NEW `static-whale.pstatic.net/WhaleSetup.exe`: HTTP 404 (Apache) — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- NEW NVD API (keywordSearch=`naver+whale`): exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754); 0 in 2026 — disclosure gap confirmed
+- NEW GitHub search API (`q=org:naver+whale`): 1 repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of additional repos disproven

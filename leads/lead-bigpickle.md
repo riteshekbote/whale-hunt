@@ -930,3 +930,28 @@ testability: AUTH_HELPED
 [FINAL] 1. Sync KDF envelope (62) → 2. Sidebar/dual-tab SOP boundary (58) → 3. Installer DLL (50)
 [NEXT] HUMAN: Deliver the official Whale binary — run the live online `WhaleSetup.exe` from `static-whale.pstatic.net` (enumerated CDN artifact, online stub 2.1.5.0 fetches the full package at runtime) or supply the offline package — unblocking in one pass: (a) VERSIONINFO/DLL-load settles the <3.1.0.0 installer question, (b) strings/`.rodata` scan extracts `xv10`/`os_crypt_whale`/PBKDF2 iteration constants to advance the sync-KDF hypothesis, (c) enables the authorized Linux install for sidebar/dual-tab boundary testing. All passive channels re-confirmed dead this run (NVD 0-byte transient, CDN guessed path 404, repo frozen, FileHorse JS-rendered).
 [RISK] sync: 45 | custom OSCrypt/KDF + bootstrap-token envelope confirmed present in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 | 3–6 minor bumps past last SOP/CSP fixes with 0 published CVEs, Linux never claimed in CVE-2025-69235 fix, and the all-origin `sidebarAction.show` sample surface is now fully source-confirmed live → open regression window. | libs: 35 | socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.
+## 2026-08-08 15:44:25 UTC [sync] (model bigpickle)
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+confidence: 62
+reasoning: Whale-only prefs keys + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface. KDF alg/iteration count still unextracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: strings/`.rodata`/objdump on delivered binary for iteration constants + `xv10` symbols; authorized Linux login: snapshot keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords + bookmarks; High
+testability: AUTH_HELPED
+class: OTHER
+asset: Latest desktop Whale `sidebarAction.show({url})`; all-origin `runtime.onMessage` pattern (sample source)
+confidence: 58
+reasoning: CVE-2025-69235 (CWE-346) fixed v4.35.351.12; NVD CPEs list only Windows/macOS (Linux absent). Sample `background.js` (source-confirmed this run) forwards runtime messages to `sidebarAction.show`/`windows.create` without origin validation; README documents web panels load arbitrary remote URLs.
+evidence_needed: crafted HTML via `sidebarAction.show({url})` executing script or reading opener cross-origin on Linux; iframe `sandbox` escape.
+verify_steps: AUTH_HELPED: install latest on Linux; drive `sidebarAction.show({url: crafted.html})`; test opener readback + sandbox escape. (Sample itself uninstallable due to invalid manifest — test must use a minimal valid extension.)
+impact: SOP bypass / script in privileged browser-UI context; Critical if renderer escalation
+testability: AUTH_HELPED
+class: OTHER
+asset: Latest desktop Whale web panel (remote HTTP/HTTPS panel) + dual-tab
+confidence: 55
+reasoning: README.ko.md confirms web panels load remote URLs over HTTP/HTTPS; CVE-2025-53600/62584 fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months / ~4 minor bumps ahead with 0 published CVEs → regression window.
+evidence_needed: crafted panel URL reading opener cross-origin or escaping panel CSP on latest Linux/Windows.
+verify_steps: AUTH_HELPED: install latest, open crafted web panel + dual-tab; test cross-origin readback and CSP bypass.
+impact: SOP/CSP bypass in panel context; High
+testability: AUTH_HELPED
