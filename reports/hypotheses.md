@@ -918,3 +918,26 @@
 - LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — disclosure gap static for v4.35.352–v4.38.386.14 (8 months since CVE-2025-69235 fix)
 - LEARN: CONFIRMED @ GitHub sample extension source (translate branch): all 4 files (manifest.json, background.js, contentscript.js, index.html) still HTTP 200 — ALL-ori
 - LEARN: REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown, pstatic): All 100% blocked in-sandbox — DNS No-answer for *.cloudfront.net
+
+## RANKED HYPOTHESES 2026-08-08 21:30:03 UTC
+- [65] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-laguna.txt)
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable derived key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) into `/tmp/opencode/whale/` via unrestricted internet — sole unlock for b
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` w
+- LEARN: ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins)
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
+- LEARN: CONFIRMED @ GitHub search API: 1 whale-named repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of addi
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-mont
+- LEARN: CONFIRMED @ GitHub repo: `naver/whale-browser-developers` `pushed_at=2019-09-23T08:03:26Z`, `updated_at=2025-10-22T03:15:17Z` — documentation-only surface uncha
+- LEARN: CONFIRMED @ sample extension manifest (translate branch): HTTP 200 — `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins) still live; sidebar S
+- LEARN: REJECTED @ binary acquisition (cloudfront/APKMirror/Uptodown/pstatic): all channels still blocked in-sandbox — binary-dependent hypotheses remain HUMAN_ONLY-gat
+- LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (same as CVE-2025-69235), shares identical gen
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; disclosure gap s
+- LEARN: CONFIRMED @ sample extension index.js (translate branch, HTTP 200): onMessage listener does only `console.log(message)` — confirms NO sender origin validation a
+- LEARN: REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown, pstatic): All 100% blocked in-sandbox — DNS No-answer for *.cloudfront.net
+- LEARN: CONFIRMED @ changelog.whale.naver.com: Fully JS-rendered (empty text fetch), no server-side version assertion available passively; version data only fetched via
+- LEARN: REJECTED @ Wayback Machine archive of wiki sidebarAction.md: No archived snapshots exist — sidebarAction API documentation evidence permanently unavailable; att
