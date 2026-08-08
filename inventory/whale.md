@@ -290,3 +290,12 @@
 ## 2026-08-08 19:31:15 UTC
 
 ## 2026-08-08 19:58:10 UTC
+
+## 2026-08-08 20:26:23 UTC
+- NEW No new surface items since last aggregated hypotheses (2026-08-08 19:58:10 UTC).
+- NEW Live probe re-confirmed: sample extension `manifest.json` (HTTP 200), `background.js` (HTTP 200), `contentscript.js` (HTTP 200), `index.html` (HTTP 200) all still live on `translate` branch — ALL-orig
+- NEW Live probe re-confirmed: NVD keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), 0 in 2026 — 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- NEW Live probe re-confirmed: `naver/whale-browser-developers` pushed_at `2019-09-23T08:03:26Z`, updated_at `2025-10-22T03:15:17Z`, 4 branches unchanged (master, translate, v2, jdkim/update_documents) — do
+- NEW Live probe re-confirmed: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` returns HTTP 404 — wiki documentation unreachable; SOP bypass attack-surface evidence rests so
+- NEW Live probe re-confirmed: all binary acquisition channels blocked (cloudfront DNS `No answer`; APKMirror 403; Uptodown 404 page removed; pstatic 404; Naver domains OOS).
+- NEW Wikipedia infobox confirms latest stable desktop version is still v4.38.386.14 (June 25 2026) — 3 minor-version bumps past last CVE-fix v4.35.351.12 (Dec 2025), 0 published CVEs in between.

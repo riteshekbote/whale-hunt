@@ -22976,3 +22976,881 @@ CVE-2025-69235 2025-12-30 Whale browser before 4.35.351.12 allows an attacker to
 - [RISK] sync: 45 — custom OSCrypt/`xv10` KDF + bootstrap-token envelope confirmed in binary with KDF params and key-persistence unextracted; all acquisition channels dead → real surface, unverifiable keys.
 - [RISK] browser: 55 — 3–6 minor bumps past last sidebar SOP/iframe-escape fixes (CVE-2025-69234/69235 Dec 2025) with 0 published CVEs; OS-agnostic fix scope; live all-origin message path; untestable without the binary.
 - [RISK] libs: 35 — `socket.io.slim.js` Whale-only and confirmed bundled, but handler possibly runtime-fetched and no in-sandbox static path; degraded passive evidence.
+===== ANALYST bigpickle 2026-08-08 20:26:23 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && ls -la reports/ 2>/dev/null; ls -la /tmp/opencode 2>/dev/null
+total 196
+drwxr-xr-x 11 runner runner  4096 Aug  8 20:20 .
+drwxr-xr-x  3 runner runner  4096 Aug  8 20:20 ..
+drwxr-xr-x  7 runner runner  4096 Aug  8 20:20 .git
+drwxr-xr-x  3 runner runner  4096 Aug  8 20:20 .github
+-rw-r--r--  1 runner runner  1057 Aug  8 20:20 README.md
+-rw-r--r--  1 runner runner    32 Aug  8 20:20 analyst-out.txt
+-rw-r--r--  1 runner runner 59651 Aug  8 20:20 analyst-prompt.txt
+-rw-r--r--  1 runner runner 56679 Aug  8 20:20 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 leads
+-rw-r--r--  1 runner runner   696 Aug  8 20:20 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 reports
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  8 20:20 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 scripts
+-rw-r--r--  1 runner runner    34 Aug  8 20:20 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  8 20:20 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  8 20:20 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  8 20:20 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  8 20:20 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 triage
+total 5084
+drwxr-xr-x  2 runner runner    4096 Aug  8 20:20 .
+drwxr-xr-x 11 runner runner    4096 Aug  8 20:20 ..
+-rw-r--r--  1 runner runner 1975916 Aug  8 20:20 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 2794742 Aug  8 20:20 analyst-laguna.log
+-rw-r--r--  1 runner runner   23793 Aug  8 20:20 analyst-ling3.log
+-rw-r--r--  1 runner runner    3060 Aug  8 20:20 analyst-longcat.log
+-rw-r--r--  1 runner runner  332258 Aug  8 20:20 analyst-nemotron3.log
+-rw-r--r--  1 runner runner      52 Aug  8 20:20 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner   26821 Aug  8 20:20 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner      48 Aug  8 20:20 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner      50 Aug  8 20:20 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner    7815 Aug  8 20:20 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  134475 Aug  8 20:20 hypotheses.md
+-rw-r--r--  1 runner runner    3522 Aug  8 20:20 valid-bugs.md
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 .
+drwxrwxrwt 15 root   root   12288 Aug  8 20:20 ..
+[0m
+[0m✱ [0mGlob "**/*.txt"[90m 13 matches[0m
+[0m
+[0m$ [0mcat scope.yml; echo "=== probe-results.md ==="; cat probe-results.md; echo "=== state ==="; cat state_*.json; echo "=== git log ==="; git log --oneline -5
+programs:
+  whale:
+    name: Naver Whale Browser
+    disclosure_policy: TBD - operator-provided program scope (update once public channel confirmed)
+    assets:
+      - name: "Whale browser - latest version (reproducible at time of reporting)"
+        priority: In
+      - name: "Third-party libraries used ONLY by Whale (not Chromium)"
+        priority: In
+      - name: "Synchronization"
+        priority: In
+    out_of_scope:
+      - "All Naver web services (*.naver.com, *.navercorp.com)"
+      - "Web servers of built-in extensions (Papago, Belli)"
+      - "URL preview spoofing in status bar"
+      - "Bypassing XSS Auditor"
+      - "IETab extension"
+      - "SafeBrowsing false positives / false negatives"
+    github_orgs:
+      - naver
+
+rules:
+  passive_first: true          # GET/HEAD reads first; client-side scope: static analysis + repro-first
+  max_requests_per_second: 1   # never hammer
+  no_doom: true                # no DoS/DDoS
+  no_account_creation: true
+  no_data_modification: true
+  no_pre_disclosure: true
+  latest_version_required: true  # bug must reproduce on the LATEST Whale version at report time
+  redact_secrets_in_commits: true
+
+# Multi-model ensemble: every hunt run picks a rotation of the 5 models.
+models:
+  - { id: opencode/big-pickle, name: bigpickle }
+  - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+  - { id: opencode/longcat-2.0-free, name: longcat }
+  - { id: opencode/ling-3.0-flash-free, name: ling3 }
+  - { id: opencode/laguna-s-2.1-free, name: laguna }
+=== probe-results.md ===
+
+## 2026-08-08 17:04:37 UTC
+
+
+## 2026-08-08 17:42:50 UTC
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246 type=text/html;charset=UTF-8
+https://d1vdt4q2qgdbji.cloudfront.net/whale/...` -> ERR <urlopen error [Errno -5] No address associated wi
+https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb` -> ERR <urlopen error [Errno -5] No address associated wi
+
+## 2026-08-08 18:06:07 UTC
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246 type=text/html;charset=UTF-8
+https://whale-browser.en.uptodown.com/windows/download` -> HTTP 404
+
+## 2026-08-08 19:03:55 UTC
+
+
+## 2026-08-08 19:31:15 UTC
+
+
+## 2026-08-08 19:58:10 UTC
+
+=== state ===
+{"phase": "POC", "target": "sync"}{"phase": "POC", "target": "browser"}{"phase": "POC", "target": "sync"}{"phase": "POC", "target": "libs"}{"phase": "POC", "target": "browser"}=== git log ===
+89942a7 triage 2026-08-08-20-15
+[0m
+[0m→ [0mRead reports/hypotheses-nemotron3.txt
+[0m
+[0m$ [0mcd /tmp/opencode
+# NEW channel not in KB: Wayback Machine CDX for historical artifacts
+echo "=== CDX: cloudfront .deb ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=d1vdt4q2qgdbji.cloudfront.net/whale/*&output=json&limit=20&filter=statuscode:200&collapse=urlkey" | head -c 2000
+echo; sleep 1.5
+echo "=== CDX: pstatic WhaleSetup.exe ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=static-whale.pstatic.net/WhaleSetup.exe&output=json&limit=20" | head -c 2000
+echo; sleep 1.5
+echo "=== CDX: wiki sidebarAction ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=github.com/naver/whale-browser-developers/wiki/sidebarAction&output=json&limit=10" | head -c 1500
+echo; sleep 1.5
+echo "=== CDX: whale-browser.en.uptodown windows ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=whale-browser.en.uptodown.com/windows&output=json&limit=10&filter=statuscode:200&collapse=urlkey" | head -c 1500
+=== CDX: cloudfront .deb ===
+[]
+
+=== CDX: pstatic WhaleSetup.exe ===
+
+=== CDX: wiki sidebarAction ===
+[]
+
+=== CDX: whale-browser.en.uptodown windows ===
+[["urlkey","timestamp","original","mimetype","statuscode","digest","length"],
+["com,uptodown,en,whale-browser)/windows","20240121102351","https://whale-browser.en.uptodown.com/windows","text/html","200","AIJH65J2TTGMKCUTBEUCY5SRT74CM4KZ","17093"]]
+[0m
+[0m$ [0mcd /tmp/opencode
+echo "=== CDX: uptodown download ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=whale-browser.en.uptodown.com/download&output=json&limit=15" | head -c 2000
+echo; sleep 1.5
+echo "=== CDX: uptodown windows/download ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=whale-browser.en.uptodown.com/windows/download&output=json&limit=15" | head -c 2000
+echo; sleep 1.5
+echo "=== NVD delta ==="
+curl -s --max-time 25 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-12-31T23:59:59.000" | head -c 400
+echo; sleep 1.5
+echo "=== GitHub repo delta ==="
+curl -s --max-time 25 "https://api.github.com/repos/naver/whale-browser-developers" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('pushed_at'), d.get('updated_at'), d.get('open_issues_count'), d.get('default_branch'))" 2>/dev/null
+=== CDX: uptodown download ===
+[]
+
+=== CDX: uptodown windows/download ===
+[]
+
+=== NVD delta ===
+
+=== GitHub repo delta ===
+2019-09-23T08:03:26Z 2025-10-22T03:15:17Z 4 master
+[0m
+[0m$ [0mcd /tmp/opencode
+echo "=== NVD delta (retry) ==="
+curl -s --max-time 25 -o nvd.json -w "HTTP %{http_code} size=%{size_download}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale"
+python3 -c "
+import json
+d=json.load(open('nvd.json'))
+print('resultsPerPage:', d.get('resultsPerPage'), 'total:', d.get('totalResults'))
+for v in d.get('vulnerabilities',[]):
+    c=v['cve']
+    print(c['id'], c['published'])
+"
+=== NVD delta (retry) ===
+HTTP 200 size=5141
+resultsPerPage: 2 total: 2
+CVE-2018-9859 2018-06-16T01:29:09.680
+CVE-2020-9754 2022-06-27T02:15:06.977
+[0m
+[0m$ [0mcd /tmp/opencode
+echo "=== CDX: apkpure d.apkpure.com whale ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=d.apkpure.com/b/APK/com.naver.whale*&output=json&limit=10" | head -c 1500
+echo; sleep 1.5
+echo "=== CDX: apkmirror whale page ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=apkmirror.com/apk/naver-corp/whale/*&output=json&limit=8&collapse=urlkey&filter=statuscode:200" | head -c 1500
+echo; sleep 1.5
+echo "=== availability: uptodown windows snapshot ==="
+curl -s --max-time 25 "http://archive.org/wayback/available?url=whale-browser.en.uptodown.com/windows" | head -c 800
+=== CDX: apkpure d.apkpure.com whale ===
+
+=== CDX: apkmirror whale page ===
+
+=== availability: uptodown windows snapshot ===
+{"url": "whale-browser.en.uptodown.com/windows", "archived_snapshots": {"closest": {"status": "200", "available": true, "url": "http://web.archive.org/web/20260112011823/https://whale-browser.en.uptodown.com/windows", "timestamp": "20260112011823"}}}
+[0m
+[0m$ [0mcd /tmp/opencode
+curl -s --max-time 30 "http://web.archive.org/web/20260112011823/https://whale-browser.en.uptodown.com/windows" -o up_2026.html
+echo "size: $(wc -c < up_2026.html)"
+python3 -c "
+import re,html
+h=open('up_2026.html',encoding='utf-8',errors='ignore').read()
+# version info
+for m in re.findall(r'([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)', h)[:5]:
+    print('version:', m)
+# download links
+for m in re.findall(r'https?://[^\"\x27 ]*(?:download|dwn|data[.]browser)[^\"\x27 ]*', h)[:10]:
+    print('DL:', m[:150])
+for m in re.findall(r'data-url=[\"\x27]([^\"\x27]+)[\"\x27]', h)[:5]:
+    print('data-url:', m[:150])
+"
+/bin/bash: line 3: up_2026.html: No such file or directory
+size: 
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: 'up_2026.html'
+[0m
+[0m$ [0mcd /tmp/opencode
+curl -sL --max-time 40 -A "Mozilla/5.0" -o up_2026.html -w "HTTP %{http_code} size=%{size_download}\n" "http://web.archive.org/web/20260112011823/https://whale-browser.en.uptodown.com/windows"
+ls -la up_2026.html 2>/dev/null
+HTTP 000 size=0
+[0m
+[0m$ [0mcd /tmp/opencode
+for u in "http://web.archive.org/web/20260112011823/https://whale-browser.en.uptodown.com/windows" "https://web.archive.org/web/20260112011823id_/https://whale-browser.en.uptodown.com/windows"; do
+  echo "== $u"
+  curl -sI --max-time 20 -A "Mozilla/5.0" -o /dev/null -w "HTTP %{http_code} time=%{time_total}\n" "$u"
+done
+echo "== web.archive.org root"
+curl -sI --max-time 20 -o /dev/null -w "HTTP %{http_code}\n" "http://web.archive.org"
+== http://web.archive.org/web/20260112011823/https://whale-browser.en.uptodown.com/windows
+HTTP 000 time=15.582887
+== https://web.archive.org/web/20260112011823id_/https://whale-browser.en.uptodown.com/windows
+HTTP 200 time=1.382465
+== web.archive.org root
+HTTP 200
+[0m
+[0m$ [0mcd /tmp/opencode
+curl -s --max-time 40 -A "Mozilla/5.0" "https://web.archive.org/web/20260112011823id_/https://whale-browser.en.uptodown.com/windows" -o up_2026.html -w "HTTP %{http_code} size=%{size_download}\n"
+python3 -c "
+import re
+h=open('up_2026.html',encoding='utf-8',errors='ignore').read()
+vers=sorted(set(re.findall(r'([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)', h)))
+print('versions:', vers[:10])
+for m in re.findall(r'https?://[^\"\x27 >]+', h):
+    if 'dwn' in m or 'download' in m or 'uptodown' in m:
+        pass
+# look for dw.uptodown links specifically
+for m in re.findall(r'(https?://[^\"\x27 >]*dw[.]uptodown[.]com[^\"\x27 >]*)', h)[:8]:
+    print('DW:', m[:160])
+"
+HTTP 200 size=22574
+versions: []
+[0m
+[0m$ [0mcd /tmp/opencode
+python3 -c "
+import re
+h=open('up_2026.html',encoding='utf-8',errors='ignore').read()
+t=re.sub(r'<[^>]+>',' ',h)
+t=re.sub(r'\s+',' ',t)
+print(t[:1200])
+"
+      ]H NFאַܩؾٹ$b1$# 8@ urî}8AfOavB 3w'N:Ȩ.g2"H03777377>_>X0"/ h =j FyH"3HD CVi4 a0/VP0Mn3Ac ~QrG 074Y_mŬ\Rj|p) >F1 UJUop ns?˽=kaZ!%M,Ie? 86n2 JfKI f~]7$A=0 /7KJۈ ٍ=|L c,-g]DUأlE)t!h $9 U SE;m KM~  rp' \O/ c xs;Qſ> @Xdpp, M$/Cj׬L ddk {A_ ?;EYz+C C>^Vt&4MA>4mٹ'0.^sQXP&indن"hIc` gS@㥷J`4p_&25h|'c{>cfbӯGt?z$Hɟ~> jxeW3w# 1>ePӔfH\( ܲr :]N-ʕsBFȪu / #(Ƒca=0V4\rMRW(}`|glՕaږo\ؼz`ɦu0l; ^  ECx e t&LK Â¯_Ps#$#0rT1N ?ۆ0\,i Rpi~Kilpe+֚ 3:G&o+̸Knp8lhx/- a&kx /0Q٤ɆAbԗљ@_; s -P-UuR n٧ - F w[C[N-C[~twhdבawF: 0ü w`~Mx0?4Ѳ숃l-&kʟ\Vvo۪-~ ^no[$`塗izH7eAE-rae*bxDć7c)U_ŨT Y';AGzlW䭘te]ox4WOd' >Ά) y4KҫMPN^KE*f c$R!x&lE9 oO6t3?N6GwܕaC̔6+ I c4OCxR8&|I ܐ V40 Ѕ wԕD~(\&{k F[TA &gm PEk0FP(خzCpcάs##6awsft3 Tj2jK4Y§s LICB;ن-eUx nx/ dD,+="ğ2>@ S >q \h1ݼB zqm i z9V*9s 9ŐASC xܭh. Lʗ.8d :/L 8_Μ󲃑 ԒcatLghUlÙ,KHxE0P ^!E cjs 4W!(樂ef*ddD5ѸGza9ϖ^ (R$Ôzy 3 - ;;6]J y@bG`Y0+Og& ѷ`+THz?] ¨7 QIv *b\qGy赹2|dQ0+yi|_Yh4zPŀrc.k !'uS _|?5l63 } [?L.N\/\ \-~Mrx{q *|a|X/N| 2(苮KTfߖe}B;8'+9oo {^-d| '\a }t#暄1 /;^_o/Nbrsq'Lf ߡ 򛋓tqg |Yj
+[0m
+[0m$ [0mcd /tmp/opencode
+file up_2026.html
+python3 -c "
+import gzip,re
+raw=open('up_2026.html','rb').read()
+try:
+    h=gzip.decompress(raw).decode('utf-8',errors='ignore')
+except Exception as e:
+    h=''
+print('gzip ok' if h else 'not gzip')
+if h:
+    vers=sorted(set(re.findall(r'([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)', h)))
+    print('versions:', vers[:10])
+    import re
+    for m in re.findall(r'https?://[^\"\x27 >]*uptodown[^\"\x27 >]*', h)[:5]:
+        print(m[:160])
+"
+up_2026.html: gzip compressed data, from Unix, original size modulo 2^32 119587
+gzip ok
+versions: ['1.1.1.1', '3.24.223.12', '3.27.254.15', '3.28.266.14', '4.31.304.12', '4.34.340.17', '4.35.351.12', '4.35.351.7']
+https://scripts.ssm.codes/uptodown.js
+https://ssm.codes/smart-tag/uptodown.js
+https://whale-browser.en.uptodown.com/windows
+https://whale-browser.en.uptodown.com/favicon.ico
+https://whale-browser.en.uptodown.com/windows
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt
+echo "=== repo file list ==="
+curl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/master?recursive=1" | python3 -c "import json,sys; d=json.load(sys.stdin); [print(t['path']) for t in d.get('tree',[])]" 2>/dev/null
+echo "=== reposcan analysis head ==="
+head -c 1500 reposcan-raw/analysis.txt 2>/dev/null
+echo
+echo "=== grep-hits tail ==="
+tail -c 800 reposcan-raw/grep-hits.txt 2>/dev/null
+=== repo file list ===
+translation
+translation/chromium
+translation/chromium/docs
+translation/chromium/docs/how_cc_works.md
+translation/chromium/docs/images
+translation/chromium/docs/images/how_cc_works-commit_flow.png
+translation/chromium/docs/images/how_cc_works-compositor_frame.png
+translation/chromium/docs/images/how_cc_works-data_flow.png
+=== reposcan analysis head ===
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[0m✱ [0mGlob "**/*gladia*"[90m 0 matches[0m
+[0m✱ [0mGlob "**/package.json"[90m 0 matches[0m
+[0m
+[0m$ [0mls -la
+total 704
+drwxr-xr-x 11 runner runner   4096 Aug  8 19:58 .
+drwxr-xr-x  3 runner runner   4096 Aug  8 19:58 ..
+drwxr-xr-x  7 runner runner   4096 Aug  8 19:58 .git
+drwxr-xr-x  3 runner runner   4096 Aug  8 19:58 .github
+-rw-r--r--  1 runner runner   1057 Aug  8 19:58 README.md
+-rw-r--r--  1 runner runner      0 Aug  8 19:58 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 inventory
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 knowledge
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 leads
+-rw-r--r--  1 runner runner    696 Aug  8 19:58 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 reports
+-rw-r--r--  1 runner runner 597907 Aug  8 19:58 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug  8 19:58 reposcan-raw
+-rw-r--r--  1 runner runner  41664 Aug  8 19:58 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug  8 19:58 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 scripts
+-rw-r--r--  1 runner runner     34 Aug  8 19:58 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug  8 19:58 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug  8 19:58 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug  8 19:58 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug  8 19:58 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 triage
+[0
+=== grep-hits tail ===
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+[0m
+[0m$ [0mcd /tmp/opencode
+python3 -c "
+import gzip,re
+raw=open('up_2026.html','rb').read()
+h=gzip.decompress(raw).decode('utf-8',errors='ignore')
+# uptodown download page links
+for m in re.findall(r'data-url=[\"\x27]([^\"\x27]+)[\"\x27]', h)[:6]:
+    print('data-url:', m[:200])
+for m in re.findall(r'https?://[^\"\x27 >]*d[wl][^\"\x27 >]*(?:uptodown|apk)?[^\"\x27 >]*', h)[:6]:
+    print('DL:', m[:200])
+# find version block / apk id
+for m in re.findall(r'/android/(download|versions|news)[^\"\x27 ]*', h)[:6]:
+    print('UPD:', m[:120])
+"
+data-url: apps
+data-url: https://whale.naver.com/
+data-url: https://whale-browser.en.uptodown.com/windows/versions
+data-url: https://whale-browser.en.uptodown.com/windows
+data-url: https://whale-browser.en.uptodown.com/windows
+data-url: https://whale-browser.en.uptodown.com/windows
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt
+cat analyst-out.txt
+echo "---leads---"; ls leads/; echo "---triage---"; ls triage/
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && ls -la reports/ 2>/dev/null; ls -la /tmp/opencode 2>/dev/null
+total 196
+drwxr-xr-x 11 runner runner  4096 Aug  8 20:20 .
+drwxr-xr-x  3 runner runner  4096 Aug  8 20:20 ..
+drwxr-xr-x  7 runner runner  4096 Aug  8 20:20 .git
+drwxr-xr-x  3 runner runner  4096 Aug  8 20:20 .github
+-rw-r--r--  1 runner runner  1057 Aug  8 20:20 README.md
+-rw-r--r--  1 runner runner    32 Aug  8 20:20 analyst-out.txt
+-rw-r--r--  1 runner runner 59651 Aug  8 20:20 analyst-prompt.txt
+-rw-r--r--  1 runner runner 56679 Aug  8 20:20 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 leads
+-rw-r--r--  1 runner runner   696 Aug  8 20:20 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 reports
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  8 20:20 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 scripts
+-rw-r--r--  1 runner runner    34 Aug  8 20:20 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  8 20:20 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  8 20:20 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  8 20:20 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  8 20:20 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 triage
+total 5084
+drwxr-xr-x  2 runner runner    4096 Aug  8 20:20 .
+drwxr-xr-x 11 runner runner    4096 Aug  8 20:20 ..
+-rw-r--r--  1 runner runner 1975916 Aug  8 20:20 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 2794742 Aug  8 20:20 analyst-laguna.log
+-rw-r--r--  1 runner runner   23793 Aug  8 20:20 analyst-ling3.log
+-rw-r--r--  1 runner runner    3060 Aug  8 20:20 analyst-longcat.log
+-rw-r--r--  1 runner runner  332258 Aug  8 20:20 analyst-nemotron3.log
+-rw-r--r--  1 runner runner      52 Aug  8 20:20 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner   26821 Aug  8 20:20 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner      48 Aug  8 20:20 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner      50 Aug  8 20:20 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner    7815 Aug  8 20:20 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  134475 Aug  8 20:20 hypotheses.md
+-rw-r--r--  1 runner runner    3522 Aug  8 20:20 valid-bugs.md
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  8 20:20 .
+drwxrwxrwt 15 root   root   12288 Aug  8 20:20 ..
+[0m
+[0m✱ [0mGlob "**/*.txt"[90m 13 matches[0m
+[0m
+[0m$ [0mcat scope.yml; echo "=== probe-results.md ==="; cat probe-results.md; echo "=== state ==="; cat state_*.json; echo "=== git log ==="; git log --oneline -5
+programs:
+  whale:
+    name: Naver Whale Browser
+    disclosure_policy: TBD - operator-provided program scope (update once public channel confirmed)
+    assets:
+      - name: "Whale browser - latest version (reproducible at time of reporting)"
+        priority: In
+      - name: "Third-party libraries used ONLY by Whale (not Chromium)"
+        priority: In
+      - name: "Synchronization"
+        priority: In
+    out_of_scope:
+      - "All Naver web services (*.naver.com, *.navercorp.com)"
+      - "Web servers of built-in extensions (Papago, Belli)"
+      - "URL preview spoofing in status bar"
+      - "Bypassing XSS Auditor"
+      - "IETab extension"
+      - "SafeBrowsing false positives / false negatives"
+    github_orgs:
+      - naver
+
+rules:
+  passive_first: true          # GET/HEAD reads first; client-side scope: static analysis + repro-first
+  max_requests_per_second: 1   # never hammer
+  no_doom: true                # no DoS/DDoS
+  no_account_creation: true
+  no_data_modification: true
+  no_pre_disclosure: true
+  latest_version_required: true  # bug must reproduce on the LATEST Whale version at report time
+  redact_secrets_in_commits: true
+
+# Multi-model ensemble: every hunt run picks a rotation of the 5 models.
+models:
+  - { id: opencode/big-pickle, name: bigpickle }
+  - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+  - { id: opencode/longcat-2.0-free, name: longcat }
+  - { id: opencode/ling-3.0-flash-free, name: ling3 }
+  - { id: opencode/laguna-s-2.1-free, name: laguna }
+=== probe-results.md ===
+
+## 2026-08-08 17:04:37 UTC
+
+
+## 2026-08-08 17:42:50 UTC
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246 type=text/html;charset=UTF-8
+https://d1vdt4q2qgdbji.cloudfront.net/whale/...` -> ERR <urlopen error [Errno -5] No address associated wi
+https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb` -> ERR <urlopen error [Errno -5] No address associated wi
+
+## 2026-08-08 18:06:07 UTC
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246 type=text/html;charset=UTF-8
+https://whale-browser.en.uptodown.com/windows/download` -> HTTP 404
+
+## 2026-08-08 19:03:55 UTC
+
+
+## 2026-08-08 19:31:15 UTC
+
+
+## 2026-08-08 19:58:10 UTC
+
+=== state ===
+{"phase": "POC", "target": "sync"}{"phase": "POC", "target": "browser"}{"phase": "POC", "target": "sync"}{"phase": "POC", "target": "libs"}{"phase": "POC", "target": "browser"}=== git log ===
+89942a7 triage 2026-08-08-20-15
+[0m
+[0m→ [0mRead reports/hypotheses-nemotron3.txt
+[0m
+[0m$ [0mcd /tmp/opencode
+# NEW channel not in KB: Wayback Machine CDX for historical artifacts
+echo "=== CDX: cloudfront .deb ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=d1vdt4q2qgdbji.cloudfront.net/whale/*&output=json&limit=20&filter=statuscode:200&collapse=urlkey" | head -c 2000
+echo; sleep 1.5
+echo "=== CDX: pstatic WhaleSetup.exe ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=static-whale.pstatic.net/WhaleSetup.exe&output=json&limit=20" | head -c 2000
+echo; sleep 1.5
+echo "=== CDX: wiki sidebarAction ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=github.com/naver/whale-browser-developers/wiki/sidebarAction&output=json&limit=10" | head -c 1500
+echo; sleep 1.5
+echo "=== CDX: whale-browser.en.uptodown windows ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=whale-browser.en.uptodown.com/windows&output=json&limit=10&filter=statuscode:200&collapse=urlkey" | head -c 1500
+=== CDX: cloudfront .deb ===
+[]
+
+=== CDX: pstatic WhaleSetup.exe ===
+
+=== CDX: wiki sidebarAction ===
+[]
+
+=== CDX: whale-browser.en.uptodown windows ===
+[["urlkey","timestamp","original","mimetype","statuscode","digest","length"],
+["com,uptodown,en,whale-browser)/windows","20240121102351","https://whale-browser.en.uptodown.com/windows","text/html","200","AIJH65J2TTGMKCUTBEUCY5SRT74CM4KZ","17093"]]
+[0m
+[0m$ [0mcd /tmp/opencode
+echo "=== CDX: uptodown download ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=whale-browser.en.uptodown.com/download&output=json&limit=15" | head -c 2000
+echo; sleep 1.5
+echo "=== CDX: uptodown windows/download ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=whale-browser.en.uptodown.com/windows/download&output=json&limit=15" | head -c 2000
+echo; sleep 1.5
+echo "=== NVD delta ==="
+curl -s --max-time 25 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-12-31T23:59:59.000" | head -c 400
+echo; sleep 1.5
+echo "=== GitHub repo delta ==="
+curl -s --max-time 25 "https://api.github.com/repos/naver/whale-browser-developers" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('pushed_at'), d.get('updated_at'), d.get('open_issues_count'), d.get('default_branch'))" 2>/dev/null
+=== CDX: uptodown download ===
+[]
+
+=== CDX: uptodown windows/download ===
+[]
+
+=== NVD delta ===
+
+=== GitHub repo delta ===
+2019-09-23T08:03:26Z 2025-10-22T03:15:17Z 4 master
+[0m
+[0m$ [0mcd /tmp/opencode
+echo "=== NVD delta (retry) ==="
+curl -s --max-time 25 -o nvd.json -w "HTTP %{http_code} size=%{size_download}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale"
+python3 -c "
+import json
+d=json.load(open('nvd.json'))
+print('resultsPerPage:', d.get('resultsPerPage'), 'total:', d.get('totalResults'))
+for v in d.get('vulnerabilities',[]):
+    c=v['cve']
+    print(c['id'], c['published'])
+"
+=== NVD delta (retry) ===
+HTTP 200 size=5141
+resultsPerPage: 2 total: 2
+CVE-2018-9859 2018-06-16T01:29:09.680
+CVE-2020-9754 2022-06-27T02:15:06.977
+[0m
+[0m$ [0mcd /tmp/opencode
+echo "=== CDX: apkpure d.apkpure.com whale ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=d.apkpure.com/b/APK/com.naver.whale*&output=json&limit=10" | head -c 1500
+echo; sleep 1.5
+echo "=== CDX: apkmirror whale page ==="
+curl -s --max-time 25 "http://web.archive.org/cdx/search/cdx?url=apkmirror.com/apk/naver-corp/whale/*&output=json&limit=8&collapse=urlkey&filter=statuscode:200" | head -c 1500
+echo; sleep 1.5
+echo "=== availability: uptodown windows snapshot ==="
+curl -s --max-time 25 "http://archive.org/wayback/available?url=whale-browser.en.uptodown.com/windows" | head -c 800
+=== CDX: apkpure d.apkpure.com whale ===
+
+=== CDX: apkmirror whale page ===
+
+=== availability: uptodown windows snapshot ===
+{"url": "whale-browser.en.uptodown.com/windows", "archived_snapshots": {"closest": {"status": "200", "available": true, "url": "http://web.archive.org/web/20260112011823/https://whale-browser.en.uptodown.com/windows", "timestamp": "20260112011823"}}}
+[0m
+[0m$ [0mcd /tmp/opencode
+curl -s --max-time 30 "http://web.archive.org/web/20260112011823/https://whale-browser.en.uptodown.com/windows" -o up_2026.html
+echo "size: $(wc -c < up_2026.html)"
+python3 -c "
+import re,html
+h=open('up_2026.html',encoding='utf-8',errors='ignore').read()
+# version info
+for m in re.findall(r'([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)', h)[:5]:
+    print('version:', m)
+# download links
+for m in re.findall(r'https?://[^\"\x27 ]*(?:download|dwn|data[.]browser)[^\"\x27 ]*', h)[:10]:
+    print('DL:', m[:150])
+for m in re.findall(r'data-url=[\"\x27]([^\"\x27]+)[\"\x27]', h)[:5]:
+    print('data-url:', m[:150])
+"
+/bin/bash: line 3: up_2026.html: No such file or directory
+size: 
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: 'up_2026.html'
+[0m
+[0m$ [0mcd /tmp/opencode
+curl -sL --max-time 40 -A "Mozilla/5.0" -o up_2026.html -w "HTTP %{http_code} size=%{size_download}\n" "http://web.archive.org/web/20260112011823/https://whale-browser.en.uptodown.com/windows"
+ls -la up_2026.html 2>/dev/null
+HTTP 000 size=0
+[0m
+[0m$ [0mcd /tmp/opencode
+for u in "http://web.archive.org/web/20260112011823/https://whale-browser.en.uptodown.com/windows" "https://web.archive.org/web/20260112011823id_/https://whale-browser.en.uptodown.com/windows"; do
+  echo "== $u"
+  curl -sI --max-time 20 -A "Mozilla/5.0" -o /dev/null -w "HTTP %{http_code} time=%{time_total}\n" "$u"
+done
+echo "== web.archive.org root"
+curl -sI --max-time 20 -o /dev/null -w "HTTP %{http_code}\n" "http://web.archive.org"
+== http://web.archive.org/web/20260112011823/https://whale-browser.en.uptodown.com/windows
+HTTP 000 time=15.582887
+== https://web.archive.org/web/20260112011823id_/https://whale-browser.en.uptodown.com/windows
+HTTP 200 time=1.382465
+== web.archive.org root
+HTTP 200
+[0m
+[0m$ [0mcd /tmp/opencode
+curl -s --max-time 40 -A "Mozilla/5.0" "https://web.archive.org/web/20260112011823id_/https://whale-browser.en.uptodown.com/windows" -o up_2026.html -w "HTTP %{http_code} size=%{size_download}\n"
+python3 -c "
+import re
+h=open('up_2026.html',encoding='utf-8',errors='ignore').read()
+vers=sorted(set(re.findall(r'([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)', h)))
+print('versions:', vers[:10])
+for m in re.findall(r'https?://[^\"\x27 >]+', h):
+    if 'dwn' in m or 'download' in m or 'uptodown' in m:
+        pass
+# look for dw.uptodown links specifically
+for m in re.findall(r'(https?://[^\"\x27 >]*dw[.]uptodown[.]com[^\"\x27 >]*)', h)[:8]:
+    print('DW:', m[:160])
+"
+HTTP 200 size=22574
+versions: []
+[0m
+[0m$ [0mcd /tmp/opencode
+python3 -c "
+import re
+h=open('up_2026.html',encoding='utf-8',errors='ignore').read()
+t=re.sub(r'<[^>]+>',' ',h)
+t=re.sub(r'\s+',' ',t)
+print(t[:1200])
+"
+      ]H NFאַܩؾٹ$b1$# 8@ urî}8AfOavB 3w'N:Ȩ.g2"H03777377>_>X0"/ h =j FyH"3HD CVi4 a0/VP0Mn3Ac ~QrG 074Y_mŬ\Rj|p) >F1 UJUop ns?˽=kaZ!%M,Ie? 86n2 JfKI f~]7$A=0 /7KJۈ ٍ=|L c,-g]DUأlE)t!h $9 U SE;m KM~  rp' \O/ c xs;Qſ> @Xdpp, M$/Cj׬L ddk {A_ ?;EYz+C C>^Vt&4MA>4mٹ'0.^sQXP&indن"hIc` gS@㥷J`4p_&25h|'c{>cfbӯGt?z$Hɟ~> jxeW3w# 1>ePӔfH\( ܲr :]N-ʕsBFȪu / #(Ƒca=0V4\rMRW(}`|glՕaږo\ؼz`ɦu0l; ^  ECx e t&LK Â¯_Ps#$#0rT1N ?ۆ0\,i Rpi~Kilpe+֚ 3:G&o+̸Knp8lhx/- a&kx /0Q٤ɆAbԗљ@_; s -P-UuR n٧ - F w[C[N-C[~twhdבawF: 0ü w`~Mx0?4Ѳ숃l-&kʟ\Vvo۪-~ ^no[$`塗izH7eAE-rae*bxDć7c)U_ŨT Y';AGzlW䭘te]ox4WOd' >Ά) y4KҫMPN^KE*f c$R!x&lE9 oO6t3?N6GwܕaC̔6+ I c4OCxR8&|I ܐ V40 Ѕ wԕD~(\&{k F[TA &gm PEk0FP(خzCpcάs##6awsft3 Tj2jK4Y§s LICB;ن-eUx nx/ dD,+="ğ2>@ S >q \h1ݼB zqm i z9V*9s 9ŐASC xܭh. Lʗ.8d :/L 8_Μ󲃑 ԒcatLghUlÙ,KHxE0P ^!E cjs 4W!(樂ef*ddD5ѸGza9ϖ^ (R$Ôzy 3 - ;;6]J y@bG`Y0+Og& ѷ`+THz?] ¨7 QIv *b\qGy赹2|dQ0+yi|_Yh4zPŀrc.k !'uS _|?5l63 } [?L.N\/\ \-~Mrx{q *|a|X/N| 2(苮KTfߖe}B;8'+9oo {^-d| '\a }t#暄1 /;^_o/Nbrsq'Lf ߡ 򛋓tqg |Yj
+[0m
+[0m$ [0mcd /tmp/opencode
+file up_2026.html
+python3 -c "
+import gzip,re
+raw=open('up_2026.html','rb').read()
+try:
+    h=gzip.decompress(raw).decode('utf-8',errors='ignore')
+except Exception as e:
+    h=''
+print('gzip ok' if h else 'not gzip')
+if h:
+    vers=sorted(set(re.findall(r'([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)', h)))
+    print('versions:', vers[:10])
+    import re
+    for m in re.findall(r'https?://[^\"\x27 >]*uptodown[^\"\x27 >]*', h)[:5]:
+        print(m[:160])
+"
+up_2026.html: gzip compressed data, from Unix, original size modulo 2^32 119587
+gzip ok
+versions: ['1.1.1.1', '3.24.223.12', '3.27.254.15', '3.28.266.14', '4.31.304.12', '4.34.340.17', '4.35.351.12', '4.35.351.7']
+https://scripts.ssm.codes/uptodown.js
+https://ssm.codes/smart-tag/uptodown.js
+https://whale-browser.en.uptodown.com/windows
+https://whale-browser.en.uptodown.com/favicon.ico
+https://whale-browser.en.uptodown.com/windows
+[0m
+[0m$ [0mcd /home/runner/work/whale-hunt/whale-hunt
+echo "=== repo file list ==="
+curl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/master?recursive=1" | python3 -c "import json,sys; d=json.load(sys.stdin); [print(t['path']) for t in d.get('tree',[])]" 2>/dev/null
+echo "=== reposcan analysis head ==="
+head -c 1500 reposcan-raw/analysis.txt 2>/dev/null
+echo
+echo "=== grep-hits tail ==="
+tail -c 800 reposcan-raw/grep-hits.txt 2>/dev/null
+=== repo file list ===
+translation
+translation/chromium
+translation/chromium/docs
+translation/chromium/docs/how_cc_works.md
+translation/chromium/docs/images
+translation/chromium/docs/images/how_cc_works-commit_flow.png
+translation/chromium/docs/images/how_cc_works-compositor_frame.png
+translation/chromium/docs/images/how_cc_works-data_flow.png
+=== reposcan analysis head ===
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[0m✱ [0mGlob "**/*gladia*"[90m 0 matches[0m
+[0m✱ [0mGlob "**/package.json"[90m 0 matches[0m
+[0m
+[0m$ [0mls -la
+total 704
+drwxr-xr-x 11 runner runner   4096 Aug  8 19:58 .
+drwxr-xr-x  3 runner runner   4096 Aug  8 19:58 ..
+drwxr-xr-x  7 runner runner   4096 Aug  8 19:58 .git
+drwxr-xr-x  3 runner runner   4096 Aug  8 19:58 .github
+-rw-r--r--  1 runner runner   1057 Aug  8 19:58 README.md
+-rw-r--r--  1 runner runner      0 Aug  8 19:58 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 inventory
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 knowledge
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 leads
+-rw-r--r--  1 runner runner    696 Aug  8 19:58 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 reports
+-rw-r--r--  1 runner runner 597907 Aug  8 19:58 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug  8 19:58 reposcan-raw
+-rw-r--r--  1 runner runner  41664 Aug  8 19:58 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug  8 19:58 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 scripts
+-rw-r--r--  1 runner runner     34 Aug  8 19:58 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug  8 19:58 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug  8 19:58 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug  8 19:58 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug  8 19:58 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Aug  8 19:58 triage
+[0
+=== grep-hits tail ===
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+[0m
+[0m$ [0mcd /tmp/opencode
+python3 -c "
+import gzip,re
+raw=open('up_2026.html','rb').read()
+h=gzip.decompress(raw).decode('utf-8',errors='ignore')
+# uptodown download page links
+for m in re.findall(r'data-url=[\"\x27]([^\"\x27]+)[\"\x27]', h)[:6]:
+    print('data-url:', m[:200])
+for m in re.findall(r'https?://[^\"\x27 >]*d[wl][^\"\x27 >]*(?:uptodown|apk)?[^\"\x27 >]*', h)[:6]:
+    print('DL:', m[:200])
+# find version block / apk id
+for m in re.findall(r'/android/(download|versions|news)[^\"\x27 ]*', h)[:6]:
+    print('UPD:', m[:120])
+"
+data-url: apps
+data-url: https://whale.naver.com/
+data-url: https://whale-browser.en.uptodown.com/windows/versions
+data-url: https://whale-browser.en.uptodown.com/windows
+data-url: https://whale-browser.en.uptodown.com/windows
+data-url: https://whale-browser.en.uptodown.com/windows
+[0m
+---leads---
+lead-bigpickle.md
+lead-laguna.md
+lead-ling3.md
+lead-longcat.md
+lead-nemotron3.md
+reposcan-2026-08-07-18-44.md
+reposcan-2026-08-07-18-59.md
+reposcan-2026-08-07-19-19.md
+reposcan-2026-08-07-19-22.md
+reposcan-2026-08-07-19-28.md
+reposcan-2026-08-07-20-06.md
+reposcan-2026-08-07-20-11.md
+reposcan-2026-08-07-20-59.md
+reposcan-2026-08-07-21-09.md
+reposcan-2026-08-07-21-58.md
+reposcan-2026-08-07-22-05.md
+reposcan-2026-08-07-22-23.md
+reposcan-2026-08-07-23-05.md
+reposcan-2026-08-07-23-08.md
+reposcan-2026-08-07-23-50.md
+reposcan-2026-08-07-23-57.md
+reposcan-2026-08-08-00-44.md
+reposcan-2026-08-08-01-38.md
+reposcan-2026-08-08-02-55.md
+reposcan-2026-08-08-03-20.md
+reposcan-2026-08-08-04-14.md
+reposcan-2026-08-08-04-34.md
+reposcan-2026-08-08-05-18.md
+reposcan-2026-08-08-05-39.md
+reposcan-2026-08-08-06-07.md
+reposcan-2026-08-08-06-42.md
+reposcan-2026-08-08-07-44.md
+reposcan-2026-08-08-07-49.md
+reposcan-2026-08-08-08-23.md
+reposcan-2026-08-08-08-35.md
+reposcan-2026-08-08-09-12.md
+reposcan-2026-08-08-09-33.md
+reposcan-2026-08-08-09-57.md
+reposcan-2026-08-08-10-26.md
+reposcan-2026-08-08-10-37.md
+reposcan-2026-08-08-11-01.md
+reposcan-2026-08-08-11-07.md
+reposcan-2026-08-08-11-36.md
+reposcan-2026-08-08-11-44.md
+reposcan-2026-08-08-12-08.md
+reposcan-2026-08-08-12-37.md
+reposcan-2026-08-08-13-17.md
+reposcan-2026-08-08-13-42.md
+reposcan-2026-08-08-13-59.md
+reposcan-2026-08-08-14-27.md
+reposcan-2026-08-08-14-38.md
+reposcan-2026-08-08-14-59.md
+reposcan-2026-08-08-15-07.md
+reposcan-2026-08-08-15-35.md
+reposcan-2026-08-08-15-49.md
+reposcan-2026-08-08-16-51.md
+reposcan-2026-08-08-17-06.md
+reposcan-2026-08-08-17-26.md
+reposcan-2026-08-08-17-43.md
+reposcan-2026-08-08-17-57.md
+reposcan-2026-08-08-18-09.md
+reposcan-2026-08-08-18-34.md
+reposcan-2026-08-08-19-05.md
+reposcan-2026-08-08-19-16.md
+reposcan-2026-08-08-19-33.md
+reposcan-2026-08-08-19-53.md
+reposcan-2026-08-08-20-03.md
+reposcan-latest.md
+---triage---
+run-2026-08-07-19-23.md
+run-2026-08-07-21-01.md
+run-2026-08-07-21-04.md
+run-2026-08-07-21-57.md
+run-2026-08-07-22-02.md
+run-2026-08-07-22-57.md
+run-2026-08-07-23-03.md
+run-2026-08-07-23-53.md
+run-2026-08-08-02-34.md
+run-2026-08-08-04-30.md
+run-2026-08-08-04-39.md
+run-2026-08-08-06-09.md
+run-2026-08-08-07-30.md
+run-2026-08-08-09-06.md
+run-2026-08-08-10-02.md
+run-2026-08-08-10-56.md
+run-2026-08-08-11-50.md
+run-2026-08-08-13-00.md
+run-2026-08-08-13-16.md
+run-2026-08-08-14-00.md
+run-2026-08-08-14-06.md
+run-2026-08-08-14-38.md
+run-2026-08-08-14-55.md
+run-2026-08-08-15-52.md
+run-2026-08-08-17-00.md
+run-2026-08-08-17-58.md
+run-2026-08-08-18-00.md
+run-2026-08-08-18-17.md
+run-2026-08-08-18-30.md
+run-2026-08-08-19-06.md
+run-2026-08-08-19-48.md
+run-2026-08-08-20-15.md
+[0m
+STEP 1 — DELTA
+- [NEW] Wayback Machine (web.archive.org) evaluated as 6th binary-acquisition channel: CDX empty for cloudfront `d1vdt4q2qgdbji.cloudfront.net/whale/*`, `static-whale.pstatic.net/WhaleSetup.exe`, `d.apkpure.com/b/APK/com.naver.whale*`, apkmirror whale pages, and uptodown `download` URLs; only uptodown `windows` landing page archived (2024-01-21, 2026-01-12) — decompressed 2026-01-12 snapshot lists versions ≤4.35.351.12 (last CVE-fixed build), no v4.38.386.14 binary ever archived, no direct installer links (JS/tokenized). Channel dead for latest.
+- [CONFIRMED] NVD: still exactly 2 Whale CVEs (CVE-2018-9859, CVE-2020-9754), 0 in 2026 — gap unchanged.
+- [CONFIRMED] `naver/whale-browser-developers`: pushed_at 2019-09-23, 4 open issues, tree = 4 translation docs only — unchanged.
+
+STEP 2 — PRIORITIZE
+- [PRIO] Sidebar/dual-tab SOP boundary on latest desktop (v4.38.386.14, Linux absent from fix CPE), 6.85, atk=8 biz=8 tech=8 gate=3 cloud=2 fresh=10
+- [PRIO] whalesync client engine (api.whale.naver.com/whalesync + profile prefs + NEO_SES cookie auth), 6.50, atk=7 biz=8 tech=9 gate=2 cloud=3 fresh=8
+- [PRIO] Desktop Whale binary `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` (`xv10` magic; sync.encryption_bootstrap_token_per_account sha256=053ffa4b...), 6.15, atk=7 biz=7 tech=8 gate=3 cloud=2 fresh=8
+- [PRIO] Bundled `socket.io.slim.js` in `resources.pak` (runtime-fetched handler), 4.05, atk=4 biz=4 tech=6 gate=3 cloud=1 fresh=6
+
+STEP 3 — HYPOTHESES
+[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable derived key
+class: AUTH
+asset: Desktop Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync` (NEO_SES)
+confidence: 60
+reasoning: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface; KDF alg + iteration count still unextracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance; whether `whale_need_encryption_key_forced_time` downgrades to a stale key.
+verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords + bookmarks; High
+testability: AUTH_HELPED
+
+[HYP] Sidebar/dual-tab SOP-boundary regression — CVE-2025-69235/62585 variant on v4.38.386.14
+class: OTHER
+asset: Latest desktop Whale `sidebarAction.show({url})` + web-panel boundary (Linux CPE absent from 69235 fix)
+confidence: 55
+reasoning: CVE-2025-69235 fixed <4.35.351.12 (Dec 2025); latest v4.38.386.14 is 3 minor bumps ahead, 0 CVEs since; live sample extension (background.js HTTP 200) forwards ANY-origin `runtime.onMessage` to `sidebarAction.show`/`windows.create` unvalidated; manifest.json invalid → real test needs a minimal valid MV2 extension.
+evidence_needed: crafted panel URL executing script / cross-origin opener readback / iframe sandbox escape / panel CSP bypass on the latest build.
+verify_steps: AUTH_HELPED: install latest on Linux, load minimal valid MV2 extension, drive all-origin content-script `sendMessage`, `sidebarAction.show({url: crafted.html})`, test opener readback + sandbox escape. Zero Naver-infra requests.
+impact: SOP bypass / script execution in privileged browser-UI context; High
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] `socket.io.slim.js` event-handler injection (XSS, 40): confidence sits exactly at floor 40, handler is runtime-fetched so evidence_needed is unattainable even with the binary, and KB carries REJECTED XSS @ extension/built-in-extension-processing class — weakest link, parked.
+- [PARKED] Android sync KDF (AUTH, 55): binary-blocked, no passive-first proof path — stale until HUMAN delivers binary.
+- [FINAL] 1. Sync passphrase KDF + bootstrap-token envelope (AUTH, 60) — survives: unique Whale-only surface, concrete AUTH_HELPED steps.
+- [FINAL] 2. Sidebar/dual-tab SOP boundary regression (OTHER, 55) — survives: live evidence, testable once binary installs.
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: Deliver ANY official Whale desktop binary to `/tmp/opencode/whale_binary/` — refine prior ask: the sync-KDF hypothesis does NOT require the latest build, since `os_crypt_whale`/`xv10` constants are architecture-stable (even the archived 4.35.x-era binary settles PBKDF2/scrypt alg + iteration count + key persistence). Latest v4.38.386.14 required only for the sidebar-regression repro. All 6 passive channels re-confirmed dead this run (cloudfront DNS `No answer`, APKMirror/apkpure 403, uptodown 404 live + Wayback archive maxes at 4.35.351.12, pstatic 404, Naver infra excluded).
+
+STEP 6 — LEARNING
+- [LEARN] REJECTED binary acquisition @ Wayback Machine (web.archive.org): CDX + availability API show zero archived Whale binaries (cloudfront .deb, pstatic WhaleSetup.exe, apkpure/apkmirror, uptodown download URLs all empty); sole uptodown snapshot (2026-01-12) lists versions ≤4.35.351.12 with no installer links — archive.org is the 6th dead channel; HUMAN delivery is the only acquisition path.
+- [LEARN] REJECTED XSS @ extension/bundled-processing: socket.io.slim.js XSS parked — class family already carried as REJECTED in KB, confidence at floor, evidence unattainable.
+
+STEP 7 — RISK SCORE
+- [RISK] sync: 45 — custom `/whalesync` + per-account bootstrap tokens + `xv10` OSCrypt fork confirmed in binary, but KDF params/master-key storage unextracted and all 6 acquisition channels dead; real surface, unverifiable keys. | browser: 55 — 3 minor bumps past last sidebar SOP fix (CVE-2025-69235, Linux CPE absent) with 0 CVEs since; all-origin message path source-documented live but untestable without binary. | libs: 35 — socket.io.slim.js Whale-only but runtime-fetched; no in-sandbox static path; visibility lowest.
