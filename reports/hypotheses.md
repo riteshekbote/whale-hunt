@@ -805,3 +805,23 @@
 - LEARN: REJECTED @ GitHub repo: documentation-only (last commit 2019-09-23, 0 releases, 1 repo) — static path permanently dead; binary acquisition is only vector.
 - LEARN: REJECTED @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net`+`*.cloudfront.net` still `No answer` (127.0.0.53) — `.deb` path permanently dead in-sandbox.
 - LEARN: REJECTED @ GitHub wiki `sidebarAction` docs: still HTTP 404 — SOP evidence rests solely on live sample extension source.
+
+## RANKED HYPOTHESES 2026-08-08 18:06:07 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Sidebar/dual-tab boundary regression — CVE-2025-69235 variant on v4.38.386.14 (from reports/hypotheses-laguna.txt)
+- [58] com.naver.whale: Android sync encryption key derivation/storage, com.naver.whale 3.9.14.9 (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/aut
+- NEXT(hypotheses-bigpickle.txt): PROBE: resolve the uptodown session-signed direct link to obtain com.naver.whale 3.9.14.9 XAPK: (1) `curl -c /tmp/opencode/utd.jar -s "https://naver-whale-brows
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` w
+- LEARN: ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins)
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
+- LEARN: CONFIRMED @ GitHub search API: 1 whale-named repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of addi
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apk.support/apkpure: Cloudflare 403 on curl egress in this sandbox — PASSIVE binary-download path is dead here;
+- LEARN: ACCEPTED Android sync asset @ com.naver.whale 3.9.14.9: version + SHA256 pinned via non-Naver mirror metadata (APKMirror/Uptodown) — in-scope sync surface confi
+- LEARN: CONFIRMED desktop latest @ changelog.whale.naver.com: page is fully JS-rendered (empty text fetch) — no server-side version assertion available passively; v4.38
+- LEARN: ACCEPTED @ GitHub sample extension `js/contentscript.js` (translate branch, HTTP 200): confirms `whale.runtime.sendMessage('sidebarAction.show')` / `'sidebarAct
+- LEARN: CONFIRMED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net`+`*.cloudfront.net` resolve `No answer` (127.0.0.53) — desktop `.deb` path permanently dead in-sandbo
+- LEARN: CONFIRMED @ GitHub wiki `sidebarAction` docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` still 404 — wiki documentation un

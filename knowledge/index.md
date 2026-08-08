@@ -160,3 +160,6 @@
 - 2026-08-08 REJECTED @ GitHub repo: documentation-only (last commit 2019-09-23, 0 releases, 1 repo) — static path permanently dead; binary acquisition is only vector.
 - 2026-08-08 REJECTED @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net`+`*.cloudfront.net` still `No answer` (127.0.0.53) — `.deb` path permanently dead in-sandbox.
 - 2026-08-08 REJECTED @ GitHub wiki `sidebarAction` docs: still HTTP 404 — SOP evidence rests solely on live sample extension source.
+- 2026-08-08 ACCEPTED @ GitHub sample extension `js/contentscript.js` (translate branch, HTTP 200): confirms `whale.runtime.sendMessage('sidebarAction.show')` / `'sidebarAction.show2'` fired from `navigator.userAgent.includes('sidebar')` === false branch — i.e., from **any web page** content_script context to privileged background without sender origin validation — attack surface confirmed wider than initially scoped.
+- 2026-08-08 CONFIRMED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net`+`*.cloudfront.net` resolve `No answer` (127.0.0.53) — desktop `.deb` path permanently dead in-sandbox.
+- 2026-08-08 CONFIRMED @ GitHub wiki `sidebarAction` docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` still 404 — wiki documentation unreachable; SOP bypass evidence rests solely on live sample extension source.
