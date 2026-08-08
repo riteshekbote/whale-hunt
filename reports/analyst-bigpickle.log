@@ -11613,3 +11613,2892 @@ Stopping here for a checkpoint. My next-step proposal, for your confirmation bef
 3. **Map `wbc_wrapper_apis.cc` (Whale Browser Core)** — this is a Whale-only IPC bridge; a cross-process exposure there is a candidate finding.
 
 Want me to continue with these three, or focus on something else?
+===== ANALYST bigpickle 2026-08-08 07:48:25 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/ 2>/dev/null | head -50
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  8 07:30 .
+drwxrwxrwt 15 root   root   12288 Aug  8 07:30 ..
+[0m
+[0m$ [0mls -la /tmp/opencode/*.deb /tmp/opencode/*.xapk /tmp/opencode/*.apk 2>/dev/null; echo "---"; which jadx apktool d8 dex2jar unzip objdump readelf 2>/dev/null
+---
+/usr/bin/unzip
+/usr/bin/objdump
+/usr/bin/readelf
+[0m
+/tmp/opencode is empty — no binary cached. Attempting the planned uptodown probe to acquire com.naver.whale 3.9.14.9.
+[0m$ [0mcurl -s -c /tmp/opencode/utd.jar -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" -L "https://naver-whale-browser.en.uptodown.com/android/download" -o /tmp/opencode/utd_page.html; echo "HTTP done, size:"; wc -c /tmp/opencode/utd_page.html
+HTTP done, size:
+155246 /tmp/opencode/utd_page.html
+[0m
+[0m$ [0mgrep -o 'data-url="[^"]*"' /tmp/opencode/utd_page.html | head -5; echo "---"; grep -o 'https://dw.uptodown.com/[^"]*' /tmp/opencode/utd_page.html | head -5; echo "---version---"; grep -oE '>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+<' /tmp/opencode/utd_page.html | head; grep -oE '3\.9\.14\.[0-9]+' /tmp/opencode/utd_page.html | head
+data-url="apps"
+data-url="https://play.google.com/store/apps/details?id=com.naver.whale"
+data-url="9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHxuBvUi2KcgcnxT3PP94fonAWCwSPQEhdkWKDN-xfjpbyz5JY_RsmmuFe/QjcuGlmSjULQuBWN8_ZgM-VMV78JZeVFpAoUNXdJNuhofAaMDLuxXGPiAUJrlOxM2PdJG20MrgyOki6lxCHl9cbxyKx_gALsSxxqZbc5OusNIqoFVyMZn2BWpB0vFzMv/xsgsQDaIEAODcOG-oY8ktN52doxhX1ziwIVvCyFl0HwlFLVdrth_hp6U3MpWkeSMnTUZB0rXIwQLV_2W38zlTMSvDJinNQv8598KOaHL9Ws=/"
+data-url="https://play.google.com/store/apps/details?id=com.naver.whale"
+data-url="https://naver-whale-browser.en.uptodown.com/android/versions"
+---
+---version---
+>3.9.14.9<
+>3.9.14.9<
+>3.9.14.9<
+>3.9.14.7<
+>3.9.14.6<
+>3.9.14.6<
+>3.9.14.5<
+3.9.14.9
+3.9.14.9
+3.9.14.9
+3.9.14.9
+3.9.14.9
+3.9.14.9
+3.9.14.7
+3.9.14.6
+3.9.14.6
+3.9.14.5
+[0m
+[0m$ [0mgrep -o 'id="detail-download-button"[^>]*' /tmp/opencode/utd_page.html | head -2; echo "---"; grep -oE 'data-url="[^"]*dw[^"]*"' /tmp/opencode/utd_page.html | head -3; echo "---any dw host---"; grep -oE 'https://[a-z0-9.]*uptodown[^"]*' /tmp/opencode/utd_page.html | sort -u | head -10
+id="detail-download-button" class="button download xapk "
+---
+---any dw host---
+https://ads.uptodown.dev/ads/
+https://ar.uptodown.com/
+https://blog.en.uptodown.com/
+https://br.uptodown.com/
+https://cn.uptodown.com/
+https://de.uptodown.com/
+https://doubao.en.uptodown.com/android
+https://doubao.en.uptodown.com/android';addEventAnalytics('similar', {'event_category': 'item'});
+https://emochi.en.uptodown.com/android
+https://en.uptodown.com
+[0m
+Page confirms latest = 3.9.14.9 and yields a fresh session token. Constructing the dw URL.
+[0m$ [0mpython3 - <<'EOF'
+import re
+html = open('/tmp/opencode/utd_page.html').read()
+# The download button is a data-url token; find the one right before/inside detail-download-button context
+m = re.search(r'detail-download-button.{0,200}?data-url="([^"]+)"', html, re.S)
+print("near-button:", m.group(1)[:80] if m else "NONE")
+# Also the generic dw.uptodown.com base
+base = re.search(r'"https://dw\.uptodown\.com/"', html)
+print("dw-base literal:", bool(base))
+# print all data-url tokens
+toks = re.findall(r'data-url="(https?://[^"]+|apps)"', html)
+print("tokens:", len(toks))
+for t in toks:
+    if t.startswith('http'):
+        print("  ", t[:60])
+EOF
+near-button: 9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHxuBvUi2K
+dw-base literal: False
+tokens: 11
+   https://play.google.com/store/apps/details?id=com.naver.whal
+   https://play.google.com/store/apps/details?id=com.naver.whal
+   https://naver-whale-browser.en.uptodown.com/android/versions
+   https://naver-whale-browser.en.uptodown.com/android
+   https://naver-whale-browser.en.uptodown.com/android
+   https://naver-whale-browser.en.uptodown.com/android
+   https://naver-whale-browser.en.uptodown.com/android
+   https://naver-whale-browser.en.uptodown.com/android
+   https://naver-whale-browser.en.uptodown.com/android
+[0m
+[0m$ [0mTOKEN=$(python3 -c "
+import re
+html = open('/tmp/opencode/utd_page.html').read()
+m = re.search(r'detail-download-button.{0,200}?data-url=\"([^\"]+)\"', html, re.S)
+print(m.group(1))
+")
+echo "token len: ${#TOKEN}"
+curl -s -b /tmp/opencode/utd.jar -c /tmp/opencode/utd.jar -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" -H "Referer: https://naver-whale-browser.en.uptodown.com/android/download" -o /tmp/opencode/whale_dl.bin -w "http_code=%{http_code} size=%{size_download} type=%{content_type}\n" "https://dw.uptodown.com/${TOKEN}"
+file /tmp/opencode/whale_dl.bin
+token len: 367
+http_code=404 size=548 type=text/html
+/tmp/opencode/whale_dl.bin: HTML document, ASCII text, with CRLF line terminators
+[0m
+[0m$ [0mhead -c 400 /tmp/opencode/whale_dl.bin; echo; echo "---cookie jar---"; cat /tmp/opencode/utd.jar 2>/dev/null | grep -v '^#' | head
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<center><h1>404 Not Found</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly er
+---cookie jar---
+
+.uptodown.com	TRUE	/	FALSE	0	country	US
+[0m
+[0m$ [0mgrep -oE 'dw[0-9]*\.[a-z0-9]*\.[a-z]+' /tmp/opencode/utd_page.html | sort -u | head; echo "---initDownloading---"; grep -oE 'initDownloading.{0,300}' /tmp/opencode/utd_page.html | head -3; echo "---action/method---"; grep -oE 'action="[^"]*download[^"]*"' /tmp/opencode/utd_page.html | head -3
+---initDownloading---
+---action/method---
+[0m
+[0m$ [0mgrep -oE 'function [a-zA-Z]+\(' /tmp/opencode/utd_page.html | sort -u | head -20; echo "---scripts---"; grep -oE '<script[^>]*src="[^"]*"' /tmp/opencode/utd_page.html | head -10
+function addEventAnalytics(
+function addEventGoogleAnalytics(
+function checkScroll(
+function getCookie(
+function getScrollPercent(
+function gtag(
+function sendConnectionInfo(
+function setCookie(
+function signalGooglefcPresent(
+---scripts---
+<script defer src="//geo.cookie-script.com/s/a52be48a31f50475bd697e1db8507f9d.js?country=no-is-li-gb-ch-br&state=ca&region=eu"
+<script async src="https://fundingchoicesmessages.google.com/i/pub-0337387298854186?ers=1"
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DW5XRK7GYT"
+<script defer src="https://stc.utdstc.com/1786093238827/vendor.js"
+<script defer src="https://stc.utdstc.com/1786093238827/download.js"
+[0m
+[0m$ [0mcurl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" "https://stc.utdstc.com/1786093238827/download.js" -o /tmp/opencode/download.js; wc -c /tmp/opencode/download.js; grep -oE 'dw[a-z0-9.]*uptodown[^"'\'' ]*' /tmp/opencode/download.js | sort -u | head
+114 /tmp/opencode/download.js
+[0m
+[0m$ [0mcat /tmp/opencode/download.js; echo "---try vendor.js---"; curl -s -A "Mozilla/5.0" "https://stc.utdstc.com/1786093238827/vendor.js" -o /tmp/opencode/vendor.js; wc -c /tmp/opencode/vendor.js; grep -oE 'dw[0-9a-z.]*uptodown[^"'\'' ]*' /tmp/opencode/vendor.js | sort -u | head; grep -oE 'data-url' /tmp/opencode/vendor.js | head -2
+<html><body><h1>410 Gone</h1>
+The resource is no longer available and will not be available again.
+</body></html>
+---try vendor.js---
+8178 /tmp/opencode/vendor.js
+[0m
+[0m$ [0mpython3 - <<'EOF'
+import re
+html = open('/tmp/opencode/utd_page.html').read()
+i = html.find('detail-download-button')
+print(html[i-300:i+700])
+EOF
+0 0 .157.283h1.613l-1.468 3.149a.182.182 0 0 0 .293.2l4.224-4.211a.183.183 0 0 0-.128-.31h-1.193l1.416-2.285a.182.182 0 0 0-.154-.277Z" data-name="Layer 22"/>
+</g>
+</g>
+</svg>
+</span>
+</div>
+<div id="button-group-download" class="button-group download">
+<div class="main-group-buttons">
+<button id="detail-download-button" class="button download xapk "
+data-dwldng="Downloading…"
+data-showSpinner="true"
+data-url="9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHxuBvUi2KcgcnxT3PP94fonAWCwSPQEhdkWKDN-xfjpbyz5JY_RsmmuFe/QjcuGlmSjULQuBWN8_ZgM-VMV78JZeVFpAoUNXdJNuhofAaMDLuxXGPiAUJrlOxM2PdJG20MrgyOki6lxCHl9cbxyKx_gALsSxxqZbc5OusNIqoFVyMZn2BWpB0vFzMv/xsgsQDaIEAODcOG-oY8ktN52doxhX1ziwIVvCyFl0HwlFLVdrth_hp6U3MpWkeSMnTUZB0rXIwQLV_2W38zlTMSvDJinNQv8598KOaHL9Ws=/" data-download-version="1197336657" title="download naver whale browser free"
+rel="nofollow" onclick="addEventAnalytics('downloadApp', {'event_category': 'download-link-deeplink', 'appID': '777828'});">
+<strong>Downlo
+[0m
+Token-based dw URL 404s (as anticipated). Trying the app-id/dwn pattern and the versions page.
+[0m$ [0mfor u in "https://dw.uptodown.com/dwn/777828/1197336657" "https://dw.uptodown.com/777828" "https://dw.uptodown.com/dwn/777828"; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" -b /tmp/opencode/utd.jar -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -H "Referer: https://naver-whale-browser.en.uptodown.com/android/download" "$u")
+  echo "$u -> $code"
+  sleep 1
+done
+https://dw.uptodown.com/dwn/777828/1197336657 -> 404
+https://dw.uptodown.com/777828 -> 404
+https://dw.uptodown.com/dwn/777828 -> 400
+[0m
+[0m$ [0mcurl -s -b /tmp/opencode/utd.jar -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -H "Referer: https://naver-whale-browser.en.uptodown.com/android/download" -H "X-Requested-With: XMLHttpRequest" -X POST "https://naver-whale-browser.en.uptodown.com/android/download" --data "app_id=777828&version_id=1197336657" -o /tmp/opencode/post1.json -w "code=%{http_code} type=%{content_type}\n"; cat /tmp/opencode/post1.json | head -c 300
+code=404 type=text/html;charset=UTF-8
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+<title>Uptodown 404</title>
+<link rel="preconnect" href="https://img.utdstc.com">
+<link rel="preconnect" href="https://stc.utdstc.com">
+<link re
+[0m
+[0m$ [0mcurl -s -b /tmp/opencode/utd.jar -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -L "https://naver-whale-browser.en.uptodown.com/android/versions" -o /tmp/opencode/versions.html; wc -c /tmp/opencode/versions.html; grep -oE 'data-url="[^"]*"' /tmp/opencode/versions.html | head -8
+100455 /tmp/opencode/versions.html
+data-url="apps"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+[0m
+[0m$ [0mpython3 - <<'EOF'
+import re
+html = open('/tmp/opencode/versions.html').read()
+# version blocks: find links to specific version download pages
+for m in re.finditer(r'href="(https://naver-whale-browser\.en\.uptodown\.com/android/download/[^"]+)"', html):
+    print(m.group(1))
+EOF
+(no output)
+[0m
+[0m$ [0mgrep -oE 'version[^"<>]*download[^"<>]*' /tmp/opencode/versions.html | head; echo "---"; grep -oE 'href="[^"]*versions/[^"]*"' /tmp/opencode/versions.html | sort -u | head; echo "---detail links---"; grep -oE 'href="/android/download[^"]*"' /tmp/opencode/versions.html | sort -u | head
+versions. If you need a specific Naver Whale Browser version, you can access an archive from Uptodown, where you can download previous versions of Naver Whale Browser for Android knowing that they are virus-free and free of charge.
+---
+---detail links---
+[0m
+[0m$ [0mgrep -oE 'data-[a-z-]+="[0-9]+"' /tmp/opencode/versions.html | sort -u | head -15; echo "---"; grep -oE 'onclick="[^"]*"' /tmp/opencode/versions.html | sort -u | head -10; echo "--- version ids ---"; grep -oE '1197[0-9]{6,8}' /tmp/opencode/versions.html | sort -u | head
+data-code="777828"
+data-file-id="1197336657"
+data-version-id="1135544573"
+data-version-id="1138384476"
+data-version-id="1146305259"
+data-version-id="1151511696"
+data-version-id="1156842137"
+data-version-id="1158134555"
+data-version-id="1159946807"
+data-version-id="1164184664"
+data-version-id="1165410868"
+data-version-id="1169892938"
+data-version-id="1178799900"
+data-version-id="1178945475"
+data-version-id="1183015268"
+---
+onclick="addEventAnalytics('ad_large', {'event_category': 'turbo-landing'});"
+onclick="addEventAnalytics('adex_old-version', {'event_category': 'ads'});"
+onclick="addEventAnalytics('authorLink', {'event_category': 'author'});"
+onclick="addEventAnalytics('comments', {'event_category': 'app'});"
+onclick="addEventAnalytics('footer', {'event_category': 'turbo-landing'});"
+onclick="addEventAnalytics('login-popup-continue', {'event_category': 'login-popup'});"
+onclick="addEventAnalytics('rating', {'event_category': 'app'});"
+--- version ids ---
+1197336657
+[0m
+[0m$ [0mpython3 - <<'EOF'
+import re
+html = open('/tmp/opencode/versions.html').read()
+i = html.find('data-version-id="1135544573"')
+print(html[max(0,i-500):i+300])
+EOF
+<span class="version">3.9.9.2</span>
+<span class="sdkVersion">Android + 8.0</span>
+<span class="date">Mar 4, 2026</span>
+</div>
+<div data-url="https://naver-whale-browser.en.uptodown.com/android" data-version-id="1146305259" data-extra-url="download" >
+<span class="type xapk" title="xapk">xapk</span>
+<span class="version">3.9.9.2</span>
+<span class="sdkVersion">Android + 8.0</span>
+<span class="date">Feb 11, 2026</span>
+</div>
+<div data-url="https://naver-whale-browser.en.uptodown.com/android" data-version-id="1135544573" data-extra-url="download" >
+<span class="type xapk" title="xapk">xapk</span>
+<span class="version">3.9.6.8</span>
+<span class="sdkVersion">Android + 8.0</span>
+<span class="date">Dec 28, 2025</span>
+</div>
+<div data-url="https://naver-whale-browser.en.uptodown.com/androi
+[0m
+[0m$ [0mcurl -s -b /tmp/opencode/utd.jar -c /tmp/opencode/utd.jar -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" -L "https://naver-whale-browser.en.uptodown.com/android/download/1197336657" -o /tmp/opencode/ver_page.html -w "code=%{http_code} size=%{size_download}\n"; grep -oE 'data-url="[^"]*"' /tmp/opencode/ver_page.html | grep -vE 'play.google|http' | head -3
+code=200 size=156018
+data-url="apps"
+data-url="9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHxuBvUi2KcgcnxT3PP94fonAWCwSPQEhdkWKDN-xfjpbyz5JY_RsmmuFe/QjcuGlmSjULQuBWN8_ZgM-VMV78JZeVFpAoUNXdJNuhofAaMDLuxXGPiAUJrlOxM2PdJG20MrgyOki6lxCHl9cbxyKx_gALsSxxqZbc5OusNIqoFVyMZn2BWpB0vFzMv/xsgsQDaIEAODcOG-oY8ktN52doxhX1ziwIVvCyFl0HwlFLVdrth_hp6U3MpWkeSMnTUZB0rXIwQLV_2W38zlTMSvDJinNQv8598KOaHL9Ws=/"
+data-url="apps"
+[0m
+[0m$ [0mgrep -oE '<script[^>]*src="[^"]*"' /tmp/opencode/ver_page.html | head; echo "---inline download js---"; grep -oE 'src="[^"]*download[^"]*"' /tmp/opencode/ver_page.html | head; echo "--- post-download ---"; grep -oE '(post-download|dwn)[^"'\'' ]*' /tmp/opencode/ver_page.html | sort -u | head
+<script defer src="//geo.cookie-script.com/s/a52be48a31f50475bd697e1db8507f9d.js?country=no-is-li-gb-ch-br&state=ca&region=eu"
+<script async src="https://fundingchoicesmessages.google.com/i/pub-0337387298854186?ers=1"
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DW5XRK7GYT"
+<script defer src="https://stc.utdstc.com/1786093238827/vendor.js"
+<script defer src="https://stc.utdstc.com/1786093238827/download.js"
+---inline download js---
+src="https://stc.utdstc.com/img/icons-info.svg#icon-40-downloads"
+src="https://stc.utdstc.com/img/icons-nolazy.svg#icon-20-download-button"
+src=" https://stc.utdstc.com/img/icons-nolazy.svg#icon-20-download-button"
+src="https://stc.utdstc.com/1786093238827/download.js"
+--- post-download ---
+[0m
+[0m$ [0mcurl -s -b /tmp/opencode/utd.jar -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" -H "Referer: https://naver-whale-browser.en.uptodown.com/android/download" "https://stc.utdstc.com/1786093238827/download.js" -o /tmp/opencode/download2.js -w "code=%{http_code} size=%{size_download}\n"; head -c 300 /tmp/opencode/download2.js
+code=410 size=114
+<html><body><h1>410 Gone</h1>
+The resource is no longer available and will not be available again.
+</body></html>
+[0m
+[0m$ [0mwhich node deno python3 chromium chromium-browser google-chrome java 2>/dev/null; node --version 2>/dev/null; python3 --version 2>/dev/null
+/usr/local/bin/node
+/usr/bin/python3
+/usr/bin/chromium
+/usr/bin/chromium-browser
+/usr/bin/google-chrome
+/usr/bin/java
+v22.23.1
+Python 3.12.3
+[0m
+[0m$ [0mgrep -oE 'dw\.uptodown[^"'\''`)]*' /tmp/opencode/vendor.js | sort -u | head; echo "---"; grep -c 'data-url' /tmp/opencode/vendor.js; grep -oE '\[data-url\]|data-url' /tmp/opencode/vendor.js | sort | uniq -c; echo "--- initDownloading/init-download ---"; grep -oE '[a-zA-Z_$]{2,30}(ownload|wn)[a-zA-Z_$]{0,20}' /tmp/opencode/vendor.js | sort -u | head -20
+---
+0
+--- initDownloading/init-download ---
+[0m
+Headless Chromium is available — I can execute the uptodown JS client-side. First, inspecting vendor.js for the download URL construction.
+[0m$ [0mhead -c 600 /tmp/opencode/vendor.js; echo; echo "---minified?---"; python3 -c "
+s=open('/tmp/opencode/vendor.js').read()
+print('len', len(s), 'newlines', s.count(chr(10)))"
+�cDjR�F��9��7W���M�ԓ����2�X�+���PA�#e�6�D~��i�p��.�q��Pw�.�����*������\�I�@���k ����5�{���=c��ʚL��Ĺ$V�Ke��p���v�,�����#[�~m�~��O�oӲ�^�j�:~�4��aј���ݷ~Gt!� ��+�Z|���K���믿�R]�`S2���1D3�lˢ���ַ��D�7В+j��=zrY�.��J�K��/0��@�|\�|t�/,?#��NB�M�>�.���w�f|���cpO�Q��-u�N�qG���B]��>n
+�����ٗ���@�O����7��&m6E�?m����M/��a��4��)�*g�G��x��;l�N?�K�7y��Ϳ�AKY&
+9��咈L�Ҁ���ߛ�\ڔ������2����d�;]"����:F�L$�uU.A���o6�G@5t��;k����
+�d��p��5i݌���B��Wld;X��v�Y2��N������$i��)��Lzz��=��Z��O������gCӿ�<7-CQ���JxƬ����Py��v��ޓ��B_�
+---minified?---
+Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+  File "<frozen codecs>", line 322, in decode
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf1 in position 0: invalid continuation byte
+[0m
+vendor.js came back compressed/binary — curl skipped decompression. Refetching with `--compressed`.
+[0m$ [0mcurl -s --compressed -A "Mozilla/5.0" -H "Referer: https://naver-whale-browser.en.uptodown.com/android/download" "https://stc.utdstc.com/1786093238827/vendor.js" -o /tmp/opencode/vendor.js; python3 -c "
+s=open('/tmp/opencode/vendor.js','rb').read()
+print('len', len(s))
+print(s[:40])
+print('text?', s[:3] not in (b'\x1f\x8b',))"; echo "---"; grep -oE 'dw[0-9a-z.]*uptodown[^"'\'' ]*' /tmp/opencode/vendor.js | sort -u | head
+len 24610
+b'(self.webpackChunkuptodown_com=self.webp'
+text? True
+---
+[0m
+[0m$ [0mgrep -oE 'https?://[a-zA-Z0-9._/-]+' /tmp/opencode/vendor.js | sort -u | head -20; echo "---download refs---"; grep -oE '.{40}download.{60}' /tmp/opencode/vendor.js | head -20
+---download refs---
+[0m
+[0m$ [0mpython3 -c "
+s=open('/tmp/opencode/vendor.js').read()
+import re
+for kw in ['dwn','Downloading','data-url','initDown','postMessage','window.open','dw_','uptodown']:
+    idxs=[m.start() for m in re.finditer(kw, s)]
+    print(kw, len(idxs), idxs[:5])
+"
+dwn 0 []
+Downloading 0 []
+data-url 0 []
+initDown 0 []
+postMessage 0 []
+window.open 1 [22485]
+dw_ 0 []
+uptodown 2 [18, 48]
+[0m
+[0m$ [0mcurl -s -c /tmp/opencode/utd.jar -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" -L -D /tmp/opencode/hdr.txt -o /dev/null "https://naver-whale-browser.en.uptodown.com/android/download"; grep -iE 'set-cookie|location|server|via' /tmp/opencode/hdr.txt | head -20; echo "---jar---"; grep -v '^#' /tmp/opencode/utd.jar
+via: 1.1 varnish
+set-cookie: country=US; Domain=.uptodown.com; Path=/
+---jar---
+
+.uptodown.com	TRUE	/	FALSE	0	country	US
+[0m
+vendor.js has no download logic (it lives in the now-410 download.js). The right move: drive headless Chromium via CDP, click the button, and capture the exact request the JS makes. Launching Chrome and writing a minimal CDP driver.
+[0m$ [0mrm -rf /tmp/opencode/chrome; nohup /usr/bin/chromium --headless=new --no-sandbox --disable-gpu --remote-debugging-port=9222 --user-data-dir=/tmp/opencode/chrome about:blank >/tmp/opencode/chrome.log 2>&1 & sleep 3; curl -s http://127.0.0.1:9222/json/version | head -c 300
+(no output)
+[0m
+[0m$ [0msleep 2; curl -s http://127.0.0.1:9222/json/version; echo; tail -5 /tmp/opencode/chrome.log
+[0m
+[0m$ [0mcat /tmp/opencode/chrome.log 2>/dev/null | head -20; echo "---procs---"; ps aux | grep -i chrom | grep -v grep | head -3
+[3147:3189:0808/073247.134435:ERROR:dbus/bus.cc:405] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[3147:3189:0808/073247.135204:ERROR:dbus/bus.cc:405] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[3147:3189:0808/073248.803905:ERROR:dbus/bus.cc:405] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+---procs---
+runner      3147  1.7  0.7 55289788 115832 ?     Dl   07:32   0:00 /usr/bin/chromium --headless=new --no-sandbox --disable-gpu --remote-debugging-port=9222 --user-data-dir=/tmp/opencode/chrome about:blank
+runner      3172  0.0  0.0 54549212 5012 ?       Sl   07:32   0:00 /usr/local/share/chromium/chrome-linux/chrome_crashpad_handler --monitor-self --monitor-self-annotation=ptype=crashpad-handler --database=/home/runner/.config/chromium/Crash Reports --annotation=lsb-release=Ubuntu 24.04.4 LTS --annotation=plat=Linux --annotation=prod=Chrome_Linux --annotation=ver=150.0.7871.0 --initial-client-fd=92 --shared-client-connection
+runner      3174  0.0  0.0 54532808 4968 ?       S    07:32   0:00 /usr/local/share/chromium/chrome-linux/chrome_crashpad_handler --no-periodic-tasks --monitor-self-annotation=ptype=crashpad-handler --database=/home/runner/.config/chromium/Crash Reports --annotation=lsb-release=Ubuntu 24.04.4 LTS --annotation=plat=Linux --annotation=prod=Chrome_Linux --annotation=ver=150.0.7871.0 --initial-client-fd=4 --shared-client-connection
+[0m
+[0m$ [0msleep 2; curl -s http://127.0.0.1:9222/json/version; echo; curl -s http://127.0.0.1:9222/json/list | head -c 200
+[0m
+[0m$ [0mss -tlnp 2>/dev/null | grep 9222; curl -v http://127.0.0.1:9222/json/version 2>&1 | tail -5
+LISTEN 0      10         127.0.0.1:9222      0.0.0.0:*    users:(("chrome",pid=3147,fd=165))
+   "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+   "V8-Version": "15.0.245",
+   "WebKit-Version": "537.36 (@0000000000000000000000000000000000000000)",
+   "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/browser/d9f5c593-8781-4971-b5bf-165ebadbaff2"
+}
+[0m
+[0m← [0mWrite /tmp/opencode/cdp.js
+Wrote file successfully.
+[0m
+CDP is live. Writing a Node driver to click the download button and capture the real request URL.
+[0m$ [0mnode /tmp/opencode/cdp.js 2>&1 | tail -30
+<anonymous_script>:1
+Using unsafe HTTP verb GET to invoke /json/new. This action supports only PUT verb.
+^
+
+SyntaxError: Unexpected token 'U', "Using unsa"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at IncomingMessage.<anonymous> (/tmp/opencode/cdp.js:8:34)
+    at IncomingMessage.emit (node:events:531:35)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+
+Node.js v22.23.1
+[0m
+[0m← [0mEdit /tmp/opencode/cdp.js
+Index: /tmp/opencode/cdp.js
+===================================================================
+--- /tmp/opencode/cdp.js
++++ /tmp/opencode/cdp.js
+@@ -1,13 +1,15 @@
+ const http = require('http');
+ 
+-function getJson(path) {
++function getJson(path, method = 'GET') {
+   return new Promise((res, rej) => {
+-    http.get('http://127.0.0.1:9222' + path, (r) => {
++    const req = http.request({ host: '127.0.0.1', port: 9222, path, method }, (r) => {
+       let d = '';
+       r.on('data', (c) => (d += c));
+       r.on('end', () => res(JSON.parse(d)));
+-    }).on('error', rej);
++    });
++    req.on('error', rej);
++    req.end();
+   });
+ }
+ 
+ (async () => {
+
+[0m
+[0m← [0mEdit /tmp/opencode/cdp.js
+Index: /tmp/opencode/cdp.js
+===================================================================
+--- /tmp/opencode/cdp.js
++++ /tmp/opencode/cdp.js
+@@ -12,9 +12,9 @@
+   });
+ }
+ 
+ (async () => {
+-  const target = await getJson('/json/new?url=about:blank');
++  const target = await getJson('/json/new?url=about:blank', 'PUT');
+   const ws = new WebSocket(target.webSocketDebuggerUrl);
+   let id = 0;
+   const pending = new Map();
+   const events = [];
+
+[0m
+[0m$ [0mnode /tmp/opencode/cdp.js 2>&1 | tail -30
+REQ GET https://naver-whale-browser.en.uptodown.com/android/download
+NAV https://naver-whale-browser.en.uptodown.com/android/download
+REQ POST https://analytics.google.com/g/collect?v=2&tid=G-DW5XRK7GYT&gtm=45je6852v888089788za200zd888089788&_p=1786174393915&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&tcfd=10000&_eu=AAAAAGA&are=1&cid=1666116561.1786174395&frm=0&pscdl=noapi&rcb=2&sr=800x600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B8.0.0.0%7CChromium%3B150.0.7871.0&uam=&uamb=0&uap=Linux&uapv=&uaw=0&ul=en-us&gaf=2&_s=1&tag_exp=115616986~115938465~115938469~118897920~118897930~119527019~119896803&sid=1786174394&sct=1&seg=0&dl=https%3A%2F%2Fnaver-whale-browser.en.uptodown.com%2Fandroid%2Fdownload&dt=Download%20Naver%20Whale%20Browser%203.9.14.9%20for%20Android%20%7C%20Uptodown.com&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&tfd=1559
+REQ POST https://analytics.google.com/g/collect?v=2&tid=G-DW5XRK7GYT&gtm=45je6852v888089788za200zd888089788&_p=1786174393915&gcd=13l3l3l3l1l1&npa=0&dma=0&tcfd=10000&_eu=AAAAAGQ&are=1&cid=1666116561.1786174395&frm=0&pscdl=noapi&rcb=2&sr=800x600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B8.0.0.0%7CChromium%3B150.0.7871.0&uam=&uamb=0&uap=Linux&uapv=&uaw=0&ul=en-us&gaf=2&_s=2&tag_exp=115616986~115938465~115938469~118897920~118897930~119527019~119896803&sid=1786174394&sct=1&seg=0&dl=https%3A%2F%2Fnaver-whale-browser.en.uptodown.com%2Fandroid%2Fdownload&dt=Download%20Naver%20Whale%20Browser%203.9.14.9%20for%20Android%20%7C%20Uptodown.com&en=connection_info&_ee=1&ep.event_category=performance&ep.effectiveType=4g&epn.downlink=1.4&epn.rtt=100&tfd=1617
+REQ GET https://www.uptodown.com/cookie-pixel.gif
+REQ POST https://www.google-analytics.com/g/collect?v=2&tid=G-DW5XRK7GYT&gtm=45je6852v888089788za200zd888089788&_p=1786174393915&gcs=G100&gcd=13p3p3p3p5l1&npa=1&dma_cps=-&dma=0&tcfd=10000&gdid=dMmY1Mm&_eu=AAAAAGA&are=1&cid=1666116561.1786174395&frm=0&pscdl=denied&rcb=2&sr=800x600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B8.0.0.0%7CChromium%3B150.0.7871.0&uam=&uamb=0&uap=Linux&uapv=&uaw=0&ul=en-us&gaf=2&_s=3&tag_exp=115616986~115938465~115938469~118897920~118897930~119527019~119896803&sid=1786174394&sct=1&seg=0&dl=https%3A%2F%2Fnaver-whale-browser.en.uptodown.com%2Fandroid%2Fdownload&dt=Download%20Naver%20Whale%20Browser%203.9.14.9%20for%20Android%20%7C%20Uptodown.com&en=select_content&_ee=1&ep.content_type=CookieScript%20firstshown&tfd=6618
+REQ POST https://www.google-analytics.com/g/collect?v=2&tid=G-DW5XRK7GYT&gtm=45je6852v888089788za200zd888089788&_p=1786174393915&gcs=G100&gcd=13p3p3p3p5l1&npa=1&dma_cps=-&dma=0&tcfd=10000&gdid=dMmY1Mm&_eu=AAAAAGA&are=1&cid=1666116561.1786174395&frm=0&pscdl=denied&rcb=2&sr=800x600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B8.0.0.0%7CChromium%3B150.0.7871.0&uam=&uamb=0&uap=Linux&uapv=&uaw=0&ul=en-us&gaf=2&_s=4&tag_exp=115616986~115938465~115938469~118897920~118897930~119527019~119896803&sid=1786174394&sct=1&seg=0&dl=https%3A%2F%2Fnaver-whale-browser.en.uptodown.com%2Fandroid%2Fdownload&dt=Download%20Naver%20Whale%20Browser%203.9.14.9%20for%20Android%20%7C%20Uptodown.com&en=downloadApp&_c=1&_ee=1&ep.event_category=download-link-deeplink&ep.appID=777828&tfd=9597
+REQ GET https://naver-whale-browser.en.uptodown.com/ajax/app/777828/pop-ups
+CLICK "clicked 9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZ... btn=BUTTON"
+REQ GET https://dw.uptodown.com/dwn/9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHxuBvUi2KcgcnxT3PP94fonAWCwSPQEhdkWKDN-xfjpbyz5JY_RsmmuFe/QjcuGlmSjULQuBWN8_ZgM-VMV78JZeVFpAoUNXdJNuhofAaMDLuxXGPiAUJrlOxM2PdJG20MrgyOki6lxCHl9cbxyKx_gALsSxxqZbc5OusNIqoFVyMZn2BWpB0vFzMv/xsgsQDaIEAODcOG-oY8ktN52doxhX1ziwIVvCyFl0HwlFLVdrth_hp6U3MpWkeSMnTUZB0rXIwQLV_2W38zlTMSvDJinNQv8598KOaHL9Ws=/
+REQ GET https://dw.uptodown.net/dwn/9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHxuBvUi2KcgcnxT3PP94fonAWCwSPQEhdkWKDN-xfjpbyz5JY_RsmmuFe/QjcuGlmSjULQuBWN8_ZgM-VMV78JZeVFpAoUNXdJNuhofAaMDLuxXGPiAUJrlOxM2PdJG20MrgyOki6lxCHl9cbxyKx_gALsSxxqZbc5OusNIqoFVyMZn2BWpB0vFzMv/xsgsQDaIEAODcOG-oY8ktN52doxhX1ziwIVvCyFl0HwlFLVdrth_hp6U3MpWkeSMnTUZB0rXIwQLV_2W38zlTMSvDJinNQv8598KOaHL9Ws=/uptodown-com.naver.whale.apk
+RES 200 https://dw.uptodown.net/dwn/9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHxuBvUi2KcgcnxT3PP94fonAWCwSPQEhdkWKDN-xfjpbyz5JY_RsmmuFe/QjcuGlmSjULQuBWN8_ZgM-VMV78JZeVFpAoUNXdJNuhofAaMDLuxXGPiAUJrlOxM2PdJG20MrgyOki6lxCHl9cbxyKx_gALsSxxqZbc5OusNIqoFVyMZn2BWpB0vFzMv/xsgsQDaIEAODcOG-oY8ktN52doxhX1ziwIVvCyFl0HwlFLVdrth_hp6U3MpWkeSMnTUZB0rXIwQLV_2W38zlTMSvDJinNQv8598KOaHL9Ws=/uptodown-com.naver.whale.apk loc=-
+REQ POST https://www.google-analytics.com/g/collect?v=2&tid=G-DW5XRK7GYT&gtm=45je6852v888089788za200zd888089788&_p=1786174393915&gcs=G100&gcd=13p3p3p3p5l1&npa=1&dma_cps=-&dma=0&tcfd=10000&gdid=dMmY1Mm&_eu=AEAAAGA&ae=a&are=1&cid=1666116561.1786174395&frm=0&pscdl=denied&rcb=2&sr=800x600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B8.0.0.0%7CChromium%3B150.0.7871.0&uam=&uamb=0&uap=Linux&uapv=&uaw=0&ul=en-us&gaf=2&_s=5&tag_exp=115616986~115938465~115938469~118897920~118897930~119527019~119896803&sid=1786174394&sct=1&seg=0&dl=https%3A%2F%2Fnaver-whale-browser.en.uptodown.com%2Fandroid%2Fdownload&dt=Download%20Naver%20Whale%20Browser%203.9.14.9%20for%20Android%20%7C%20Uptodown.com&en=click&ep.link_id=&ep.link_classes=&ep.link_url=https%3A%2F%2Fdw.uptodown.com%2Fdwn%2F9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHxuBvUi2KcgcnxT3PP94fonAWCwSPQEhdkWKDN-xfjpbyz5JY_RsmmuFe%2FQjcuGlmSjULQuBWN8_ZgM-VMV78JZeVFpAoUNXdJNuhofAaMDLuxXGPiAUJrlOxM2PdJG20MrgyOki6lxCHl9cbxyKx_gALsSxxqZbc5OusNIqoFVyMZn2BWpB0vFzMv%2FxsgsQDaIEAODcOG-oY8ktN52doxhX1ziwIVvCyFl0HwlFLVdrth_hp6U3MpWkeSMnTUZB0rXIwQLV_2W38zlTMSvDJinNQv8598KOaHL9Ws%3D%2F&ep.link_domain=dw.uptodown.com&ep.outbound=true&tfd=14854
+RES 204 https://www.google-analytics.com/g/collect?v=2&tid=G-DW5XRK7GYT&gtm=45je6852v888089788za200zd888089788&_p=1786174393915&gcs=G100&gcd=13p3p3p3p5l1&npa=1&dma_cps=-&dma=0&tcfd=10000&gdid=dMmY1Mm&_eu=AEAAAGA&ae=a&are=1&cid=1666116561.1786174395&frm=0&pscdl=denied&rcb=2&sr=800x600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B8.0.0.0%7CChromium%3B150.0.7871.0&uam=&uamb=0&uap=Linux&uapv=&uaw=0&ul=en-us&gaf=2&_s=5&tag_exp=115616986~115938465~115938469~118897920~118897930~119527019~119896803&sid=1786174394&sct=1&seg=0&dl=https%3A%2F%2Fnaver-whale-browser.en.uptodown.com%2Fandroid%2Fdownload&dt=Download%20Naver%20Whale%20Browser%203.9.14.9%20for%20Android%20%7C%20Uptodown.com&en=click&ep.link_id=&ep.link_classes=&ep.link_url=https%3A%2F%2Fdw.uptodown.com%2Fdwn%2F9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHxuBvUi2KcgcnxT3PP94fonAWCwSPQEhdkWKDN-xfjpbyz5JY_RsmmuFe%2FQjcuGlmSjULQuBWN8_ZgM-VMV78JZeVFpAoUNXdJNuhofAaMDLuxXGPiAUJrlOxM2PdJG20MrgyOki6lxCHl9cbxyKx_gALsSxxqZbc5OusNIqoFVyMZn2BWpB0vFzMv%2FxsgsQDaIEAODcOG-oY8ktN52doxhX1ziwIVvCyFl0HwlFLVdrth_hp6U3MpWkeSMnTUZB0rXIwQLV_2W38zlTMSvDJinNQv8598KOaHL9Ws%3D%2F&ep.link_domain=dw.uptodown.com&ep.outbound=true&tfd=14854 loc=-
+WINDOW_OPEN_HANDLER: "<button id=\"detail-download-button\" class=\"button download xapk \" data-dwldng=\"Downloading…\" data-showspinner=\"true\" data-url=\"9ayuAxeI09lHcwg0bM_2U_v4eXLVefK2wgbtswNZIqsMqNQnTKiygM8hfexOhi-2kKCrvCwHx"
+[0m
+The headless browser decoded the real flow: host is `dw.uptodown.net` (not `.com`) and the path is `/dwn/<token>/uptodown-com.naver.whale.apk` → RES 200. Downloading it now and verifying the SHA256.
+[0m$ [0mTOKEN=$(python3 -c "
+import re
+html = open('/tmp/opencode/ver_page.html').read()
+m = re.search(r'detail-download-button.{0,300}?data-url=\"([^\"]+)\"', html, re.S)
+print(m.group(1))
+")
+URL="https://dw.uptodown.net/dwn/${TOKEN}/uptodown-com.naver.whale.apk"
+echo "url length: ${#URL}"
+curl -s -b /tmp/opencode/utd.jar -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" -H "Referer: https://naver-whale-browser.en.uptodown.com/android/download" -o /tmp/opencode/whale.apk -w "code=%{http_code} size=%{size_download} type=%{content_type} redirect=%{redirect_url}\n" "$URL"
+file /tmp/opencode/whale.apk
+sha256sum /tmp/opencode/whale.apk
+url length: 424
+code=200 size=15275646 type=application/octet-stream redirect=
+/tmp/opencode/whale.apk: Android package (APK), with gradle app-metadata.properties
+abde6f83ed936585bbf28a1ce750c6954c28fc07469fb33014ea049e39f747b4  /tmp/opencode/whale.apk
+[0m
+Got a 15MB base APK but SHA differs from the pinned XAPK (expected — this is the base, not the full arm64 XAPK). Verifying it's the right version and pulling the dex.
+[0m$ [0mcd /tmp/opencode && unzip -o -q whale.apk -d whale_apk/ 2>&1 | tail -2; ls -la whale_apk/ | head -30; echo "---dex---"; ls -la whale_apk/classes*.dex 2>/dev/null
+total 27648
+drwxr-xr-x 9 runner runner    4096 Aug  8 07:33 .
+drwxr-xr-x 4 runner runner    4096 Aug  8 07:33 ..
+-rw-r--r-- 1 runner runner   61820 Jan  1  1981 AndroidManifest.xml
+-rw-r--r-- 1 runner runner    1728 Jan  1  1981 DebugProbesKt.bin
+drwxr-xr-x 5 runner runner   12288 Aug  8 07:33 META-INF
+drwxr-xr-x 4 runner runner    4096 Aug  8 07:33 assets
+-rw-r--r-- 1 runner runner 8855536 Jan  1  1981 classes.dex
+-rw-r--r-- 1 runner runner  583544 Jan  1  1981 classes2.dex
+-rw-r--r-- 1 runner runner 7585104 Jan  1  1981 classes3.dex
+-rw-r--r-- 1 runner runner 7339780 Jan  1  1981 classes4.dex
+-rw-r--r-- 1 runner runner    2982 Jan  1  1981 client_analytics.proto
+-rw-r--r-- 1 runner runner      74 Jan  1  1981 firebase-analytics.properties
+-rw-r--r-- 1 runner runner      84 Jan  1  1981 firebase-encoders-proto.properties
+-rw-r--r-- 1 runner runner      72 Jan  1  1981 firebase-encoders.properties
+-rw-r--r-- 1 runner runner      78 Jan  1  1981 firebase-iid-interop.properties
+-rw-r--r-- 1 runner runner      98 Jan  1  1981 firebase-measurement-connector.properties
+-rw-r--r-- 1 runner runner      52 Jan  1  1981 googleid.properties
+drwxr-xr-x 9 runner runner    4096 Aug  8 07:33 kotlin
+drwxr-xr-x 6 runner runner    4096 Aug  8 07:33 lib
+-rw-r--r-- 1 runner runner    2381 Jan  1  1981 messaging_event.proto
+-rw-r--r-- 1 runner runner     883 Jan  1  1981 messaging_event_extension.proto
+drwxr-xr-x 3 runner runner    4096 Aug  8 07:33 okhttp3
+drwxr-xr-x 3 runner runner    4096 Aug  8 07:33 org
+-rw-r--r-- 1 runner runner      94 Jan  1  1981 play-services-ads-identifier.properties
+-rw-r--r-- 1 runner runner      94 Jan  1  1981 play-services-auth-api-phone.properties
+-rw-r--r-- 1 runner runner      86 Jan  1  1981 play-services-auth-base.properties
+-rw-r--r-- 1 runner runner      96 Jan  1  1981 play-services-auth-blockstore.properties
+-rw-r--r-- 1 runner runner      74 Jan  1  1981 play-services-auth.properties
+-rw-r--r-- 1 runner runner      74 Jan  1  1981 play-services-base.properties
+---dex---
+-rw-r--r-- 1 runner runner 8855536 Jan  1  1981 whale_apk/classes.dex
+-rw-r--r-- 1 runner runner  583544 Jan  1  1981 whale_apk/classes2.dex
+-rw-r--r-- 1 runner runner 7585104 Jan  1  1981 whale_apk/classes3.dex
+-rw-r--r-- 1 runner runner 7339780 Jan  1  1981 whale_apk/classes4.dex
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 8 whale_apk/AndroidManifest.xml 2>/dev/null | grep -iE 'version|whale' | head; echo "---aapt?---"; which aapt apkanalyzer 2>/dev/null; echo "---grep dex for sync strings---"; for d in classes.dex classes2.dex classes3.dex classes4.dex; do echo "== $d =="; strings -n 6 whale_apk/$d | grep -icE 'bootstrap|encrypt'; done
+---aapt?---
+---grep dex for sync strings---
+== classes.dex ==
+2
+== classes2.dex ==
+0
+== classes3.dex ==
+10
+== classes4.dex ==
+8
+[0m
+[0m$ [0mcd /tmp/opencode && for d in classes.dex classes2.dex classes3.dex classes4.dex; do echo "== $d =="; strings -a -n 6 whale_apk/$d | grep -iE 'bootstrap|encrypt|sync|passphrase|os_crypt|nigori|keystore' | sort -u | head -30; done 2>/dev/null | head -80
+== classes.dex ==
+	syncState
+!Ljava/security/KeyStoreException;
+$Slot table is out of sync (expected 
+&lambda$syncRequestedAndStoredLocales$1
+)asyncExecuteSyncRequestedAndStoredLocales
+*syncMainBufferToTemporaryBuffer$foundation
++Ljava/security/KeyStore$LoadStoreParameter;
+,Landroidx/recyclerview/widget/AsyncListUtil;
+.Landroidx/recyclerview/widget/AsyncListDiffer;
+.Landroidx/recyclerview/widget/AsyncListDiffer<
+.Landroidx/recyclerview/widget/AsyncListUtil$1;
+.Landroidx/recyclerview/widget/AsyncListUtil$2;
+/Landroid/security/keystore/KeyGenParameterSpec;
+0Landroidx/recyclerview/widget/AsyncDifferConfig;
+0Landroidx/recyclerview/widget/AsyncDifferConfig<
+0Landroidx/recyclerview/widget/AsyncListDiffer$1;
+2Landroidx/recyclerview/widget/AsyncListDiffer$1$1;
+2Landroidx/recyclerview/widget/AsyncListDiffer$1$2;
+2lambda$asyncExecuteSyncRequestedAndStoredLocales$0
+7Landroid/security/keystore/KeyGenParameterSpec$Builder;
+8Landroidx/recyclerview/widget/AsyncDifferConfig$Builder;
+8Landroidx/recyclerview/widget/AsyncDifferConfig$Builder<
+9Landroidx/recyclerview/widget/AsyncListUtil$DataCallback;
+9Landroidx/recyclerview/widget/AsyncListUtil$DataCallback<
+9Landroidx/recyclerview/widget/AsyncListUtil$ViewCallback;
+;Landroidx/recyclerview/widget/AsyncListDiffer$ListListener;
+;Landroidx/recyclerview/widget/AsyncListDiffer$ListListener<
+=Landroidx/compose/runtime/platform/Synchronization_androidKt;
+>Landroidx/recyclerview/widget/MessageThreadUtil$SyncQueueItem;
+@Landroidx/compose/foundation/platform/Synchronization_androidKt;
+== classes2.dex ==
+synchronizedList
+synchronizedMap
+synchronizedSet
+== classes3.dex ==
+	AsyncTask
+	loadAsync
+ Unsupported Async font load path
+ getReuseSyncDeactivation-NjRlDlw
+!Failed to sync file output stream
+"access$getReuseSyncDeactivation$cp
+#getCanLoadSynchronously$annotations
+$asyncLoader
+$asyncLoads
+$this_loadAsync
+%getReuseForceSyncDeactivation-NjRlDlw
+'SYNC_ACTIVATED_TO_EXPANDED_AND_SELECTED
+'access$getReuseForceSyncDeactivation$cp
+)Landroidx/loader/content/AsyncTaskLoader;
+)Landroidx/loader/content/AsyncTaskLoader<
+)Landroidx/loader/content/ModernAsyncTask;
+)Landroidx/loader/content/ModernAsyncTask<
+*Landroid/adservices/topics/EncryptedTopic;
++Landroidx/core/util/Pools$SynchronizedPool;
++Landroidx/datastore/core/okio/Synchronizer;
++Landroidx/loader/content/ModernAsyncTask$1;
++Landroidx/loader/content/ModernAsyncTask$2;
++Landroidx/loader/content/ModernAsyncTask$3;
++Landroidx/loader/content/ModernAsyncTask$4;
+, EncryptedTopics=
+0Landroidx/loader/content/ModernAsyncTask$Status;
+0androidx.compose.ui.text.font.AsyncTypefaceCache
+1[Landroidx/loader/content/ModernAsyncTask$Status;
+1androidx.compose.ui.text.font.AsyncFontListLoader
+2Landroidx/compose/ui/text/font/AsyncTypefaceCache;
+== classes4.dex ==
+	fiid-sync
+	needsSync
+ device-encrypted-storage-info.pb
+!syncBlocking$room_runtime_release
+!syncTriggers$room_runtime_release
+"TRANSACTION_getForegroundInfoAsync
+"forceNeedSync$room_runtime_release
+"refreshInvalidationAsync$lambda$10
+"refreshInvalidationAsync$lambda$11
+$getTablesToSync$room_runtime_release
+$tablesToSync
+&default failing getForegroundInfoAsync
+'Landroidx/tracing/TraceKt$traceAsync$1;
+[0m
+[0m← [0mWrite /tmp/opencode/dexstrings.py
+Wrote file successfully.
+[0m
+`strings` on dex is noisy. Writing a proper DEX string-table dumper to extract real string constants.
+[0m$ [0mcd /tmp/opencode && python3 dexstrings.py whale_apk/classes.dex whale_apk/classes2.dex whale_apk/classes3.dex whale_apk/classes4.dex > dex_strings.txt 2>/dev/null; wc -l dex_strings.txt; echo "=== bootstrap/encrypt tokens ==="; grep -iE 'bootstrap' dex_strings.txt | head -20; echo "=== encryption-related ==="; grep -iE 'encrypt|os_crypt|nigori|scrypt|pbkdf|passphrase|kdf|derive' dex_strings.txt | head -40
+38 dex_strings.txt
+=== bootstrap/encrypt tokens ===
+=== encryption-related ===
+setEncryptionPaddingPKCS7
+setEncryptionPaddings
+, EncryptedTopics=
+EncryptedTopic { 
+EncryptedTopic=
+Landroid/adservices/topics/EncryptedTopic;
+Landroidx/privacysandbox/ads/adservices/topics/EncryptedTopic;
+convertResponseWithEncryptedTopics$ads_adservices_release
+encryptedTopic
+encryptedTopics
+getEncryptedTopic
+getEncryptedTopics
+, encryptedBlob=
+, experimentIdsEncrypted=
+ALTER TABLE events ADD COLUMN experiment_ids_encrypted_blob BLOB
+Conscrypt
+ECDH_HKDF_256
+Lorg/conscrypt/Conscrypt;
+Lorg/conscrypt/OpenSSLProvider;
+WorkManager can't be accessed from direct boot, because credential encrypted storage isn't accessible.
+blockstore_is_end_to_end_encryption_available
+com.android.org.conscrypt.SSLParametersImpl
+conscrypt
+device-encrypted-storage-info.pb
+encryptedBlob
+experiment_ids_encrypted_blob
+isConscrypt
+org.conscrypt.ConscryptEngineSocket
+[0m
+Base APK dex lacks the desktop sync-encryption strings (bootstrap_token/os_crypt/nigori) — notable. Checking for EncryptedSharedPreferences, keystore, and sync hosts.
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct,re
+def uleb(b,o):
+    r=0;s=0
+    while True:
+        c=b[o];o+=1;r|=(c&0x7f)<<s
+        if not c&0x80:break
+        s+=7
+    return r,o
+def dump(p):
+    b=open(p,'rb').read()
+    n,=struct.unpack_from('<I',b,0x38);off,=struct.unpack_from('<I',b,0x3c)
+    for i in range(n):
+        o,=struct.unpack_from('<I',b,off+i*4)
+        sz,o=uleb(b,o)
+        yield b[o:o+sz].decode('utf-8','replace')
+pats=[r'sync\.encryption',r'encryption_bootstrap',r'migration_done',r'whale_need_encryption',r'EncryptedSharedPreferences',r'MasterKey',r'AndroidKeyStore',r'KeyGenParameterSpec',r'whaleon',r'whalesync',r'whale\.sync',r'sync_encryption',r'passphrase',r'vault',r'recovery_code',r'recoveryCode',r'naver.*account.*sync',r'sync.*naver',r'\.whale\.',r'whale-browser']
+seen=set()
+for f in ['whale_apk/classes.dex','whale_apk/classes2.dex','whale_apk/classes3.dex','whale_apk/classes4.dex']:
+    for s in dump(f):
+        if any(re.search(p,s,re.I) for p in pats) and 4<len(s)<200:
+            if s in seen: continue
+            seen.add(s); print(s)
+EOF
+AndroidKeyStore
+Landroid/security/keystore/KeyGenParameterSpec$Builder;
+Landroid/security/keystore/KeyGenParameterSpec;
+buildKeyGenParameterSpec
+createKeyGenParameterSpecBuilder
+[0m
+[0m$ [0mcd /tmp/opencode && ls -la whale_apk/lib/ whale_apk/assets/ 2>/dev/null; echo "=== native libs ==="; find whale_apk/lib -name '*.so' | head -40; echo "=== strings in native libs for sync ==="; find whale_apk/lib -name '*.so' -exec strings -a -n 8 {} \; 2>/dev/null | grep -iE 'whaleon|whalesync|bootstrap|os_crypt|nigori|passphrase|encryption_bootstrap|whale.*sync|sync.*whale' | sort -u | head -30
+whale_apk/assets/:
+total 16
+drwxr-xr-x 4 runner runner 4096 Aug  8 07:33 .
+drwxr-xr-x 9 runner runner 4096 Aug  8 07:33 ..
+drwxr-xr-x 2 runner runner 4096 Aug  8 07:33 dexopt
+drwxr-xr-x 2 runner runner 4096 Aug  8 07:33 fonts
+
+whale_apk/lib/:
+total 24
+drwxr-xr-x 6 runner runner 4096 Aug  8 07:33 .
+drwxr-xr-x 9 runner runner 4096 Aug  8 07:33 ..
+drwxr-xr-x 2 runner runner 4096 Aug  8 07:33 arm64-v8a
+drwxr-xr-x 2 runner runner 4096 Aug  8 07:33 armeabi-v7a
+drwxr-xr-x 2 runner runner 4096 Aug  8 07:33 x86
+drwxr-xr-x 2 runner runner 4096 Aug  8 07:33 x86_64
+=== native libs ===
+whale_apk/lib/x86/libutd-services-native.so
+whale_apk/lib/x86/libandroidx.graphics.path.so
+whale_apk/lib/x86/libdatastore_shared_counter.so
+whale_apk/lib/x86/libuptodown-native.so
+whale_apk/lib/arm64-v8a/libutd-services-native.so
+whale_apk/lib/arm64-v8a/libandroidx.graphics.path.so
+whale_apk/lib/arm64-v8a/libdatastore_shared_counter.so
+whale_apk/lib/arm64-v8a/libuptodown-native.so
+whale_apk/lib/x86_64/libutd-services-native.so
+whale_apk/lib/x86_64/libandroidx.graphics.path.so
+whale_apk/lib/x86_64/libdatastore_shared_counter.so
+whale_apk/lib/x86_64/libuptodown-native.so
+whale_apk/lib/armeabi-v7a/libutd-services-native.so
+whale_apk/lib/armeabi-v7a/libandroidx.graphics.path.so
+whale_apk/lib/armeabi-v7a/libdatastore_shared_counter.so
+whale_apk/lib/armeabi-v7a/libuptodown-native.so
+=== strings in native libs for sync ===
+[0m
+`libuptodown-native.so` / `libutd-services-native.so` in the APK is a red flag — that's Uptodown's SDK, suggesting a re-signed/rebuild artifact. Verifying package identity and signing cert before building any findings on it.
+[0m$ [0mcd /tmp/opencode && ls whale_apk/META-INF/ | head; echo "---signature cert---"; find whale_apk/META-INF -name '*.RSA' -o -name '*.DSA' -o -name '*.EC' | head; echo "---manifest pkg (raw bytes may be axml)---"; grep -a 'com.naver.whale' whale_apk/AndroidManifest.xml | head -3; echo "---utd references in manifest---"; strings -a -n 5 whale_apk/AndroidManifest.xml | grep -icE 'uptodown'; echo "---dex package refs---"; grep -oE 'com/naver/whale[a-zA-Z0-9/]*' dex_strings.txt | head; python3 -c "
+import struct
+def uleb(b,o):
+    r=0;s=0
+    while True:
+        c=b[o];o+=1;r|=(c&0x7f)<<s
+        if not c&0x80:break
+        s+=7
+    return r,o
+b=open('whale_apk/classes.dex','rb').read()
+n,=struct.unpack_from('<I',b,0x38);off,=struct.unpack_from('<I',b,0x3c)
+refs={}
+for i in range(n):
+    o,=struct.unpack_from('<I',b,off+i*4)
+    sz,o=uleb(b,o)
+    s=b[o:o+sz].decode('utf-8','replace')
+    if '/'.startswith(s[:1]) or True:
+        for pref in ['com/naver/whale','com/naver/corp','com/whale','uptodown']:
+            if s.startswith(pref):
+                refs.setdefault(pref,[]).append(s)
+for k,v in refs.items():
+    print(k, len(v))
+    print('  ', '; '.join(sorted(set(v))[:8]))
+"
+CERT.RSA
+CERT.SF
+MANIFEST.MF
+androidx
+androidx.activity_activity-compose.version
+androidx.activity_activity-ktx.version
+androidx.activity_activity.version
+androidx.annotation_annotation-experimental.version
+androidx.appcompat_appcompat-resources.version
+androidx.appcompat_appcompat.version
+---signature cert---
+whale_apk/META-INF/CERT.RSA
+---manifest pkg (raw bytes may be axml)---
+---utd references in manifest---
+0
+---dex package refs---
+uptodown 1
+   uptodown_turbo_register_popup_shown
+[0m
+[0m$ [0mcd /tmp/opencode && openssl pkcs7 -inform DER -in whale_apk/META-INF/CERT.RSA -print_certs 2>/dev/null | grep -E 'subject=|issuer=|Not Before|Not After' | head -6; echo "---cert hash---"; openssl pkcs7 -inform DER -in whale_apk/META-INF/CERT.RSA -print_certs 2>/dev/null | openssl x509 -noout -fingerprint -sha256 2>/dev/null
+subject=C = ES, ST = M\C3\A1laga, L = M\C3\A1laga, O = Uptodown, OU = Uptodown, CN = Uptodown Technologies SL
+issuer=C = ES, ST = M\C3\A1laga, L = M\C3\A1laga, O = Uptodown, OU = Uptodown, CN = Uptodown Technologies SL
+---cert hash---
+sha256 Fingerprint=82:2B:9C:A1:2B:53:4E:BC:F4:26:63:22:21:D9:51:BF:C6:0E:B0:8F:9F:0C:F2:83:9C:32:1B:06:85:C2:E8:A4
+[0m
+**Critical integrity finding**: the APK is signed by "Uptodown Technologies SL" — a re-signed, SDK-injected rebuild, not Naver's official binary. Confirming via manifest package name.
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+b = open('whale_apk/AndroidManifest.xml','rb').read()
+# search UTF-16LE encoded strings for package markers
+for needle in ['com.naver.whale', 'naver', 'whale', 'Uptodown', 'uptodown', 'navercorp']:
+    enc = needle.encode('utf-16-le')
+    print(f'{needle}: {b.count(enc)}')
+# check versionName/Code via META-INF or version files
+EOF
+echo "---dex top-level packages (class descriptors)---"
+cd /tmp/opencode && python3 - <<'EOF'
+import struct
+def uleb(b,o):
+    r=0;s=0
+    while True:
+        c=b[o];o+=1;r|=(c&0x7f)<<s
+        if not c&0x80:break
+        s+=7
+    return r,o
+for f in ['whale_apk/classes.dex','whale_apk/classes2.dex','whale_apk/classes3.dex','whale_apk/classes4.dex']:
+    b=open(f,'rb').read()
+    n,=struct.unpack_from('<I',b,0x38);off,=struct.unpack_from('<I',b,0x3c)
+    top={}
+    for i in range(n):
+        o,=struct.unpack_from('<I',b,off+i*4)
+        sz,o=uleb(b,o)
+        s=b[o:o+sz].decode('utf-8','replace')
+        if s.startswith('L') and '/' in s:
+            pkg=s[1:s.rfind('/')]
+            p1=pkg.split('/')[0]
+            top[p1]=top.get(p1,0)+1
+    print(f, sorted(top.items(), key=lambda x:-x[1])[:12])
+EOF
+com.naver.whale: 0
+naver: 0
+whale: 0
+Uptodown: 1
+uptodown: 75
+navercorp: 0
+---dex top-level packages (class descriptors)---
+whale_apk/classes.dex [('androidx', 8633), ('android', 552), ('java', 231), ('com', 79), ('j$', 40), ('i5', 39), ('a9', 26), ('e6', 26), ('b8', 25), ('kotlin', 25), ('d9', 22), ('b', 20)]
+whale_apk/classes2.dex [('j$', 560), ('java', 202), ('dalvik', 4), ('sun', 1)]
+whale_apk/classes3.dex [('androidx', 7713), ('android', 873), ('java', 293), ('r1', 31), ('j$', 27), ('a9', 26), ('b8', 21), ('kotlin', 19), ('com', 18), ('d9', 16), ('a8', 13), ('ia', 13)]
+whale_apk/classes4.dex [('androidx', 2411), ('com', 2010), ('android', 570), ('java', 390), ('i5', 379), ('g2', 158), ('e6', 109), ('b6', 102), ('h3', 92), ('a9', 91), ('x6', 80), ('a2', 68)]
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct,re
+def uleb(b,o):
+    r=0;s=0
+    while True:
+        c=b[o];o+=1;r|=(c&0x7f)<<s
+        if not c&0x80:break
+        s+=7
+    return r,o
+b=open('whale_apk/classes4.dex','rb').read()
+n,=struct.unpack_from('<I',b,0x38);off,=struct.unpack_from('<I',b,0x3c)
+coms={}
+for i in range(n):
+    o,=struct.unpack_from('<I',b,off+i*4)
+    sz,o=uleb(b,o)
+    s=b[o:o+sz].decode('utf-8','replace')
+    if s.startswith('Lcom/'):
+        pkg='L'+s[1:s.find('/',2)]
+        coms[pkg]=coms.get(pkg,0)+1
+for k,v in sorted(coms.items(),key=lambda x:-x[1])[:20]:
+    print(k, v)
+EOF
+Lcom 2010
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct
+def uleb(b,o):
+    r=0;s=0
+    while True:
+        c=b[o];o+=1;r|=(c&0x7f)<<s
+        if not c&0x80:break
+        s+=7
+    return r,o
+b=open('whale_apk/classes4.dex','rb').read()
+n,=struct.unpack_from('<I',b,0x38);off,=struct.unpack_from('<I',b,0x3c)
+coms={}
+for i in range(n):
+    o,=struct.unpack_from('<I',b,off+i*4)
+    sz,o=uleb(b,o)
+    s=b[o:o+sz].decode('utf-8','replace')
+    if s.startswith('Lcom/') and len(s)>6:
+        parts=s.split('/')
+        pkg='L'+parts[1]+'/'+(parts[2] if len(parts)>2 else '')
+        coms[pkg]=coms.get(pkg,0)+1
+for k,v in sorted(coms.items(),key=lambda x:-x[1])[:25]:
+    print(k, v)
+EOF
+Lgoogle/android 1706
+Lgoogle/gson 115
+Luptodown/activities 47
+Ldavemorrissey/labs 34
+Linmobi/cmp 27
+Lgoogle/firebase 20
+Luptodown/workers 17
+Luptodown/tv 16
+Luptodown/views 7
+Luptodown/core 6
+Luptodown/receivers 4
+Luptodown/util 4
+Luptodown/services 2
+Lgoogle/common 1
+Lpierfrancescosoffritti/androidyoutubeplayer 1
+Lsquareup/picasso 1
+Luptodown/UptodownApp; 1
+Luptodown/gcm 1
+[0m
+The dex contains `com.uptodown.*` application classes (activities, workers, receivers, gcm, UptodownApp) — this is NOT Whale's code. Dumping the AXML string pool to definitively identify the artifact.
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct
+b=open('whale_apk/AndroidManifest.xml','rb').read()
+# AXML chunk: 08 00 03 08 <headersize=0x8> <chunksize> then string pool
+def u16(b,o): return struct.unpack_from('<H',b,o)[0]
+def u32(b,o): return struct.unpack_from('<I',b,o)[0]
+assert b[:4]==b'\x03\x00\x08\x00'
+pos=8
+strs=[]
+while pos < len(b):
+    typ,hsize,csize=u16(b,pos),u16(b,pos+2),u32(b,pos+4)
+    if typ==0x0001:  # STRING_POOL
+        sct,bcount,scount,sidx,soff = u32(b,pos+8),u32(b,pos+12),u32(b,pos+16),u32(b,pos+20),u32(b,pos+24)
+        base=pos
+        offs=[u32(b,pos+28+i*4) for i in range(scount)]
+        for o in offs:
+            p=base+o
+            clen=u16(b,p)
+            if clen==0xFFFF:
+                clen=u32(b,p+2); utf16=True; po=p+6
+            else:
+                utf16=False; po=p+2
+            s=b[po:po+clen*2].decode('utf-16-le','replace') if utf16 else b[po:po+clen].decode('utf-8','replace')
+            strs.append(s)
+        break
+    pos+=csize
+print('total strings:', len(strs))
+import re
+interesting=[s for s in strs if re.search(r'naver|whale|whaleon|version|uptodown', s, re.I)]
+for s in interesting[:40]:
+    print(repr(s))
+EOF
+total strings: 0
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct
+b=open('whale_apk/AndroidManifest.xml','rb').read()
+print('head:', b[:16].hex())
+typ,hsz,sz = struct.unpack_from('<HHI', b, 0)
+print('type',hex(typ),'headerSize',hsz,'size',sz)
+pos=8
+while pos < len(b):
+    t,hs,cs = struct.unpack_from('<HHI', b, pos)
+    print('chunk at',pos,'type',hex(t),'hs',hs,'cs',cs)
+    if t==0x0001:
+        # string pool
+        sct,bo,sc,si,so = struct.unpack_from('<IIIII', b, pos+8)
+        base=pos
+        for j in range(sc):
+            o,=struct.unpack_from('<I', b, base+28+j*4)
+            p=base+o
+            cl=struct.unpack_from('<H', b, p)[0]
+            if cl==0xFFFF:
+                cl=struct.unpack_from('<I', b, p+2)[0]
+                s=b[p+6:p+6+cl*2].decode('utf-16-le','replace')
+            else:
+                s=b[p+2:p+2+cl].decode('utf-8','replace')
+            if any(k in s.lower() for k in ['naver','whale','uptodown','version','app','browser']):
+                print('   ', repr(s[:120]))
+    pos+=cs
+EOF
+head: 030008007cf1000001001c00ac5e0000
+type 0x3 headerSize 8 size 61820
+chunk at 8 type 0x1 hs 28 cs 24236
+chunk at 24244 type 0x180 hs 8 cs 208
+chunk at 24452 type 0x100 hs 16 cs 24
+chunk at 24476 type 0x102 hs 16 cs 196
+chunk at 24672 type 0x102 hs 16 cs 76
+chunk at 24748 type 0x103 hs 16 cs 24
+chunk at 24772 type 0x102 hs 16 cs 56
+chunk at 24828 type 0x103 hs 16 cs 24
+chunk at 24852 type 0x102 hs 16 cs 56
+chunk at 24908 type 0x103 hs 16 cs 24
+chunk at 24932 type 0x102 hs 16 cs 56
+chunk at 24988 type 0x103 hs 16 cs 24
+chunk at 25012 type 0x102 hs 16 cs 56
+chunk at 25068 type 0x103 hs 16 cs 24
+chunk at 25092 type 0x102 hs 16 cs 56
+chunk at 25148 type 0x103 hs 16 cs 24
+chunk at 25172 type 0x102 hs 16 cs 56
+chunk at 25228 type 0x103 hs 16 cs 24
+chunk at 25252 type 0x102 hs 16 cs 56
+chunk at 25308 type 0x103 hs 16 cs 24
+chunk at 25332 type 0x102 hs 16 cs 56
+chunk at 25388 type 0x103 hs 16 cs 24
+chunk at 25412 type 0x102 hs 16 cs 56
+chunk at 25468 type 0x103 hs 16 cs 24
+chunk at 25492 type 0x102 hs 16 cs 56
+chunk at 25548 type 0x103 hs 16 cs 24
+chunk at 25572 type 0x102 hs 16 cs 56
+chunk at 25628 type 0x103 hs 16 cs 24
+chunk at 25652 type 0x102 hs 16 cs 56
+chunk at 25708 type 0x103 hs 16 cs 24
+chunk at 25732 type 0x102 hs 16 cs 56
+chunk at 25788 type 0x103 hs 16 cs 24
+chunk at 25812 type 0x102 hs 16 cs 56
+chunk at 25868 type 0x103 hs 16 cs 24
+chunk at 25892 type 0x102 hs 16 cs 56
+chunk at 25948 type 0x103 hs 16 cs 24
+chunk at 25972 type 0x102 hs 16 cs 56
+chunk at 26028 type 0x103 hs 16 cs 24
+chunk at 26052 type 0x102 hs 16 cs 56
+chunk at 26108 type 0x103 hs 16 cs 24
+chunk at 26132 type 0x102 hs 16 cs 56
+chunk at 26188 type 0x103 hs 16 cs 24
+chunk at 26212 type 0x102 hs 16 cs 56
+chunk at 26268 type 0x103 hs 16 cs 24
+chunk at 26292 type 0x102 hs 16 cs 56
+chunk at 26348 type 0x103 hs 16 cs 24
+chunk at 26372 type 0x102 hs 16 cs 56
+chunk at 26428 type 0x103 hs 16 cs 24
+chunk at 26452 type 0x102 hs 16 cs 56
+chunk at 26508 type 0x103 hs 16 cs 24
+chunk at 26532 type 0x102 hs 16 cs 56
+chunk at 26588 type 0x103 hs 16 cs 24
+chunk at 26612 type 0x102 hs 16 cs 76
+chunk at 26688 type 0x103 hs 16 cs 24
+chunk at 26712 type 0x102 hs 16 cs 76
+chunk at 26788 type 0x103 hs 16 cs 24
+chunk at 26812 type 0x102 hs 16 cs 76
+chunk at 26888 type 0x103 hs 16 cs 24
+chunk at 26912 type 0x102 hs 16 cs 76
+chunk at 26988 type 0x103 hs 16 cs 24
+chunk at 27012 type 0x102 hs 16 cs 76
+chunk at 27088 type 0x103 hs 16 cs 24
+chunk at 27112 type 0x102 hs 16 cs 76
+chunk at 27188 type 0x103 hs 16 cs 24
+chunk at 27212 type 0x102 hs 16 cs 76
+chunk at 27288 type 0x103 hs 16 cs 24
+chunk at 27312 type 0x102 hs 16 cs 76
+chunk at 27388 type 0x103 hs 16 cs 24
+chunk at 27412 type 0x102 hs 16 cs 156
+chunk at 27568 type 0x103 hs 16 cs 24
+chunk at 27592 type 0x102 hs 16 cs 56
+chunk at 27648 type 0x103 hs 16 cs 24
+chunk at 27672 type 0x102 hs 16 cs 56
+chunk at 27728 type 0x103 hs 16 cs 24
+chunk at 27752 type 0x102 hs 16 cs 56
+chunk at 27808 type 0x103 hs 16 cs 24
+chunk at 27832 type 0x102 hs 16 cs 56
+chunk at 27888 type 0x103 hs 16 cs 24
+chunk at 27912 type 0x102 hs 16 cs 56
+chunk at 27968 type 0x103 hs 16 cs 24
+chunk at 27992 type 0x102 hs 16 cs 56
+chunk at 28048 type 0x103 hs 16 cs 24
+chunk at 28072 type 0x102 hs 16 cs 56
+chunk at 28128 type 0x103 hs 16 cs 24
+chunk at 28152 type 0x102 hs 16 cs 56
+chunk at 28208 type 0x103 hs 16 cs 24
+chunk at 28232 type 0x102 hs 16 cs 76
+chunk at 28308 type 0x103 hs 16 cs 24
+chunk at 28332 type 0x102 hs 16 cs 56
+chunk at 28388 type 0x103 hs 16 cs 24
+chunk at 28412 type 0x102 hs 16 cs 296
+chunk at 28708 type 0x102 hs 16 cs 76
+chunk at 28784 type 0x103 hs 16 cs 24
+chunk at 28808 type 0x102 hs 16 cs 76
+chunk at 28884 type 0x103 hs 16 cs 24
+chunk at 28908 type 0x102 hs 16 cs 76
+chunk at 28984 type 0x103 hs 16 cs 24
+chunk at 29008 type 0x102 hs 16 cs 136
+chunk at 29144 type 0x102 hs 16 cs 36
+chunk at 29180 type 0x102 hs 16 cs 56
+chunk at 29236 type 0x103 hs 16 cs 24
+chunk at 29260 type 0x102 hs 16 cs 56
+chunk at 29316 type 0x103 hs 16 cs 24
+chunk at 29340 type 0x102 hs 16 cs 56
+chunk at 29396 type 0x103 hs 16 cs 24
+chunk at 29420 type 0x102 hs 16 cs 96
+chunk at 29516 type 0x103 hs 16 cs 24
+chunk at 29540 type 0x103 hs 16 cs 24
+chunk at 29564 type 0x102 hs 16 cs 36
+chunk at 29600 type 0x102 hs 16 cs 56
+chunk at 29656 type 0x103 hs 16 cs 24
+chunk at 29680 type 0x102 hs 16 cs 56
+chunk at 29736 type 0x103 hs 16 cs 24
+chunk at 29760 type 0x103 hs 16 cs 24
+chunk at 29784 type 0x102 hs 16 cs 76
+chunk at 29860 type 0x103 hs 16 cs 24
+chunk at 29884 type 0x102 hs 16 cs 76
+chunk at 29960 type 0x103 hs 16 cs 24
+chunk at 29984 type 0x102 hs 16 cs 36
+chunk at 30020 type 0x102 hs 16 cs 56
+chunk at 30076 type 0x103 hs 16 cs 24
+chunk at 30100 type 0x102 hs 16 cs 56
+chunk at 30156 type 0x103 hs 16 cs 24
+chunk at 30180 type 0x102 hs 16 cs 56
+chunk at 30236 type 0x103 hs 16 cs 24
+chunk at 30260 type 0x102 hs 16 cs 56
+chunk at 30316 type 0x103 hs 16 cs 24
+chunk at 30340 type 0x103 hs 16 cs 24
+chunk at 30364 type 0x102 hs 16 cs 36
+chunk at 30400 type 0x102 hs 16 cs 56
+chunk at 30456 type 0x103 hs 16 cs 24
+chunk at 30480 type 0x102 hs 16 cs 56
+chunk at 30536 type 0x103 hs 16 cs 24
+chunk at 30560 type 0x102 hs 16 cs 56
+chunk at 30616 type 0x103 hs 16 cs 24
+chunk at 30640 type 0x102 hs 16 cs 56
+chunk at 30696 type 0x103 hs 16 cs 24
+chunk at 30720 type 0x103 hs 16 cs 24
+chunk at 30744 type 0x102 hs 16 cs 36
+chunk at 30780 type 0x102 hs 16 cs 56
+chunk at 30836 type 0x103 hs 16 cs 24
+chunk at 30860 type 0x102 hs 16 cs 56
+chunk at 30916 type 0x103 hs 16 cs 24
+chunk at 30940 type 0x102 hs 16 cs 56
+chunk at 30996 type 0x103 hs 16 cs 24
+chunk at 31020 type 0x102 hs 16 cs 76
+chunk at 31096 type 0x103 hs 16 cs 24
+chunk at 31120 type 0x103 hs 16 cs 24
+chunk at 31144 type 0x102 hs 16 cs 36
+chunk at 31180 type 0x102 hs 16 cs 56
+chunk at 31236 type 0x103 hs 16 cs 24
+chunk at 31260 type 0x102 hs 16 cs 56
+chunk at 31316 type 0x103 hs 16 cs 24
+chunk at 31340 type 0x102 hs 16 cs 56
+chunk at 31396 type 0x103 hs 16 cs 24
+chunk at 31420 type 0x102 hs 16 cs 76
+chunk at 31496 type 0x103 hs 16 cs 24
+chunk at 31520 type 0x102 hs 16 cs 76
+chunk at 31596 type 0x103 hs 16 cs 24
+chunk at 31620 type 0x103 hs 16 cs 24
+chunk at 31644 type 0x102 hs 16 cs 36
+chunk at 31680 type 0x102 hs 16 cs 56
+chunk at 31736 type 0x103 hs 16 cs 24
+chunk at 31760 type 0x102 hs 16 cs 56
+chunk at 31816 type 0x103 hs 16 cs 24
+chunk at 31840 type 0x102 hs 16 cs 56
+chunk at 31896 type 0x103 hs 16 cs 24
+chunk at 31920 type 0x102 hs 16 cs 96
+chunk at 32016 type 0x103 hs 16 cs 24
+chunk at 32040 type 0x103 hs 16 cs 24
+chunk at 32064 type 0x102 hs 16 cs 56
+chunk at 32120 type 0x102 hs 16 cs 56
+chunk at 32176 type 0x103 hs 16 cs 24
+chunk at 32200 type 0x102 hs 16 cs 56
+chunk at 32256 type 0x103 hs 16 cs 24
+chunk at 32280 type 0x102 hs 16 cs 56
+chunk at 32336 type 0x103 hs 16 cs 24
+chunk at 32360 type 0x102 hs 16 cs 56
+chunk at 32416 type 0x103 hs 16 cs 24
+chunk at 32440 type 0x102 hs 16 cs 56
+chunk at 32496 type 0x103 hs 16 cs 24
+chunk at 32520 type 0x102 hs 16 cs 56
+chunk at 32576 type 0x103 hs 16 cs 24
+chunk at 32600 type 0x102 hs 16 cs 56
+chunk at 32656 type 0x103 hs 16 cs 24
+chunk at 32680 type 0x102 hs 16 cs 56
+chunk at 32736 type 0x103 hs 16 cs 24
+chunk at 32760 type 0x102 hs 16 cs 56
+chunk at 32816 type 0x103 hs 16 cs 24
+chunk at 32840 type 0x102 hs 16 cs 56
+chunk at 32896 type 0x103 hs 16 cs 24
+chunk at 32920 type 0x102 hs 16 cs 56
+chunk at 32976 type 0x103 hs 16 cs 24
+chunk at 33000 type 0x102 hs 16 cs 56
+chunk at 33056 type 0x103 hs 16 cs 24
+chunk at 33080 type 0x102 hs 16 cs 56
+chunk at 33136 type 0x103 hs 16 cs 24
+chunk at 33160 type 0x102 hs 16 cs 56
+chunk at 33216 type 0x103 hs 16 cs 24
+chunk at 33240 type 0x102 hs 16 cs 56
+chunk at 33296 type 0x103 hs 16 cs 24
+chunk at 33320 type 0x102 hs 16 cs 56
+chunk at 33376 type 0x103 hs 16 cs 24
+chunk at 33400 type 0x102 hs 16 cs 56
+chunk at 33456 type 0x103 hs 16 cs 24
+chunk at 33480 type 0x102 hs 16 cs 56
+chunk at 33536 type 0x103 hs 16 cs 24
+chunk at 33560 type 0x102 hs 16 cs 56
+chunk at 33616 type 0x103 hs 16 cs 24
+chunk at 33640 type 0x102 hs 16 cs 56
+chunk at 33696 type 0x103 hs 16 cs 24
+chunk at 33720 type 0x103 hs 16 cs 24
+chunk at 33744 type 0x102 hs 16 cs 56
+chunk at 33800 type 0x102 hs 16 cs 56
+chunk at 33856 type 0x103 hs 16 cs 24
+chunk at 33880 type 0x102 hs 16 cs 56
+chunk at 33936 type 0x103 hs 16 cs 24
+chunk at 33960 type 0x102 hs 16 cs 56
+chunk at 34016 type 0x103 hs 16 cs 24
+chunk at 34040 type 0x102 hs 16 cs 56
+chunk at 34096 type 0x103 hs 16 cs 24
+chunk at 34120 type 0x102 hs 16 cs 56
+chunk at 34176 type 0x103 hs 16 cs 24
+chunk at 34200 type 0x102 hs 16 cs 56
+chunk at 34256 type 0x103 hs 16 cs 24
+chunk at 34280 type 0x103 hs 16 cs 24
+chunk at 34304 type 0x102 hs 16 cs 56
+chunk at 34360 type 0x102 hs 16 cs 56
+chunk at 34416 type 0x103 hs 16 cs 24
+chunk at 34440 type 0x102 hs 16 cs 56
+chunk at 34496 type 0x103 hs 16 cs 24
+chunk at 34520 type 0x102 hs 16 cs 56
+chunk at 34576 type 0x103 hs 16 cs 24
+chunk at 34600 type 0x102 hs 16 cs 56
+chunk at 34656 type 0x103 hs 16 cs 24
+chunk at 34680 type 0x102 hs 16 cs 56
+chunk at 34736 type 0x103 hs 16 cs 24
+chunk at 34760 type 0x102 hs 16 cs 56
+chunk at 34816 type 0x103 hs 16 cs 24
+chunk at 34840 type 0x103 hs 16 cs 24
+chunk at 34864 type 0x102 hs 16 cs 56
+chunk at 34920 type 0x102 hs 16 cs 56
+chunk at 34976 type 0x103 hs 16 cs 24
+chunk at 35000 type 0x102 hs 16 cs 56
+chunk at 35056 type 0x103 hs 16 cs 24
+chunk at 35080 type 0x102 hs 16 cs 56
+chunk at 35136 type 0x103 hs 16 cs 24
+chunk at 35160 type 0x102 hs 16 cs 116
+chunk at 35276 type 0x103 hs 16 cs 24
+chunk at 35300 type 0x102 hs 16 cs 116
+chunk at 35416 type 0x103 hs 16 cs 24
+chunk at 35440 type 0x103 hs 16 cs 24
+chunk at 35464 type 0x102 hs 16 cs 56
+chunk at 35520 type 0x102 hs 16 cs 56
+chunk at 35576 type 0x103 hs 16 cs 24
+chunk at 35600 type 0x102 hs 16 cs 56
+chunk at 35656 type 0x103 hs 16 cs 24
+chunk at 35680 type 0x102 hs 16 cs 56
+chunk at 35736 type 0x103 hs 16 cs 24
+chunk at 35760 type 0x102 hs 16 cs 56
+chunk at 35816 type 0x103 hs 16 cs 24
+chunk at 35840 type 0x102 hs 16 cs 56
+chunk at 35896 type 0x103 hs 16 cs 24
+chunk at 35920 type 0x103 hs 16 cs 24
+chunk at 35944 type 0x102 hs 16 cs 56
+chunk at 36000 type 0x102 hs 16 cs 56
+chunk at 36056 type 0x103 hs 16 cs 24
+chunk at 36080 type 0x102 hs 16 cs 56
+chunk at 36136 type 0x103 hs 16 cs 24
+chunk at 36160 type 0x102 hs 16 cs 56
+chunk at 36216 type 0x103 hs 16 cs 24
+chunk at 36240 type 0x102 hs 16 cs 56
+chunk at 36296 type 0x103 hs 16 cs 24
+chunk at 36320 type 0x102 hs 16 cs 56
+chunk at 36376 type 0x103 hs 16 cs 24
+chunk at 36400 type 0x102 hs 16 cs 56
+chunk at 36456 type 0x103 hs 16 cs 24
+chunk at 36480 type 0x102 hs 16 cs 56
+chunk at 36536 type 0x103 hs 16 cs 24
+chunk at 36560 type 0x102 hs 16 cs 56
+chunk at 36616 type 0x103 hs 16 cs 24
+chunk at 36640 type 0x102 hs 16 cs 56
+chunk at 36696 type 0x103 hs 16 cs 24
+chunk at 36720 type 0x102 hs 16 cs 56
+chunk at 36776 type 0x103 hs 16 cs 24
+chunk at 36800 type 0x102 hs 16 cs 56
+chunk at 36856 type 0x103 hs 16 cs 24
+chunk at 36880 type 0x102 hs 16 cs 56
+chunk at 36936 type 0x103 hs 16 cs 24
+chunk at 36960 type 0x102 hs 16 cs 56
+chunk at 37016 type 0x103 hs 16 cs 24
+chunk at 37040 type 0x102 hs 16 cs 56
+chunk at 37096 type 0x103 hs 16 cs 24
+chunk at 37120 type 0x102 hs 16 cs 56
+chunk at 37176 type 0x103 hs 16 cs 24
+chunk at 37200 type 0x102 hs 16 cs 56
+chunk at 37256 type 0x103 hs 16 cs 24
+chunk at 37280 type 0x102 hs 16 cs 56
+chunk at 37336 type 0x103 hs 16 cs 24
+chunk at 37360 type 0x102 hs 16 cs 56
+chunk at 37416 type 0x103 hs 16 cs 24
+chunk at 37440 type 0x102 hs 16 cs 56
+chunk at 37496 type 0x103 hs 16 cs 24
+chunk at 37520 type 0x102 hs 16 cs 56
+chunk at 37576 type 0x103 hs 16 cs 24
+chunk at 37600 type 0x103 hs 16 cs 24
+chunk at 37624 type 0x102 hs 16 cs 56
+chunk at 37680 type 0x102 hs 16 cs 56
+chunk at 37736 type 0x103 hs 16 cs 24
+chunk at 37760 type 0x102 hs 16 cs 56
+chunk at 37816 type 0x103 hs 16 cs 24
+chunk at 37840 type 0x102 hs 16 cs 56
+chunk at 37896 type 0x103 hs 16 cs 24
+chunk at 37920 type 0x102 hs 16 cs 56
+chunk at 37976 type 0x103 hs 16 cs 24
+chunk at 38000 type 0x102 hs 16 cs 56
+chunk at 38056 type 0x103 hs 16 cs 24
+chunk at 38080 type 0x102 hs 16 cs 56
+chunk at 38136 type 0x103 hs 16 cs 24
+chunk at 38160 type 0x103 hs 16 cs 24
+chunk at 38184 type 0x102 hs 16 cs 56
+chunk at 38240 type 0x102 hs 16 cs 56
+chunk at 38296 type 0x103 hs 16 cs 24
+chunk at 38320 type 0x102 hs 16 cs 56
+chunk at 38376 type 0x103 hs 16 cs 24
+chunk at 38400 type 0x102 hs 16 cs 56
+chunk at 38456 type 0x103 hs 16 cs 24
+chunk at 38480 type 0x102 hs 16 cs 56
+chunk at 38536 type 0x103 hs 16 cs 24
+chunk at 38560 type 0x102 hs 16 cs 56
+chunk at 38616 type 0x103 hs 16 cs 24
+chunk at 38640 type 0x102 hs 16 cs 56
+chunk at 38696 type 0x103 hs 16 cs 24
+chunk at 38720 type 0x103 hs 16 cs 24
+chunk at 38744 type 0x102 hs 16 cs 56
+chunk at 38800 type 0x102 hs 16 cs 56
+chunk at 38856 type 0x103 hs 16 cs 24
+chunk at 38880 type 0x102 hs 16 cs 56
+chunk at 38936 type 0x103 hs 16 cs 24
+chunk at 38960 type 0x102 hs 16 cs 56
+chunk at 39016 type 0x103 hs 16 cs 24
+chunk at 39040 type 0x102 hs 16 cs 116
+chunk at 39156 type 0x103 hs 16 cs 24
+chunk at 39180 type 0x102 hs 16 cs 116
+chunk at 39296 type 0x103 hs 16 cs 24
+chunk at 39320 type 0x103 hs 16 cs 24
+chunk at 39344 type 0x102 hs 16 cs 56
+chunk at 39400 type 0x102 hs 16 cs 56
+chunk at 39456 type 0x103 hs 16 cs 24
+chunk at 39480 type 0x102 hs 16 cs 56
+chunk at 39536 type 0x103 hs 16 cs 24
+chunk at 39560 type 0x102 hs 16 cs 56
+chunk at 39616 type 0x103 hs 16 cs 24
+chunk at 39640 type 0x102 hs 16 cs 56
+chunk at 39696 type 0x103 hs 16 cs 24
+chunk at 39720 type 0x102 hs 16 cs 56
+chunk at 39776 type 0x103 hs 16 cs 24
+chunk at 39800 type 0x103 hs 16 cs 24
+chunk at 39824 type 0x102 hs 16 cs 56
+chunk at 39880 type 0x102 hs 16 cs 56
+chunk at 39936 type 0x103 hs 16 cs 24
+chunk at 39960 type 0x102 hs 16 cs 56
+chunk at 40016 type 0x103 hs 16 cs 24
+chunk at 40040 type 0x102 hs 16 cs 56
+chunk at 40096 type 0x103 hs 16 cs 24
+chunk at 40120 type 0x102 hs 16 cs 56
+chunk at 40176 type 0x103 hs 16 cs 24
+chunk at 40200 type 0x102 hs 16 cs 56
+chunk at 40256 type 0x103 hs 16 cs 24
+chunk at 40280 type 0x102 hs 16 cs 56
+chunk at 40336 type 0x103 hs 16 cs 24
+chunk at 40360 type 0x102 hs 16 cs 56
+chunk at 40416 type 0x103 hs 16 cs 24
+chunk at 40440 type 0x102 hs 16 cs 56
+chunk at 40496 type 0x103 hs 16 cs 24
+chunk at 40520 type 0x102 hs 16 cs 56
+chunk at 40576 type 0x103 hs 16 cs 24
+chunk at 40600 type 0x102 hs 16 cs 56
+chunk at 40656 type 0x103 hs 16 cs 24
+chunk at 40680 type 0x102 hs 16 cs 56
+chunk at 40736 type 0x103 hs 16 cs 24
+chunk at 40760 type 0x102 hs 16 cs 56
+chunk at 40816 type 0x103 hs 16 cs 24
+chunk at 40840 type 0x102 hs 16 cs 56
+chunk at 40896 type 0x103 hs 16 cs 24
+chunk at 40920 type 0x102 hs 16 cs 56
+chunk at 40976 type 0x103 hs 16 cs 24
+chunk at 41000 type 0x102 hs 16 cs 56
+chunk at 41056 type 0x103 hs 16 cs 24
+chunk at 41080 type 0x102 hs 16 cs 56
+chunk at 41136 type 0x103 hs 16 cs 24
+chunk at 41160 type 0x102 hs 16 cs 56
+chunk at 41216 type 0x103 hs 16 cs 24
+chunk at 41240 type 0x102 hs 16 cs 56
+chunk at 41296 type 0x103 hs 16 cs 24
+chunk at 41320 type 0x102 hs 16 cs 56
+chunk at 41376 type 0x103 hs 16 cs 24
+chunk at 41400 type 0x102 hs 16 cs 56
+chunk at 41456 type 0x103 hs 16 cs 24
+chunk at 41480 type 0x103 hs 16 cs 24
+chunk at 41504 type 0x102 hs 16 cs 56
+chunk at 41560 type 0x102 hs 16 cs 56
+chunk at 41616 type 0x103 hs 16 cs 24
+chunk at 41640 type 0x102 hs 16 cs 56
+chunk at 41696 type 0x103 hs 16 cs 24
+chunk at 41720 type 0x102 hs 16 cs 56
+chunk at 41776 type 0x103 hs 16 cs 24
+chunk at 41800 type 0x102 hs 16 cs 56
+chunk at 41856 type 0x103 hs 16 cs 24
+chunk at 41880 type 0x102 hs 16 cs 56
+chunk at 41936 type 0x103 hs 16 cs 24
+chunk at 41960 type 0x102 hs 16 cs 56
+chunk at 42016 type 0x103 hs 16 cs 24
+chunk at 42040 type 0x103 hs 16 cs 24
+chunk at 42064 type 0x102 hs 16 cs 56
+chunk at 42120 type 0x102 hs 16 cs 56
+chunk at 42176 type 0x103 hs 16 cs 24
+chunk at 42200 type 0x102 hs 16 cs 56
+chunk at 42256 type 0x103 hs 16 cs 24
+chunk at 42280 type 0x102 hs 16 cs 56
+chunk at 42336 type 0x103 hs 16 cs 24
+chunk at 42360 type 0x102 hs 16 cs 56
+chunk at 42416 type 0x103 hs 16 cs 24
+chunk at 42440 type 0x102 hs 16 cs 56
+chunk at 42496 type 0x103 hs 16 cs 24
+chunk at 42520 type 0x102 hs 16 cs 56
+chunk at 42576 type 0x103 hs 16 cs 24
+chunk at 42600 type 0x103 hs 16 cs 24
+chunk at 42624 type 0x102 hs 16 cs 56
+chunk at 42680 type 0x102 hs 16 cs 56
+chunk at 42736 type 0x103 hs 16 cs 24
+chunk at 42760 type 0x102 hs 16 cs 56
+chunk at 42816 type 0x103 hs 16 cs 24
+chunk at 42840 type 0x102 hs 16 cs 56
+chunk at 42896 type 0x103 hs 16 cs 24
+chunk at 42920 type 0x102 hs 16 cs 116
+chunk at 43036 type 0x103 hs 16 cs 24
+chunk at 43060 type 0x102 hs 16 cs 116
+chunk at 43176 type 0x103 hs 16 cs 24
+chunk at 43200 type 0x103 hs 16 cs 24
+chunk at 43224 type 0x102 hs 16 cs 56
+chunk at 43280 type 0x102 hs 16 cs 56
+chunk at 43336 type 0x103 hs 16 cs 24
+chunk at 43360 type 0x102 hs 16 cs 56
+chunk at 43416 type 0x103 hs 16 cs 24
+chunk at 43440 type 0x102 hs 16 cs 56
+chunk at 43496 type 0x103 hs 16 cs 24
+chunk at 43520 type 0x102 hs 16 cs 56
+chunk at 43576 type 0x103 hs 16 cs 24
+chunk at 43600 type 0x102 hs 16 cs 56
+chunk at 43656 type 0x103 hs 16 cs 24
+chunk at 43680 type 0x103 hs 16 cs 24
+chunk at 43704 type 0x102 hs 16 cs 56
+chunk at 43760 type 0x102 hs 16 cs 56
+chunk at 43816 type 0x103 hs 16 cs 24
+chunk at 43840 type 0x102 hs 16 cs 56
+chunk at 43896 type 0x103 hs 16 cs 24
+chunk at 43920 type 0x102 hs 16 cs 56
+chunk at 43976 type 0x103 hs 16 cs 24
+chunk at 44000 type 0x102 hs 16 cs 56
+chunk at 44056 type 0x103 hs 16 cs 24
+chunk at 44080 type 0x102 hs 16 cs 56
+chunk at 44136 type 0x103 hs 16 cs 24
+chunk at 44160 type 0x103 hs 16 cs 24
+chunk at 44184 type 0x102 hs 16 cs 56
+chunk at 44240 type 0x102 hs 16 cs 56
+chunk at 44296 type 0x103 hs 16 cs 24
+chunk at 44320 type 0x102 hs 16 cs 56
+chunk at 44376 type 0x103 hs 16 cs 24
+chunk at 44400 type 0x102 hs 16 cs 56
+chunk at 44456 type 0x103 hs 16 cs 24
+chunk at 44480 type 0x102 hs 16 cs 56
+chunk at 44536 type 0x103 hs 16 cs 24
+chunk at 44560 type 0x102 hs 16 cs 56
+chunk at 44616 type 0x103 hs 16 cs 24
+chunk at 44640 type 0x103 hs 16 cs 24
+chunk at 44664 type 0x103 hs 16 cs 24
+chunk at 44688 type 0x102 hs 16 cs 96
+chunk at 44784 type 0x102 hs 16 cs 36
+chunk at 44820 type 0x102 hs 16 cs 56
+chunk at 44876 type 0x103 hs 16 cs 24
+chunk at 44900 type 0x102 hs 16 cs 56
+chunk at 44956 type 0x103 hs 16 cs 24
+chunk at 44980 type 0x103 hs 16 cs 24
+chunk at 45004 type 0x103 hs 16 cs 24
+chunk at 45028 type 0x102 hs 16 cs 96
+chunk at 45124 type 0x103 hs 16 cs 24
+chunk at 45148 type 0x102 hs 16 cs 76
+chunk at 45224 type 0x103 hs 16 cs 24
+chunk at 45248 type 0x102 hs 16 cs 76
+chunk at 45324 type 0x103 hs 16 cs 24
+chunk at 45348 type 0x102 hs 16 cs 76
+chunk at 45424 type 0x103 hs 16 cs 24
+chunk at 45448 type 0x102 hs 16 cs 76
+chunk at 45524 type 0x103 hs 16 cs 24
+chunk at 45548 type 0x102 hs 16 cs 76
+chunk at 45624 type 0x103 hs 16 cs 24
+chunk at 45648 type 0x102 hs 16 cs 96
+chunk at 45744 type 0x103 hs 16 cs 24
+chunk at 45768 type 0x102 hs 16 cs 136
+chunk at 45904 type 0x102 hs 16 cs 76
+chunk at 45980 type 0x103 hs 16 cs 24
+chunk at 46004 type 0x103 hs 16 cs 24
+chunk at 46028 type 0x102 hs 16 cs 116
+chunk at 46144 type 0x103 hs 16 cs 24
+chunk at 46168 type 0x102 hs 16 cs 96
+chunk at 46264 type 0x102 hs 16 cs 76
+chunk at 46340 type 0x103 hs 16 cs 24
+chunk at 46364 type 0x103 hs 16 cs 24
+chunk at 46388 type 0x102 hs 16 cs 96
+chunk at 46484 type 0x102 hs 16 cs 76
+chunk at 46560 type 0x103 hs 16 cs 24
+chunk at 46584 type 0x103 hs 16 cs 24
+chunk at 46608 type 0x102 hs 16 cs 96
+chunk at 46704 type 0x102 hs 16 cs 76
+chunk at 46780 type 0x103 hs 16 cs 24
+chunk at 46804 type 0x103 hs 16 cs 24
+chunk at 46828 type 0x102 hs 16 cs 76
+chunk at 46904 type 0x103 hs 16 cs 24
+chunk at 46928 type 0x102 hs 16 cs 116
+chunk at 47044 type 0x102 hs 16 cs 76
+chunk at 47120 type 0x103 hs 16 cs 24
+chunk at 47144 type 0x103 hs 16 cs 24
+chunk at 47168 type 0x102 hs 16 cs 96
+chunk at 47264 type 0x102 hs 16 cs 76
+chunk at 47340 type 0x103 hs 16 cs 24
+chunk at 47364 type 0x103 hs 16 cs 24
+chunk at 47388 type 0x102 hs 16 cs 96
+chunk at 47484 type 0x102 hs 16 cs 76
+chunk at 47560 type 0x103 hs 16 cs 24
+chunk at 47584 type 0x103 hs 16 cs 24
+chunk at 47608 type 0x102 hs 16 cs 96
+chunk at 47704 type 0x102 hs 16 cs 76
+chunk at 47780 type 0x103 hs 16 cs 24
+chunk at 47804 type 0x103 hs 16 cs 24
+chunk at 47828 type 0x102 hs 16 cs 96
+chunk at 47924 type 0x102 hs 16 cs 76
+chunk at 48000 type 0x103 hs 16 cs 24
+chunk at 48024 type 0x103 hs 16 cs 24
+chunk at 48048 type 0x102 hs 16 cs 96
+chunk at 48144 type 0x102 hs 16 cs 76
+chunk at 48220 type 0x103 hs 16 cs 24
+chunk at 48244 type 0x103 hs 16 cs 24
+chunk at 48268 type 0x102 hs 16 cs 96
+chunk at 48364 type 0x102 hs 16 cs 76
+chunk at 48440 type 0x103 hs 16 cs 24
+chunk at 48464 type 0x103 hs 16 cs 24
+chunk at 48488 type 0x102 hs 16 cs 96
+chunk at 48584 type 0x102 hs 16 cs 76
+chunk at 48660 type 0x103 hs 16 cs 24
+chunk at 48684 type 0x103 hs 16 cs 24
+chunk at 48708 type 0x102 hs 16 cs 96
+chunk at 48804 type 0x102 hs 16 cs 76
+chunk at 48880 type 0x103 hs 16 cs 24
+chunk at 48904 type 0x103 hs 16 cs 24
+chunk at 48928 type 0x102 hs 16 cs 76
+chunk at 49004 type 0x103 hs 16 cs 24
+chunk at 49028 type 0x102 hs 16 cs 76
+chunk at 49104 type 0x103 hs 16 cs 24
+chunk at 49128 type 0x102 hs 16 cs 76
+chunk at 49204 type 0x103 hs 16 cs 24
+chunk at 49228 type 0x102 hs 16 cs 76
+chunk at 49304 type 0x103 hs 16 cs 24
+chunk at 49328 type 0x102 hs 16 cs 76
+chunk at 49404 type 0x103 hs 16 cs 24
+chunk at 49428 type 0x102 hs 16 cs 96
+chunk at 49524 type 0x103 hs 16 cs 24
+chunk at 49548 type 0x102 hs 16 cs 116
+chunk at 49664 type 0x102 hs 16 cs 36
+chunk at 49700 type 0x102 hs 16 cs 56
+chunk at 49756 type 0x103 hs 16 cs 24
+chunk at 49780 type 0x102 hs 16 cs 56
+chunk at 49836 type 0x103 hs 16 cs 24
+chunk at 49860 type 0x103 hs 16 cs 24
+chunk at 49884 type 0x102 hs 16 cs 76
+chunk at 49960 type 0x103 hs 16 cs 24
+chunk at 49984 type 0x103 hs 16 cs 24
+chunk at 50008 type 0x102 hs 16 cs 76
+chunk at 50084 type 0x103 hs 16 cs 24
+chunk at 50108 type 0x102 hs 16 cs 76
+chunk at 50184 type 0x103 hs 16 cs 24
+chunk at 50208 type 0x102 hs 16 cs 76
+chunk at 50284 type 0x103 hs 16 cs 24
+chunk at 50308 type 0x102 hs 16 cs 76
+chunk at 50384 type 0x103 hs 16 cs 24
+chunk at 50408 type 0x102 hs 16 cs 76
+chunk at 50484 type 0x103 hs 16 cs 24
+chunk at 50508 type 0x102 hs 16 cs 76
+chunk at 50584 type 0x103 hs 16 cs 24
+chunk at 50608 type 0x102 hs 16 cs 76
+chunk at 50684 type 0x103 hs 16 cs 24
+chunk at 50708 type 0x102 hs 16 cs 76
+chunk at 50784 type 0x103 hs 16 cs 24
+chunk at 50808 type 0x102 hs 16 cs 76
+chunk at 50884 type 0x103 hs 16 cs 24
+chunk at 50908 type 0x102 hs 16 cs 76
+chunk at 50984 type 0x103 hs 16 cs 24
+chunk at 51008 type 0x102 hs 16 cs 76
+chunk at 51084 type 0x103 hs 16 cs 24
+chunk at 51108 type 0x102 hs 16 cs 76
+chunk at 51184 type 0x103 hs 16 cs 24
+chunk at 51208 type 0x102 hs 16 cs 76
+chunk at 51284 type 0x103 hs 16 cs 24
+chunk at 51308 type 0x102 hs 16 cs 76
+chunk at 51384 type 0x103 hs 16 cs 24
+chunk at 51408 type 0x102 hs 16 cs 76
+chunk at 51484 type 0x103 hs 16 cs 24
+chunk at 51508 type 0x102 hs 16 cs 76
+chunk at 51584 type 0x103 hs 16 cs 24
+chunk at 51608 type 0x102 hs 16 cs 76
+chunk at 51684 type 0x103 hs 16 cs 24
+chunk at 51708 type 0x102 hs 16 cs 76
+chunk at 51784 type 0x103 hs 16 cs 24
+chunk at 51808 type 0x102 hs 16 cs 76
+chunk at 51884 type 0x103 hs 16 cs 24
+chunk at 51908 type 0x102 hs 16 cs 76
+chunk at 51984 type 0x103 hs 16 cs 24
+chunk at 52008 type 0x102 hs 16 cs 96
+chunk at 52104 type 0x103 hs 16 cs 24
+chunk at 52128 type 0x102 hs 16 cs 96
+chunk at 52224 type 0x103 hs 16 cs 24
+chunk at 52248 type 0x102 hs 16 cs 96
+chunk at 52344 type 0x103 hs 16 cs 24
+chunk at 52368 type 0x102 hs 16 cs 96
+chunk at 52464 type 0x103 hs 16 cs 24
+chunk at 52488 type 0x102 hs 16 cs 76
+chunk at 52564 type 0x103 hs 16 cs 24
+chunk at 52588 type 0x102 hs 16 cs 76
+chunk at 52664 type 0x103 hs 16 cs 24
+chunk at 52688 type 0x102 hs 16 cs 76
+chunk at 52764 type 0x103 hs 16 cs 24
+chunk at 52788 type 0x102 hs 16 cs 76
+chunk at 52864 type 0x103 hs 16 cs 24
+chunk at 52888 type 0x102 hs 16 cs 76
+chunk at 52964 type 0x102 hs 16 cs 36
+chunk at 53000 type 0x102 hs 16 cs 56
+chunk at 53056 type 0x103 hs 16 cs 24
+chunk at 53080 type 0x103 hs 16 cs 24
+chunk at 53104 type 0x102 hs 16 cs 76
+chunk at 53180 type 0x103 hs 16 cs 24
+chunk at 53204 type 0x103 hs 16 cs 24
+chunk at 53228 type 0x102 hs 16 cs 56
+chunk at 53284 type 0x103 hs 16 cs 24
+chunk at 53308 type 0x102 hs 16 cs 76
+chunk at 53384 type 0x102 hs 16 cs 36
+chunk at 53420 type 0x102 hs 16 cs 56
+chunk at 53476 type 0x103 hs 16 cs 24
+chunk at 53500 type 0x103 hs 16 cs 24
+chunk at 53524 type 0x103 hs 16 cs 24
+chunk at 53548 type 0x102 hs 16 cs 76
+chunk at 53624 type 0x102 hs 16 cs 36
+chunk at 53660 type 0x102 hs 16 cs 56
+chunk at 53716 type 0x103 hs 16 cs 24
+chunk at 53740 type 0x103 hs 16 cs 24
+chunk at 53764 type 0x103 hs 16 cs 24
+chunk at 53788 type 0x102 hs 16 cs 76
+chunk at 53864 type 0x103 hs 16 cs 24
+chunk at 53888 type 0x102 hs 16 cs 116
+chunk at 54004 type 0x102 hs 16 cs 76
+chunk at 54080 type 0x103 hs 16 cs 24
+chunk at 54104 type 0x103 hs 16 cs 24
+chunk at 54128 type 0x102 hs 16 cs 76
+chunk at 54204 type 0x102 hs 16 cs 36
+chunk at 54240 type 0x102 hs 16 cs 56
+chunk at 54296 type 0x103 hs 16 cs 24
+chunk at 54320 type 0x103 hs 16 cs 24
+chunk at 54344 type 0x103 hs 16 cs 24
+chunk at 54368 type 0x102 hs 16 cs 76
+chunk at 54444 type 0x102 hs 16 cs 36
+chunk at 54480 type 0x102 hs 16 cs 56
+chunk at 54536 type 0x103 hs 16 cs 24
+chunk at 54560 type 0x102 hs 16 cs 56
+chunk at 54616 type 0x103 hs 16 cs 24
+chunk at 54640 type 0x102 hs 16 cs 56
+chunk at 54696 type 0x103 hs 16 cs 24
+chunk at 54720 type 0x103 hs 16 cs 24
+chunk at 54744 type 0x103 hs 16 cs 24
+chunk at 54768 type 0x102 hs 16 cs 76
+chunk at 54844 type 0x102 hs 16 cs 36
+chunk at 54880 type 0x102 hs 16 cs 56
+chunk at 54936 type 0x103 hs 16 cs 24
+chunk at 54960 type 0x103 hs 16 cs 24
+chunk at 54984 type 0x103 hs 16 cs 24
+chunk at 55008 type 0x102 hs 16 cs 96
+chunk at 55104 type 0x102 hs 16 cs 76
+chunk at 55180 type 0x103 hs 16 cs 24
+chunk at 55204 type 0x103 hs 16 cs 24
+chunk at 55228 type 0x102 hs 16 cs 156
+chunk at 55384 type 0x103 hs 16 cs 24
+chunk at 55408 type 0x102 hs 16 cs 156
+chunk at 55564 type 0x103 hs 16 cs 24
+chunk at 55588 type 0x102 hs 16 cs 116
+chunk at 55704 type 0x103 hs 16 cs 24
+chunk at 55728 type 0x102 hs 16 cs 116
+chunk at 55844 type 0x103 hs 16 cs 24
+chunk at 55868 type 0x102 hs 16 cs 96
+chunk at 55964 type 0x102 hs 16 cs 36
+chunk at 56000 type 0x102 hs 16 cs 56
+chunk at 56056 type 0x103 hs 16 cs 24
+chunk at 56080 type 0x103 hs 16 cs 24
+chunk at 56104 type 0x102 hs 16 cs 76
+chunk at 56180 type 0x103 hs 16 cs 24
+chunk at 56204 type 0x103 hs 16 cs 24
+chunk at 56228 type 0x102 hs 16 cs 96
+chunk at 56324 type 0x102 hs 16 cs 56
+chunk at 56380 type 0x102 hs 16 cs 56
+chunk at 56436 type 0x103 hs 16 cs 24
+chunk at 56460 type 0x103 hs 16 cs 24
+chunk at 56484 type 0x103 hs 16 cs 24
+chunk at 56508 type 0x102 hs 16 cs 96
+chunk at 56604 type 0x102 hs 16 cs 76
+chunk at 56680 type 0x103 hs 16 cs 24
+chunk at 56704 type 0x102 hs 16 cs 76
+chunk at 56780 type 0x103 hs 16 cs 24
+chunk at 56804 type 0x102 hs 16 cs 76
+chunk at 56880 type 0x103 hs 16 cs 24
+chunk at 56904 type 0x102 hs 16 cs 76
+chunk at 56980 type 0x103 hs 16 cs 24
+chunk at 57004 type 0x102 hs 16 cs 76
+chunk at 57080 type 0x103 hs 16 cs 24
+chunk at 57104 type 0x102 hs 16 cs 76
+chunk at 57180 type 0x103 hs 16 cs 24
+chunk at 57204 type 0x102 hs 16 cs 76
+chunk at 57280 type 0x103 hs 16 cs 24
+chunk at 57304 type 0x102 hs 16 cs 76
+chunk at 57380 type 0x103 hs 16 cs 24
+chunk at 57404 type 0x102 hs 16 cs 76
+chunk at 57480 type 0x103 hs 16 cs 24
+chunk at 57504 type 0x102 hs 16 cs 76
+chunk at 57580 type 0x103 hs 16 cs 24
+chunk at 57604 type 0x103 hs 16 cs 24
+chunk at 57628 type 0x102 hs 16 cs 96
+chunk at 57724 type 0x103 hs 16 cs 24
+chunk at 57748 type 0x102 hs 16 cs 96
+chunk at 57844 type 0x103 hs 16 cs 24
+chunk at 57868 type 0x102 hs 16 cs 116
+chunk at 57984 type 0x103 hs 16 cs 24
+chunk at 58008 type 0x102 hs 16 cs 96
+chunk at 58104 type 0x103 hs 16 cs 24
+chunk at 58128 type 0x102 hs 16 cs 96
+chunk at 58224 type 0x103 hs 16 cs 24
+chunk at 58248 type 0x102 hs 16 cs 136
+chunk at 58384 type 0x103 hs 16 cs 24
+chunk at 58408 type 0x102 hs 16 cs 96
+chunk at 58504 type 0x102 hs 16 cs 76
+chunk at 58580 type 0x103 hs 16 cs 24
+chunk at 58604 type 0x102 hs 16 cs 76
+chunk at 58680 type 0x103 hs 16 cs 24
+chunk at 58704 type 0x102 hs 16 cs 76
+chunk at 58780 type 0x103 hs 16 cs 24
+chunk at 58804 type 0x102 hs 16 cs 76
+chunk at 58880 type 0x103 hs 16 cs 24
+chunk at 58904 type 0x103 hs 16 cs 24
+chunk at 58928 type 0x102 hs 16 cs 136
+chunk at 59064 type 0x103 hs 16 cs 24
+chunk at 59088 type 0x102 hs 16 cs 116
+chunk at 59204 type 0x103 hs 16 cs 24
+chunk at 59228 type 0x102 hs 16 cs 116
+chunk at 59344 type 0x103 hs 16 cs 24
+chunk at 59368 type 0x102 hs 16 cs 116
+chunk at 59484 type 0x102 hs 16 cs 36
+chunk at 59520 type 0x102 hs 16 cs 56
+chunk at 59576 type 0x103 hs 16 cs 24
+chunk at 59600 type 0x103 hs 16 cs 24
+chunk at 59624 type 0x103 hs 16 cs 24
+chunk at 59648 type 0x102 hs 16 cs 136
+chunk at 59784 type 0x102 hs 16 cs 36
+chunk at 59820 type 0x102 hs 16 cs 56
+chunk at 59876 type 0x103 hs 16 cs 24
+chunk at 59900 type 0x103 hs 16 cs 24
+chunk at 59924 type 0x103 hs 16 cs 24
+chunk at 59948 type 0x102 hs 16 cs 76
+chunk at 60024 type 0x103 hs 16 cs 24
+chunk at 60048 type 0x102 hs 16 cs 76
+chunk at 60124 type 0x103 hs 16 cs 24
+chunk at 60148 type 0x102 hs 16 cs 76
+chunk at 60224 type 0x103 hs 16 cs 24
+chunk at 60248 type 0x102 hs 16 cs 96
+chunk at 60344 type 0x103 hs 16 cs 24
+chunk at 60368 type 0x102 hs 16 cs 76
+chunk at 60444 type 0x102 hs 16 cs 76
+chunk at 60520 type 0x103 hs 16 cs 24
+chunk at 60544 type 0x103 hs 16 cs 24
+chunk at 60568 type 0x102 hs 16 cs 96
+chunk at 60664 type 0x103 hs 16 cs 24
+chunk at 60688 type 0x102 hs 16 cs 136
+chunk at 60824 type 0x102 hs 16 cs 36
+chunk at 60860 type 0x102 hs 16 cs 56
+chunk at 60916 type 0x103 hs 16 cs 24
+chunk at 60940 type 0x103 hs 16 cs 24
+chunk at 60964 type 0x102 hs 16 cs 36
+chunk at 61000 type 0x102 hs 16 cs 56
+chunk at 61056 type 0x103 hs 16 cs 24
+chunk at 61080 type 0x103 hs 16 cs 24
+chunk at 61104 type 0x102 hs 16 cs 36
+chunk at 61140 type 0x102 hs 16 cs 56
+chunk at 61196 type 0x103 hs 16 cs 24
+chunk at 61220 type 0x103 hs 16 cs 24
+chunk at 61244 type 0x102 hs 16 cs 36
+chunk at 61280 type 0x102 hs 16 cs 56
+chunk at 61336 type 0x103 hs 16 cs 24
+chunk at 61360 type 0x103 hs 16 cs 24
+chunk at 61384 type 0x103 hs 16 cs 24
+chunk at 61408 type 0x102 hs 16 cs 96
+chunk at 61504 type 0x103 hs 16 cs 24
+chunk at 61528 type 0x102 hs 16 cs 76
+chunk at 61604 type 0x103 hs 16 cs 24
+chunk at 61628 type 0x102 hs 16 cs 96
+chunk at 61724 type 0x103 hs 16 cs 24
+chunk at 61748 type 0x103 hs 16 cs 24
+chunk at 61772 type 0x103 hs 16 cs 24
+chunk at 61796 type 0x101 hs 16 cs 24
+[0m
+[0m$ [0mcd /tmp/opencode && echo "=== UTF-8 naver in manifest ==="; grep -ac 'naver' whale_apk/AndroidManifest.xml; echo "=== UTF-8 whale in manifest ==="; grep -ac 'whale' whale_apk/AndroidManifest.xml; echo "=== UTF-8 uptodown in manifest ==="; grep -ac 'uptodown' whale_apk/AndroidManifest.xml; echo "=== naver anywhere in whole apk ==="; python3 -c "
+b=open('whale.apk','rb').read()
+print('utf8 naver:', b.count(b'naver'))
+print('utf8 whale:', b.count(b'whale'))
+print('utf16 naver:', b.count('naver'.encode('utf-16-le')))
+print('utf16 whale:', b.count('whale'.encode('utf-16-le')))
+print('utf8 com.naver.whale:', b.count(b'com.naver.whale'))
+print('utf16 com.naver.whale:', b.count('com.naver.whale'.encode('utf-16-le')))
+print('utf8 uptodown:', b.count(b'uptodown'))
+print('utf16 uptodown:', b.count(b'uptodown'.decode().encode('utf-16-le')))
+print('utf8 com.uptodown:', b.count(b'com.uptodown'))
+"
+=== UTF-8 naver in manifest ===
+0
+=== UTF-8 whale in manifest ===
+0
+=== UTF-8 uptodown in manifest ===
+0
+=== naver anywhere in whole apk ===
+utf8 naver: 0
+utf8 whale: 0
+utf16 naver: 0
+utf16 whale: 0
+utf8 com.naver.whale: 0
+utf16 com.naver.whale: 0
+utf8 uptodown: 125
+utf16 uptodown: 1
+utf8 com.uptodown: 1
+[0m
+[0m← [0mWrite /tmp/opencode/probe.js
+Wrote file successfully.
+[0m
+**Decisive result**: the APK contains zero occurrences of "naver"/"whale"/"com.naver.whale" anywhere (UTF-8/UTF-16) but 125× "uptodown" — the uptodown channel served Uptodown's own app, not Whale's binary. The Android static-analysis path via uptodown is **dead (tainted artifact)**. The only trustworthy pin remains the APKMirror SHA256. Now that headless Chromium passes the uptodown flow, testing whether it also passes APKMirror's Cloudflare to reach the genuine Naver-signed artifact.
+[0m$ [0mnode /tmp/opencode/probe.js "https://www.apkmirror.com/apk/naver-corp/whale-browser/" 2>&1 | tail -5
+NAV https://www.apkmirror.com/apk/naver-corp/whale-browser/
+STATE {"t":"Attention Required! | Cloudflare","h":"https://www.apkmirror.com/apk/naver-corp/whale-browser/","cf":false,"txt":"Sorry, you have been blocked\nYou are unable to access apkmirror.com\nWhy have I been blocked?\n\nThis website is using a security service to protect itself from online attacks. The action you just performed triggered the security solution. There are several actions that could trigger this block including submitting a certain word or phrase, a SQL command or malformed data.\n\nWhat can I do to resolve t"}
+[0m
+APKMirror blocks even real Chromium (datacenter IP). Trying apkpure.net through the browser.
+[0m$ [0mnode /tmp/opencode/probe.js "https://apkpure.com/whale-browser/com.naver.whale" 2>&1 | tail -5
+NAV https://apkpure.com/whale-browser/com.naver.whale
+STATE {"t":"Just a moment...","h":"https://apkpure.com/whale-browser/com.naver.whale","cf":false,"txt":"apkpure.com\nPerforming security verification\n\nThis website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot.\n\nRay ID: a27cd8e608f4ee17\nPerformance and Security by Cloudflare\nPrivacy"}
+[0m
+Both apkpure and APKMirror are Cloudflare-walled even via Chromium — Android acquisition is exhausted in-sandbox. Pivoting to the remaining genuine-binary channel: Naver's own desktop CDN (`.deb`). Probing known installer URL patterns with HEAD only.
+[0m$ [0mfor u in \
+ "https://update.whale.naver.com/downloads/installers/whale_4.38.386.14_amd64.deb" \
+ "https://update.whale.naver.com/downloads/installers/WhaleSetup_4.38.386.14.deb" \
+ "https://update.whale.naver.com/downloads/installers/WhaleSetup.exe" \
+ "https://update.whale.naver.com/downloads/installers/whale_amd64.deb" ; do
+  echo "== $u"; curl -s -o /dev/null -I -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -w "code=%{http_code} type=%{content_type} len=%{content_length}\n" "$u"; sleep 1
+done
+== https://update.whale.naver.com/downloads/installers/whale_4.38.386.14_amd64.deb
+curl: unknown --write-out variable: 'content_length'
+code=000 type= len=
+== https://update.whale.naver.com/downloads/installers/WhaleSetup_4.38.386.14.deb
+curl: unknown --write-out variable: 'content_length'
+code=000 type= len=
+== https://update.whale.naver.com/downloads/installers/WhaleSetup.exe
+curl: unknown --write-out variable: 'content_length'
+code=000 type= len=
+== https://update.whale.naver.com/downloads/installers/whale_amd64.deb
+curl: unknown --write-out variable: 'content_length'
+code=000 type= len=
+[0m
+[0m$ [0mfor u in \
+ "https://update.whale.naver.com/downloads/installers/whale_4.38.386.14_amd64.deb" \
+ "https://update.whale.naver.com/downloads/installers/WhaleSetup_4.38.386.14.deb" \
+ "https://update.whale.naver.com/downloads/installers/WhaleSetup.exe" \
+ "https://update.whale.naver.com/downloads/installers/whale_amd64.deb" ; do
+  echo "== $u"; curl -s -o /dev/null -I -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -w "code=%{http_code} type=%{content_type} len=%{size_download}\n" "$u"; sleep 1
+done
+== https://update.whale.naver.com/downloads/installers/whale_4.38.386.14_amd64.deb
+code=000 type= len=0
+== https://update.whale.naver.com/downloads/installers/WhaleSetup_4.38.386.14.deb
+code=000 type= len=0
+== https://update.whale.naver.com/downloads/installers/WhaleSetup.exe
+code=000 type= len=0
+== https://update.whale.naver.com/downloads/installers/whale_amd64.deb
+code=000 type= len=0
+[0m
+[0m$ [0mgetent hosts update.whale.naver.com; echo "---"; curl -sv -o /dev/null --max-time 15 -I "https://update.whale.naver.com/downloads/installers/whale_amd64.deb" 2>&1 | tail -8
+---
+* Could not resolve host: update.whale.naver.com
+* Closing connection
+[0m
+[0m$ [0mfor h in whale.naver.com update.whale.naver.com play.google.com apkmirror.com github.com nvd.nist.gov www.naver.com; do printf "%-28s %s\n" "$h" "$(getent hosts $h | head -1)"; done; echo "---proxy env---"; env | grep -iE 'proxy|http' | head
+whale.naver.com              61.247.194.52   fb2d0c3c.ndash.net whale.naver.com
+update.whale.naver.com       
+play.google.com              2607:f8b0:4005:816::200e play.google.com
+apkmirror.com                2606:4700::6811:44d7 apkmirror.com
+github.com                   140.82.116.3    github.com
+nvd.nist.gov                 2606:4700:78::90:0:181 nvd.nist.gov
+www.naver.com                23.199.20.248   e6030.a.akamaiedge.net www.naver.com www.naver.com.nheos.com www.naver.com.edgekey.net
+---proxy env---
+GITHUB_API_URL=https://api.github.com
+GITHUB_GRAPHQL_URL=https://api.github.com/graphql
+GITHUB_SERVER_URL=https://github.com
+[0m
+[0m$ [0mcurl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" -L "https://whale.naver.com/" -o /tmp/opencode/whale_home.html -w "code=%{http_code} size=%{size_download}\n"; grep -oiE 'https?://[a-z0-9./_-]*(installer|download|whale)[a-z0-9./_-]*\.(deb|exe|dmg)' /tmp/opencode/whale_home.html | sort -u | head; echo "---any deb/exe links---"; grep -oE '[^"'\'' ]+\.(deb|exe|dmg)[^"'\'' ]*' /tmp/opencode/whale_home.html | sort -u | head
+code=200 size=6335
+---any deb/exe links---
+!function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):
+[0m
+[0m$ [0mgrep -oE 'src="[^"]*"|href="[^"]*"' /tmp/opencode/whale_home.html | grep -viE '\.(css|js|png|svg|ico|woff)' | head -20; echo "---download api hints---"; grep -oE '"(downloads|installer|update|version)[^"]*"' /tmp/opencode/whale_home.html | head
+href="https://shared-whale.pstatic.net"
+href="https://wcs.naver.net"
+href="https://installer-whale.pstatic.net"
+href="https://static-whale.pstatic.net"
+src="https://www.googletagmanager.com/ns.html?id=GTM_ID"
+href="https://whale.naver.com/ko/download/"
+href="https://whale.naver.com/en/download/"
+---download api hints---
+[0m
+The real installer CDN is `installer-whale.pstatic.net`. Checking the download page for exact installer URLs.
+[0m$ [0mcurl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" -L "https://whale.naver.com/en/download/" -o /tmp/opencode/whale_dl.html -w "code=%{http_code} size=%{size_download}\n"; grep -oE '[a-zA-Z0-9_./:%-]+\.(deb|exe|dmg|msi)' /tmp/opencode/whale_dl.html | sort -u | head; echo "---installer host refs---"; grep -oE 'https://[a-z0-9.-]*pstatic[a-z0-9./_-]*' /tmp/opencode/whale_dl.html | sort -u | head
+code=200 size=6335
+s.exe
+---installer host refs---
+https://installer-whale.pstatic.net
+https://shared-whale.pstatic.net
+https://shared-whale.pstatic.net/favicon/icon.png
+https://shared-whale.pstatic.net/favicon/icon180.png
+https://shared-whale.pstatic.net/favicon/icon256.png
+https://shared-whale.pstatic.net/favicon/icon512.png
+https://shared-whale.pstatic.net/home2/assets/hero-bg-
+https://shared-whale.pstatic.net/home2/assets/index-
+https://shared-whale.pstatic.net/home2/assets/index-c
+https://static-whale.pstatic.net
+[0m
+[0m$ [0mJS=$(grep -oE 'https://shared-whale.pstatic.net/home2/assets/index-[a-z0-9]*\.js' /tmp/opencode/whale_dl.html | head -1); echo "JS=$JS"; curl -s -A "Mozilla/5.0" "$JS" -o /tmp/opencode/whale_index.js; wc -c /tmp/opencode/whale_index.js; grep -oE '.{0,60}(\.deb|\.exe|\.dmg|installer|update\.whale|pstatic\.net)[^"'\'']{0,60}' /tmp/opencode/whale_index.js | head -20
+JS=
+wc: /tmp/opencode/whale_index.js: No such file or directory
+grep: /tmp/opencode/whale_index.js: No such file or directory
+[0m
+[0m$ [0mgrep -oE 'src="[^"]*\.js[^"]*"' /tmp/opencode/whale_dl.html | head; echo "---full index asset names---"; grep -oE 'index-[a-z0-9]+\.(js|css)' /tmp/opencode/whale_dl.html | sort -u
+src="/vendor/lcslog.v0.14.0.js"
+src="https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js"
+---full index asset names---
+[0m
+[0m$ [0mcurl -s -A "Mozilla/5.0" "https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js" -o /tmp/opencode/whale_index.js; wc -c /tmp/opencode/whale_index.js; grep -oE 'https?://[a-z0-9.-]+[^"'\'' ]*\.(deb|exe|dmg)' /tmp/opencode/whale_index.js | sort -u | head; echo "---keywords---"; grep -oE '.{0,50}(update\.whale|installer-whale|\.deb|WhaleSetup|downloads/installers)[^"'\'' ]{0,50}' /tmp/opencode/whale_index.js | head -20
+840257 /tmp/opencode/whale_index.js
+https://installer-whale.pstatic.net/downloads/banner/${encodeURIComponent(s)}/WhaleSetup.exe
+https://installer-whale.pstatic.net/downloads/beta/installers/NaverWhaleBeta.dmg
+https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+https://installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg
+https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupARM64.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX86.exe
+---keywords---
+",this.logger=i||consoleLogger,this.options=s,this.debug=s.debug}log(){for(var
+DEPRECATED: ",!0)}forward(i,s,a,o){return o&&!this.debug?null:(isString$2(i[0])&&(i[0]=`${a}${this.prefi
+is.options,...i,isClone:!0},c=new I18n(o);return(i.debug!==void
+whale/"):!1}const DOWNLOAD_MAP={win:{url:"https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+load Whale",note:"Windows 10+"},mac:{url:"https://installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg
+load Whale",note:"macOS 12+"},linux:{url:"https://installer-whale.pstatic.net/downloads/installers/naver-whale-stab
+le_amd64.deb
+el:"Get it on Google Play"},unknown:{url:"https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+{case"win":case"unknown":return{...a,url:`https://installer-whale.pstatic.net/downloads/banner/${encodeURIComponent
+(s)}/WhaleSetup.exe`};case
+nkDisabled},WINDOWS_VARIANT_URLS={"32비트":"https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX86
+.exe","32-bit":"https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX86
+.exe","64비트":"https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64
+.exe","64-bit":"https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64
+.exe",ARM:"https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupARM
+64.exe"},WIN_INSTALLER="https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+",WIN_BETA_INSTALLER="https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupB
+eta.exe",MAC_INSTALLER="https://installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg
+",MAC_BETA_INSTALLER="https://installer-whale.pstatic.net/downloads/beta/installers/NaverWhaleB
+eta.dmg",LINUX_INSTALLER="https://installer-whale.pstatic.net/downloads/installers/naver-whale-stab
+[0m
+Found the official Linux installer URL: `installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb`. Downloading it — this is the genuine Naver-signed desktop binary.
+[0m$ [0mcurl -s -o /tmp/opencode/whale.deb -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -w "code=%{http_code} size=%{size_download} type=%{content_type}\n" "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb"; file /tmp/opencode/whale.deb; sha256sum /tmp/opencode/whale.deb
+code=200 size=164163916 type=application/x-debian-package
+/tmp/opencode/whale.deb: Debian binary package (format 2.0), with control.tar.xz/, data compression xz
+6dd7ebc47d7e8f21da1108ad5b0e17fcd562fd92e684da206564b51476e0b47e  /tmp/opencode/whale.deb
+[0m
+Genuine 164MB .deb acquired from Naver's CDN. Extracting and verifying version.
+[0m$ [0mcd /tmp/opencode && dpkg-deb -I whale.deb 2>/dev/null | grep -iE 'Package|Version|Installed-Size' | head; echo "---extract---"; mkdir -p whale_deb && dpkg-deb -x whale.deb whale_deb/ && ls whale_deb/opt/ 2>/dev/null; find whale_deb -maxdepth 4 -name 'whale' -o -maxdepth 4 -name '*whale*' 2>/dev/null | head -20
+new Debian package, version 2.0.
+ Package: naver-whale-stable
+ Version: 4.38.386.14-1
+ Installed-Size: 478090
+---extract---
+naver
+whale_deb
+whale_deb/opt/naver/whale
+whale_deb/opt/naver/whale/whale_200_percent.pak
+whale_deb/opt/naver/whale/whale_100_percent.pak
+whale_deb/opt/naver/whale/whale
+whale_deb/opt/naver/whale/whale-sandbox
+whale_deb/opt/naver/whale/naver-whale
+whale_deb/etc/cron.daily/naver-whale
+whale_deb/usr/share/doc/naver-whale-stable
+whale_deb/usr/share/appdata/naver-whale.appdata.xml
+whale_deb/usr/share/applications/naver-whale.desktop
+whale_deb/usr/bin/naver-whale-stable
+[0m
+v4.38.386.14-1 confirmed. Running targeted static analysis on the main binary for the sync encryption module.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && ls -la whale | head -3; strings -a -n 8 whale 2>/dev/null | grep -iE 'sync\.encryption|bootstrap_token|encryption_bootstrap|whale_need_encryption_key_forced_time|migration_done' | sort -u | head -20
+-rwxr-xr-x 1 runner runner 319511768 Jun 24 09:34 whale
+DEPRECATED_BOOTSTRAP_TOKEN_UPDATED
+MIGRATION_DONE
+MIGRATION_DONE but no types specified.
+OSCrypt.Async.EncryptionFallbackToSync
+sync.encryption_bootstrap_token
+sync.encryption_bootstrap_token_per_account
+sync.encryption_bootstrap_token_per_account_migration_done
+sync.passwords_per_account_pref_migration_done
+sync.whale_need_encryption_key_forced_time
+user_experience_metrics.consent_migration_done
+[0m
+Whale-only sync encryption prefs confirmed in the official latest binary. Now hunting the KDF algorithm and iteration constants.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -n 6 whale 2>/dev/null | grep -iE '^(PBKDF2|scrypt|hkdf|bcrypt|sha256|sha512|iterations|iteration|100000|1000000|150000|210000|os_crypt|v10|v11|peanuts|salt|passphrase)' | sort -u | head -40
+100000
+1000000
+10000000
+10000000H
+HKDF failed in public_metadata_crypto_utils
+HKDF functions
+HKDF-SHA-256 AES-256-GCM
+HKDF_LIB
+HKDF_extract failed when creating initial crypters
+HkdfParams
+Iteration limit exceeded
+Iteration over selected cursor (%d) is not supported. Should be either SRC or DST cursor.
+IterationCompositeOperation
+IterationKind::kEntries
+IterationKind::kKeys
+IterationKind::kValues
+IterationMultiple
+IterationMultiple loop control operand must be greater than zero
+PASSPHRASE_ACCEPTED
+PASSPHRASE_REQUIRED
+PASSPHRASE_TYPE_CHANGED
+PBKDF2
+PBKDF2 requires iterations > 0
+PassPhraseHelpIcon
+Passphrase Required
+Passphrase Type
+PassphraseType::kCustomPassphrase
+PassphraseType::kFrozenImplicitPassphrase
+PassphraseType::kImplicitPassphrase
+PassphraseType::kKeystorePassphrase
+PassphraseType::kTrustedVaultPassphrase
+Pbkdf2
+Pbkdf2HmacSha1
+Pbkdf2Params
+SHA256 block transform for x86_64, CRYPTOGAMS by <appro@openssl.org>
+SHA512 block transform for x86_64, CRYPTOGAMS by <appro@openssl.org>
+SHA512-256
+Salt flat
+Salt is used before updating
+Scrypt
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 6 whale 2>/dev/null | grep -iE '(^| )PBKDF2$|(^| )Scrypt$|Pbkdf2HmacSha1|scrypt|pbkdf2' | head -20
+26854835 OnOsCryptReady
+26857294 OnOsCryptAsyncReady
+27104998 Scrypt
+27105021 .ReencryptedWithAsyncOSCrypt
+27128909 OSCrypt.EncryptorKeyCount
+27595946 Pbkdf2Params
+28514003 OSCrypt.EncryptionPrefixVersion
+28841459 OnOsCryptReadyOnUi
+29426026 PasswordManager.OsCryptAsync.GetInstanceTime
+29430412 OSCrypt.AsyncInitialization.Time
+29550330 OSCrypt.EncryptorKeyCount.PermanentlyUnavailable
+29550379 OSCrypt.EncryptorKeyCount.TemporarilyUnavailable
+29557632 OSCrypt.EncryptorKeyCount.Available
+29627414 OSCrypt.BackendUsage
+30235066 OSCrypt.Async.EncryptionFallbackToSync
+30235105 OSCrypt.Async.DecryptionFallbackToSync
+30301426 ../../third_party/boringssl/src/crypto/evp/scrypt.cc
+30652655 ../../components/webcrypto/algorithms/pbkdf2.cc
+31380862 Pbkdf2
+31395718 PBKDF2
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 6 whale 2>/dev/null | grep -iE 'sync\.encryption_bootstrap|whale_need_encryption|encryption.*key|need_encryption_key|bootstrap.*token|token.*bootstrap' | head; echo "=== context around prefs (string neighborhood) ==="; strings -a -t d -n 5 whale 2>/dev/null | awk '$1 >= 1860000000 && $1 <= 1860200000' | head -40
+26831843 TrustedVault.SetEncryptionKeysForSecurityDomain.OffTheRecordOnly
+26841434 need_encryption_key
+26847459 UpdateEncryptionKey
+26850633 fetchEncryptionPublicKey
+27244363 Sync.BootstrapTokenEncryptionResult
+27244434 Sync.BootstrapTokenDecryptionResult
+27311170 Default encryption key pair version is not set
+27370896 setClientEncryptionKeys
+27370920 setSyncEncryptionKeys
+27372587 Encryption Keys
+=== context around prefs (string neighborhood) ===
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 6 whale 2>/dev/null | grep -E 'sync\.encryption_bootstrap|DEPRECATED_BOOTSTRAP|_migration_done|MIGRATION_DONE' | head; echo "=== strings between the sync prefs cluster ==="; strings -a -t d -n 5 whale 2>/dev/null | awk '$1 >= 1566500000 && $1 <= 1566600000' | head -50
+31029770 MIGRATION_DONE
+31082142 DEPRECATED_BOOTSTRAP_TOKEN_UPDATED
+32034230 MIGRATION_DONE but no types specified.
+39084368 user_experience_metrics.consent_migration_done
+42697104 sync.encryption_bootstrap_token
+42697184 sync.encryption_bootstrap_token_per_account
+42697232 sync.encryption_bootstrap_token_per_account_migration_done
+42697344 sync.passwords_per_account_pref_migration_done
+=== strings between the sync prefs cluster ===
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 5 whale 2>/dev/null | awk '$1 >= 42695000 && $1 <= 42700000' | head -80
+42696039 	FeedbackIncludeVariations
+42696098 X-Client-Data
+42696112 Sync.DataTypeErrorSite.
+42696155 	Sync Data
+42696166 LevelDB
+42696192 sync.migrate_reading_list_from_local_to_account
+42696240 _mts_schema_descriptor
+42696288 -GlobalMetadata
+42696416 sync.device_statistics_timestamp
+42696487 	client
+42696495 Naver Whale
+42696507 client_id
+42696631 	Identity
+42696641 details
+42696649 Uninitialized
+42696663 uninitialized
+42696677 in_bad_state
+42696711 	sync.managed
+42696848 sync.selected_types_per_account
+42696880 sync.has_setup_completed
+42696912 sync.autofill_wallet_import_enabled_migrated
+42696960 sync.sync_to_signin_migration_state
+42697008 sync.cached_passphrase_type
+42697040 sync.cached_trusted_vault_auto_upgrade_experiment_group
+42697104 sync.encryption_bootstrap_token
+42697136 sync.cached_persistent_auth_error
+42697184 sync.encryption_bootstrap_token_per_account
+42697232 sync.encryption_bootstrap_token_per_account_migration_done
+42697296 sync.passphrase_prompt_muted_product_version
+42697344 sync.passwords_per_account_pref_migration_done
+42697392 sync.first_time_tried_to_migrate_sync_feature_paused_to_signin
+42697456 autofill.wallet_import_enabled
+42697487 sync.bookmarks
+42697504 sync.preferences
+42697521 sync.themes
+42697536 sync.extensions
+42697552 sync.apps
+42697568 sync.reading_list
+42697586 sync.tabs
+42697600 sync.saved_tab_groups
+42697622 sync.payments
+42697648 sync.product_comparison
+42697672 sync.cookies
+42697728 sync.feature_status_for_sync_to_signin
+42697776 sync.data_type_status_for_sync_to_signin
+42697817 sync.gaia_id
+42697840 sync.transport_data_per_account
+42697872 sync.last_synced_time
+42697904 sync.last_poll_time
+42697936 sync.short_poll_interval
+42697968 sync.cache_guid
+42697984 sync.birthday
+42698000 sync.bag_of_chips
+42698032 sync.whale_need_encryption_key_forced_time
+42698224 sync-deferred-startup-timeout-seconds
+42698272 sync-short-initial-retry-override
+42698320 sync-short-nudge-delay-for-test
+42698352 SyncUnsubscribeFromTypesWithPermanentErrors
+42698440 nigori-key
+42698639 	/whalesync/reset
+42698657 NEO_SES
+42698711 	DataTypeManagerImplCorrectActiveTypes
+42698839 	/command/
+42698864 sync-protocol-log-buffer-size
+42698896 Sync.PasswordNotesStateInUpdate
+42698928 Sync.EntityEncryptionSucceeded
+42698960 Sync.DataTypeEntityChange.
+42699011 	SyncPopulateAllFieldsForCommitOnlyTypes
+42699078 LoopBackServer
+42699093 bookmark_bar
+42699106 Bookmark Bar
+42699120 other_bookmarks
+42699136 Other Bookmarks
+42699152 synced_bookmarks
+42699184 Synced Bookmarks
+42699226 SyncShortInitialDelayOnNetworkError
+42699600 Sync.CommitLatency
+42699632 Sync.CommitResponse
+[0m
+`/whalesync/reset`, `nigori-key`, `NEO_SES` all confirmed. Now locating the bootstrap-token crypto module via the UMA metric strings.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 5 whale 2>/dev/null | awk '$1 >= 27244000 && $1 <= 27245000' | head -40
+27244001 FaviconUtil::ResizeFaviconBitmapResult
+27244040 PostShowPromoResult
+27244060 OnShowPromoResult
+27244078 unknown tag in WebUIGetModelInfoResult
+27244117 Storage.FileSystemAccess.WatchWithChangeInfoResult
+27244168 CreateNullAndReturnResult
+27244194 CreateBlobAndReturnResult
+27244220 Conversions.AttributionResult
+27244250 Signin.BoundSessionCredentials.CookieRotationGenerateAssertionResult
+27244319 Signin.TokenBinding.GenerateAssertionResult
+27244363 Sync.BootstrapTokenEncryptionResult
+27244399 Sync.NigoriStorageEncryptionResult
+27244434 Sync.BootstrapTokenDecryptionResult
+27244470 PasswordManager.StoreDecryptionResult
+27244508 Sync.NigoriStorageDecryptionResult
+27244543 Notifications.Database.OpenAfterCorruptionResult
+27244592 unknown tag in GeopositionResult
+27244625 SpeechRecognitionResult
+27244649 unknown tag in ObliviousHttpCompletionResult
+27244694 .Quic.CompletionResult
+27244717 tint::core::ir::InstructionResult
+27244751 WebAuthentication.Enclave.RenewingPinTransactionResult
+27244806 WebAuthentication.EnclaveTransactionResult
+27244849 unknown tag in SmartCardTransactionResult
+27244891 Chrome.ProcessSingleton.RemoteProcessInteractionResult
+27244946 automationInternal.onActionResult
+27244980 unknown tag in ActionResult
+[0m
+Whale encrypts the nigori node itself (`Sync.NigoriStorageEncryptionResult`) — a real deviation. Hunting the `xv10` magic and KDF now.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 4 whale 2>/dev/null | grep -iE 'xv10|xv11|whale.*(crypt|key|passphrase|bootstrap)|os_crypt' | head -30
+26843173 use-whale-policy-verification-key
+26904279 WhaleNidAuth: failed to decode server ECDH public key hex
+28643642 WhaleNidAuth: failed to decode client_private_key from base64url
+28921429 ../../whale/whale/browser/ui/views/omnibox/multiple_keyword_search_view.h
+30267529 ../../components/os_crypt/sync/os_crypt_linux.cc
+30270049 ../../components/os_crypt/sync/libsecret_util_linux.cc
+30270148 ../../components/os_crypt/sync/key_storage_util_linux.cc
+30271211 ../../components/os_crypt/sync/key_storage_linux.cc
+30283276 ../../whale/whale/browser/ui/views/omnibox/multiple_keyword_search_view.cc
+30315767 ../../components/os_crypt/sync/key_storage_libsecret.cc
+30318796 ../../whale/google_apis/naver_api_keys.cc
+30320864 ../../components/os_crypt/sync/kwallet_dbus.cc
+30335874 ../../whale/components/os_crypt/sync/wbc_wrapper_apis.cc
+30343363 ../../whale/crypto/encryptor.cc
+30343395 ../../components/os_crypt/async/common/encryptor.cc
+30398328 ../../whale/google_apis/naver_epoch_key_confirmer.cc
+30438277 ../../whale/components/signin/public/identity_manager/authkey_fetcher.cc
+30476571 ../../components/os_crypt/async/browser/freedesktop_secret_key_provider.cc
+30476646 ../../components/os_crypt/async/browser/secret_portal_key_provider.cc
+30580447 ../../services/network/enterprise/encryption/os_crypt_cache_encryption_delegate.cc
+30605740 ../../whale/components/os_crypt/sync/os_crypt_whale.cc
+30985486 WhaleNidAuth: failed to parse server public key from SPKI
+31310659 WhaleNidAuth: failed to parse client private key from PKCS#8
+31364866 chrome_libsecret_os_crypt_password_v2
+36588016 whale::kEyeIcon
+36588032 whale::kEyeCrossedIcon
+36589680 whale::kProfileChooserPassPhraseInfoIcon
+36594880 whale::kMenuKeyIcon
+36596032 whale::kEyeCrossedWhaleRefreshIcon
+36596080 whale::kEyeWhaleRefreshIcon
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 4 whale 2>/dev/null | grep -iE 'xv[0-9]|whale.*encrypt.*v|AES-256-GCM|AES-128-GCM|HMAC' | grep -iE 'xv|whale' | head -20; echo "=== whale encryptor region ==="; strings -a -t d -n 5 whale 2>/dev/null | awk '$1 >= 30343000 && $1 <= 30343800' | head -30
+26636459 xV42?
+29565306 xv48le
+29565347 xv36le
+29566136 xv30le
+29752286 xv48be
+29752327 xv36be
+29753083 xv30be
+31293842 whale:hmac:
+31345804 ANGLE_maxv3
+37071980 ''xv10
+37589911 Vxv5
+37983881 V'V-VXV9VWV,VMVbVYV\VLVTV
+39839520 vkBZXv4
+49729431 I9}Xv7H
+49729897 I9}Xv7H
+49730415 I9}Xv7H
+49730973 I9}Xv7H
+49731436 I9}Xv7H
+49731904 I9}Xv4H
+49811871 M9MXv9M
+=== whale encryptor region ===
+30343029 ../../components/permissions/prediction_service/prediction_signature_model_executor.cc
+30343116 ../../services/on_device_model/ml/on_device_model_executor.cc
+30343178 ../../content/browser/scheduler/browser_task_executor.cc
+30343235 ../../components/permissions/prediction_service/permissions_aiv4_executor.cc
+30343312 ../../third_party/perfetto/src/protovm/executor.cc
+30343363 ../../whale/crypto/encryptor.cc
+30343395 ../../components/os_crypt/async/common/encryptor.cc
+30343447 ../../third_party/webrtc/video/buffered_frame_decryptor.cc
+30343506 ../../device/bluetooth/emulation/fake_remote_gatt_descriptor.cc
+30343570 ../../chrome/browser/contextual_tasks/contextual_tasks_url_loader_factory_interceptor.cc
+30343659 ../../content/browser/preloading/prefetch/prefetch_url_loader_interceptor.cc
+30343736 ../../chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor.cc
+[0m
+`xv10` magic found at offset 37071980. Examining its string neighborhood for the encryption scheme and KDF params.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 4 whale 2>/dev/null | awk '$1 >= 37071400 && $1 <= 37072600' | head -60
+37071408 org.freedesktop.Secret.Session
+37071439 Close
+37071445 close
+37071456 org.freedesktop.Secret.Prompt
+37071486 Prompt
+37071495 a{ss}
+37071536 os_crypt.portal.token
+37071568 os_crypt.portal.prev_desktop
+37071600 os_crypt.portal.prev_init_success
+37071648 /org/freedesktop/portal/desktop
+37071680 org.freedesktop.portal.Secret
+37071710 RetrieveSecret
+37071728 OSCrypt.SecretPortalKeyProvider.GotToken
+37071776 fdo_portal_secret_salt
+37071808 HKDF-SHA-256 AES-256-GCM
+37071840 OSCrypt.SecretPortalKeyProvider.InitStatus
+37071888 OSCrypt.SecretPortalKeyProvider.NewInitFailure
+37071936 org.freedesktop.portal.Desktop
+37071980 ''xv10
+37072000 chrome://browser-switch/
+37072032 browser_switcher.enabled
+37072064 browser_switcher.keep_last_tab
+37072096 browser_switcher.external_sitelist_url
+37072144 browser_switcher.external_greylist_url
+37072192 browser_switcher.alternative_browser_path
+37072240 browser_switcher.alternative_browser_parameters
+37072288 browser_switcher.url_list
+37072320 browser_switcher.url_greylist
+37072352 browser_switcher.cached_external_sitelist
+37072400 browser_switcher.cached_external_sitelist_greylist
+37072464 browser_switcher.cached_external_greylist
+37072512 browser_switcher.delay
+37072544 browser_switcher.parsing_mode
+37072596 rules
+[0m
+`xv10` belongs to Chromium's portal key provider region — not uniquely Whale. Focusing on the actual `os_crypt_whale.cc` module strings.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 5 whale 2>/dev/null | grep -iE 'bootstrap|need_encryption_key|encryption_key_forced|whale_need' | head -20
+26841434 need_encryption_key
+27244363 Sync.BootstrapTokenEncryptionResult
+27244434 Sync.BootstrapTokenDecryptionResult
+27414098 bootstrap_points
+27940320 IPC::mojom::Bootstrap [primary] MessageHeaderValidator
+28069418 IPC::mojom::Bootstrap [primary] PipeControlMessageHandler
+28240153 bootstrap
+28240163 DidGetStorageKeysForBootstrap
+29051104 Bootstrapping
+29101656 DidGetBootstrapFlag
+29293967 MaybeBootstrapDatabase
+29293990 DidBootstrapDatabase
+30011622 DidSetDatabaseBootstrapped
+30494975 ../../ipc/ipc_mojo_bootstrap.cc
+30727380 is_bootstrapping_database_
+30904187 IO_BOOTSTRAP_TQ
+30904203 UI_BOOTSTRAP_TQ
+31082142 DEPRECATED_BOOTSTRAP_TOKEN_UPDATED
+31472291 dns_bootstrap/
+32205212 (Bootstrapper)
+[0m
+Using objdump to map the string's VMA and find code xrefs in the crypto module.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && readelf -SW whale 2>/dev/null | grep -E '\.rodata|\.text|\.data\.rel' | head; echo "=== find section for offset 42697104 ==="; readelf -SW whale 2>/dev/null | awk '{print $2, $4, $5, $6}' | head -30
+[12] .rodata           PROGBITS        00000000018fa300 18fa300 1259bb9 00 AMS  0   0 256
+  [16] .text             PROGBITS        0000000002e0f000 2e0e000 f615316 00 AXo  0   0 4096
+  [25] .data.rel.ro      PROGBITS        000000001242aa40 12428a40 ab9968 00  WA  0   0 16
+=== find section for offset 42697104 ===
+are section headers, starting
+   
+Headers:   
+Name Address Off Size
+0] 0000000000000000 000000 000000
+1] PROGBITS 00000000000002e0 0002e0
+2] NOTE 00000000000002fc 0002fc
+3] NOTE 000000000000031c 00031c
+4] NOTE 000000000000033c 00033c
+5] DYNSYM 0000000000000360 000360
+6] VERSYM 00000000000117c0 0117c0
+7] VERNEED 0000000000012ec8 012ec8
+8] GNU_HASH 00000000000132a8 0132a8
+9] STRTAB 0000000000016180 016180
+.rela.dyn 000000000002bd18 02bd18 18c6930
+.rela.plt 00000000018f2648 18f2648 007c38
+.rodata 00000000018fa300 18fa300 1259bb9
+.gcc_except_table 0000000002b53ebc 2b53ebc 00b3d8
+.eh_frame_hdr 0000000002b5f294 2b5f294 069a5c
+.eh_frame 0000000002bc8cf0 2bc8cf0 2452cc
+.text 0000000002e0f000 2e0e000 f615316
+.init 0000000012424318 12423318 000017
+.fini 0000000012424330 12423330 000009
+malloc_hook 0000000012424340 12423340 000220
+.plt 0000000012424560 12423560 0052e0
+.tdata 000000001242a840 12428840 000100
+.tbss 000000001242a940 12428940 001858
+.fini_array 000000001242a940 12428940 000008
+.init_array 000000001242a948 12428948 0000f8
+.data.rel.ro 000000001242aa40 12428a40 ab9968
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 5 whale 2>/dev/null | grep -iE 'wbc|os_crypt_whale|authkey|epoch_key|naver_api|nigori_storage|storage_encryption' | head -30
+26841139 authkey
+26848485 StartFetchingAuthKey
+30318796 ../../whale/google_apis/naver_api_keys.cc
+30331638 ../../whale/google_apis/naver_api_fetcher_utils.cc
+30335874 ../../whale/components/os_crypt/sync/wbc_wrapper_apis.cc
+30398328 ../../whale/google_apis/naver_epoch_key_confirmer.cc
+30438277 ../../whale/components/signin/public/identity_manager/authkey_fetcher.cc
+30605740 ../../whale/components/os_crypt/sync/os_crypt_whale.cc
+31293214 AuthkeyFetcher: token request using refresh token failed:
+35058744 #$XWBC%
+41857568 v1/appauth/authkey
+41857600 user2/appauth/loginByAuthKey.nhn
+51900613 wbc-@:
+51900672 wbc}H;
+52076723 wbc}H;
+52077033 wbc}H;
+52077410 wbc}H;
+52077804 wbc}H;
+52093746 wbc}H;
+52094476 wbc}H;
+52095273 wbc}H;
+52096087 wbc}H;
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 5 whale 2>/dev/null | awk '$1 >= 30605300 && $1 <= 30606400' | head -40
+30605357 ../../whale/whale/browser/ui/views/profiles/profile_menu_view_whale.cc
+30605428 ../../whale/whale/browser/ui/views/frame/vertical_tabs/vertical_tab_strip_region_view_whale.cc
+30605523 ../../whale/whale/browser/ui/views/translate/translate_bubble_view_whale.cc
+30605599 ../../whale/components/sync/trusted_vault/trusted_vault_request_whale.cc
+30605672 ../../services/device/geolocation/network_location_request_whale.cc
+30605740 ../../whale/components/os_crypt/sync/os_crypt_whale.cc
+30605795 ../../whale/components/optimization_guide/core/model_execution/on_device_model_component_whale.cc
+30605893 ../../whale/whale/browser/chrome_browser_main_extra_parts_whale.cc
+30605960 ../../whale/components/sync/service/sync_stopped_reporter_whale.cc
+30606027 ../../whale/third_party/zlib/google/zip_writer_whale.cc
+30606083 ../../whale/whale/browser/importer/profile_writer_whale.cc
+30606142 ../../chrome/browser/ui/views/frame/immersive_mode_controller_whale.cc
+30606213 ../../whale/whale/browser/component_updater/optimization_guide_on_device_model_installer_whale.cc
+30606311 ../../chrome/browser/ui/webui/signin/inline_login_handler_whale.cc
+30606378 ../../whale/components/sync/engine/data_type_worker_whale.cc
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 5 whale 2>/dev/null | awk '$1 >= 26841000 && $1 <= 26842000' | head -30; echo "=== nigori/whale sync crypto strings ==="; strings -a -t d -n 6 whale 2>/dev/null | grep -iE 'kDerived|derived.*key|key.*derivation|from.*passphrase|passphrase.*deriv' | head -10
+26841046 PasswordManager.PasswordDropdownSelected.Passkey
+26841095 Turkey
+26841102 onwaitingforkey
+26841123 cryptokey
+26841133 nokey
+26841139 authkey
+26841147 process_memory_key
+26841166 encrypted_recovery_key
+26841189 primary_key
+26841201 picker_auto_display_key
+26841225 SELECT index_references.key AS index_key
+26841266 gl_method_no_context_key
+26841291 Unexpected failure of AES_set_encrypt_key
+26841333 search_terms_replacement_key
+26841362 ui_audit_key
+26841375 stat_key
+26841384 flat_key
+26841393 previous_key
+26841406 order_key
+26841416 header_key
+26841427 no_key
+26841434 need_encryption_key
+26841454 decryption_key
+26841469 partition_key
+26841483 network_anonymization_key
+26841509 network_isolation_key
+26841531 spdy_session_key
+26841548 GetPartitionDomain-config_domain_key
+26841585 picker_platform_key
+26841605 image_translate_target_language_param_key
+=== nigori/whale sync crypto strings ===
+26844679 The public parameter for X25519 key derivation is not a public key
+26844948 The public parameter for ECDH key derivation is not a public EC key
+27267121 custom_passphrase_key_derivation_salt
+27440351 Length specified for ECDH key derivation is too large. Maximum allowed is %u bits
+27594039 AesDerivedKeyParams
+27863771 Sync.Crypto.NigoriKeyDerivationDuration.%s
+28190088 Sync.Crypto.CustomPassphraseKeyDerivationMethodStateOnStartup
+28356675 Sync.Crypto.CustomPassphraseKeyDerivationMethodOnSuccessfulDecryption
+28764067 The shared secret cannot be derived from the keying material
+29157070 The public parameter for ECDH key derivation is for a different named curve
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 5 whale 2>/dev/null | awk '$1 >= 42698000 && $1 <= 42699000' | head -30
+42698000 sync.bag_of_chips
+42698032 sync.whale_need_encryption_key_forced_time
+42698224 sync-deferred-startup-timeout-seconds
+42698272 sync-short-initial-retry-override
+42698320 sync-short-nudge-delay-for-test
+42698352 SyncUnsubscribeFromTypesWithPermanentErrors
+42698440 nigori-key
+42698639 	/whalesync/reset
+42698657 NEO_SES
+42698711 	DataTypeManagerImplCorrectActiveTypes
+42698839 	/command/
+42698864 sync-protocol-log-buffer-size
+42698896 Sync.PasswordNotesStateInUpdate
+42698928 Sync.EntityEncryptionSucceeded
+42698960 Sync.DataTypeEntityChange.
+[0m
+Writing a targeted xref scanner: find RIP-relative references in `.text` to the Whale sync pref strings' VMAs.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'EOF'
+import struct
+b = open('whale','rb').read()
+TEXT_OFF=0x2e0e000; TEXT_VMA=0x2e0f000; TEXT_SIZE=0xf615316
+targets = {
+ 'sync.encryption_bootstrap_token': 0x28B7A50,
+ 'sync.encryption_bootstrap_token_per_account': 0x28B7AA0,
+ 'sync.whale_need_encryption_key_forced_time': 0x28B7CF0,
+ 'nigori-key': 0x28B7E48,
+ 'sync.encryption_bootstrap_token_per_account_migration_done': 0x28B7AF0,
+}
+name_by_vma = {v:k for k,v in targets.items()}
+text = b[TEXT_OFF:TEXT_OFF+TEXT_SIZE]
+hits = {}
+import re
+for vma, name in targets.items():
+    # scan for little-endian int32 displacement that resolves to vma at position p: ref = p+4+disp
+    disp = (vma & 0xffffffff)
+    hits.setdefault(vma, [])
+count=0
+# Build a set of target VMAs; scan every window
+for p in range(0, len(text)-4, 1):
+    d = struct.unpack_from('<i', text, p)[0]
+    ref = TEXT_OFF + p + 4 + d   # file offset of referenced string... 
+    # ref computed above is in file-offset space: p is file offset within text; insn starts at p-3 in file; lea len 7 => insn_end=p+4; target = insn_end + d
+    ref_vma = ref  # for this binary, vma == file offset in .rodata
+    if ref_vma in name_by_vma:
+        insn_start = p - 3
+        # only keep if instruction looks like 48 8D xx disp32 (LEA r64,[rip+d])
+        if insn_start >= 0 and text[insn_start] == 0x48 and text[insn_start+1] == 0x8d:
+            count += 1
+            if count <= 12:
+                print(f'xref {name_by_vma[ref_vma]} @ .text vma 0x{TEXT_VMA + (insn_start - 0):x} (file 0x{TEXT_OFF+insn_start:x}) bytes={text[insn_start:insn_start+7].hex()}')
+print('total candidate LEA xrefs found:', count)
+EOF
+Traceback (most recent call last):
+  File "<stdin>", line 17, in <module>
+TypeError: unsupported operand type(s) for &: 'str' and 'int'
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'EOF'
+import struct
+b = open('whale','rb').read()
+TEXT_OFF=0x2e0e000; TEXT_VMA=0x2e0f000; TEXT_SIZE=0xf615316
+targets = {
+ 'sync.encryption_bootstrap_token': 0x28B7A50,
+ 'sync.encryption_bootstrap_token_per_account': 0x28B7AA0,
+ 'sync.whale_need_encryption_key_forced_time': 0x28B7CF0,
+ 'nigori-key': 0x28B7E48,
+}
+name_by_vma = {v:k for k,v in targets.items()}
+text = b[TEXT_OFF:TEXT_OFF+TEXT_SIZE]
+count=0
+for p in range(0, len(text)-4):
+    d = struct.unpack_from('<i', text, p)[0]
+    ref_vma = (TEXT_OFF + p + 4) + d
+    if ref_vma in name_by_vma:
+        insn_start = p - 3
+        if insn_start >= 0 and text[insn_start] == 0x48 and text[insn_start+1] == 0x8d:
+            count += 1
+            if count <= 12:
+                print(f'LEA xref {name_by_vma[ref_vma]} @ vma 0x{TEXT_VMA + (insn_start - (TEXT_OFF)):x}')
+print('total LEA xrefs:', count)
+EOF
+total LEA xrefs: 0
+[0m
+Off-by-0x1000 (text VMA != offset). Fixing the scan.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'EOF'
+import struct
+b = open('whale','rb').read()
+TEXT_OFF=0x2e0e000; TEXT_VMA=0x2e0f000; TEXT_SIZE=0xf615316
+VMA_OFFSET = TEXT_VMA - TEXT_OFF  # 0x1000
+targets = {
+ 'sync.encryption_bootstrap_token': 0x28B7A50,
+ 'sync.encryption_bootstrap_token_per_account': 0x28B7AA0,
+ 'sync.whale_need_encryption_key_forced_time': 0x28B7CF0,
+ 'nigori-key': 0x28B7E48,
+ 'sync.encryption_bootstrap_token_per_account_migration_done': 0x28B7AF0,
+}
+name_by_vma = {v:k for k,v in targets.items()}
+text = b[TEXT_OFF:TEXT_OFF+TEXT_SIZE]
+count=0
+for p in range(0, len(text)-4):
+    d = struct.unpack_from('<i', text, p)[0]
+    ref_vma = (p + 4 + VMA_OFFSET) + d
+    if ref_vma in name_by_vma:
+        insn_start = p - 3
+        if insn_start >= 0 and text[insn_start] == 0x48 and text[insn_start+1] == 0x8d:
+            count += 1
+            if count <= 12:
+                print(f'LEA {name_by_vma[ref_vma]} @ vma 0x{TEXT_VMA + insn_start - 0: x}'.replace(' ',''))
+print('total LEA xrefs:', count)
+EOF
+total LEA xrefs: 0
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'EOF'
+import struct
+b = open('whale','rb').read()
+# validate string at computed vma/offset
+for off,name in [(0x28B7A50,'bootstrap_token'),(0x28B7E48,'nigori-key'),(0x28B7CF0,'need_encryption')]:
+    s = b[off:off+80].split(b'\x00')[0]
+    print(hex(off), name, '->', s[:60])
+print('---')
+# check data.rel.ro for absolute 8-byte pointers to these vmAs
+RELRO_OFF=0x12428a40; RELRO_SIZE=0xab9968
+targets=[0x28B7A50,0x28B7AA0,0x28B7CF0,0x28B7E48,0x28B7AF0]
+relro=b[RELRO_OFF:RELRO_OFF+RELRO_SIZE]
+found=0
+for p in range(0,len(relro)-8):
+    v=struct.unpack_from('<Q',relro,p)[0]
+    if v in targets:
+        found+=1
+print('data.rel.ro absolute ptr xrefs:', found)
+# also scan whole file for the QWORD values (any data section)
+for v in targets:
+    q=struct.pack('<Q',v)
+    idxs=[]
+    start=0
+    while True:
+        i=b.find(q,start)
+        if i==-1: break
+        idxs.append(i); start=i+1
+    print(hex(v), 'qword refs:', len(idxs), [hex(x) for x in idxs[:5]])
+EOF
+0x28b7a50 bootstrap_token -> b'i\x02\xd9\ti\x02\xd9\t\xba\x03\xd9\tY\x03\xd9\t\xddt\xda\t\xeft\xda\t\xf8t\xda\t\xe6t\xda\t\nu\xda\t\xd7\xbe\xdb\t\xd7\xbe\xdb\t\xd7\xbe\xdb\t\xd7\xbe\xdb\t\xd7\xbe\xdb\t\xd7\xbe\xdb\t'
+0x28b7e48 nigori-key -> b'dt-'
+0x28b7cf0 need_encryption -> b':\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t:\x13\xdc\t'
+---
+data.rel.ro absolute ptr xrefs: 0
+0x28b7a50 qword refs: 0 []
+0x28b7aa0 qword refs: 0 []
+0x28b7cf0 qword refs: 0 []
+0x28b7e48 qword refs: 0 []
+0x28b7af0 qword refs: 0 []
+[0m
+[0m$ [0mpython3 -c "
+print(hex(42697104), hex(42697184), hex(42698032), hex(42698440), hex(42698639))
+print(int('0x28B7A50',16), int('0x28B7AA0',16), int('0x28B7CF0',16), int('0x28B7E48',16), int('0x28B7EEF',16))
+"
+0x28b8190 0x28b81e0 0x28b8530 0x28b86c8 0x28b878f
+42695248 42695328 42695920 42696264 42696431
+[0m
+My offset→hex conversion is suspect. Verifying with exact arithmetic.
+Offsets corrected. Re-running the xref scan.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'EOF'
+import struct
+b = open('whale','rb').read()
+TEXT_OFF=0x2e0e000; TEXT_VMA=0x2e0f000; TEXT_SIZE=0xf615316
+VMA_OFFSET = TEXT_VMA - TEXT_OFF
+targets = {
+ 'sync.encryption_bootstrap_token': 0x28B8190,
+ 'sync.encryption_bootstrap_token_per_account': 0x28B81E0,
+ 'sync.whale_need_encryption_key_forced_time': 0x28B8530,
+ 'nigori-key': 0x28B86C8,
+ 'migration_done_pref': 0x28B8230,
+ 'bootstrap_token_per_account_migration_done': 0x28B8230,
+}
+name_by_vma = {v:k for k,v in targets.items()}
+# validate strings exist at these offsets
+for off in targets:
+    s = b[off:off+64].split(b'\x00')[0]
+    print(hex(off), s[:60])
+text = b[TEXT_OFF:TEXT_OFF+TEXT_SIZE]
+hits={}
+for p in range(0, len(text)-4):
+    d = struct.unpack_from('<i', text, p)[0]
+    ref_vma = (p + 4 + VMA_OFFSET) + d
+    if ref_vma in name_by_vma:
+        insn_start = p - 3
+        if insn_start >= 0 and text[insn_start] == 0x48 and text[insn_start+1] == 0x8d:
+            hits.setdefault(name_by_vma[ref_vma], []).append(insn_start)
+for k,v in hits.items():
+    print(k, len(v), [hex(TEXT_VMA + x) for x in v[:8]])
+EOF
+Traceback (most recent call last):
+  File "<stdin>", line 16, in <module>
+TypeError: can only concatenate str (not "int") to str
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'EOF'
+import struct
+b = open('whale','rb').read()
+TEXT_OFF=0x2e0e000; TEXT_VMA=0x2e0f000; TEXT_SIZE=0xf615316
+VMA_OFFSET = TEXT_VMA - TEXT_OFF
+targets = {
+ 'sync.encryption_bootstrap_token': 0x28B8190,
+ 'sync.encryption_bootstrap_token_per_account': 0x28B81E0,
+ 'sync.whale_need_encryption_key_forced_time': 0x28B8530,
+ 'nigori-key': 0x28B86C8,
+ 'bootstrap_migration_done': 0x28B8230,
+}
+name_by_vma = {v:k for k,v in targets.items()}
+for off in targets:
+    s = b[off:off+64].split(b'\x00')[0]
+    print(hex(off), '->', s[:60])
+text = b[TEXT_OFF:TEXT_OFF+TEXT_SIZE]
+hits={}
+for p in range(0, len(text)-4):
+    d = struct.unpack_from('<i', text, p)[0]
+    ref_vma = (p + 4 + VMA_OFFSET) + d
+    if ref_vma in name_by_vma:
+        insn_start = p - 3
+        if insn_start >= 0 and text[insn_start] == 0x48 and text[insn_start+1] == 0x8d:
+            hits.setdefault(name_by_vma[ref_vma], []).append(insn_start)
+for k,v in hits.items():
+    print(k, len(v), [hex(TEXT_VMA + x) for x in v[:8]])
+EOF
+Traceback (most recent call last):
+  File "<stdin>", line 14, in <module>
+TypeError: can only concatenate str (not "int") to str
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'EOF'
+import struct
+b = open('whale','rb').read()
+TEXT_OFF=0x2e0e000; TEXT_VMA=0x2e0f000; TEXT_SIZE=0xf615316
+VMA_OFFSET = TEXT_VMA - TEXT_OFF
+targets = {
+ 'sync.encryption_bootstrap_token': 0x28B8190,
+ 'sync.encryption_bootstrap_token_per_account': 0x28B81E0,
+ 'sync.whale_need_encryption_key_forced_time': 0x28B8530,
+ 'nigori-key': 0x28B86C8,
+ 'bootstrap_migration_done': 0x28B8230,
+}
+name_by_vma = {v:k for k,v in targets.items()}
+for off in list(targets.values()):
+    s = b[off:off+64].split(b'\x00')[0]
+    print(hex(off), '->', s[:60])
+text = b[TEXT_OFF:TEXT_OFF+TEXT_SIZE]
+hits={}
+for p in range(0, len(text)-4):
+    d = struct.unpack_from('<i', text, p)[0]
+    ref_vma = (p + 4 + VMA_OFFSET) + d
+    if ref_vma in name_by_vma:
+        insn_start = p - 3
+        if insn_start >= 0 and text[insn_start] == 0x48 and text[insn_start+1] == 0x8d:
+            hits.setdefault(name_by_vma[ref_vma], []).append(insn_start)
+for k,v in hits.items():
+    print(k, len(v), [hex(TEXT_VMA + x) for x in v[:8]])
+print('done')
+EOF
+0x28b8190 -> b'sync.encryption_bootstrap_token'
+0x28b81e0 -> b'sync.encryption_bootstrap_token_per_account'
+0x28b8530 -> b'sync.whale_need_encryption_key_forced_time'
+0x28b86c8 -> b'nigori-key'
+0x28b8230 -> b'per_account_migration_done'
+done
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'EOF'
+import struct
+b = open('whale','rb').read()
+targets = {
+ 'sync.encryption_bootstrap_token': 0x28B8190,
+ 'sync.encryption_bootstrap_token_per_account': 0x28B81E0,
+ 'sync.whale_need_encryption_key_forced_time': 0x28B8530,
+ 'nigori-key': 0x28B86C8,
+}
+for v, name in targets.items():
+    q=struct.pack('<Q', v)
+    idxs=[]; start=0
+    while True:
+        i=b.find(q,start)
+        if i==-1: break
+        idxs.append(i); start=i+1
+    print(name, 'qword refs:', len(idxs), [hex(x) for x in idxs[:6]])
+EOF
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+struct.error: required argument is not an integer
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'PYEOF'
+import struct
+b = open('whale','rb').read()
+targets = [
+ ('sync.encryption_bootstrap_token', 0x28B8190),
+ ('sync.encryption_bootstrap_token_per_account', 0x28B81E0),
+ ('sync.whale_need_encryption_key_forced_time', 0x28B8530),
+ ('nigori-key', 0x28B86C8),
+]
+for name, v in targets:
+    q = struct.pack('<Q', v)
+    idxs = []
+    start = 0
+    while True:
+        i = b.find(q, start)
+        if i == -1:
+            break
+        idxs.append(i)
+        start = i + 1
+    print(name, 'qword refs:', len(idxs), [hex(x) for x in idxs[:6]])
+PYEOF
+sync.encryption_bootstrap_token qword refs: 0 []
+sync.encryption_bootstrap_token_per_account qword refs: 0 []
+sync.whale_need_encryption_key_forced_time qword refs: 0 []
+nigori-key qword refs: 0 []
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'PYEOF'
+import struct
+b = open('whale','rb').read()
+TEXT_OFF=0x2e0e000; TEXT_VMA=0x2e0f000; TEXT_SIZE=0xf615316
+VOFF = TEXT_VMA - TEXT_OFF
+targets = set([0x28B8190, 0x28B81E0, 0x28B8530, 0x28B86C8, 0x28B8230])
+text = b[TEXT_OFF:TEXT_OFF+TEXT_SIZE]
+hits = []
+for p in range(0, len(text)-4):
+    d = struct.unpack_from('<i', text, p)[0]
+    if (p + 4 + VOFF + d) in targets:
+        # print instruction context (bytes before disp)
+        pre = text[max(0,p-4):p]
+        hits.append((p, d, pre.hex()))
+print('total disp matches (any opcode):', len(hits))
+for p,d,pre in hits[:20]:
+    print('vma 0x%x pre=%s disp=0x%x' % (TEXT_VMA + (p-3), pre, d & 0xffffffff))
+PYEOF
+total disp matches (any opcode): 1
+vma 0x457277a pre=0274e166 disp=0x1153a0f
+[0m
+No direct xrefs to the pref strings — likely indirect. Let me pivot to Whale's key-label strings (`whale:hmac:`) and search for its crypto context strings.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 5 whale 2>/dev/null | grep -E '^[0-9]+ whale:[a-z]' | head -20; echo "=== other whale-prefixed key labels ==="; strings -a -t d -n 4 whale 2>/dev/null | grep -oE 'whale:[a-zA-Z0-9_:-]+' | sort -u | head -20
+31293842 whale:hmac:
+=== other whale-prefixed key labels ===
+whale::kAiTabSearchGlyphIcon
+whale::kAiTabSearchTextIcon
+whale::kAppMenuMobileWindowRefreshIcon
+whale::kArrowToRightIcon
+whale::kAutofillCallIcon
+whale::kAutofillEditIcon
+whale::kAutofillLocationIcon
+whale::kAutofillMailIcon
+whale::kAutomationIcon
+whale::kBackButtonRefreshIcon
+whale::kBookmarkBarMoreRefreshIcon
+whale::kBookmarkBlankRefreshIcon
+whale::kBookmarkSavedRefreshIcon
+whale::kBrowserTabSendIcon
+whale::kBubbleArrowBackIcon
+whale::kBubbleCloseButtonIcon
+whale::kCaptureMenuAutoTargetIcon
+whale::kCaptureMenuAutoTargetRefreshIcon
+whale::kCaptureMenuFullScreenIcon
+whale::kCaptureMenuFullScreenRefreshIcon
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -t d -n 4 whale 2>/dev/null | awk '$1 >= 31293500 && $1 <= 31294400' | head -60
+31293501 RegEx of local heuristic matched:
+31293535 initial_value_changed:
+31293558 :EXT_blend_func_extended:
+31293584 app_specific_not_accept_count_exceeded:
+31293624 , require_audio_offload:
+31293649  Encoding root %d:
+31293668  Encoding hot object %d:
+31293693 Received too new packet ssrc:
+31293723 Received too old packet ssrc:
+31293753 SetSink: ssrc:
+31293768 WebRtcVoiceMediaChannel::SetRawAudioSink: ssrc:
+31293816 :OES_shader_image_atomic:
+31293842 whale:hmac:
+31293854 blob:
+31293860 -rgb:
+31293866 adb:
+31293871 java:
+31293877 Failed to get settings for quota:
+31293911  delta:
+31293919 Spa:Pod:Object:Param:Meta:
+31293946 AXTreeUpdate tree data:
+31293970 Failed to generate required data:
+31294004   Fax Data:
+31294016 Spa:
+31294021  nits, gamma:
+31294035 ofTheFollowingCriteria:
+31294059 , known_received_count_:
+31294084 receive_window_size_:
+31294109 Cand[:
+31294116 :MaxComputeWorkGroupCountZ:
+31294144 :MaxComputeWorkGroupSizeZ:
+31294171 :MaxComputeWorkGroupCountY:
+31294199 :MaxComputeWorkGroupSizeY:
+31294226 :MaxComputeWorkGroupCountX:
+31294254 :MaxComputeWorkGroupSizeX:
+31294281 [TLV:
+31294287 :ShadingRateFlag4HorizontalPixelsEXT:
+31294325 :ShadingRateFlag2HorizontalPixelsEXT:
+31294363 :ShadingRateFlag2VerticalPixelsEXT:
+31294399 PAINTED_SHAPE_COUNT:
+[0m
+Trying xref to the BootstrapToken metric string to locate the encrypt/decrypt functions.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && python3 - <<'PYEOF'
+import struct
+b = open('whale','rb').read()
+TEXT_OFF=0x2e0e000; TEXT_VMA=0x2e0f000; TEXT_SIZE=0xf615316
+VOFF = TEXT_VMA - TEXT_OFF
+# VMA of 'Sync.BootstrapTokenEncryptionResult' at file offset 27244363
+metric_vma = 0x19FB3CB
+text = b[TEXT_OFF:TEXT_OFF+TEXT_SIZE]
+hits=[]
+for p in range(0, len(text)-4):
+    d = struct.unpack_from('<i', text, p)[0]
+    if (p + 4 + VOFF + d) == metric_vma:
+        insn_start = p-3
+        pre = text[max(0,insn_start-3):insn_start]
+        hits.append((insn_start, pre.hex(), text[insn_start:insn_start+7].hex()))
+print('metric refs:', len(hits))
+for s, pre, insn in hits[:10]:
+    print('vma 0x%x pre=%s insn=%s' % (TEXT_VMA+s, pre, insn))
+PYEOF
+metric refs: 1
+vma 0x5740b78 pre=184489 insn=f1418b4c880cff
+[0m
+The single "ref" is a false positive (displacement coincidence). Static xref RE is maxed out without Ghidra. Doing the last high-value passive checks: sync passphrase UI strings in locales and resources.pak.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && ls -la locales/ | head; ls -la resources.pak; strings -a -n 5 locales/en-US.pak 2>/dev/null | grep -iE 'passphrase|bootstrap|encryption' | head -20; echo "=== resources.pak ==="; strings -a -n 6 resources.pak 2>/dev/null | grep -iE 'passphrase|bootstrap token|encrypt.*sync' | head -20
+total 55908
+drwxr-xr-x 2 runner runner   12288 Jun 24 09:34 .
+drwxr-xr-x 8 runner runner    4096 Jun 24 09:34 ..
+-rw-r--r-- 1 runner runner  715724 Jun 24 09:34 af.pak
+-rw-r--r-- 1 runner runner      18 Jun 24 09:34 af_FEMININE.pak
+-rw-r--r-- 1 runner runner      18 Jun 24 09:34 af_MASCULINE.pak
+-rw-r--r-- 1 runner runner      18 Jun 24 09:34 af_NEUTER.pak
+-rw-r--r-- 1 runner runner 1158606 Jun 24 09:34 am.pak
+-rw-r--r-- 1 runner runner      18 Jun 24 09:34 am_FEMININE.pak
+-rw-r--r-- 1 runner runner      18 Jun 24 09:34 am_MASCULINE.pak
+-rw-r--r-- 1 runner runner 41262698 Jun 24 09:34 resources.pak
+Visit NAVER MYBOX to register firstLog in to WhaleNAVER MYBOX Save FailedNAVER MYBOX requires one-time user agreement. Click OK to open the agreement page. Please try again after submitting the agreement.Add to ScrapbookSync Server Data DeletedA remote browser ($1) has deleted all sync data for NAVER account $2. Sync is disabled.I have read and agree to Whale Terms of Use and Privacy Policy.Terms of UsePrivacy PolicyWelcome to NAVER Whale.Make NAVER Whale the default browser.Start WhaleAgreeI've read Whale $1Terms$2 and $3Privacy$4 and agree to them.As your privacy setting, Whale has deleted the remaining data after last abnormal termination.Browser has been logged out of $1 account at user's request.Copied text from $1A web page sent from $1A photo sent from $1A file sent from $1A video sent from $1Files sent from $1CopyOpenDownloadDownload AllOpen Naver KeepNAVER Appyour other deviceSites will probably work as expected. You'll be signed out of most sites when you close all Whale windows.Open Compatible Web StoreWelcome to WhaleWhale conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.Whale is not respondingWhale temporarily stopped responding. We recommend restarting for a better experience.Restart nowLaterRelaunch Whale?About WhaleGet help with WhaleUpdating WhaleUpdating Whale ($1)Nearly up to date! Relaunch Whale to finish updating.Whale is up to dateWhale can't check your passwords. Try checking your internet connection.Whale can check your passwords when you sign in with your NAVER AccountNo saved passwords. Whale can check your passwords when you save them.Whale can't check your passwords. Try again after 24 hours or <a href="$1" target="_blank">check passwords in your NAVER Account</a>.Whale can't check your passwords. Try again after 24 hours.Whale can't check your passwords. Try again later.Whale will notify you when you sign in with a compromised passwordTo check if your passwords are safe from data breaches and other security issues, <a target='_blank' href='$1'>sign in to Whale</a>.To check if your other passwords are safe from data breaches and other security issues, <a target='_blank' href='$1'>sign in to Whale</a>.Weak passwords are easy to guess. Let Whale <a target='_blank' href='$1'>create and remember strong passwords for you</a>.If so, please edit your saved password in Whale so it matches your new password.Later, Whale can ask if you want to use saved info to autofill forms for youNAVER Whale is your default browserThanks for choosing Whale as your default browser!Make NAVER Whale the default browserYou can use Whale anytime you click links in messages, documents, and other appsMake NAVER Whale the default browser and pin to the taskbarYou can use Whale anytime you click links in messages, documents, and other apps. It will also be pinned to your taskbar.NAVER Whale cannot determine or set the default browserThis is a secondary installation of NAVER Whale, and cannot be made your default browser.Whale preloads pages you're likely to visit, so that they load more quickly when you visit themWhale preloads even more pages that you're likely to visit, so that they load more quickly when you visit themWhen a site asks to privately preload links on their page, Whale uses NAVER servers. This hides your identity from the preloaded site, but NAVER learns what sites get preloaded.If you allow cookies, Whale may use them when preloadingTo fix spelling errors, Whale sends the text you type in the browser to NAVERTo apply your changes, relaunch WhaleAllow Whale sign-inBy turning this off, you can sign in to NAVER sites like Gmail without signing in to WhaleShows prompts to sign in to WhaleOpen PDFs in WhaleTo use your camera, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>To use your microphone, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>To use your location, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>To use your camera on these sites, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>To use your location on these sites, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>To use your microphone on these sites, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>Sites will probably work as expected. You'll be signed out of most sites when you close all Whale windows, except your NAVER Account if you're signed in to Whale.Always delete site data from your device when you close WhaleReview key privacy and security controls in WhaleChecks URLs with a list of unsafe sites stored in WhaleIf a site tries to steal your password, or when you download a harmful file, Whale may also send URLs, including bits of page content, to Safe BrowsingWhale gives you more control over the ads you see and limits what sites can learn about you when they show you personalized adsChoose whether to include Whale history for more personalized experiences in NAVER servicesIf you also save your bookmarks in your NAVER Account, you can track product prices in Whale and get notified when the price dropsIf you also share Whale usage reports, those reports include the URLs you visitYour interests as estimated by WhaleAd measurement allows sites you visit to request information from Whale that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.To protect your data, let Whale remove permissions from sites you haven't visited recently. Doesn't stop notifications.To protect your data, let Whale remove permissions from sites you haven't visited recently.Keeps you safe on Whale and may be used to improve your security in other NAVER apps when you are signed inChecks URLs with a list of unsafe sites stored in Whale. If a site tries to steal your password, or when you download a harmful file, Whale may also send URLs, including bits of page content, to Safe Browsing.Warns you about dangerous sites, even ones NAVER didn't know about before, by analyzing more data from sites than standard protection. You can choose to skip Whale warnings.Learn more about <a href="#" id="enhancedProtectionLearnMoreLink" on-click="onEnhancedProtectionLearnMoreClick_">how Whale keeps your data private</a>Make it harder for people with access to your internet traffic to see which sites you visit. Whale uses a secure connection to look up a site's IP address in the DNS (Domain Name System).This will delete 1 item from this device. To retrieve your data later, sign in to Whale as $1.This will delete $1 items from this device. To retrieve your data later, sign in to Whale as $2.This will delete your browsing data from this device. To retrieve your data later, sign in to Whale as $1.Customize your Whale profileName your Whale profileSync and personalize Whale across your devicesTo get your passwords and more on all your devices, sign in to WhaleTo get your passwords, bookmarks, and more on all your devices, sign in to WhaleYour WhaleSign in to Whale when you sign in to other NAVER servicesWhen signing into NAVER services like Gmail or Youtube with $1, you can automatically sign in to Whale with the same accountMake Whale your ownFor added security, NAVER Whale will encrypt your dataSign out of Whale?When you type in the address bar or search box, Whale sends what you type to your default search engine to get better suggestions. This is off in Incognito.When you type in the address bar or search box, Whale sends what you type to your organization's search, AI, and agent tools to get suggestions.Sign in to sync and personalize Whale across your devicesTo get personalization, include Whale in Web & App ActivityTo get personalization and other features, include Whale in Web & App Activity and linked NAVER servicesLink Whale and other NAVER services for personalization and other purposesTo use and save Whale data in your NAVER Account, enter your passphraseTo use and save Whale data in your NAVER Account, verify it's youTo use and save Whale data in your NAVER Account, update WhaleVerify it's you to use and save Whale data in your account, $1Enter your passphrase to use and save Whale data in your account, $1Sign out of WhaleWhale data in your accountUse your <a href="$1" target="_blank">own passphrase</a> to encrypt all the Whale data in your NAVER Account. Payment methods and addresses from Google Pay won
+t sync.Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by NAVER. If you forget your passphrase or want to change this setting, you
+ll need to <a href="$1" target="_blank">delete the Whale data in your account</a>.If you forgot your passphrase or want to change this setting, <a href="$1" target="_blank">delete the Whale data in your account</a>To help improve these features, Whale sends your interactions with them to NAVER. This data may be read, processed, and annotated by human reviewers.Whale frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Whale fast. Your inactive tabs automatically become active again when you go back to them. <a href="$1" target="_blank" id="learn-more" aria-description="$2">Learn more about Memory Saver</a>Whale conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <a href="$1" target="_blank" id="learn-more" aria-description="$2">Learn more about Energy Saver</a>Whale preloads pages which makes browsing and searching faster. <a href="$1" target="_blank" id="learn-more" aria-description="$2">Learn more about preload pages</a>Continue running background apps when NAVER Whale is closedHelp make Whale better by reporting the <a is="action-link" target="_blank">current settings</a>Whale regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.Whale found some safety recommendations for your reviewWhale will let you know if anything needs your reviewWhale updateWhale can check your passwords when you save themLearn how Whale keeps you safeWhale
+re signed in to Whale. To let sites remember you, $1.If you forgot your passphrase or want to change this setting, $1 the Whale data in your accountClear the Whale data in your accountYour data is encrypted with your passphrase. Enter it to use and save Whale data in your NAVER Account.Click to close the Whale sign-in dialogWhale account requires re-authenticationTo get your passwords and more on all your devices, sign in to Whale. This password will be saved in your NAVER Account after you sign in.To get your addresses and more on all your devices, sign in to Whale. This address will be saved in your NAVER Account after you sign in.Customize your new Whale profileSign in to WhaleRemove account from WhaleManage Whale profilesAdd Whale profileRemove this app's data from WhaleWhale AppsWhale Canary AppsNAVER Whale is using your camera and microphone.NAVER Whale is using your microphone.NAVER Whale is using your camera.{NUM_DEVICES, plural,
+ll see a prompt to enable price tracking alerts.Whale Tip: Enhanced Safe BrowsingDownload Whale on your phone to open or create new tab groups on the go.Next time you open Whale on your $1, you'll see a prompt to use tab groups.Your settings were changed by an unknown appYour search engine was changed from outside of Whale. To protect you, Whale reset it to its original default. $1Search settingsReport this site to NAVERImprove online safety for everyone when you report a site you think is harmful. Learn more about <a href="https://safebrowsing.google.com/#policies" target="_blank" id="unsafe_site_policy_link">NAVER's unsafe site policy.</a>We use info to improve this service. See <a href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a> and <a href="https://policies.google.com/terms" target="_blank">Terms of Service</a>.IndigoIndigo tooltip textIndigo is available for this pageData is encrypted with your sync passphrase.Data was encrypted with your sync passphrase on $1.Please enter your IDExport passwordsIf you do not set a password for the password file, anyone who has access to the file can see the passwords saved in it.Enter passwordReenter passwordExportDo not set a passwordSet a passwordIncomplete Password CleanupDelete password entries saved without a username.NextClean upSearching passwords
+You have $1 bookmark(s) and $2 folder(s) that match the criteria you select.Deleted bookmarks and folders cannot be recovered.$1 bookmark(s) and $2 folder(s) have been deleted.Update will be completed after restart Naver Whale. If update continues to fail, please reinstall your browser.Start with linked tabsBoth tabs are linked when Dual Tab opensShow Dual Tab menusDisplays basic menu buttons when you open Dual TabStartup in Dual TabOpen a home pageCustomize fontsWebpages are displayed in custom fonts instead of fonts set on the web.Text in unsupported languages may not appear properly.DisabledMouse shortcutsUse the combination of modifiers keys and mouse buttons to create your own shortcuts.Modifier keyMouse buttonActionLeft-clickMiddle-clickScrollSave linkOpen link in new windowOpen link in background tabOpen link in foreground tabOpen link in same tabOpen link in sidebarOpen link in mobile windowZoom in/Zoom outSwitch between tabsScroll on dual tabAllow custom sitesEnter any site name of the jump list in the address bar to directly take you to the site.Besides default sites, you can add your desired sites to the list by clicking [Add sites].Add sites you want to jump to.Site nameSite URLThe URL format is not validSearch EngineDomainSearch URLGet smoother playbackReducing CPU usage by not supporting VP8 and VP9 codecs, but some high-quality videos may not playAlways check target language before translationNew Tab connects to www.naver.comAdministrator connected New Tab to $1No resultAre you sure to remove?Open in a new tabOpen in a new windowOpen in a mobile windowNew FolderSort By NameThere are no bookmarks in the folder set as a bookmarks bar. Please add bookmarks.Go to bookmark managerEnter passphraseError occurred on sync processAll data on the server clearedEnable syncClose TabThere is no email information to sign in. Please follow the guide below to resolve the problem.This NAVER ID is not connected to any NAVER WORKS account. Please log in using another method.Add ScrapbookBookmark/Scrapbook this tabEdit Bookmark/Scrapbook for this tabImport bookmarks and settings
+Help make Whale better by automatically sending usage statistics and crash reports to Whale.Help make Whale better by sending usage statistics and crash reports to NAVER.This app may not work properly in Whale because of using the Chrome Identity API.Encrypt synced data with your own <a href="$1" target="_blank">sync passphrase</a>. Browsing history from NAVER Whale won
+t allow you to use sidebar.Start with Multiplay muteUnable to start the service.Whale ON and Multiplay can't run together. Close the active Whale ON or Multiplay session and try again.Another session is in progress.Please end the current Multiplay session before starting a new one.$1 has stopped Spotlight.($1 blocked)Enter reader modeExit reader modeReader mode for web pagesOffer to show articles in reader mode, when supportedSomeone is already running Spotlight.Whale ON ended due to logging out of the browser.Enable TouchpadRemove from listImage sent.File sent.Sharing of the login tab is disabled.Group chatStop sharing$1's screenClick to followClick to unfollowSearch engine used in the address bar.GroupMy profile settingsDistinguish the site icons of inactive tabs. <a href="$1" target="_blank" aria-description="$2">Learn more about inactive tabs</a>The Naver Whale contains certificates from Certificate Authorities trusted by the Whale Root Program, and is continually reviewed on an ongoing basis.Send commands to $1Search $1Press $1 to send commands to $2TabUnsafe downloadUse passwordSync passphraseCreate a sync passphrase for added security. This passphrase will be required when you log in to your Whale browser on a new device.Protect data with your own passphrase.CreateEnter your passphrase to use and save Whale data in your account.A password sync error has occurred. Please reset the sync data and try again.Check Sync StatusPermission requestSame content in the category.Your data is encrypted with your passphrase. Enter it to use and save Whale data in your login accountIf you forgot your passphrase or want to change this setting, $1 the synced data in your accountresetReset the synced data in your accountAffects the sites listed here. Inserting 
+      other {{NUM_REUSED} reused passwords}}Autofill can offer to save info when you submit forms, like your driver's license or passport numberSaved informationSaved information will appear hereMore options to edit or delete $1, $2Autofill won't have this info on this device to help fill out forms$1 month$1 day$1 yearMMDDYYYYCheck the dateFill at least one field before saving* $1 is requiredSave info to NAVER Wallet from pages you viewAccess your passes, like event tickets and loyalty cards, from your deviceWallet can offer to save info from pages you're viewing, like tickets you purchaseLater, Wallet can send you notifications about your eventsTo offer suggestions and improve this feature, the URL and full page content of the site you visit are shared with NAVERYour info is available in NAVER Wallet on any signed-in deviceShow password for $1 on $2Hide password for $1 on $2Edit in NAVER AccountRemove your home address from Whale autofill?Remove your work address from Whale autofill?Remove this info from Whale autofill?Your home address can help you get things done across NAVER services, like more relevant Search results and directions in NAVER Maps. You can edit or delete your address in your <a href="$1" target="_blank">NAVER Account $2</a>.Your work address can help you get things done across NAVER services, like more relevant Search results and directions in NAVER Maps. You can edit or delete your address in your <a href="$1" target="_blank">NAVER Account $2</a>.You can edit your name in your <a href="$1" target="_blank">NAVER Account</a> $2Address removedInfo removedDefault browserTime rangeTo delete browsing data from this device only, while keeping it in your NAVER Account, <a href="#" target="_blank">sign out</a>.To delete browsing data from all of your synced devices and your NAVER Account, <a href="#" target="_blank">visit sync settings</a>.To delete browsing data from all of your synced devices and your NAVER Account, <a href="#" target="_blank">enter your passphrase</a>.To delete browsing data from all of your synced devices and your NAVER Account, <a href="#" target="_blank">sign in</a>.Signs you out of most sitesSigns you out of most sites. You'll stay signed in to your NAVER Account so your synced data can be deleted.Signs you out of most sites. You'll stay signed in to your NAVER Account so your Family Link settings for Whale apply.Signs you out of most sites. You'll stay signed in to your NAVER Account.Deletes history, including in the search boxDeletes history from all synced devices<a target="_blank" href="$1">Search history</a> and <a target="_blank" href="$2">other forms of activity</a> may be saved in your NAVER Account when you're signed in. You can delete them anytime.<a target="_blank" href="$1">Other forms of activity</a> may be saved in your NAVER Account when you're signed in. You can delete them anytime.Cookies and other site dataPasswords and other sign-in dataLast 15 minLast 15 minutesLast hourLast 7 daysLast 4 weeksAll timeNotifications will be disabledShow moreManage your Gemini Apps activityGemini Apps activityDelete from this device$1 deletedDeletedSearch history, Gemini history, and passwords can be deleted in their management settingsAsk where to save each file before downloadingShow downloads when they're doneOn startupOpen the New Tab pageContinue where you left offOpen a specific page or set of pagesContinue where you left off and open a specific set of pagesUse current pagesAdd a new pageEdit page$1 - $2Please enter a shorter URLPerformanceGeneralMemoryMemory SaverFree up memory based on usageRecommendedFree up memory based on tab inactivityMemory saver optionsChoose time rangeModerateBalanced (recommended)MaximumGet moderate memory savings. Your tabs become inactive after a longer period of time.Get balanced memory savings. Your tabs become inactive after an optimal period of time.Get maximum memory savings. Your tabs become inactive after a shorter period of time.Add to the "always keep these sites active" listSave to the "always keep these sites active" listAlways keep these sites activeSites you add will always stay active and memory won't be freed up from themAdditional sitesAdd current sitesNo sites currently available. Visit a site to add it to this list.Add sites manuallyActive siteSites you add will always stay active and memory won't be freed up from them. <a href="$1" target="_blank">Learn more about keeping specific sites active</a>PowerEnergy SaverTurn on when your computer is unpluggedTurn on only when your battery is at $1% or lowerEnergy saver optionsTurn on Energy Saver to extend battery lifeInactive tabs appearanceA dotted circle appears around site icons. <a href="$1" target="_blank" aria-description="$2">Learn more about inactive tabs</a>Tab hover preview card appearanceChoose to show memory usage and images in the tab hover preview cardPerformance issue alertsGet notifications that suggest ways to improve detected performance issues. <a href="$1" target="_blank" aria-description="$2">Learn more about performance issue alerts</a>Preferred languagesSearch languagesMove to the topMove upMove downNo languages addedShow language optionsWebsites in your languagesLet websites know the languages you speak. They'll show content in those languages, when possible.Use NAVER TranslateWhen on, NAVER Translate will offer to translate sites into your preferred language. It can also automatically translate sites.This language is used when translating pagesAdd $1Remove $1 from automatically translated languagesRemove $1 from never offer translation languagesNAVER TranslateTranslate into this languageAutomatically translate these languagesAdd languages to automatically translateNever offer to translate these languagesAdd languages to never offer translationSpell checkBasic spell checkEnhanced spell checkUses the same spell checker that
+        other {{NUM_COOKIES} cookies}}You and NAVERNAVER Profile photoBecause this account is managed by $1 you will not be signed out of your NAVER Account. Your bookmarks, history, passwords, and other settings will no longer be synced. However, your previously synced data will remain stored in your NAVER Account and can be managed on <a href="$2" target="_blank">NAVER Dashboard</a>.Turn off sync and personalization?Delete and continueRemove bookmarks, history, passwords, and more from this deviceSettings saved. Sync started.Choice saved. Your choice will apply when you sign in to other NAVER services.Show desktop shortcutPick a theme colorCreate desktop shortcutCreate a desktop shortcut on your device to access directly to this profileYour accountIn your NAVER AccountWhen on, data is saved in your NAVER Account and can be used on all your devices. When off, data is saved only to this device.Managed by your organizationHistory and tabsTurn on to get your browsing history and tabs from other devicesNAVER servicesChanges to your bookmarks, history, passwords, and other settings will no longer be synced to your NAVER Account. However, your existing data will remain stored in your NAVER Account and can be managed on <a href="$1" target="_blank">NAVER Dashboard</a>.This will sign you out of your NAVER Accounts. Your bookmarks, history, passwords, and more will no longer be synced.This will sign you out of your NAVER Accounts. Your parent's choices won't be able to keep you safer online. Your bookmarks, history, passwords, and more will no longer be synced.Show profile statsSync will start once you leave sync settingsActivity and interactionsUses content on sites you visit, plus browser activity and interactions, for personalizationEncrypt synced data with your own <a href="$1" target="_blank">sync passphrase</a>. Payment methods and addresses from Google Pay won
+t sync.Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by NAVER. If you forget your passphrase or want to change this setting, you'll need to <a href="$1" target="_blank">reset sync</a>.To change this setting, <a href="$1" target="_blank">reset sync</a> to remove your sync passphraseTo turn this on, <a href="$1" target="_blank">reset sync</a> to remove your sync passphraseIf you forgot your passphrase or want to change this setting, <a href="$1" target="_blank">reset sync</a>.Control how your browsing history is used to personalize Search and moreControl how browsing history is used with your other data across NAVER servicesLinked NAVER servicesSelect an optionDon
+t always get it rightData sent to NAVER may be seen by human reviewers to improve this featureYour content will not be used by human reviewers to improve AI. Your organization may change these settings at any timeEasily compare similar productsLearn more about comparing productsHelps you see similar products side-by-side and easily compare the details that matter to youSuggests comparison details to look at when choosing between productsYou can use your comparison tables to keep track as you narrow down your optionsFor some products, comparison tables summarize reviews from around the webWhen you compare products, the tab titles and URLs of the products are sent to NAVERComparison tables are saved in your NAVER AccountAutomated Password ChangeIf Whale finds one of your passwords in a public data breach, Whale Password Manager can offer to change your password for you if you're signed in.If one of your passwords is found in a data breach, Whale Password Manager asks if you want it changed to a strong passwordYou don't need to remember the password because it gets saved for you in Whale Password ManagerThis feature uses AI and is experimentalContent from this site, including its URL, is sent to NAVER and may be seen by human reviewers to improve this featureYour password is encrypted and never seen by anyoneEnhanced protection is onEnhanced protection is offTo save bookmarks in your account, delete your unused bookmarks$1 subpage back buttonClick to navigate away from $1 subpage.Learn more about: $1CaptionsCaption preferencesCustomize caption size and style for Live Caption. Some apps and sites will also use this setting.Text sizeText fontText colorText opacityBackground opacityOpaqueSemi-transparentTransparentText shadowRaisedDepressedUniformDrop shadowBackground colorBlackWhiteRedGreenBlueYellowCyanMagentaPreferred caption languageSupported Live Caption languagesWhale can create and translate captions for the languages shown hereWhale can create captions for the languages shown hereTranslate captions toOnly supported Live Caption languages can be translated(default)Nearby ShareSet upDevice nameChange device nameNew device nameShow notificationWhen devices are sharing nearbyShow notification when devices are sharing nearbyCurrent device name is $1Manage contactsContactsData usageWi-Fi onlyNever use mobile data to transferMobile DataMay incur mobile data chargesThis option applies to Whalebooks with a data plan or mobile network dongle, or when tethering to a portable hotspotWithout internetFiles will always be shared offlineCurrent data usage setting is Mobile DataCurrent data usage setting is Wi-Fi onlyCurrent data usage setting is Without internetDevice visibilityChange visibilityShare files and more with nearby devices. <a>Learn more</a>Visible to everyoneVisibility is on for $1 minutesYou will be visible to everyone for $1 minutes. <a>Learn more</a>Make searches and browsing betterSends URLs of pages you visit to NAVERHelp improve Whale's features and performanceAutomatically sends usage statistics and crash reports to NAVERImprove search suggestionsSigned in to $1Syncing to $1Get NAVER smarts in WhaleSync isn't workingPassword sync isn't workingManage syncManage what you syncUse another accountTurn on SyncTo use and save passwords in your NAVER Account, verify it's youTo make sure you can always use the passwords in your NAVER Account, verify it's youTo get your passwords and more on all your devices, sign in as $1To get your passwords, bookmarks, and more on all your devices, sign in as $1Sign in as $1Choose another accountDelete and Sign OutSaved tab groupsComparison tablesWi-Fi networksApps sync is set in device SettingsOther NAVER servicesCustomize syncSync dataPasswords and passkeysPassphraseEncryption optionsEncrypt synced passwords with your NAVER AccountUse NAVER
+s default encryption for the passwords in your NAVER AccountReading listYou must enter the same passphrase twiceEmpty passphrase is not allowedThe passphrase you entered is incorrectReview your synced dataManage browser syncSync and NAVER servicesConfirm passphrasePlease wait
+      other {$1 sent to $2}}$1 cancelled the transferKeep track of your passwords and manage them in one place.Search passwordsCheckupOffer to save passwords and passkeysSign in automatically$1 remembers how you signed in and automatically signs you in when possible. When off, you'll be asked for confirmation every time.Create, save, and manage your passwords so you can easily sign in to sites and apps. <a target='_blank' href='$1'>Learn more</a>Add shortcutTo get here quicker, add a shortcut to $1Set up on-device encryptionFor added safety, you can encrypt passwords on your device before they're saved to your NAVER AccountOn-device encryptionYour passwords are encrypted on your device before they
+t saved in your account yetDelete and sign outgo to settingsclearEnter your passphraseCan't sign inCan't sign in to $1Switch to $1This wasn't me.Create a new profile for $1This was me.Add my bookmarks, history, passwords, and other settings to $1$1 has crashedOpen $1?$1 wants to open this application.A website wants to open this application.Always allow $1 to open links of this type in the associated appIndex of LOCATION[parent directory]Date ModifiedWebpage, HTML OnlyWebpage, Single FileWebpage, CompleteProfile error occurredSomething went wrong when opening your profile. Some features may be unavailable.Something went wrong when opening your profile. Please sign out then sign in again.Send feedback to help us fix this issue.Please help our engineers fix this problem. Tell us what happened right before you got the profile error message:
+Sync isn't working. Try signing in again.Sync isn't working. Try signing out and back in again.Enter your passphrase to sync your dataSign in again to resume syncData is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.Data was encrypted with your sync passphrase on $1. This doesn't include payment methods and addresses from Google Pay.Data is encrypted with your sync passphrase. This doesn
+t include payment methods and addresses from Google Pay.Data was encrypted with your sync passphrase on $1. This doesn
+                    other {View all # reviews. Average rating is {1,number,0.0} stars.}}Store reviews. Average rating is {0, number, 0.0} stars.Last visited todayLast visited yesterdayLast visited $1 days agoLast visited $1This site is flagged by your organizationYour organization has flagged this site as it might violate a policy.This site is blocked by your organizationYour organization has blocked this site because it violates a policy.See info used to show you adsThis site gets your ad topics from Whale to show you more relevant adsThis site determines things you like and then suggests ads to other sitesThis site determines things you like and then suggests ads to other sites. This site also gets your ad topics from Whale to show you more relevant ads.Manage ad privacyPKCS #1 RSA EncryptionPKCS #1 MD2 With RSA EncryptionPKCS #1 MD4 With RSA EncryptionPKCS #1 MD5 With RSA EncryptionPKCS #1 SHA-1 With RSA EncryptionPKCS #1 SHA-256 With RSA EncryptionPKCS #1 SHA-384 With RSA EncryptionPKCS #1 SHA-512 With RSA EncryptionX9.62 ECDSA Signature with SHA-1X9.62 ECDSA Signature with SHA-256X9.62 ECDSA Signature with SHA-384X9.62 ECDSA Signature with SHA-512Elliptic Curve Public KeySECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)SECG elliptic curve secp384r1 (aka NIST P-384)SECG elliptic curve secp521r1 (aka NIST P-521)AnyCode SigningEmail ProtectionTime StampingAuthority Information AccessNon-repudiationKey EnciphermentData EnciphermentKey AgreementCertificate SignerCRL SignerEncipher OnlyDecipher OnlyCertification Practice Statement PointerUser NoticePaint Preview Compositor ServiceChange your passwordCheck your saved passwordsThe password you just used was found in a data breach. To secure your accounts, Whale Password Manager recommends checking your saved passwords.The password you just used was found in a data breach. Whale Password Manager recommends changing your password now.The password you just used was found in a data breach. To secure your accounts, Whale Password Manager recommends changing it now and checking your saved passwords.The password you just used was found in a data breach. To secure your accounts, Password Manager recommends checking your saved passwords.The password you just used was found in a data breach. Password Manager recommends changing this password now.The password you just used was found in a data breach. To secure your accounts, Password Manager recommends changing it now and then checking your saved passwords.When you use a password, NAVER Whale warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can
+t configured correctly. Uninstalling "$1" usually fixes the problem. $2Applications that can cause this error include antivirus, firewall, and web-filtering or proxy software.Safety warningDid you mean <a href="#" id="dont-proceed-link">$1</a>?The site you just tried to visit looks fake. Attackers sometimes mimic sites by making small, hard-to-see changes to the URL.Fake site aheadAttackers sometimes mimic sites by making small, hard-to-see changes to the URL.Close pageBlocked by AdminThe site ahead is blocked by your organizationYour organization has blocked <strong>$1</strong> because it violates a policy. <a href="#" id="learn-more-link" aria-label="$2">Learn more about this warning</a>Your organization says: "$1"Admin warningThe site ahead is flagged by your organizationYour organization has identified  <strong>$1</strong> as a site that might violate a policy. <a href="#" id="learn-more-link" aria-label="$2">Learn more about this warning</a>Continue to siteLearn more about site restrictions in managed browsersClock errorYour clock is aheadYour clock is behindUpdate date and timeA private connection to <strong>$1</strong> can't be established because your computer's date and time ($2) are incorrect.To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, NAVER Whale cannot verify these certificates.Privacy errorYour connection is not privateAttackers might be trying to steal your information from <strong>$1</strong> (for example, passwords, messages, or credit cards). <a href="#" id="learn-more-link">Learn more about this warning</a><a href="#" id="proceed-link">Proceed to $1 (unsafe)</a>You cannot visit $1 right now because the website uses certificate pinning. Network errors and attacks are usually temporary, so this page will probably work later.You cannot visit $1 right now because the website uses HSTS. Network errors and attacks are usually temporary, so this page will probably work later.You cannot visit $1 right now because its certificate has been revoked. Network errors and attacks are usually temporary, so this page will probably work later.$1 normally uses encryption to protect your information. When NAVER Whale tried to connect to $1 this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be $1, or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because NAVER Whale stopped the connection before any data was exchanged.You cannot visit $1 right now because the website sent scrambled credentials that NAVER Whale cannot process. Network errors and attacks are usually temporary, so this page will probably work later.Security errorAttackers on the site you tried visiting might install harmful software that steals or deletes things like your passwords, photos, messages, or credit card numbers. Whale strongly recommends going back to safety. <a href="#" id="learn-more-link">Learn more about this warning</a>Whale has built-in safety features to protect you while you browse 
+     other {This server could not prove that it is <strong>{0}</strong>; its security certificate is supposedly from # days in the future. This may be caused by a misconfiguration or an attacker intercepting your connection.}}Server's certificate is not yet valid.This server could not prove that it is <strong>$1</strong>; its security certificate is not valid at this time. This may be caused by a misconfiguration or an attacker intercepting your connection.Server's certificate is not valid at this time.Server's certificate is not trusted.This server could not prove that it is <strong>$1</strong>; its security certificate contains errors. This may be caused by a misconfiguration or an attacker intercepting your connection.Server's certificate contains errors.This server could not prove that it is <strong>$1</strong>; its security certificate might be revoked. This may be caused by a misconfiguration or an attacker intercepting your connection.Server's certificate cannot be checked.No revocation mechanism found.You attempted to reach <strong>$1</strong>, but the certificate that the server presented has been revoked by its issuer. This means that the security credentials the server presented absolutely should not be trusted. You may be communicating with an attacker.Server's certificate has been revoked.You attempted to reach <strong>$1</strong>, but the server presented an invalid certificate.Server's certificate is invalid.You attempted to reach <strong>$1</strong>, but the server presented a certificate signed using a weak signature algorithm (such as SHA-1). This means that the security credentials the server presented could have been forged, and the server may not be the server you expected (you may be communicating with an attacker).Server's certificate is signed using a weak signature algorithm.You attempted to reach <strong>$1</strong>, but the server presented a certificate containing a weak key. An attacker could have broken the private key, and the server may not be the server you expected (you may be communicating with an attacker).The server certificate contains a weak cryptographic key.This server could not prove that it is <strong>$1</strong>; its security certificate might have been issued fraudulently. This may be caused by a misconfiguration or an attacker intercepting your connection.Server's certificate violates name constraints.You attempted to reach <strong>$1</strong>, but the server presented a certificate whose validity period is too long to be trustworthy.The server certificate has a validity period that is too long.You attempted to reach <strong>$1</strong>, but the server presented an invalid certificate issued to that name. The name is a reserved IP address or internal hostname.The server certificate is issued to a non-unique name.An unknown error has occurred.Unknown server certificate error.The server presented a certificate that doesn't match built-in expectations. These expectations are included for certain, high-security websites in order to protect you.The server's certificate appears to be a forgery.The server presented a certificate that was not publicly disclosed using the Certificate Transparency policy. This is a requirement for some certificates, to ensure that they are trustworthy and protect against attackers.The server's certificate was not disclosed via Certificate Transparency.The server used an obsolete version of TLS.The server should upgrade to TLS 1.2 or later.This server could not prove that it is <strong>$1</strong>; its security certificate is not trusted by your computer's operating system. This may be caused by a misconfiguration or an attacker intercepting your connection.This server could not prove that it is <strong>$1</strong> because it is using a security certificate that is not trusted by NAVER Whale or your system configuration for web traffic encryption. This may be caused by a misconfiguration, or an attacker intercepting your connection. <a href="#" id="view-certificate-link">View Certificate</a>Always allow ads on this siteThis site shows intrusive or misleading ads.Ads blockedSite blockedAsk your parentYou don't have permission to visit this siteA parent or guardian has to say that it's OK for you to visit this websiteThis site may have mature content. A parent or guardian has to say that it's OK for you to visit this website.A parent or guardian said that this site isn
+=== resources.pak ===
+[0m
+Excellent — the locale strings document the full passphrase E2E design. Checking resources.pak for the bundled socket.io and any sync web resources.
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && strings -a -n 8 resources.pak 2>/dev/null | grep -icE 'socket.io|whalesync|whaleon'; echo "---specific---"; strings -a -n 6 resources.pak 2>/dev/null | grep -iE 'socket.io.slim|whalesync|whaleon.us' | head -5; echo "---main binary socket.io---"; strings -a -n 8 whale 2>/dev/null | grep -iE 'socket.io' | head -5
+0
+---specific---
+---main binary socket.io---
+whale_sync_push/socket.io.slim.js
+[0m
+[0m$ [0mcd /tmp/opencode/whale_deb/opt/naver/whale && ls -la *.pak 2>/dev/null | head; for p in whale_100_percent.pak whale_200_percent.pak; do echo "== $p =="; strings -a -n 6 "$p" 2>/dev/null | grep -icE 'socket.io|whalesync'; done; echo "=== find which pak has socket.io ==="; for p in *.pak; do n=$(strings -a -n 8 "$p" 2>/dev/null | grep -c 'socket.io'); echo "$p: $n"; done 2>/dev/null | grep -v ': 0'
+-rw-r--r-- 1 runner runner 41262698 Jun 24 09:34 resources.pak
+-rw-r--r-- 1 runner runner 14289590 Jun 24 09:34 whale_100_percent.pak
+-rw-r--r-- 1 runner runner 17507540 Jun 24 09:34 whale_200_percent.pak
+== whale_100_percent.pak ==
+0
+== whale_200_percent.pak ==
+0
+=== find which pak has socket.io ===
+[0m
