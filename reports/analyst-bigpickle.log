@@ -18637,3 +18637,731 @@ testability: AUTH_HELPED
 - [RISK] sync: 45 | custom OSCrypt/KDF + bootstrap-token envelope confirmed in binary, `/whalesync` + NEO_SES real, but KDF params unextracted and every acquisition channel now dead (incl. CDN installer 404) → real surface, unverifiable keys.
 - [RISK] browser: 55 | 3–6 minor bumps past last SOP/CSP fixes, Linux unclaimed in CVE-2025-69235 fix, README documents arbitrary-remote-URL web panels; sample surface downgraded (invalid manifest) but API design + CVE history keep the regression window open.
 - [RISK] libs: 35 | socket.io.slim.js Whale-only confirmed but runtime-fetched with no static path; no other Whale-only bundled library surfaced across full repo enumeration.
+===== ANALYST bigpickle 2026-08-08 17:04:37 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/ 2>/dev/null && echo "---" && ls reports/ 2>/dev/null
+total 184
+drwxr-xr-x 11 runner runner  4096 Aug  8 17:01 .
+drwxr-xr-x  3 runner runner  4096 Aug  8 17:01 ..
+drwxr-xr-x  7 runner runner  4096 Aug  8 17:01 .git
+drwxr-xr-x  3 runner runner  4096 Aug  8 17:01 .github
+-rw-r--r--  1 runner runner  1057 Aug  8 17:01 README.md
+-rw-r--r--  1 runner runner    32 Aug  8 17:01 analyst-out.txt
+-rw-r--r--  1 runner runner 53627 Aug  8 17:01 analyst-prompt.txt
+-rw-r--r--  1 runner runner 50655 Aug  8 17:01 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  8 17:01 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  8 17:01 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  8 17:01 leads
+drwxr-xr-x  2 runner runner  4096 Aug  8 17:01 reports
+drwxr-xr-x  2 runner runner  4096 Aug  8 17:01 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  8 17:01 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  8 17:01 scripts
+-rw-r--r--  1 runner runner    34 Aug  8 17:01 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  8 17:01 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  8 17:01 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  8 17:01 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  8 17:01 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  8 17:01 triage
+---
+analyst-bigpickle.log
+analyst-laguna.log
+analyst-ling3.log
+analyst-longcat.log
+analyst-nemotron3.log
+hypotheses-bigpickle.txt
+hypotheses-laguna.txt
+hypotheses-ling3.txt
+hypotheses-longcat.txt
+hypotheses-nemotron3.txt
+hypotheses.md
+valid-bugs.md
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" "https://nvd.nist.gov" 2>&1; echo; curl -s -o /dev/null -w "%{http_code}" "https://api.github.com/repos/naver/whale-browser-developers" 2>&1; echo
+403
+200
+[0m
+[0m$ [0mls inventory/ knowledge/ leads/ reports/ 2>/dev/null; echo "---state---"; cat state_bigpickle.json
+inventory/:
+whale.md
+
+knowledge/:
+index.md
+
+leads/:
+lead-bigpickle.md
+lead-laguna.md
+lead-ling3.md
+lead-longcat.md
+lead-nemotron3.md
+reposcan-2026-08-07-18-44.md
+reposcan-2026-08-07-18-59.md
+reposcan-2026-08-07-19-19.md
+reposcan-2026-08-07-19-22.md
+reposcan-2026-08-07-19-28.md
+reposcan-2026-08-07-20-06.md
+reposcan-2026-08-07-20-11.md
+reposcan-2026-08-07-20-59.md
+reposcan-2026-08-07-21-09.md
+reposcan-2026-08-07-21-58.md
+reposcan-2026-08-07-22-05.md
+reposcan-2026-08-07-22-23.md
+reposcan-2026-08-07-23-05.md
+reposcan-2026-08-07-23-08.md
+reposcan-2026-08-07-23-50.md
+reposcan-2026-08-07-23-57.md
+reposcan-2026-08-08-00-44.md
+reposcan-2026-08-08-01-38.md
+reposcan-2026-08-08-02-55.md
+reposcan-2026-08-08-03-20.md
+reposcan-2026-08-08-04-14.md
+reposcan-2026-08-08-04-34.md
+reposcan-2026-08-08-05-18.md
+reposcan-2026-08-08-05-39.md
+reposcan-2026-08-08-06-07.md
+reposcan-2026-08-08-06-42.md
+reposcan-2026-08-08-07-44.md
+reposcan-2026-08-08-07-49.md
+reposcan-2026-08-08-08-23.md
+reposcan-2026-08-08-08-35.md
+reposcan-2026-08-08-09-12.md
+reposcan-2026-08-08-09-33.md
+reposcan-2026-08-08-09-57.md
+reposcan-2026-08-08-10-26.md
+reposcan-2026-08-08-10-37.md
+reposcan-2026-08-08-11-01.md
+reposcan-2026-08-08-11-07.md
+reposcan-2026-08-08-11-36.md
+reposcan-2026-08-08-11-44.md
+reposcan-2026-08-08-12-08.md
+reposcan-2026-08-08-12-37.md
+reposcan-2026-08-08-13-17.md
+reposcan-2026-08-08-13-42.md
+reposcan-2026-08-08-13-59.md
+reposcan-2026-08-08-14-27.md
+reposcan-2026-08-08-14-38.md
+reposcan-2026-08-08-14-59.md
+reposcan-2026-08-08-15-07.md
+reposcan-2026-08-08-15-35.md
+reposcan-2026-08-08-15-49.md
+reposcan-2026-08-08-16-51.md
+reposcan-latest.md
+
+reports/:
+analyst-bigpickle.log
+analyst-laguna.log
+analyst-ling3.log
+analyst-longcat.log
+analyst-nemotron3.log
+hypotheses-bigpickle.txt
+hypotheses-laguna.txt
+hypotheses-ling3.txt
+hypotheses-longcat.txt
+hypotheses-nemotron3.txt
+hypotheses.md
+valid-bugs.md
+---state---
+{"phase": "POC", "target": "sync"}
+[0m
+[0m$ [0mcurl -s "https://nvd.nist.gov/rest/public/cves/2.0?keywordSearch=naver%20whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-12-31T23:59:59.999" | head -c 400; echo; echo "---git---"; curl -s "https://api.github.com/repos/naver/whale-browser-developers" | grep -E '"(pushed_at|updated_at|open_issues_count)"'
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en-US"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en-US"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en-US"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en-US"> <!--<![endif]-->
+<head>
+<title>Attention Required! | Cloudflare</title>
+<meta charset="UTF-8" />
+<meta
+---git---
+  "updated_at": "2025-10-22T03:15:17Z",
+  "pushed_at": "2019-09-23T08:03:26Z",
+  "open_issues_count": 4,
+[0m
+[0m→ [0mRead leads/reposcan-latest.md
+[0m→ [0mRead inventory/whale.md
+[0m
+[0m$ [0mfor u in "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale%20naver" "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-69235"; do echo "== $u"; curl -s --max-time 20 "$u" | head -c 300; echo; done
+== https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale%20naver
+{"resultsPerPage":2,"startIndex":0,"totalResults":2,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-08T17:01:50.736","vulnerabilities":[{"cve":{"id":"CVE-2018-9859","sourceIdentifier":"cve@mitre.org","published":"2018-06-16T01:29:09.680","lastModified":"2026-06-17T02:07:18.247","vulnStatus":
+== https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-69235
+{"resultsPerPage":1,"startIndex":0,"totalResults":1,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-08T17:01:50.900","vulnerabilities":[{"cve":{"id":"CVE-2025-69235","sourceIdentifier":"cve@navercorp.com","published":"2025-12-30T02:16:16.930","lastModified":"2026-06-17T10:00:20.773","vulnSta
+[0m
+Let me run fresh passive probes to detect delta on the live surfaces.
+[0m$ [0mcurl -s --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" -o /dev/null -w "bg.js: %{http_code}\n"; curl -s --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" -o /dev/null -w "manifest: %{http_code}\n"; curl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/branches" | grep -o '"name": "[^"]*"' | head; curl -s --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.md" -o /dev/null -w "README: %{http_code}\n"
+bg.js: 200
+manifest: 200
+"name": "jdkim/update_documents"
+"name": "master"
+"name": "translate"
+"name": "v2"
+README: 404
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-69235" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+c=d['vulnerabilities'][0]['cve']
+print('DESC:', c['descriptions'][0]['value'][:300])
+for cfg in c.get('configurations',[]):
+    for node in cfg.get('nodes',[]):
+        for m in node.get('cpeMatch',[]):
+            print('CPE:', m['criteria'])
+"
+DESC: Whale browser before 4.35.351.12 allows an attacker to bypass the Same-Origin Policy in a sidebar environment.
+CPE: cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/commits?sha=translate&per_page=3" | grep -E '"(sha|date)"' | head -8; curl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-12-31T23:59:59.999" | python3 -c "import json,sys; d=json.load(sys.stdin); print('2026 whale CVEs:', d['totalResults'])"
+"sha": "049575337ad5e50a04e0480f460d09b58c5e31a5",
+        "date": "2017-08-04T05:52:11Z"
+        "date": "2017-08-04T05:52:11Z"
+        "sha": "6de172e9b3271af120b7d6ad79d617a34dfaa413",
+        "sha": "69de03bb18596e1bcf0add01e043db8b7f54736e",
+        "sha": "445e092d7b78aedc1d459180bd895e6b2f8388ed",
+    "sha": "445e092d7b78aedc1d459180bd895e6b2f8388ed",
+        "date": "2017-08-01T00:11:00Z"
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0msleep 2; curl -s --max-time 25 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-12-31T23:59:59.999" -o /tmp/nvd26.json -w "%{http_code}\n"; python3 -c "import json; d=json.load(open('/tmp/nvd26.json')); print('2026 whale CVEs total:', d['totalResults'])" 2>/dev/null || head -c 200 /tmp/nvd26.json
+404
+[0m
+[0m$ [0msleep 3; curl -s --max-time 25 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&pubStartDate=2026-01-01T00:00:00.000" -o /tmp/nvd26b.json -w "%{http_code}\n"; python3 -c "import json; d=json.load(open('/tmp/nvd26b.json')); print('2026 whale CVEs total:', d['totalResults'])" 2>/dev/null || head -c 200 /tmp/nvd26b.json
+404
+[0m
+[0m$ [0msleep 2; curl -s --max-time 25 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale" -o /tmp/nvdk.json -w "kw=whale: %{http_code}\n"; python3 -c "import json; d=json.load(open('/tmp/nvdk.json')); print('whale total:', d['totalResults'])" 2>/dev/null || head -c 150 /tmp/nvdk.json
+kw=whale: 200
+whale total: 28
+[0m
+[0m$ [0msleep 2; curl -s --max-time 25 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=chrome&pubStartDate=2026-06-01T00:00:00.000" -o /tmp/nvdc.json -w "chrome-2026: %{http_code}\n"; python3 -c "import json; d=json.load(open('/tmp/nvdc.json')); print('chrome 2026 total:', d['totalResults'])" 2>/dev/null || head -c 150 /tmp/nvdc.json
+chrome-2026: 404
+[0m
+[0m$ [0mpython3 -c "
+import json
+d=json.load(open('/tmp/nvdk.json'))
+for v in d['vulnerabilities']:
+    c=v['cve']
+    print(c['id'], c.get('published','')[:10], (c.get('descriptions') or [{}])[0].get('value','')[:80])
+"
+CVE-2003-1127 2003-12-31 Whale Communications e-Gap 2.5 on Windows 2000 allows remote attackers to obtain
+CVE-2007-2238 2009-04-16 Multiple stack-based buffer overflows in the Whale Client Components ActiveX con
+CVE-2017-15913 2018-01-08 The Installer in Whale allows DLL hijacking.
+CVE-2018-9859 2018-06-16 The path of Whale update service was unquoted in NAVER Whale before 1.0.40.7. Th
+CVE-2018-7635 2018-07-03 Whale Browser before 1.0.41.8 displays no URL information but only a title of a 
+CVE-2018-12448 2018-08-02 Whale Browser before 1.3.48.4 displays no URL information but only a title of a 
+CVE-2018-12449 2018-10-11 The Whale browser installer 0.4.3.0 and earlier versions allows DLL hijacking.
+CVE-2020-9753 2020-05-20 Whale Browser Installer before 1.2.0.5 versions don't support signature verifica
+CVE-2021-33593 2021-11-02 Whale browser for iOS before 1.14.0 has an inconsistent user interface issue tha
+CVE-2022-24071 2022-01-28 A Built-in extension in Whale browser before 3.12.129.46 allows attackers to com
+CVE-2022-24072 2022-03-17 The devtools API in Whale browser before 3.12.129.18 allowed extension developer
+CVE-2022-24073 2022-03-17 The Web Request API in Whale browser before 3.12.129.18 allowed to deny access t
+CVE-2022-24074 2022-03-17 Whale Bridge, a default extension in Whale browser before 3.12.129.18, allowed t
+CVE-2022-24075 2022-03-17 Whale browser before 3.12.129.18 allowed extensions to replace JavaScript files 
+CVE-2020-9754 2022-06-27 NAVER Whale browser mobile app before 1.10.6.2 allows the attacker to bypass its
+CVE-2023-3308 2023-06-18 A vulnerability classified as problematic has been found in whaleal IceFrog 1.1.
+CVE-2023-35780 2023-07-11 Cross-Site Request Forgery (CSRF) vulnerability in Andy Whalen Galleria plugin <
+CVE-2023-25632 2023-11-27 The Android Mobile Whale browser app before 3.0.1.2 allows the attacker to bypas
+CVE-2024-40618 2024-07-11 Whale browser before 3.26.244.21 allows an attacker to execute malicious JavaScr
+CVE-2024-50583 2024-10-25 Whale browser Installer before 3.1.0.0 allows an attacker to execute a malicious
+CVE-2024-56967 2025-01-27 An issue in Cloud Whale Interactive Technology LLC. PolyBuzz iOS 2.0.20 allows a
+CVE-2025-53599 2025-07-04 Whale browser for iOS before 3.9.1.4206 allow an attacker to execute malicious s
+CVE-2025-53600 2025-07-04 Whale browser before 4.32.315.22 allow an attacker to bypass the Same-Origin Pol
+CVE-2025-62583 2025-10-16 Whale Browser before 4.33.325.17 allows an attacker to escape the iframe sandbox
+CVE-2025-62584 2025-10-16 Whale browser before 4.33.325.17 allows an attacker to bypass the Same-Origin Po
+CVE-2025-62585 2025-10-16 Whale browser before 4.33.325.17 allows an attacker to bypass the Content Securi
+CVE-2025-69234 2025-12-30 Whale browser before 4.35.351.12 allows an attacker to escape the iframe sandbox
+CVE-2025-69235 2025-12-30 Whale browser before 4.35.351.12 allows an attacker to bypass the Same-Origin Po
+[0m
+[0m$ [0msleep 2; curl -s --max-time 25 "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-69234" -o /tmp/c69234.json -w "%{http_code}\n"; sleep 2; curl -s --max-time 25 "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-62584" -o /tmp/c62584.json -w "%{http_code}\n"; python3 -c "
+import json
+for f in ['/tmp/c69234.json','/tmp/c62584.json']:
+    try:
+        d=json.load(open(f))
+        c=d['vulnerabilities'][0]['cve']
+        print(c['id'])
+        for cfg in c.get('configurations',[]):
+            for node in cfg.get('nodes',[]):
+                for m in node.get('cpeMatch',[]):
+                    print('  ', m['criteria'])
+    except Exception as e:
+        print(f, 'ERR', e)
+"
+200
+200
+CVE-2025-69234
+   cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*
+CVE-2025-62584
+   cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+paths=[t['path'] for t in d.get('tree',[]) if 'sidebar' in t['path'].lower() or 'sample' in t['path'].lower()]
+for p in paths: print(p)
+" | head -40
+src/sidebar-sample
+src/sidebar-sample/css
+src/sidebar-sample/css/style.css
+src/sidebar-sample/icons
+src/sidebar-sample/icons/icon128.png
+src/sidebar-sample/icons/icon16.png
+src/sidebar-sample/icons/icon48.png
+src/sidebar-sample/img
+src/sidebar-sample/img/img01.png
+src/sidebar-sample/img/img02.png
+src/sidebar-sample/img/img03.png
+src/sidebar-sample/index.html
+src/sidebar-sample/js
+src/sidebar-sample/js/background.js
+src/sidebar-sample/js/contentscript.js
+src/sidebar-sample/js/index.js
+src/sidebar-sample/manifest.json
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+paths=[t['path'] for t in d.get('tree',[])]
+print('total files:', len(paths))
+for p in paths:
+    if p.endswith(('.json','.js','.md')) and 'sidebar' not in p.lower():
+        print(p)
+"
+total files: 46
+README.ko.md
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+paths=[t['path'] for t in d.get('tree',[])]
+for p in paths: print(p)
+"
+README.ko.md
+docs
+docs/0a3101a4-0e2d-11e7-8eb5-0fb2bab6ba77.png
+docs/1765d6e4-0809-11e7-89ee-d88ac06318be.png
+docs/253a55b2-0fc8-11e7-9b7d-4afddeff04f8.png
+docs/25eb21f8-0e2e-11e7-8c6f-1c71d9cfab07.png
+docs/34650d96-080e-11e7-815c-854ab8a52ad9.png
+docs/40bc5c1e-0e2d-11e7-80ec-4137936a3bff.png
+docs/5dcfef0e-0e2e-11e7-9527-cabe957718d3.png
+docs/74c4ad62-0e2e-11e7-9831-c77bfa0808f9.png
+docs/7b2e651a-0809-11e7-8d33-7fe5093d0132.png
+docs/7fa170fe-0e2d-11e7-9402-538293aacb71.png
+docs/989e7932-0809-11e7-908c-7e3b96867080.png
+docs/NCapture004.PNG
+docs/NCapture005.PNG
+docs/contextmenu.png
+docs/e0d26564-0e2c-11e7-94b1-6d47c4edead0.png
+docs/f11076b4-0e2c-11e7-993b-3aba86b416e3.png
+docs/f6ad8410-0808-11e7-8942-1cab765a9168.png
+docs/fec442d6-080f-11e7-9a1c-f0d550f01d6e.png
+docs/wiki_image1.png
+docs/wiki_image2.png
+docs/wiki_image3.png
+docs/wiki_image4.png
+docs/wiki_image5.png
+docs/wiki_image6.png
+docs/wiki_image7.png
+docs/wiki_image8.png
+src
+src/sidebar-sample
+src/sidebar-sample/css
+src/sidebar-sample/css/style.css
+src/sidebar-sample/icons
+src/sidebar-sample/icons/icon128.png
+src/sidebar-sample/icons/icon16.png
+src/sidebar-sample/icons/icon48.png
+src/sidebar-sample/img
+src/sidebar-sample/img/img01.png
+src/sidebar-sample/img/img02.png
+src/sidebar-sample/img/img03.png
+src/sidebar-sample/index.html
+src/sidebar-sample/js
+src/sidebar-sample/js/background.js
+src/sidebar-sample/js/contentscript.js
+src/sidebar-sample/js/index.js
+src/sidebar-sample/manifest.json
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js"
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message === 'sidebarAction.show') {
+    whale.sidebarAction.show({
+      reload : false
+    }, () => {
+
+    });
+  } else if (message === 'sidebarAction.hide') {
+    whale.sidebarAction.hide(() => {
+    });
+  } else if (message === 'sidebarAction.show2') {
+    whale.windows.create((windowInfo) => {
+      whale.sidebarAction.show(windowInfo.id, () => {
+
+      });
+    });
+  } else if (message === 'sidebarAction.hideAll') {
+    whale.windows.getAll((windowList) => {
+      for(let i = 0, len = windowList.length ; i < len ; i++) {
+        whale.sidebarAction.hide(windowList[i].id, () => {
+        });
+      }
+    });
+  }
+});
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json"; echo "===== index.html ====="; curl -s --max-time 25 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/index.html" | head -60
+{
+  "manifest_version": 2,
+  "name": "Whale Sidebar Extension",
+  "description": "Helloworld sample test for Whale browser sidebar extension",
+  "version": "1.0",
+  "icons": {
+    "16": "icons/icon16.png", /* used in context menu icon */
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png" 
+  },
+  "sidebar_action": {
+    "default_icon": {
+      "16": "icons/icon16.png" /* used in sidebar menu icon */
+    },
+    "default_page": "index.html",
+    "default_title": "Whale Sidebar Extension"
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "js/contentscript.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "permissions": [
+    "tabs"
+  ]
+}
+===== index.html =====
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta charset="UTF-8">
+  <title>Whale Sidebar Extension</title>
+  <link href="css/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Whale Sidebar Extension Test</div>
+
+    <div class="section">
+      <div class="title">sidebarAction.show() /<br> sidebarAction.hide()</div>
+      <div class="description">
+        If you want to open or hide sidebar from some action from the web content,
+        you can call show() and hide() method using content scripts and background scripts.
+        Refer to contentscript.js and backgorund.js.
+        Test buttons are injected to all website to test this feature.
+      </div>
+      <div class="image">
+        <img src="img/img01.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">sidebarAction.getTitle() /<br> sidebarAction.setTitle()</div>
+      <div class="description">
+        You can update or retrieve the tooltip text using setTitle() and getTitle() method,
+        Refer to index.js. Test buttons are available below:
+      </div>
+      <div class="buttons">
+        <button id="setTitle1">Set title to 'ABC'</button>
+        <button id="setTitle2">Reset title</button>
+      </div>
+      <div class="image">
+        <img src="img/img02.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">
+        sidebarAction.setBadgeText() /<br>
+        sidebarAction.getBadgeText()
+      </div>
+      <div class="description">
+        You can update or retrieve the badge text or badge background color using
+        setBadgeText(), getBadgeText(), setBadgeBackgroundColor(), getBadgeBackgroundColor() method.
+        Refer to index.js. Test buttons are available below:
+      </div>
+      <div class="buttons">
+        <button id="setBadgeText1">Update badge text and color</button>
+        <button id="setBadgeText2">Reset badge</button>
+      </div>
+      <div class="image">
+        <img src="img/img03.png" />
+      </div>
+    </div>
+
+    <div class="section">
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js"
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+if (navigator.userAgent.includes('sidebar') === false) {
+  let a = document.createElement('button');
+  a.innerHTML = 'Show sidebar';
+  a.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:0;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid red;
+    color: red;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(a);
+  a.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show');
+  }, false);
+
+  let c = document.createElement('button');
+  c.innerHTML = 'Show sidebar in new window';
+  c.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:40px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid green;
+    color: green;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(c);
+  c.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show2');
+  }, false);
+
+  let b = document.createElement('button');
+  b.innerHTML = 'Hide sidebar';
+  b.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:80px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid blue;
+    color: blue;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(b);
+  b.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hide');
+  }, false);
+
+  let d = document.createElement('button');
+  d.innerHTML = 'Hide all sidebars';
+  d.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:120px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid black;
+    color: black;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(d);
+  d.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hideAll');
+  }, false);
+}
+[0m
+[0m$ [0mpython3 -c "
+import json
+for f in ['/tmp/c69234.json','/tmp/c62584.json']:
+    d=json.load(open(f))
+    c=d['vulnerabilities'][0]['cve']
+    print('====', c['id'])
+    for cfg in c.get('configurations',[]):
+        for node in cfg.get('nodes',[]):
+            for m in node.get('cpeMatch',[]):
+                print(json.dumps(m, indent=1))
+"
+==== CVE-2025-69234
+{
+ "vulnerable": true,
+ "criteria": "cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*",
+ "versionEndExcluding": "4.35.351.12",
+ "matchCriteriaId": "190A5B33-48F9-47DD-902A-63554FF53365"
+}
+==== CVE-2025-62584
+{
+ "vulnerable": true,
+ "criteria": "cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*",
+ "versionEndExcluding": "4.33.325.17",
+ "matchCriteriaId": "58B46536-56DC-45CD-9F7C-4A0FC1875500"
+}
+[0m
+[0m$ [0mpython3 -c "
+import json
+d=json.load(open('/tmp/c69234.json'))
+c=d['vulnerabilities'][0]['cve']
+print('ID:', c['id'])
+print('DESC:', c['descriptions'][0]['value'])
+for r in c.get('references',[]): print('REF:', r.get('url'))
+print('source:', c.get('sourceIdentifier'))
+"
+ID: CVE-2025-69234
+DESC: Whale browser before 4.35.351.12 allows an attacker to escape the iframe sandbox in a sidebar environment.
+REF: https://cve.naver.com/detail/cve-2025-69234.html
+source: cve@navercorp.com
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://cve.naver.com/detail/cve-2025-69234.html" -o /tmp/nvcve.html -w "%{http_code}\n"; python3 -c "
+import re,html
+t=open('/tmp/nvcve.html',encoding='utf-8',errors='ignore').read()
+t=re.sub(r'<script.*?</script>','',t,flags=re.S)
+t=re.sub(r'<style.*?</style>','',t,flags=re.S)
+t=re.sub(r'<[^>]+>',' ',t)
+t=html.unescape(t)
+t=re.sub(r'\s+',' ',t)
+print(t[:1500])
+"
+200
+ NAVER Security Advisory NAVER Disclosure Policy Security Advisory CVE-2025-69234 Whale browser before 4.35.351.12 allows an attacker to escape the iframe sandbox in a sidebar environment. We would like to thank Mingi Jung. © NAVER Corp. All rights reserved.
+[0m
+[0m$ [0mdate -u; echo "---"; cat scope.yml
+Sat Aug  8 17:03:24 UTC 2026
+---
+programs:
+  whale:
+    name: Naver Whale Browser
+    disclosure_policy: TBD - operator-provided program scope (update once public channel confirmed)
+    assets:
+      - name: "Whale browser - latest version (reproducible at time of reporting)"
+        priority: In
+      - name: "Third-party libraries used ONLY by Whale (not Chromium)"
+        priority: In
+      - name: "Synchronization"
+        priority: In
+    out_of_scope:
+      - "All Naver web services (*.naver.com, *.navercorp.com)"
+      - "Web servers of built-in extensions (Papago, Belli)"
+      - "URL preview spoofing in status bar"
+      - "Bypassing XSS Auditor"
+      - "IETab extension"
+      - "SafeBrowsing false positives / false negatives"
+    github_orgs:
+      - naver
+
+rules:
+  passive_first: true          # GET/HEAD reads first; client-side scope: static analysis + repro-first
+  max_requests_per_second: 1   # never hammer
+  no_doom: true                # no DoS/DDoS
+  no_account_creation: true
+  no_data_modification: true
+  no_pre_disclosure: true
+  latest_version_required: true  # bug must reproduce on the LATEST Whale version at report time
+  redact_secrets_in_commits: true
+
+# Multi-model ensemble: every hunt run picks a rotation of the 5 models.
+models:
+  - { id: opencode/big-pickle, name: bigpickle }
+  - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+  - { id: opencode/longcat-2.0-free, name: longcat }
+  - { id: opencode/ling-3.0-flash-free, name: ling3 }
+  - { id: opencode/laguna-s-2.1-free, name: laguna }
+[0m
+Fresh probes complete (NVD API ×4, GitHub trees/commits ×3, raw files ×4, cve.naver.com ×1, all GET/HEAD ≤1rps). Key corrections surfaced vs prior knowledge.
+
+STEP 1 — DELTA
+- [CHANGED] NVD API: `keywordSearch=whale&pubStartDate=2026-01-01` now returns HTTP 404 (prior runs: 200 + `totalResults:0`); verified 404 is an empty-result/API-quirk behavior (chrome+2026 also 404) — full `keywordSearch=whale` still 200, total 28, zero 2026-published Whale CVEs → disclosure-gap conclusion unchanged
+- [CHANGED] NVD CPE records for CVE-2025-69234/69235/62584 are OS-agnostic `cpe:2.3:a:navercorp:whale:*` (versionEndExcluding only) — prior lead claim "NVD CPEs list only Windows/macOS (Linux absent)" is FACTUALLY WRONG; no platform carve-out exists
+- [NEW] CVE-2025-69234 full record retrieved: "allows an attacker to escape the iframe sandbox in a sidebar environment", credit Mingi Jung, ref `cve.naver.com/detail/cve-2025-69234.html` (200)
+- [NEW] translate-branch sample files commit-dated 2017-08-04 (9 years old); `manifest.json` is invalid JSON (JS-style `/* */` comments) → sample uninstallable as-is, confirming prior laguna note
+- NO_DELTA otherwise: repo frozen (`pushed_at` 2019-09-23, 46 files), sample files all 200, NVD keywordSearch full list unchanged
+
+STEP 2 — PRIORITIZE
+- [PRIO] Latest desktop Whale v4.38.386.14 sidebar/dual-tab panel, 6.2 = attack 8 / business 6 / tech 7 / gate 5 / cloud 1 / fresh 8
+- [PRIO] Latest desktop binary (sync KDF `os_crypt_whale`/`whale_sync_util`), 5.5 = attack 6 / business 9 / tech 5 / gate 2 / cloud 4 / fresh 3
+- [PRIO] Android com.naver.whale 3.9.14.9 (sync), 4.9 = attack 5 / business 7 / tech 5 / gate 1 / cloud 4 / fresh 6
+- socket.io.slim.js (Whale-only lib), 3.7 — unacquirable in-sandbox, parked
+
+STEP 3 — HYPOTHESES
+[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable derived key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+confidence: 60
+reasoning: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface; KDF alg + iteration count never extracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: acquire official binary (all channels re-confirmed dead in-sandbox); strings/`.rodata`/objdump for `xv10` symbols + iteration constants; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+[HYP] Sidebar/dual-tab boundary regression on latest — 3–6 minor bumps, 0 CVEs since fix
+class: OTHER
+asset: Latest desktop Whale `sidebarAction.show({url})` + dual-tab panel; documented all-origin message path
+confidence: 45
+reasoning: CVE-2025-69234/69235 (iframe sandbox escape + SOP bypass in sidebar) fixed <4.35.351.12; latest v4.38.386.14 is 3–6 minor bumps ahead with zero published CVEs → regression window; prior "Linux absent from CPE" reasoning RETRACTED (CPE is OS-agnostic). Sample source (2017) documents unvalidated `runtime.onMessage → sidebarAction.show/windows.create` path.
+evidence_needed: crafted panel URL executing script / escaping sandbox on latest desktop.
+verify_steps: AUTH_HELPED: install latest, load minimal valid MV2 extension (sample manifest is invalid JSON), cross-origin content-script sendMessage, drive `sidebarAction.show({url: crafted.html})`, test opener readback + iframe sandbox escape.
+impact: SOP bypass / sandbox escape in browser-UI context; High if renderer escalation
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] Android sync re-upload churn (3.9.14.9 twice) @ 42: MISCONFIG inference from mirror metadata is speculative; verify_steps reduce to "acquire the binary" — no concrete verification; binary blocked in-sandbox
+- [FINAL] 1. Sync KDF envelope (AUTH, 60) → 2. Sidebar/dual-tab boundary regression (OTHER, 45)
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: Deliver the official Whale desktop binary (v4.38.386.14, `.deb` or `WhaleSetup.exe`) via unrestricted internet — unblocks in one pass: (a) objdump/strings extracts `xv10`/`os_crypt_whale` PBKDF2 iteration constants for the sync-KDF hypothesis (60), (b) enables the authorized Linux install for sidebar/dual-tab boundary testing (45). All passive channels re-confirmed dead this run (NVD date-filtered search 404, sample 2017-era invalid manifest, repo frozen).
+
+STEP 6 — LEARNING
+- [ACCEPTED] OTHER @ sidebar environment: CVE-2025-69234/69235 NVD records live via API — "escape the iframe sandbox in a sidebar environment" / "SOP bypass in sidebar environment", credit Mingi Jung, fixed <4.35.351.12
+- [REJECTED] class @ NVD CPE: prior "CPEs list only Windows/macOS, Linux absent" claim is false — records use OS-agnostic `cpe:2.3:a:navercorp:whale`; platform-carve-out reasoning retracted
+- [CHANGED] @ NVD API: keywordSearch+pubStartDate combo returns HTTP 404 for empty/zero-result queries (was 200+0) — tooling quirk, no surface impact
+- [CONFIRMED] @ sample extension: translate-branch manifest.json is invalid JSON (JS-style comments), sample dated 2017-08-04 — uninstallable reference code, not live attack surface
+
+STEP 7 — RISK SCORE
+[RISK] sync: 45 — custom OSCrypt/KDF + bootstrap-token envelope confirmed present in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 — 3–6 minor bumps past last sidebar SOP/sandbox fixes with 0 published CVEs and an OS-agnostic fix scope; source-documented all-origin message path remains the best-characterized surface, untestable without the binary. | libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.

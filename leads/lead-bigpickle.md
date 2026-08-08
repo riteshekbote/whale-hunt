@@ -955,3 +955,24 @@ evidence_needed: crafted panel URL reading opener cross-origin or escaping panel
 verify_steps: AUTH_HELPED: install latest, open crafted web panel + dual-tab; test cross-origin readback and CSP bypass.
 impact: SOP/CSP bypass in panel context; High
 testability: AUTH_HELPED
+## 2026-08-08 17:04:14 UTC [sync] (model bigpickle)
+[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable derived key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+confidence: 60
+reasoning: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface; KDF alg + iteration count never extracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: acquire official binary (all channels re-confirmed dead in-sandbox); strings/`.rodata`/objdump for `xv10` symbols + iteration constants; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+[HYP] Sidebar/dual-tab boundary regression on latest — 3–6 minor bumps, 0 CVEs since fix
+class: OTHER
+asset: Latest desktop Whale `sidebarAction.show({url})` + dual-tab panel; documented all-origin message path
+confidence: 45
+reasoning: CVE-2025-69234/69235 (iframe sandbox escape + SOP bypass in sidebar) fixed <4.35.351.12; latest v4.38.386.14 is 3–6 minor bumps ahead with zero published CVEs → regression window; prior "Linux absent from CPE" reasoning RETRACTED (CPE is OS-agnostic). Sample source (2017) documents unvalidated `runtime.onMessage → sidebarAction.show/windows.create` path.
+evidence_needed: crafted panel URL executing script / escaping sandbox on latest desktop.
+verify_steps: AUTH_HELPED: install latest, load minimal valid MV2 extension (sample manifest is invalid JSON), cross-origin content-script sendMessage, drive `sidebarAction.show({url: crafted.html})`, test opener readback + iframe sandbox escape.
+impact: SOP bypass / sandbox escape in browser-UI context; High if renderer escalation
+testability: AUTH_HELPED
+[NEXT] HUMAN: Deliver the official Whale desktop binary (v4.38.386.14, `.deb` or `WhaleSetup.exe`) via unrestricted internet — unblocks in one pass: (a) objdump/strings extracts `xv10`/`os_crypt_whale` PBKDF2 iteration constants for the sync-KDF hypothesis (60), (b) enables the authorized Linux install for sidebar/dual-tab boundary testing (45). All passive channels re-confirmed dead this run (NVD date-filtered search 404, sample 2017-era invalid manifest, repo frozen).
+[RISK] sync: 45 — custom OSCrypt/KDF + bootstrap-token envelope confirmed present in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 — 3–6 minor bumps past last sidebar SOP/sandbox fixes with 0 published CVEs and an OS-agnostic fix scope; source-documented all-origin message path remains the best-characterized surface, untestable without the binary. | libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.

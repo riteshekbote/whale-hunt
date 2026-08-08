@@ -263,3 +263,6 @@
 - NEW `static-whale.pstatic.net/WhaleSetup.exe`: HTTP 404 (Apache) — online installer CDN artifact dead; Naver pstatic infra excluded per scope
 - NEW NVD API (keywordSearch=`naver+whale`): exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754); 0 in 2026 — disclosure gap confirmed
 - NEW GitHub search API (`q=org:naver+whale`): 1 repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of additional repos disproven
+
+## 2026-08-08 17:04:37 UTC
+- NEW NO_DELTA — inventory, knowledge, and leads unchanged since last aggregated hypotheses (2026-08-08 15:48:16 UTC); no new public CVEs, no new GitHub commits, no new wiki edits, all binary acquisition pa

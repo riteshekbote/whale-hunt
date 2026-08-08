@@ -729,3 +729,29 @@
 - LEARN: REJECTED @ GitHub wiki `sidebarAction` docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` still HTTP 404 — wiki documentatio
 - LEARN: ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins)
 - LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
+
+## RANKED HYPOTHESES 2026-08-08 17:04:37 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Sidebar/dual-tab boundary regression — CVE-2025-69235 fix may have new variant (from reports/hypotheses-laguna.txt)
+- [60] Whale: Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable derived key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/aut
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver the official Whale desktop binary (v4.38.386.14, `.deb` or `WhaleSetup.exe`) via unrestricted internet — unblocks in one pass: (a) objdump/string
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale binary — run the live online WhaleSetup.exe v4.38.386.14 OR WhaleSetup.deb v4.38.386.14 via unrestricted internet. All passive dow
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — wiki documentation remains 
+- LEARN: ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins)
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
+- LEARN: CONFIRMED @ GitHub search API: 1 whale-named repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of addi
+- LEARN: REJECTED class @ installer: DLL search-order regression (confidence 50, below 60 threshold, no passive proof path, all binary acquisition channels dead)
+- LEARN: REJECTED installer DLL search-order regression @ WhaleSetup.exe: Confidence 50, below 60 self-imposed threshold; binary blocked on all passive channels (cloudfr
+- LEARN: REJECTED @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` resolve `No answer` (127.0.0.53) — desktop `.deb` path confirmed dead; resolver-
+- LEARN: REJECTED @ `static-whale.pstatic.net/WhaleSetup.exe`: HTTP 404 (server: Apache) — Naver pstatic CDN installer artifact confirmed dead; Naver pstatic infra exclu
+- LEARN: REJECTED @ uptodown: `whale-browser.en.uptodown.com` HTTP 404 (entire Whale app page removed; was 410 Gone) — passive WhaleSetup.exe acquisition permanently dea
+- LEARN: REJECTED @ GitHub wiki `sidebarAction` docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` HTTP 404 — wiki documentation rema
+- LEARN: CONFIRMED @ sample extension manifest (translate branch): HTTP 200 — `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins) confirmed live
+- LEARN: CONFIRMED @ sample extension background.js (translate branch): HTTP 200 — `whale.runtime.onMessage.addListener` dispatches `sidebarAction.show`/`hide`/`show2`/`
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — keywordSearch returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure g
+- LEARN: CONFIRMED @ NVD CVE-2025-69235: "Whale browser before 4.35.351.12 allows an attacker to bypass the Same-Origin Policy in a sidebar environment" — CPE `cpe:2.3:a
+- LEARN: CONFIRMED @ NVD CVE-2025-62585: "Whale browser before 4.33.325.17 allows an attacker to bypass the Content Security Policy via a specific scheme in a dual-tab e
+- LEARN: CONFIRMED @ GitHub repo: `naver/whale-browser-developers` documentation-only — `pushed_at` 2019-09-23, `updated_at` 2025-10-22, 0 releases, 1 repo in Naver org 
