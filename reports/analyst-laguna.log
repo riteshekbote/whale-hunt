@@ -25145,3 +25145,75 @@ testability: HUMAN_ONLY
 [RISK] sync: 62 — Whale-only sync prefs (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`) + `xv10`-fork + NEO_SES cookie on `/whalesync` confirmed present in v4.38.386.14; client-side KDF/key-storage is entire sync attack surface; KDF constants + master-key locality unverified (binary blocked in-sandbox); Android sync encryption churn (two re-uploads Aug 2026) suggests active attack-surface changes; AUTH confidence raised from 60→62 due to freshness of undisclosed version drift
 [RISK] browser: 82 — 6 sidebar/dual-tab CVEs in 2025 (SOP/iframe/CSP); CVE-2025-69235 fix NVD CPE omits Linux (confirmed platform gap); v4.38.386.14 is 3 minor bumps past last fix with 0 CVEs in 8 months; sample extension manifest (HTTP 200) still confirms ALL-origin `content_scripts` + unvalidated `sidebarAction.show({url})` — high-priority regression window unchanged
 [RISK] libs: 35 — Whale bundles Chromium (inherits upstream CVEs); `socket.io.slim.js` confirmed Whale-only in `resources.pak` but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk
+===== ANALYST laguna 2026-08-08 13:59:13 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+## STEP 1 — DELTA
+
+NO_DELTA — inventory, knowledge, and leads unchanged since last aggregated hypotheses (2026-08-08 13:16:20 UTC). All binary acquisition channels remain blocked in-sandbox; GitHub repo remains documentation-only; NVD still shows 0 Whale CVEs published in 2026.
+
+## STEP 2 — PRIORITIZE
+
+- [PRIO] Whale desktop sidebar/dual-tab panel v4.38.386.14 (Linux) — 7.95, atk=9 biz=10 tech=7 gate=2 cloud=4 fresh=10
+- [PRIO] Whale sync KDF + bootstrap-token envelope (desktop v4.38.386.14 / Android 3.9.14.9) — 6.60, atk=7 biz=8 tech=9 gate=3 cloud=5 fresh=7
+- [PRIO] Whale installer DLL search-order regression (CVE-2024-50583 class) — 4.35, atk=5 biz=4 tech=6 gate=1 cloud=2 fresh=3
+
+## STEP 3 — HYPOTHESES
+
+[HYP] Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux
+class: OTHER
+asset: Whale v4.38.386.14 desktop Linux sidebar (`sidebarAction.show({url})`) + dual-tab web panel
+confidence: 58
+reasoning: CVE-2025-69235 (CWE-346) NVD CPE lists only Windows/macOS — Linux absent. v4.38.386.14 is 3 minor-version bumps past the fix with 0 published CVEs. Sample extension `translate/src/sidebar-sample/manifest.json` confirms `content_scripts` match ALL origins and `background.js` calls `sidebarAction.show()` without origin validation.
+evidence_needed: Script execution or cross-origin `fetch` in sidebar/dual-tab panel on Linux; `window.opener`/`parent` readback from foreign origin; iframe sandbox escape; CSP bypass via non-http(s) scheme
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load sidebar-sample extension → `whale.sidebarAction.show({url:'https://attacker.com/exploit.html'})` → attempt cross-origin `fetch` from panel content script → test drag-drop with `use_navigation_bar:false` → check `opener`/`parent` readback. Zero requests to Naver infra.
+impact: SOP bypass / script execution in privileged browser-UI context — cross-origin cookie/DOM/CSRF-token theft; Critical if escalates to renderer code execution
+testability: HUMAN_ONLY
+
+[HYP] Sync passphrase KDF / bootstrap-token plaintext envelope
+class: AUTH
+asset: Whale sync client (`os_crypt_whale.cc`, `whale_sync_util.cc`); Local State + OS keyring (desktop), Keystore (Android 3.9.14.9); profile prefs `sync.encryption_bootstrap_token_per_account`
+confidence: 65
+reasoning: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`, `whale_need_encryption_key_forced_time`) + `xv10`-magic OSCrypt fork + custom `/whalesync` (NEO_SES cookie) confirmed present in v4.38.386.14 via prior bigpickle/laguna runs. Help Center confirms passphrase never leaves device → client-side KDF + local key store is entire attack surface. KDF iteration count + master-key storage locality still unextracted (binary blocked).
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence location + protection (keyring vs file vs Local State); whether `whale_need_encryption_key_forced_time` downgrades to stale key
+verify_steps: HUMAN_ONLY: Deliver official Whale `.deb` v4.38.386.14 via unrestricted internet (cloudfront DNS blocked; APKMirror 403; uptodown 404) → `strings`/`.rodata`/objdump on `os_crypt_whale` + `whale_sync_util` symbols → extract PBKDF2/scrypt iteration constants + key storage path → snapshot keyring + `Preferences`/`Login Data`/`Local State` pre/post encrypted-sync enable. Zero requests to Naver sync infra.
+impact: Weak KDF or device-recoverable key → local attacker or infostealer decrypts synced passwords + bookmarks + autofill → PII cascade (High)
+testability: HUMAN_ONLY
+
+[HYP] Installer DLL search-order regression (CVE-2024-50583 class)
+class: MISCONFIG
+asset: WhaleSetup.exe v4.38.386.14 (Windows installer)
+confidence: 50
+reasoning: CVE-2024-50583 (CWE-427, CVSS 6.3) fixed only in installer 3.1.0.0 — Whale-only component. 9 minor-version bumps since fix (4.35→4.38) with 0 installer-related CVEs in NVD. No installer source (repo documentation-only); current installer version unverified — DLL-load regression plausible.
+evidence_needed: Current WhaleSetup.exe VERSIONINFO ≥3.1.0.0; install-dir ACLs; DLL search-path behavior
+verify_steps: HUMAN_ONLY: Deliver official WhaleSetup.exe v4.38.386.14 via unrestricted internet → read VERSIONINFO resource → scan embedded manifest for `requestedExecutionLevel`/`loadFrom` → if version <3.1.0.0, active regression. Zero requests to Naver infra.
+impact: DLL planting → local code execution in installer context (Medium; High if LPE via privileged install)
+testability: HUMAN_ONLY
+
+## STEP 4 — SELF-CRITIQUE
+
+[PARKED] Sync refresh-token storage deviation in forked OAuth: confidence 45 → 42 — dropped. Reasoning ("forked = insecure") ≠ demonstrated plaintext storage outside `token_service`; no passive evidence; speculative.
+[PARKED] Scrapbook shared-category invite-link authorization bypass: confidence 46, feature listed as "coming soon", no active deployment evidence.
+
+[FINAL] #1: Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux (confidence 58, class OTHER, testability HUMAN_ONLY)
+[FINAL] #2: Sync passphrase KDF / bootstrap-token plaintext envelope (confidence 65, class AUTH, testability HUMAN_ONLY)
+[FINAL] #3: Installer DLL search-order / improper-permissions regression (confidence 50, class MISCONFIG, testability HUMAN_ONLY)
+
+## STEP 5 — NEXT ACTION
+
+[NEXT] HUMAN: Deliver official Whale `WhaleSetup.exe` v4.38.386.14 OR `WhaleSetup.deb` v4.38.386.14 via unrestricted internet — all passive download channels confirmed dead in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptodown 404 page removed). This single asset unblocks ALL three surviving hypotheses: (a) installer VERSIONINFO ≥3.1.0.0 check for CVE-2024-50583 regression; (b) Linux browser install for `sidebarAction.show({url})` + dual-tab SOP/CSP tests; (c) `os_crypt_whale`/`whale_sync_util` binary static analysis for KDF iteration constants + master-key storage locality. If binary is delivered, pass to `scripts/sync-issues.py` for KDF constant extraction. Zero requests to Naver infrastructure required.
+
+## STEP 6 — LEARNING
+
+[LEARN] REJECTED @ uptodown download channel: `whale-browser.en.uptodown.com` now returns HTTP 404 (entire Whale app page removed; was 410 Gone) — passive WhaleSetup.exe acquisition path is permanently dead
+[LEARN] CONFIRMED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` still resolve `No answer` (127.0.0.53) — desktop `.deb` path confirmed dead
+[LEARN] CONFIRMED @ APKMirror: Cloudflare 403 returns on all paths — Android + desktop binary acquisition blocked
+[LEARN] REJECTED @ GitHub wiki `sidebarAction` docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` still 404 — wiki documentation remains unreachable; SOP bypass attack-surface evidence rests solely on live sample extension manifest
+[LEARN] CONFIRMED @ GitHub repo activity: latest commit still `e5ee01f8` (2019-09-23T08:03:12Z); `pushed_at` 2019-09-23, `updated_at` 2025-10-22 — static analysis path confirmed dead, no new code since 2019
+[LEARN] CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — no public disclosures for v4.35.352–v4.38.386.14, confirming 8-month disclosure gap
+[LEARN] CONFIRMED @ sample extension manifest (translate branch): HTTP 200 — `content_scripts` matching `http://*/*` + `https://*/*` still live; attack surface for CVE-2025-69235 regression remains active
+
+## STEP 7 — RISK SCORE
+
+[RISK] sync: 62 — Whale-only sync prefs (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`) + `xv10`-fork + NEO_SES cookie on `/whalesync` confirmed present in v4.38.386.14; client-side KDF/key-storage is entire sync attack surface; KDF constants + master-key locality unverified (binary blocked in-sandbox); Android sync encryption churn (two re-uploads Aug 2026) suggests active attack-surface changes | browser: 82 — 6 sidebar/dual-tab CVEs in 2025 (SOP/iframe/CSP); CVE-2025-69235 fix NVD CPE omits Linux (confirmed platform gap); v4.38.386.14 is 3 minor bumps past last fix with 0 CVEs in 8 months; sample extension manifest (HTTP 200) still confirms ALL-origin `content_scripts` + unvalidated `sidebarAction.show({url})` — high-priority regression window unchanged | libs: 35 — Whale bundles Chromium (inherits upstream CVEs); `socket.io.slim.js` confirmed Whale-only in `resources.pak` but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk

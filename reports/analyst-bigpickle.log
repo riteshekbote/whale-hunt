@@ -17331,3 +17331,180 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK SCORE
 [RISK] sync: 45 | custom OSCrypt/KDF + bootstrap-token envelope confirmed present in binary, but binary analysis still blocked → real surface, unverified keys. | browser: 55 | 3–6 minor bumps past last SOP/CSP fixes with 0 CVEs, Linux never claimed in CVE-2025-69235 fix → open regression window. | libs: 35 | socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.
+===== ANALYST bigpickle 2026-08-08 13:59:13 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers" | grep -E '"pushed_at"|"updated_at"|"open_issues_count"'
+"updated_at": "2025-10-22T03:15:17Z",
+  "pushed_at": "2019-09-23T08:03:26Z",
+  "open_issues_count": 4,
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00.000&resultsPerPage=5" | head -c 2000
+(no output)
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json"
+200
+[0m
+[0m$ [0mcurl -s --max-time 25 -o /tmp/nvd.json -w "%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale&pubStartDate=2026-01-01T00:00:00.000&resultsPerPage=5"; python3 -c "import json;d=json.load(open('/tmp/nvd.json'));print('total:',d['totalResults'])"
+404
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mcurl -s --max-time 25 -o /tmp/nvd2.json -w "kwsearch=%{http_code} " "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%2Bwhale&resultsPerPage=5"; curl -s --max-time 25 -o /tmp/nvd3.json -w "plain=%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?resultsPerPage=1"; head -c 300 /tmp/nvd2.json
+kwsearch=200 plain=200
+{"resultsPerPage":0,"startIndex":0,"totalResults":0,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-08T13:57:07.287","vulnerabilities":[]}
+[0m
+[0m$ [0mcurl -s --max-time 25 -o /tmp/nvd_cpe.json -w "%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*&pubStartDate=2025-12-01T00:00:00.000&resultsPerPage=20"; python3 -c "
+import json
+d=json.load(open('/tmp/nvd_cpe.json'))
+v=d.get('vulnerabilities',[])
+print('total2025-12onward:',len(v))
+for c in v[:20]:
+    cid=c['cve']['id']; print(cid)
+    for desc in c['cve']['descriptions']:
+        if desc['lang']=='en': print('  ',desc['value'][:180])
+" 2>&1 | head -40
+404
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mcurl -s --max-time 25 -o /tmp/nvd_kw.json -w "%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%2Bwhale&pubStartDate=2024-01-01T00:00:00.000&resultsPerPage=40"; python3 -c "
+import json
+d=json.load(open('/tmp/nvd_kw.json'))
+v=d.get('vulnerabilities',[])
+print('total2024onward:',len(v))
+for c in v:
+    cid=c['cve']['id']
+    cpes=set()
+    for conf in c['cve'].get('configurations',[]):
+        for n in conf.get('nodes',[]):
+            for m in n.get('cpeMatch',[]):
+                cpes.add(m['criteria'])
+    print(cid,'|',sorted(cpes)[:3])
+"
+404
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mcurl -s --max-time 25 -o /tmp/nvd_kw.json -w "%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%2Bwhale&pubStartDate=2024-01-01T00%3A00%3A00.000%2B00%3A00&resultsPerPage=40"; python3 -c "
+import json
+d=json.load(open('/tmp/nvd_kw.json'))
+v=d.get('vulnerabilities',[])
+print('total2024onward:',len(v))
+for c in v:
+    cid=c['cve']['id']
+    cpes=set()
+    for conf in c['cve'].get('configurations',[]):
+        for n in conf.get('nodes',[]):
+            for m in n.get('cpeMatch',[]):
+                cpes.add(m['criteria'])
+    print(cid)
+    for cpe in sorted(cpes): print('   ',cpe)
+"
+404
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mcurl -s --max-time 25 -o /tmp/nvd_a.json -w "kw_plus:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=40"; python3 -c "
+import json
+d=json.load(open('/tmp/nvd_a.json'))
+v=d.get('vulnerabilities',[])
+print('total:',len(v))
+for c in v:
+    print(c['cve']['id'], c['cve'].get('published','')[:10])
+"
+kw_plus:200
+total: 2
+CVE-2018-9859 2018-06-16
+CVE-2020-9754 2022-06-27
+[0m
+[0m$ [0mpython3 -c "
+import json
+d=json.load(open('/tmp/nvd_a.json'))
+for c in d['vulnerabilities']:
+    cid=c['cve']['id']
+    for conf in c['cve'].get('configurations',[]):
+        for n in conf.get('nodes',[]):
+            for m in n.get('cpeMatch',[]):
+                print(cid, m['criteria'])
+"; curl -s --max-time 25 -o /tmp/nvd_b.json -w "cpe2026:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=cpe:2.3:a:whalebrowser:whale:&pubStartDate=2026-01-01T00:00:00.000%2B00%3A00&resultsPerPage=10"; python3 -c "import json;print(json.load(open('/tmp/nvd_b.json')).get('totalResults'))" 2>/dev/null
+CVE-2018-9859 cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*
+CVE-2020-9754 cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*
+cpe2026:404
+[0m
+[0m$ [0mcurl -s --max-time 25 -o /tmp/nvd_c.json -w "cpe_all:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=cpe%3A2.3%3Aa%3Anavercorp%3Awhale%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A&resultsPerPage=50"; python3 -c "
+import json
+d=json.load(open('/tmp/nvd_c.json'))
+v=d.get('vulnerabilities',[])
+print('total_cpe:',len(v))
+for c in sorted(v,key=lambda x:x['cve']['published']):
+    print(c['cve']['id'], c['cve']['published'][:10])
+" 2>&1 | head -30
+cpe_all:404
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mcurl -s --max-time 25 -o /tmp/nvd_d.json -w "cpe_short:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=cpe%3A2.3%3Aa%3Anavercorp%3Awhale%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A&resultsPerPage=1"; cat /tmp/nvd_d.json | head -c 300; echo; curl -s --max-time 25 -o /tmp/nvd_e.json -w "cvds:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*&resultsPerPage=1"; head -c 300 /tmp/nvd_e.json failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
