@@ -67,3 +67,13 @@
 
 - 1 lead(s) marked VALID at 2026-08-08 20:15:55 UTC
   - | Q6 Not rejected? | YES — SOP bypass is a valid vulnerability class |
+
+- 13 lead(s) triaged at 2026-08-08 21:18 UTC — **0 VALID / 4 INVALID / 9 HOLD**
+  - Full 7Q analysis per lead; uniform killer is Q4 (no passive proof) + Q7 (no evidence)
+  - 5 models de-duplicated to 13 distinct lead categories
+  - 4 INVALID: Lead 03 (dupes CVE-2022-24072/2024-40618), Lead 08 (no_doom + below threshold), Lead 11 (speculative)
+  - 9 HOLD: all require binary artifact absent from sandbox or HUMAN_ONLY/AUTH_HELPED verification
+  - See `triage/run-2026-08-08-21-18.md` for full analysis
+
+- 1 lead(s) marked VALID at 2026-08-08 21:22:07 UTC
+  - VALID:    0
