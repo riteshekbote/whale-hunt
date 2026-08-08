@@ -663,3 +663,32 @@ testability: AUTH_HELPED
 [RISK] sync: 56 — Android 3.9.14.9 now SHA-pinned and latest (3.9.14.5→.9 in 6 weeks, two re-uploads), sync encryption still only ~15 months old with Whale-only prefs keys (`sync.encryption_*`, `_migration_done`) evidencing custom OSCrypt/migration deviations; but in-sandbox binary access is egress-blocked, so the KDF/envelope design stays unverifiable → moderate-high exposure, unchanged in kind
 [RISK] browser: 78 — 6 confirmed 2025 CVEs in Whale-only sidebar/dual-tab envs (SOP CWE-346, iframe sandbox, CSP CWE-358); v4.38.386.14 is 3 minor bumps past last CVE-fix with 0 CVEs in the 6-month gap; DevTools-in-sidebar (v4.38.386.12) added attack surface
 [RISK] libs: 30 — no Whale-only third-party manifests or version lists public; repo documentation-only; inventory impossible without binary access; low visibility, moderate inherent risk
+## 2026-08-08 05:55:19 UTC [sync] (model bigpickle)
+[HYP] Whale sync passphrase KDF + bootstrap-token envelope, official v4.38.386.14
+class: AUTH
+asset: whale binary (os_crypt_whale.cc / whale_sync_util.cc); key in Local State/keyring
+confidence: 65
+reasoning: Official latest binary contains Whale-only os_crypt_whale.cc + `sync.encryption_bootstrap_token[_per_account]` + migration_done + `whale_need_encryption_key_forced_time` prefs; "peanuts" fallback absent → custom envelope; UMA proves client-side token encryption. KDF/iteration params not yet extracted (stripped binary).
+evidence_needed: PBKDF2/scrypt algorithm + iteration count for passphrase→bootstrap-token key; persistence location of derived key on Linux (keyring vs file vs Local State); brute-force resistance of envelope.
+verify_steps: PASSIVE: string-guided objdump of os_crypt_whale.cc/whale_sync_util.cc code regions, .rodata scan for iteration constants vs Chromium nigori defaults. AUTH_HELPED: authorized Linux login, diff Local State/keyring pre/post sync to observe token envelope + key persistence. Zero requests to sync backend.
+impact: Weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords+bookmarks → PII cascade; High
+testability: AUTH_HELPED
+[HYP] Sidebar/dual-tab boundary variant post-CVE-2025-69235, latest desktop
+class: OTHER
+asset: Latest desktop Whale (>=4.35.351.12) sidebar + dual-tab web panels
+confidence: 45
+reasoning: 6 confirmed 2025 CVEs in Whale-only sidebar/dual-tab envs (SOP CWE-346, iframe sandbox, CSP CWE-358), each fixed a release later; v4.38.386.14 is 3 minor bumps past last fix with 0 CVEs in the gap; DevTools-in-sidebar (v4.38.386.12) expanded surface.
+evidence_needed: crafted HTML escaping iframe sandbox / bypassing SOP/CSP in sidebar or dual-tab web panel on v4.38.386.14
+verify_steps: AUTH_HELPED: install latest desktop Whale, open crafted HTML in sidebar and dual-tab web panels, test sandbox escape / cross-origin read / CSP bypass. No server interaction.
+impact: sandbox escape / SOP bypass from webpage → arbitrary script or cross-origin data theft in browser UI; Critical if escalates to renderer
+testability: AUTH_HELPED
+[HYP] Sync auth refresh-token storage deviation in Whale client
+class: AUTH
+asset: whale binary — whale_sync_auth_manager.cc, naver_access_token_fetcher.cc, whale_refresh_token_revoker.cc; .whaleon.us tokens
+confidence: 45
+reasoning: Whale forks stock OAuth components (whale_sync_auth_manager.cc, access_token_fetcher_immediate_refresh_token.cc, whale_refresh_token_revoker.cc) — custom token lifecycle code is the deviation; such forks historically mis-store tokens (plaintext prefs/cookies).
+evidence_needed: whether Whale refresh/access tokens persist outside Chromium token_service (plaintext prefs/cookies) and their scope
+verify_steps: PASSIVE: strings around whale auth manager + token-service prefs, look for plaintext token/cookie key names. AUTH_HELPED: authorized login, inspect Preferences/Login Data/Secure Preferences for whale token keys. Zero requests to naver infra.
+impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
+testability: AUTH_HELPED
+[NEXT] PROBE: continue PASSIVE static analysis of the official binary — (1) scan `locales/en-US.pak` + `resources.pak` for the sync/passphrase UI strings (may document KDF/iteration); (2) objdump the `.rodata` region xref'ing `sync.encryption_bootstrap_token_per_account` to extract the OSCrypt-v10 key-wrap/KDF constants (PBKDF2 iterations / scrypt N,r,p); (3) verify SHA256 of the acquired deb against CDN `Last-Modified` metadata. Zero requests to Naver sync infra.

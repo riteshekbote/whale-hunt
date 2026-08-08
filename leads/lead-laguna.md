@@ -999,3 +999,4 @@ verify_steps: PASSIVE: acquire latest desktop installer and Android XAPK 3.9.14.
 impact: Weak KDF or plaintext-adjacent key/passphrase storage → local attacker or infostealer decrypts synced bookmarks+site passwords → PII cascade; High
 testability: AUTH_HELPED
 [HYP] Security-boundary enforcement in Whale-only sidebar/dual-tab environments on latest desktop (variant hunting)
+## 2026-08-08 06:06:47 UTC [browser] (model laguna)

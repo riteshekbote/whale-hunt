@@ -8164,3 +8164,962 @@ STEP 7 — RISK SCORE
 [RISK] sync: 56 — Android 3.9.14.9 now SHA-pinned and latest (3.9.14.5→.9 in 6 weeks, two re-uploads), sync encryption still only ~15 months old with Whale-only prefs keys (`sync.encryption_*`, `_migration_done`) evidencing custom OSCrypt/migration deviations; but in-sandbox binary access is egress-blocked, so the KDF/envelope design stays unverifiable → moderate-high exposure, unchanged in kind
 [RISK] browser: 78 — 6 confirmed 2025 CVEs in Whale-only sidebar/dual-tab envs (SOP CWE-346, iframe sandbox, CSP CWE-358); v4.38.386.14 is 3 minor bumps past last CVE-fix with 0 CVEs in the 6-month gap; DevTools-in-sidebar (v4.38.386.12) added attack surface
 [RISK] libs: 30 — no Whale-only third-party manifests or version lists public; repo documentation-only; inventory impossible without binary access; low visibility, moderate inherent risk
+===== ANALYST bigpickle 2026-08-08 06:06:56 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mdate -u
+Sat Aug  8 05:49:46 UTC 2026
+[0m
+[0m$ [0mls -la /tmp/opencode/ 2>/dev/null | head -30
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  8 05:49 .
+drwxrwxrwt 15 root   root   12288 Aug  8 05:49 ..
+[0m
+Executing my pending NEXT action — uptodown session-signed download probe for the pinned Android XAPK.
+[0m$ [0mcurl -c /tmp/opencode/utd.jar -s -o /tmp/opencode/utd_dl_page.html -w "%{http_code} %{size_download}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36" "https://naver-whale-browser.en.uptodown.com/android/download"
+200 155246
+[0m
+[0m$ [0mrg -o 'data-url="[^"]+"' /tmp/opencode/utd_dl_page.html | head -3; echo "---"; rg -o 'https://dw[0-9]*\.uptodown\.com/[^"]+' /tmp/opencode/utd_dl_page.html | head -3
+/bin/bash: line 1: rg: command not found
+---
+/bin/bash: line 1: rg: command not found
+[0m
+Page fetched (200, 155KB). Extracting the session-bound download token.
+[0m✱ [0mGrep "data-url="[^"]+""[90m in /tmp/opencode/utd_dl_page.html · 12 matches[0m
+Token extracted. Attempting the direct dw.uptodown.com GET with session cookie + Referer.
+[0m
+[0m$ [0mTOKEN="7E5qpgTRXsZea4vGMCQi1oqQY8l77Cn_bd14ndCn0gDqI7Lxm4UlXcuf8HfBJP5UHdksQlAyKd-gLYViTjUawqmppkvEnveept1xA6vANJSiXr3_4jvo9UuSnLcpHqNc/VN1HYwYeCGHbHpeOd7JrCmdVRodOExWqwV96cN3tDbt6qIvCdmB-S5evPEMOfb9xCPPry0lNV4TvYWUNmRluQuX4UewWtuxxBmzWtglBuWIT1jUDrNAmy57Un-vi-m5I/METzRAPWZfSR8sTf8HL4Ft3MY09goO1ag0l2-vrIR2aIsjFcC0WsKDNCQhgeQ_czRCWsrwiZWa0YkBiVx8BKhmGxG3MVB4koNmpnmtn92os=/"; curl -b /tmp/opencode/utd.jar -c /tmp/opencode/utd.jar -s -L -o /tmp/opencode/whale_3.9.14.9.xapk -w "%{http_code} %{size_download} %{url_effective}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36" -H "Referer: https://naver-whale-browser.en.uptodown.com/android/download" "https://dw.uptodown.com/dwn/${TOKEN}"
+200 15275646 https://dw.uptodown.net/dwn/7E5qpgTRXsZea4vGMCQi1oqQY8l77Cn_bd14ndCn0gDqI7Lxm4UlXcuf8HfBJP5UHdksQlAyKd-gLYViTjUawqmppkvEnveept1xA6vANJSiXr3_4jvo9UuSnLcpHqNc/VN1HYwYeCGHbHpeOd7JrCmdVRodOExWqwV96cN3tDbt6qIvCdmB-S5evPEMOfb9xCPPry0lNV4TvYWUNmRluQuX4UewWtuxxBmzWtglBuWIT1jUDrNAmy57Un-vi-m5I/METzRAPWZfSR8sTf8HL4Ft3MY09goO1ag0l2-vrIR2aIsjFcC0WsKDNCQhgeQ_czRCWsrwiZWa0YkBiVx8BKhmGxG3MVB4koNmpnmtn92os=/uptodown-com.naver.whale.apk
+[0m
+Download succeeded (15.3MB APK, not the 166MB XAPK — different variant). Verifying it's a real Whale APK and checking its sync-relevant contents.
+[0m$ [0mfile /tmp/opencode/whale_3.9.14.9.xapk; sha256sum /tmp/opencode/whale_3.9.14.9.xapk; unzip -l /tmp/opencode/whale_3.9.14.9.xapk 2>/dev/null | head -15
+/tmp/opencode/whale_3.9.14.9.xapk: Android package (APK), with gradle app-metadata.properties
+abde6f83ed936585bbf28a1ce750c6954c28fc07469fb33014ea049e39f747b4  /tmp/opencode/whale_3.9.14.9.xapk
+Archive:  /tmp/opencode/whale_3.9.14.9.xapk
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+       56  1981-01-01 01:01   META-INF/com/android/build/gradle/app-metadata.properties
+      120  1981-01-01 01:01   META-INF/version-control-info.textproto
+    11777  1981-01-01 01:01   assets/dexopt/baseline.prof
+     1299  1981-01-01 01:01   assets/dexopt/baseline.profm
+  8855536  1981-01-01 01:01   classes.dex
+   583544  1981-01-01 01:01   classes2.dex
+  7585104  1981-01-01 01:01   classes3.dex
+  7339780  1981-01-01 01:01   classes4.dex
+    10096  1981-01-01 01:01   lib/arm64-v8a/libandroidx.graphics.path.so
+     7112  1981-01-01 01:01   lib/arm64-v8a/libdatastore_shared_counter.so
+     4584  1981-01-01 01:01   lib/arm64-v8a/libuptodown-native.so
+     4272  1981-01-01 01:01   lib/arm64-v8a/libutd-services-native.so
+[0m
+[0m$ [0mwhich aapt apktool jadx d2j-dex2jar baksmali 2>/dev/null; ls /usr/bin | rg -i 'apk|dex|smali' 2>/dev/null; echo "---"; python3 -c "import zipfile; z=zipfile.ZipFile('/tmp/opencode/whale_3.9.14.9.xapk'); print([n for n in z.namelist() if 'META-INF/' in n and (n.endswith('.RSA') or n.endswith('.DSA') or n.endswith('.EC') or n.endswith('MF'))])"
+---
+['META-INF/CERT.RSA', 'META-INF/MANIFEST.MF']
+[0m
+Real APK but **uptodown-repackaged** (contains `libuptodown-native.so`, `libutd-services-native.so` — not a clean Naver build). Checking authenticity (signing cert, version) before trusting any strings analysis.
+[0m$ [0mcd /tmp/opencode && python3 -c "import zipfile; zipfile.ZipFile('whale_3.9.14.9.xapk').extract('META-INF/CERT.RSA')" && (keytool -printcert -file META-INF/CERT.RSA 2>/dev/null | head -25 || openssl pkcs7 -inform DER -in META-INF/CERT.RSA -print_certs -noout 2>/dev/null; openssl pkcs7 -inform DER -in META-INF/CERT.RSA -print_certs 2>/dev/null | openssl x509 -noout -subject -issuer -dates 2>/dev/null)
+Owner: CN=Uptodown Technologies SL, OU=Uptodown, O=Uptodown, L=Málaga, ST=Málaga, C=ES
+Issuer: CN=Uptodown Technologies SL, OU=Uptodown, O=Uptodown, L=Málaga, ST=Málaga, C=ES
+Serial number: 4976173c
+Valid from: Thu May 02 15:16:15 UTC 2024 until: Mon Sep 18 15:16:15 UTC 2051
+Certificate fingerprints:
+	 SHA1: 4B:64:55:9B:C3:58:29:FD:42:7B:F6:59:85:FF:DD:9A:88:90:9F:C4
+	 SHA256: 82:2B:9C:A1:2B:53:4E:BC:F4:26:63:22:21:D9:51:BF:C6:0E:B0:8F:9F:0C:F2:83:9C:32:1B:06:85:C2:E8:A4
+Signature algorithm name: SHA256withRSA
+Subject Public Key Algorithm: 2048-bit RSA key
+Version: 3
+
+Extensions: 
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: EC C9 66 1D 45 D1 CB EE   6B B5 19 22 6D F8 EA 6A  ..f.E...k.."m..j
+0010: 3D E2 C0 23                                        =..#
+]
+]
+
+subject=C = ES, ST = M\C3\A1laga, L = M\C3\A1laga, O = Uptodown, OU = Uptodown, CN = Uptodown Technologies SL
+issuer=C = ES, ST = M\C3\A1laga, L = M\C3\A1laga, O = Uptodown, OU = Uptodown, CN = Uptodown Technologies SL
+notBefore=May  2 15:16:15 2024 GMT
+notAfter=Sep 18 15:16:15 2051 GMT
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "import zipfile; zipfile.ZipFile('whale_3.9.14.9.xapk').extract('META-INF/com/android/build/gradle/app-metadata.properties'); print(open('META-INF/com/android/build/gradle/app-metadata.properties').read())"; echo "---AAPT-BINARY-STRING---"; python3 -c "
+import zipfile
+z=zipfile.ZipFile('whale_3.9.14.9.xapk')
+m=z.read('AndroidManifest.xml')
+import re
+for m_ in re.findall(rb'[ -~]{6,}', m):
+    s=m_.decode('latin1')
+    if any(k in s for k in ['version','com.naver.whale','3.9.','applicationId','usesCleartext']): print(s)
+" | head -20
+appMetadataVersion=1.1
+androidGradlePluginVersion=9.0.1
+
+---AAPT-BINARY-STRING---
+[0m
+**Critical finding:** the uptodown APK is **signed by "Uptodown Technologies SL"** (resigned + injected `libuptodown-native.so`) — this is a **repackaged, non-authentic build**, not the official Naver binary. Checking which upstream version it repackaged, then assessing the dex contents.
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import zipfile,re
+z=zipfile.ZipFile('whale_3.9.14.9.xapk')
+m=z.read('AndroidManifest.xml')
+strings=re.findall(rb'[ -~]{5,}', m)
+for s in strings:
+    d=s.decode('latin1')
+    if re.search(r'\d+\.\d+\.\d+', d) or 'naver' in d.lower(): print(d)
+" | head -25
+(no output)
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "import zipfile; zipfile.ZipFile('whale_3.9.14.9.xapk').extractall('apk', filter=lambda info, name: name.endswith('.dex') if False else True)" 2>/dev/null; ls -la /tmp/opencode/apk/*.dex 2>/dev/null; python3 -c "
+import zipfile
+z=zipfile.ZipFile('whale_3.9.14.9.xapk')
+for n in z.namelist():
+    if n.endswith('.dex') or n.endswith('.so'):
+        i=z.getinfo(n)
+        print(i.file_size, n)
+"
+8855536 classes.dex
+583544 classes2.dex
+7585104 classes3.dex
+7339780 classes4.dex
+10096 lib/arm64-v8a/libandroidx.graphics.path.so
+7112 lib/arm64-v8a/libdatastore_shared_counter.so
+4584 lib/arm64-v8a/libuptodown-native.so
+4272 lib/arm64-v8a/libutd-services-native.so
+7252 lib/armeabi-v7a/libandroidx.graphics.path.so
+4416 lib/armeabi-v7a/libdatastore_shared_counter.so
+3324 lib/armeabi-v7a/libuptodown-native.so
+3112 lib/armeabi-v7a/libutd-services-native.so
+9284 lib/x86/libandroidx.graphics.path.so
+5148 lib/x86/libdatastore_shared_counter.so
+3640 lib/x86/libuptodown-native.so
+3236 lib/x86/libutd-services-native.so
+10760 lib/x86_64/libandroidx.graphics.path.so
+6224 lib/x86_64/libdatastore_shared_counter.so
+4584 lib/x86_64/libuptodown-native.so
+4288 lib/x86_64/libutd-services-native.so
+[0m
+UTF-16 encoded strings. Extracting dex files to check whether Whale sync code survives the repackage.
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import zipfile
+z=zipfile.ZipFile('whale_3.9.14.9.xapk')
+out=b''
+for n in ['classes.dex','classes2.dex','classes3.dex','classes4.dex']:
+    out += z.read(n)
+open('all.dex','wb').write(out)
+print(len(out))
+" && python3 -c "
+data=open('all.dex','rb').read()
+import re
+kws=[b'passphrase',b'PBKDF2',b'scrypt',b'bootstrap_token',b'EncryptedSharedPreferences',b'whale_need_encryption_key',b'sync.encryption',b'os_crypt',b'keystore']
+for k in kws:
+    print(k.decode(), data.count(k))
+"
+24363964
+passphrase 0
+PBKDF2 0
+scrypt 9
+bootstrap_token 0
+EncryptedSharedPreferences 0
+whale_need_encryption_key 0
+sync.encryption 0
+os_crypt 0
+keystore 2
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+data=open('all.dex','rb').read()
+i=0
+while True:
+    i=data.find(b'scrypt', i)
+    if i<0: break
+    print(repr(data[max(0,i-80):i+40]))
+    i+=6
+"
+b'change received registered\x00/Connectivity changed. Starting background sync.\x00\tConscrypt\x00\x1aConsent generated from Tcf\x00\x1fCons'
+b'rnal/publicsuffix/PublicSuffixDatabase;\x00\x04Long\x00\x17Looper must not be null\x00\x19Lorg/conscrypt/Conscrypt;\x00\x1fLorg/conscrypt/OpenSS'
+b'csuffix/PublicSuffixDatabase;\x00\x04Long\x00\x17Looper must not be null\x00\x19Lorg/conscrypt/Conscrypt;\x00\x1fLorg/conscrypt/OpenSSLProvider;'
+b'fixDatabase;\x00\x04Long\x00\x17Looper must not be null\x00\x19Lorg/conscrypt/Conscrypt;\x00\x1fLorg/conscrypt/OpenSSLProvider;\x00\x14Lorg/json/JSONA'
+b's\x00"com.android.browser.application_id\x00\x14com.android.contacts\x00+com.android.org.conscrypt.SSLParametersImpl\x00\x13com.android.ve'
+b'ion_type\x00\x11connection_type=?\x00\x0bconnections\x00\x0cconnectivity\x00\x13connectivityManager\x00\tconscrypt\x00\rconsentBanner\x00\x0cconsentLabel\x00\x0fcon'
+b'Enabled\x00\x0cisCompressed\x00\x0cisConfigured\x00\x0bisConnected\x00\x17isConnectedOrConnecting\x00\x0bisConscrypt\x00\x07isConst\x00\risConstrained\x00\nisConsum'
+b'ache.harmony.xnet.provider.jsse.SSLParametersImpl\x00\x14org.chromium.webapk.\x00#org.conscrypt.ConscryptEngineSocket\x00\x1borg.eclips'
+b'ny.xnet.provider.jsse.SSLParametersImpl\x00\x14org.chromium.webapk.\x00#org.conscrypt.ConscryptEngineSocket\x00\x1borg.eclipse.jetty.al'
+[0m
+All 9 `scrypt` matches are inside "Conscrypt" — zero real KDF usage. The repackaged build is unusable for authentic analysis (uptodown-resigned, no `sync.encryption_*`/`bootstrap_token`/`passphrase` strings). One more passive probe: the official desktop installer path, which would unblock the highest-priority lead.
+[0m$ [0mcurl -s -o /tmp/opencode/dl_page.html -w "%{http_code} %{size_download} %{url_effective}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36" -H "Accept-Language: en-US,en;q=0.9" "https://whale.naver.com/download/"
+200 6335 https://whale.naver.com/download/
+[0m
+[0m✱ [0mGrep "(installer|download|setup|\.exe|href)"[90m in /tmp/opencode/dl_page.html · 100 matches[0m
+The page is a JS SPA; `installer-whale.pstatic.net` is the installer CDN. Searching for the actual installer URL pattern in the page and its JS bundle.
+[0m
+[0m$ [0mcd /tmp/opencode && grep -oE 'https://[a-z0-9.-]*whale[a-z0-9.-]*/[^"'"'"' ]*' dl_page.html | sort -u | head -20; echo "---JS---"; curl -s -o dl_js.js -w "%{http_code} %{size_download}\n" -A "Mozilla/5.0" "https://shared-whale.pstatic.net/home2/assets/index-cFWAVrkk.css" 2>/dev/null; echo "--- exe patterns in html ---"; grep -oE '"[^"]*\.(exe|dmg|deb|rpm)"' dl_page.html | head
+https://shared-whale.pstatic.net/favicon/icon.png
+https://shared-whale.pstatic.net/favicon/icon180.png
+https://shared-whale.pstatic.net/favicon/icon256.png
+https://shared-whale.pstatic.net/favicon/icon512.png
+https://shared-whale.pstatic.net/home2/assets/hero-bg-B6qML11p.png
+https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js
+https://shared-whale.pstatic.net/home2/assets/index-cFWAVrkk.css
+https://whale.naver.com/en/download/
+https://whale.naver.com/ko/download/
+https://whale.naver.com/og/og_image_rectangle.png
+---JS---
+200 125148
+--- exe patterns in html ---
+[0m
+[0m$ [0mcd /tmp/opencode && curl -s -o dl_main.js -w "%{http_code} %{size_download}\n" -A "Mozilla/5.0" "https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js"; grep -oE 'https://[a-zA-Z0-9._/-]*installer[a-zA-Z0-9._/-]*|installer[^"'"'"' ]*\.(exe|dmg|deb|rpm)|/downloads/[^"'"'"' ]*' dl_main.js | sort -u | head -20
+200 840257
+https://installer-whale.pstatic.net/downloads/banner/
+https://installer-whale.pstatic.net/downloads/beta/installers/NaverWhaleBeta.dmg
+https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+https://installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg
+https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupARM64.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX86.exe
+[0m
+Found the **official Naver installer CDN** (`installer-whale.pstatic.net`) — this is the authentic distribution channel, solving the authenticity gate for desktop. Probing reachability of the Linux `.deb` (easiest to statically extract) and Windows x64 exe.
+[0m$ [0mfor u in "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" "https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe"; do curl -s -I -o /dev/null -w "%{http_code} %{size_download} %{url_effective}\n" -A "Mozilla/5.0 (X11; Linux x86_64)" "$u"; done
+200 0 https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb
+200 0 https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe
+[0m
+Both reachable. Downloading the official Linux `.deb` for authentic static analysis of the sync module.
+[0m$ [0mcd /tmp/opencode && curl -s -o whale.deb -w "%{http_code} %{size_download} %{time_total}s\n" -A "Mozilla/5.0 (X11; Linux x86_64)" "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb"
+200 164163916 7.053305s
+[0m
+Official 164MB deb acquired. Extracting and checking version + sync-related binaries.
+[0m$ [0mcd /tmp/opencode && ar x whale.deb && ls -la && tar xf data.tar.* 2>/dev/null && ls opt/naver/whale/ 2>/dev/null | head -30
+total 360492
+drwxr-xr-x  3 runner runner      4096 Aug  8 05:51 .
+drwxrwxrwt 16 root   root       12288 Aug  8 05:50 ..
+drwxr-xr-x  3 runner runner      4096 Aug  8 05:50 META-INF
+-rw-r--r--  1 runner runner  24363964 Aug  8 05:50 all.dex
+-rw-r--r--  1 runner runner     10468 Aug  8 05:51 control.tar.xz
+-rw-r--r--  1 runner runner 164153256 Aug  8 05:51 data.tar.xz
+-rw-r--r--  1 runner runner         4 Aug  8 05:51 debian-binary
+-rw-r--r--  1 runner runner    125148 Aug  8 05:51 dl_js.js
+-rw-r--r--  1 runner runner    840257 Aug  8 05:51 dl_main.js
+-rw-r--r--  1 runner runner      6335 Aug  8 05:51 dl_page.html
+-rw-r--r--  1 runner runner       233 Aug  8 05:50 utd.jar
+-rw-r--r--  1 runner runner    155246 Aug  8 05:49 utd_dl_page.html
+-rw-r--r--  1 runner runner 164163916 Aug  8 05:51 whale.deb
+-rw-r--r--  1 runner runner  15275646 Aug  8 05:50 whale_3.9.14.9.xapk
+CHROME_VERSION_EXTRA
+MEIPreload
+PrivacySandboxAttestationsPreloaded
+WidevineCdm
+chrome-management-service
+chrome_crashpad_handler
+cron
+default-app-block
+icudtl.dat
+libEGL.so
+libGLESv2.so
+libqt5_shim.so
+libqt6_shim.so
+libvk_swiftshader.so
+libvulkan.so.1
+locales
+naver-whale
+product_logo_128.png
+product_logo_16.png
+product_logo_24.png
+product_logo_256.png
+product_logo_32.png
+product_logo_48.png
+product_logo_64.png
+resources
+resources.pak
+v8_context_snapshot.bin
+vk_swiftshader_icd.json
+whale
+whale-sandbox
+[0m
+[0m$ [0mcd /tmp/opencode && cat opt/naver/whale/CHROME_VERSION_EXTRA; echo; tar xf control.tar.xz && cat control | rg -i '^(Package|Version|Architecture)'; echo "---version file---"; find opt -iname '*version*' 2>/dev/null | head; echo "---binary size---"; ls -la opt/naver/whale/whale
+stable
+
+---version file---
+/bin/bash: line 1: rg: command not found
+opt/naver/whale/CHROME_VERSION_EXTRA
+---binary size---
+-rwxr-xr-x 1 runner runner 319511768 Jun 24 09:34 opt/naver/whale/whale
+[0m
+Official binary extracted. Checking version and scanning the main `whale` binary for sync-crypto strings.
+[0m$ [0mcd /tmp/opencode && grep -m1 -i '^Version:' control; echo "---"; strings opt/naver/whale/whale 2>/dev/null | grep -iE 'sync.encryption|bootstrap_token|whale_need_encryption_key|_migration_done' | sort -u | head -20
+Version: 4.38.386.14-1
+---
+DEPRECATED_BOOTSTRAP_TOKEN_UPDATED
+OSCrypt.Async.EncryptionFallbackToSync
+sync.encryption_bootstrap_token
+sync.encryption_bootstrap_token_per_account
+sync.encryption_bootstrap_token_per_account_migration_done
+sync.passwords_per_account_pref_migration_done
+sync.whale_need_encryption_key_forced_time
+user_experience_metrics.consent_migration_done
+[0m
+**Breakthrough:** official v4.38.386.14 binary confirms Whale-only sync-crypto strings (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`, `OSCrypt.Async.EncryptionFallbackToSync`). Digging into the KDF and key handling.
+[0m$ [0mcd /tmp/opencode && strings opt/naver/whale/whale 2>/dev/null | grep -iE '^(PBKDF2|scrypt|SCRYPT|bcrypt|argon)' | sort -u | head; echo "---kdf funcs---"; strings opt/naver/whale/whale 2>/dev/null | grep -iE 'derive.*key|key.*derive|GetKey|OSCrypt|bootstrap' | grep -ivE 'keyboard|monkey|tokenizer' | sort -u | head -40
+Argon chipset
+Argon chipset flash
+Argonaut Games Video
+PBKDF2
+PBKDF2 requires iterations > 0
+Pbkdf2
+Pbkdf2HmacSha1
+Pbkdf2Params
+Scrypt
+Scrypt8192
+---kdf funcs---
+(Bootstrapper)
+../../ipc/ipc_mojo_bootstrap.cc
+.ReencryptedWithAsyncOSCrypt
+AesDerivedKeyParams
+Bootstrapping
+DEPRECATED_BOOTSTRAP_TOKEN_UPDATED
+DidBootstrapDatabase
+DidGetBootstrapFlag
+DidGetStorageKeysForBootstrap
+DidSetDatabaseBootstrapped
+DoDeriveKey
+DoDeriveKeyReply
+EcdhKeyDeriveParams
+EnableBootstrapIPRandomizationForDoh
+Exception thrown during bootstrapping
+Failed to GetKeyGeneratorCurrentNumber
+Failed to decrypt the response with derived AEAD key and nonce.
+Failed to derive pesudorandom key from salt and secret.
+Failed to initialize AEAD context with derived key.
+GetKey
+GetKey Step Failed
+GetKeyedProperty
+GetKeyedPropertyExtraWideHandler
+GetKeyedPropertyHandler
+GetKeyedPropertyWideHandler
+GetKeys
+GetKeysWithValueStore
+GetKeywords
+IDBIndex::getKey
+IDBIndex::getKeyRequestSetup
+IDBObjectStore::getKey
+IDBObjectStore::getKeyRequestSetup
+IO_BOOTSTRAP_TQ
+IPC::mojom::Bootstrap [primary] MessageHeaderValidator
+IPC::mojom::Bootstrap [primary] PipeControlMessageHandler
+IsBucketsBootstrapped
+MaybeBootstrapDatabase
+OSCrypt did not initialize a backend.
+OSCrypt found more than one encryption keys.
+OSCrypt generated a new password.
+[0m
+[0m$ [0mcd /tmp/opencode && strings opt/naver/whale/whale 2>/dev/null | grep -iE 'peanuts|hardcoded' | sort -u | head; echo "---sync hostnames---"; strings opt/naver/whale/whale 2>/dev/null | grep -oE '[a-z0-9.-]*\.(naver\.com|pstatic\.net|navercorp\.com)[a-z0-9./_-]*' | grep -iE 'sync|whale' | sort -u | head -20
+Permissions.AIv4.UseHardcodedPredictionThresholds
+ViewportHardcodedWidth
+---sync hostnames---
+.whale.naver.com
+.whale.naver.com/
+.whaleon.naver.com/
+alpha-enterprise.whale.naver.com
+alpha-enterprise.whale.naver.com/devicemanagement/data/api
+alpha-update.whale.naver.com
+api.scopic.naver.com/whale
+api.sec.whale.naver.com
+api.whale.naver.com/v1/membership
+api.whale.naver.com/whalesync
+api.whale.naver.com/whalesync/whalesync
+api.whaleon.naver.com
+apis.naver.com/whale-papago/papago_public/n2mt/translate/bulk
+apis.naver.com/whale/belli/
+apis.naver.com/whale/labsapi/tts/make
+apis.naver.com/whale/naver_keep/
+apis.naver.com/whale/scrapbook-whalebrowser/
+apis.naver.com/whale/whale
+apis.naver.com/whale/whale/get
+apis.naver.com/whale/whale/seed
+[0m
+Sync backend endpoints identified (`api.whale.naver.com/whalesync`, `api.whaleon.naver.com`). Now hunting the passphrase KDF — iteration counts and derived-key storage prefs.
+[0m$ [0mcd /tmp/opencode && strings opt/naver/whale/whale 2>/dev/null | grep -iE 'sync.*key|key.*sync|encryption_key|passphrase|derived' | grep -ivE 'keyboard|monkey|token|IDB|IndexedDB' | sort -u | head -40
+<div id="accelerationthrough the Hall of Famedescriptionstranslationsinterference type='text/recent yearsin the worldvery popular{background:traditional some of the connected toexploitationemergence ofconstitutionA History ofsignificant manufacturedexpectations><noscript><can be foundbecause the has not beenneighbouringwithout the added to the	<li class="instrumentalSoviet Unionacknowledgedwhich can bename for theattention toattempts to developmentsIn fact, the<li class="aimplicationssuitable formuch of the colonizationpresidentialcancelBubble Informationmost of the is describedrest of the more or lessin SeptemberIntelligencesrc="http://px; height: available tomanufacturerhuman rightslink href="/availabilityproportionaloutside the astronomicalhuman beingsname of the are found inare based onsmaller thana person whoexpansion ofarguing thatnow known asIn the earlyintermediatederived fromScandinavian</a></div>
+ but not in synced_keys_
+ derived from 
+ derived via 
+../../components/os_crypt/async/browser/freedesktop_secret_key_provider.cc
+../../components/os_crypt/async/browser/secret_portal_key_provider.cc
+../../components/os_crypt/sync/key_storage_libsecret.cc
+../../components/os_crypt/sync/key_storage_linux.cc
+../../components/os_crypt/sync/key_storage_util_linux.cc
+../../components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.cc
+../../components/sync/nigori/cross_user_sharing_keys.cc
+../../components/webauthn/core/browser/passkey_sync_bridge.cc
+.WithCustomPassphrase
+.WithoutCustomPassphrase
+</script>other languagescompared to theportions of thethe Netherlandsthe most commonbackground:url(argued that thescrolling="no" included in theNorth American the name of theinterpretationsthe traditionaldevelopment of frequently useda collection ofvery similar tosurrounding theexample of thisalign="center">would have beenimage_caption =attached to thesuggesting thatin the form of involved in theis derived fromnamed after theIntroduction torestrictions on style="width: can be used to the creation ofmost important information andresulted in thecollapse of theThis means thatelements of thewas replaced byanalysis of theinspiration forregarded as themost successfulknown as &quot;a comprehensiveHistory of the were consideredreturned to theare referred toUnsourced image>
+<derived from the <img src='http://according to the 
+AesDerivedKeyParams
+Async Tenkey
+AutofillWalletCredentialSyncBridgeUserDataKey
+CREATE TABLE history_sync_metadata (storage_key INTEGER PRIMARY KEY NOT NULL, value BLOB)
+CREATE TABLE keywords (id INTEGER PRIMARY KEY,short_name VARCHAR NOT NULL,keyword VARCHAR NOT NULL,favicon_url VARCHAR NOT NULL,url VARCHAR NOT NULL,safe_for_autoreplace INTEGER,originating_url VARCHAR,date_created INTEGER DEFAULT 0,usage_count INTEGER DEFAULT 0,input_encodings VARCHAR,suggest_url VARCHAR,prepopulate_id INTEGER DEFAULT 0,created_by_policy INTEGER DEFAULT 0,last_modified INTEGER DEFAULT 0,sync_guid VARCHAR,alternate_urls VARCHAR,image_url VARCHAR,search_url_post_params VARCHAR,suggest_url_post_params VARCHAR,image_url_post_params VARCHAR,new_tab_url VARCHAR,log INTEGER DEFAULT 0,priority INTEGER DEFAULT 0,last_visited INTEGER DEFAULT 0, created_from_play_api INTEGER DEFAULT 0, is_active INTEGER DEFAULT 0, starter_pack_id INTEGER DEFAULT 0, enforced_by_policy INTEGER DEFAULT 0, featured_by_policy INTEGER DEFAULT 0, url_hash BLOB)
+CREATE TABLE logins_temp (origin_url VARCHAR NOT NULL,action_url VARCHAR,username_element VARCHAR,username_value VARCHAR,password_element VARCHAR,password_value BLOB,submit_element VARCHAR,signon_realm VARCHAR NOT NULL,preferred INTEGER NOT NULL,date_created INTEGER NOT NULL,blacklisted_by_user INTEGER NOT NULL,scheme INTEGER NOT NULL,password_type INTEGER,times_used INTEGER,form_data BLOB,date_synced INTEGER,display_name VARCHAR,icon_url VARCHAR,federation_url VARCHAR,skip_zero_click INTEGER,generation_upload_status INTEGER,possible_username_pairs BLOB,id INTEGER PRIMARY KEY AUTOINCREMENT,date_last_used INTEGER,UNIQUE (origin_url, username_element, username_value, password_element, signon_realm))
+CREATE TABLE temp_keywords (id INTEGER PRIMARY KEY,short_name VARCHAR NOT NULL,keyword VARCHAR NOT NULL,favicon_url VARCHAR NOT NULL,url VARCHAR NOT NULL,safe_for_autoreplace INTEGER,originating_url VARCHAR,date_created INTEGER DEFAULT 0,usage_count INTEGER DEFAULT 0,input_encodings VARCHAR,suggest_url VARCHAR,prepopulate_id INTEGER DEFAULT 0,created_by_policy INTEGER DEFAULT 0,instant_url VARCHAR,last_modified INTEGER DEFAULT 0,sync_guid VARCHAR,alternate_urls VARCHAR,search_terms_replacement_key VARCHAR,image_url VARCHAR,search_url_post_params VARCHAR,suggest_url_post_params VARCHAR,instant_url_post_params VARCHAR,image_url_post_params VARCHAR,new_tab_url VARCHAR,log INTEGER DEFAULT 0,priority INTEGER DEFAULT 0)
+CREATE TABLE temp_keywords (id INTEGER PRIMARY KEY,short_name VARCHAR NOT NULL,keyword VARCHAR NOT NULL,favicon_url VARCHAR NOT NULL,url VARCHAR NOT NULL,safe_for_autoreplace INTEGER,originating_url VARCHAR,date_created INTEGER DEFAULT 0,usage_count INTEGER DEFAULT 0,input_encodings VARCHAR,suggest_url VARCHAR,prepopulate_id INTEGER DEFAULT 0,created_by_policy INTEGER DEFAULT 0,last_modified INTEGER DEFAULT 0,sync_guid VARCHAR,alternate_urls VARCHAR,image_url VARCHAR,search_url_post_params VARCHAR,suggest_url_post_params VARCHAR,image_url_post_params VARCHAR,new_tab_url VARCHAR,log INTEGER DEFAULT 0,priority INTEGER DEFAULT 0,last_visited INTEGER DEFAULT 0)
+CREATE TABLE visits(id INTEGER PRIMARY KEY AUTOINCREMENT,url INTEGER NOT NULL,visit_time INTEGER NOT NULL,from_visit INTEGER,external_referrer_url TEXT,transition INTEGER DEFAULT 0 NOT NULL,segment_id INTEGER,visit_duration INTEGER DEFAULT 0 NOT NULL,incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT NULL,opener_visit INTEGER,originator_cache_guid TEXT,originator_visit_id INTEGER,originator_from_visit INTEGER,originator_opener_visit INTEGER,is_known_to_sync BOOLEAN DEFAULT FALSE NOT NULL,consider_for_ntp_most_visited BOOLEAN DEFAULT FALSE NOT NULL,visited_link_id INTEGER DEFAULT 0 NOT NULL,app_id TEXT)
+Can not set explicit passphrase when decryption is needed.
+Chroma-derived CL
+Chroma-derived NCL
+Compose.ProactiveNudge.DerivedEngagement
+Curve25519 shared secret not derived
+DELETE FROM history_sync_metadata WHERE storage_key=?
+DERIVED
+DeleteCertAndKeyAsync
+Derived ArrayBuffer constructor created a buffer which was too small
+Derived SharedArrayBuffer constructor created a buffer which was too small
+Derived TypedArray constructor created an array which was too small
+Derived constructors may only return object or undefined
+DerivedFH
+DerivedFromApc
+Enterprise.DeviceTrust.SyncSigningKey.ClientError
+[0m
+Standard Chromium OSCrypt/Libsecret components present. Checking for the classic hardcoded Linux OSCrypt key ("peanuts") and nigori KDF parameters.
+[0m$ [0mcd /tmp/opencode && grep -c "peanuts" opt/naver/whale/whale; echo "---"; strings opt/naver/whale/whale 2>/dev/null | grep -iE 'NigoriKeyDerivation|KeyDerivationParams|kPbkdf2|Iterations|100000|scrypt_params|DerivedKeyParams' | sort -u | head -20
+0
+---
+   !!    !!"    !"##!!!!"#$$&"""!"#$%''$##"#$%&**0$##"#$&&*+01'&&%&'((,-236)''&'(()-.3478,**))***./66:;?.,,*+,,,0177;=AC0..,---.2399=?CEG4210000045;;@AFHJN6331121156<<ACGJLPR:87555559:?@DFKMPTV[;88666559:@@EFKNPUW[\A>=;;;::>?DDIKORUZ\abiB??<<<;;?@EEJLPSV[]bcjkGDCAA@??CDIINPTWZ_aggopuJGFDCCBAEFKKPRVY]adijrsx{PLKHHGFEIJOOTVZ]`ehnnvw}
+ !!!#%%%'***-1110000011
+ (iterations: 
+ num_iterations:
+(?i)((?:http|https|ftp|chrome|chrome-extension|android|rtsp|file|isolated-app)://(?:(?:(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|:)*@)?(?:\[(?:(?:\b(?:(?:[0-9a-f]){1,4}:){6}(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|::(?:(?:[0-9a-f]){1,4}:){5}(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:[0-9a-f]){1,4})?::(?:(?:[0-9a-f]){1,4}:){4}(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,1}(?:[0-9a-f]){1,4})?::(?:(?:[0-9a-f]){1,4}:){3}(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,2}(?:[0-9a-f]){1,4})?::(?:(?:[0-9a-f]){1,4}:){2}(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,3}(?:[0-9a-f]){1,4})?::(?:(?:[0-9a-f]){1,4}:)(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,4}(?:[0-9a-f]){1,4})?::(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,5}(?:[0-9a-f]){1,4})?::(?:[0-9a-f]){1,4}\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,6}(?:[0-9a-f]){1,4})?::)|v[0-9a-f]+\.(?:[-a-z0-9._~]|[!$&'()*+,;=]|:)+)\]|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])|(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=])*)(?::[0-9]*)?(?:/(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])*)*|/(?:(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])+(?:/(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])*)*)?|(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])+(?:/(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])*)*)(?:\?(?:(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])|[\x{E000}-\x{F8FF}\x{F0000}-\x{FFFFD}\x{100000}-\x{10FFFD}]|[/?])*)?(?:#(?:(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])|[/?])*)?)
+.*(?:http|https|ftp|chrome|chrome-extension|android|rtsp|file|isolated-app)://(?:(?:(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|:)*@)?(?:\[(?:(?:\b(?:(?:[0-9a-f]){1,4}:){6}(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|::(?:(?:[0-9a-f]){1,4}:){5}(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:[0-9a-f]){1,4})?::(?:(?:[0-9a-f]){1,4}:){4}(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,1}(?:[0-9a-f]){1,4})?::(?:(?:[0-9a-f]){1,4}:){3}(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,2}(?:[0-9a-f]){1,4})?::(?:(?:[0-9a-f]){1,4}:){2}(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,3}(?:[0-9a-f]){1,4})?::(?:(?:[0-9a-f]){1,4}:)(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,4}(?:[0-9a-f]){1,4})?::(?:(?:[0-9a-f]){1,4}:(?:[0-9a-f]){1,4}|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]))\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,5}(?:[0-9a-f]){1,4})?::(?:[0-9a-f]){1,4}\b|(?:\b(?:(?:[0-9a-f]){1,4}:){0,6}(?:[0-9a-f]){1,4})?::)|v[0-9a-f]+\.(?:[-a-z0-9._~]|[!$&'()*+,;=]|:)+)\]|(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])\.(?:1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])|(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=])*)(?::[0-9]*)?(?:/(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])*)*|/(?:(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])+(?:/(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])*)*)?|(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])+(?:/(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])*)*)(?:\?(?:(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])|[\x{E000}-\x{F8FF}\x{F0000}-\x{FFFFD}\x{100000}-\x{10FFFD}]|[/?])*)?(?:#(?:(?:(?:[-a-z0-9._~]|[\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}])|%[0-9a-f][0-9a-f]|[!$&'()*+,;=]|[:@])|[/?])*)?
+00000101000000Z
+040101000000Z
+061110000000Z
+061201000000Z
+090318100000Z
+090901000000Z
+100000
+1000000
+10000000
+10000000H
+100201000000Z
+110101000000Z
+141210000000Z
+160311000000Z
+[0m
+The "peanuts" hardcoded-key string is **absent** (custom deviation, as hypothesized). Checking `Scrypt8192` context and Whale-specific sync class names.
+[0m$ [0mcd /tmp/opencode && strings opt/naver/whale/whale 2>/dev/null | grep -iE 'scrypt|whale.*sync|sync.*whale|encryption_key_forced|bootstrap' | grep -ivE 'token|keyboard' | sort -u | head -30; echo "===scrypt ctx==="; python3 -c "
+data=open('opt/naver/whale/whale','rb').read()
+i=0; found=0
+while found<6:
+    i=data.find(b'Scrypt', i)
+    if i<0: break
+    print(repr(data[max(0,i-70):i+60]))
+    i+=1; found+=1
+"
+/whalesync/reset
+(Bootstrapper)
+../../ipc/ipc_mojo_bootstrap.cc
+../../third_party/boringssl/src/crypto/evp/scrypt.cc
+../../whale/components/os_crypt/sync/os_crypt_whale.cc
+../../whale/components/os_crypt/sync/wbc_wrapper_apis.cc
+../../whale/components/sync/engine/data_type_worker_whale.cc
+../../whale/components/sync/engine/net/sync_server_connection_manager_whale.cc
+../../whale/components/sync/engine/whale_sync_util.cc
+../../whale/components/sync/invalidations/session_io_handler.cc
+../../whale/components/sync/service/sync_reset_requester.cc
+../../whale/components/sync/service/sync_service_impl_whale.cc
+../../whale/components/sync/service/sync_stopped_reporter_whale.cc
+../../whale/components/sync/service/whale_sync_auth_manager.cc
+../../whale/components/sync/trusted_vault/trusted_vault_request_whale.cc
+../../whale/whale/browser/multiplay/multiplay_tab_syncer.cc
+../../whale/whale/browser/ui/views/sync/whale_bubble_sync_promo_view.h
+.ReencryptedWithAsyncOSCrypt
+/whalesync
+Bootstrapping
+DidBootstrapDatabase
+DidGetBootstrapFlag
+DidGetStorageKeysForBootstrap
+DidSetDatabaseBootstrapped
+EnableBootstrapIPRandomizationForDoh
+Exception thrown during bootstrapping
+IO_BOOTSTRAP_TQ
+IPC::mojom::Bootstrap [primary] MessageHeaderValidator
+IPC::mojom::Bootstrap [primary] PipeControlMessageHandler
+IsBucketsBootstrapped
+===scrypt ctx===
+b'rypt\x00CdmAdapter::Decrypt\x00PrivateAi.OakSessionSandboxStability.Decrypt\x00Scrypt\x00setext-genCrypt\x00.ReencryptedWithAsyncOSCrypt\x00discardc'
+b'eek capital letter beta, U+0392\x00https://crbug.com/341254292\x00a192\x00A192\x00Scrypt8192\x00webgl_or_caps_max_texture_size_limit_8192\x00The mod'
+[0m
+**Major structural finding** — source-path strings reveal the Whale-only sync tree: `os_crypt_whale.cc`, `wbc_wrapper_apis.cc`, `whale_sync_auth_manager.cc`, `sync_server_connection_manager_whale.cc`, plus `/whalesync/reset` endpoint. `Scrypt8192` is just a WebGL texture limit (ruled out). Checking if symbols survive for deeper analysis.
+[0m$ [0mcd /tmp/opencode && file opt/naver/whale/whale | cut -c1-120; which nm objdump readelf 2>/dev/null; nm opt/naver/whale/whale 2>/dev/null | grep -iE 'os_crypt_whale|bootstrap_token' | head -20
+opt/naver/whale/whale: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/l
+/usr/bin/nm
+/usr/bin/objdump
+/usr/bin/readelf
+[0m
+Binary is stripped (no symbols), but string table is rich. Extracting the full Whale-only source-path inventory and sync crypto strings.
+[0m$ [0mcd /tmp/opencode && strings opt/naver/whale/whale 2>/dev/null | grep -E '^\.\./\.\./whale/' | sed 's|../../whale/||' | sort -u | head -60
+base/nelo_log.cc
+components/ad_blocker/adblock_rule_service_storage.cc
+components/ad_blocker/adblock_rule_source_handler.cc
+components/bookmarks/browser/bookmark_model_whale.cc
+components/country_codes/country_codes_util.cc
+components/history/core/browser/history_database_whale.cc
+components/history/core/browser/top_sites_impl_whale.cc
+components/history/core/browser/whale_web_history_service.cc
+components/invalidation/impl/push_server_url_fetcher_base.cc
+components/metrics/net/nelo_log_uploader.cc
+components/ntp_wallpaper/ntp_wallpaper_database.cc
+components/ntp_wallpaper/ntp_wallpaper_service.cc
+components/omnibox/browser/site_search_provider.cc
+components/omnibox/browser/top_sites_provider.cc
+components/optimization_guide/core/delivery/whale_prediction_model_fetcher_impl.cc
+components/optimization_guide/core/model_execution/on_device_model_component_whale.cc
+components/os_crypt/sync/os_crypt_whale.cc
+components/os_crypt/sync/wbc_wrapper_apis.cc
+components/policy/core/browser/url_on_hours_policy_handler_base.cc
+components/policy/core/common/cloud/cloud_policy_store_whale.cc
+components/policy/core/common/invalidation_utils.cc
+components/policy/core/common/weekly_time/time_utils.cc
+components/policy/core/common/weekly_time/weekly_time.cc
+components/policy/core/common/weekly_time/weekly_time_interval.cc
+components/push_driver/push_driver_impl.cc
+components/request_filter/adblock_filter/adblock_request_filter.cc
+components/request_filter/adblock_filter/adblock_rules_index_builder.cc
+components/request_filter/adblock_filter/adblock_rules_index_manager.cc
+components/request_filter/adblock_filter/blocked_urls_reporter.cc
+components/request_filter/request_filter_proxying_url_loader_factory.cc
+components/safe_browsing/browser/csd_service.cc
+components/safe_browsing/browser/local_database_manager.cc
+components/safe_browsing/browser/protocol_manager.cc
+components/safe_browsing/renderer/csd_helper.cc
+components/scrapbook/scrapbook_backend_service.cc
+components/scrapbook/scrapbook_database.cc
+components/scrapbook_util/bloom_filter_manager.cc
+components/search_engines/additional_search_manager.cc
+components/services/storage/browser_storage/browser_storage_impl.cc
+components/signin/internal/identity_manager/account_fetcher_service_whale.cc
+components/signin/public/identity_manager/authkey_fetcher.cc
+components/signin/public/identity_manager/cookie_deleter.cc
+components/signin/public/identity_manager/cookie_fetcher.cc
+components/signin/public/identity_manager/login_auth_fetcher.cc
+components/signin/public/identity_manager/login_cookie_service.cc
+components/signin/public/identity_manager/whale_refresh_token_revoker.cc
+components/speech_recognition/speech_recognition_helper_impl.cc
+components/subresource_filter/content/browser/cosmetic_filter_tracker_manager.cc
+components/sync/engine/data_type_worker_whale.cc
+components/sync/engine/net/sync_server_connection_manager_whale.cc
+components/sync/engine/whale_sync_util.cc
+components/sync/invalidations/session_io_handler.cc
+components/sync/service/sync_reset_requester.cc
+components/sync/service/sync_service_impl_whale.cc
+components/sync/service/sync_stopped_reporter_whale.cc
+components/sync/service/whale_sync_auth_manager.cc
+components/sync/trusted_vault/trusted_vault_request_whale.cc
+components/wbslog/browser/log_uploader.cc
+components/wbslog/browser/logger.cc
+components/whale_util/whale_utility.cc
+[0m
+Full Whale-only source inventory mapped (incl. `session_io_handler.cc` socket.io, `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`). Dumping strings adjacent to the `os_crypt_whale.cc` symbol region for KDF/derivation evidence.
+[0m$ [0mcd /tmp/opencode && python3 -c "
+data=open('opt/naver/whale/whale','rb').read()
+i=data.find(b'os_crypt_whale.cc')
+print('offset',i)
+seg=data[max(0,i-3000):i+5000]
+import re
+for m in re.findall(rb'[ -~]{8,}', seg):
+    s=m.decode('latin1')
+    print(s)
+" | head -80
+offset 30605777
+party/ink/src/ink/geometry/internal/circle.cc
+../../media/capture/content/video_capture_oracle.cc
+../../whale/whale/browser/ui/views/capture/capture_menu_bubble.cc
+../../ui/views/bubble/transient_bubble.cc
+../../chrome/browser/ui/exclusive_access/exclusive_access_bubble.cc
+../../components/live_caption/views/caption_bubble.cc
+../../whale/whale/browser/ui/views/whale_on/whale_on_bubble.cc
+../../whale/whale/browser/ui/views/multiplay/invite_link_bubble.cc
+../../third_party/ink/src/ink/rendering/skia/native/internal/mesh_drawable.cc
+../../content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.cc
+../../content/browser/attribution_reporting/rate_limit_table.cc
+../../components/payments/content/web_payments_table.cc
+../../content/browser/attribution_reporting/os_registrations_table.cc
+../../components/password_manager/core/browser/password_store/insecure_credentials_table.cc
+../../components/password_manager/core/browser/password_store/password_notes_table.cc
+../../components/autofill/core/browser/webdata/valuables/valuables_table.cc
+../../components/services/storage/dom_storage/sqlite/map_entries_table.cc
+../../components/password_manager/core/browser/password_store/statistics_table.cc
+../../components/segmentation_platform/internal/database/ukm_metrics_table.cc
+../../components/segmentation_platform/internal/database/uma_metrics_table.cc
+../../chrome/browser/predictors/autocomplete_action_predictor_table.cc
+../../components/multistep_filter/core/storage/filter_annotation_table.cc
+../../third_party/puffin/src/huffman_table.cc
+../../components/segmentation_platform/internal/database/ukm_url_table.cc
+../../third_party/dawn/src/tint/utils/symbol/symbol_table.cc
+../../components/autofill/core/browser/webdata/payments/payments_autofill_table.cc
+../../components/autofill/core/browser/webdata/addresses/address_autofill_table.cc
+../../chrome/browser/ui/views/sidebar/emoji_table.cc
+../../components/autofill/core/browser/webdata/autocomplete/autocomplete_table.cc
+../../third_party/dawn/src/tint/lang/core/ir/transform/resource_table.cc
+../../components/signin/public/webdata/token_service_table.cc
+../../components/search_engines/keyword_table.cc
+../../sql/meta_table.cc
+../../third_party/dawn/src/tint/lang/core/intrinsic/table.cc
+../../v8/src/heap/cppgc/gc-info-table.cc
+../../third_party/crashpad/crashpad/util/linux/scoped_pr_set_dumpable.cc
+../../third_party/dawn/src/tint/lang/wgsl/ast/variable.cc
+../../whale/whale/browser/profiles/profile_attributes_entry_whale.cc
+../../whale/services/on_device_model/ml/constraint_factory_whale.cc
+../../whale/whale/browser/ui/views/profiles/profile_menu_view_whale.cc
+../../whale/whale/browser/ui/views/frame/vertical_tabs/vertical_tab_strip_region_view_whale.cc
+../../whale/whale/browser/ui/views/translate/translate_bubble_view_whale.cc
+../../whale/components/sync/trusted_vault/trusted_vault_request_whale.cc
+../../services/device/geolocation/network_location_request_whale.cc
+../../whale/components/os_crypt/sync/os_crypt_whale.cc
+../../whale/components/optimization_guide/core/model_execution/on_device_model_component_whale.cc
+../../whale/whale/browser/chrome_browser_main_extra_parts_whale.cc
+../../whale/components/sync/service/sync_stopped_reporter_whale.cc
+../../whale/third_party/zlib/google/zip_writer_whale.cc
+../../whale/whale/browser/importer/profile_writer_whale.cc
+../../chrome/browser/ui/views/frame/immersive_mode_controller_whale.cc
+../../whale/whale/browser/component_updater/optimization_guide_on_device_model_installer_whale.cc
+../../chrome/browser/ui/webui/signin/inline_login_handler_whale.cc
+../../whale/components/sync/engine/data_type_worker_whale.cc
+../../components/signin/core/browser/account_info_fetcher_whale.cc
+../../whale/components/sync/engine/net/sync_server_connection_manager_whale.cc
+../../whale/whale/browser/profiles/profile_manager_whale.cc
+../../whale/whale/browser/ui/startup/startup_tab_provider_whale.cc
+../../whale/components/history/core/browser/top_sites_impl_whale.cc
+../../chrome/browser/ui/webui/signin/inline_login_handler_impl_whale.cc
+../../whale/google_apis/gaia/oauth2_access_token_fetcher_impl_whale.cc
+../../content/browser/speech/network_speech_recognition_engine_impl_whale.cc
+../../whale/components/sync/service/sync_service_impl_whale.cc
+../../whale/whale/browser/ui/toolbar/app_menu_model_whale.cc
+../../whale/components/bookmarks/browser/bookmark_model_whale.cc
+../../whale/third_party/naverspeech-sdk/whale/log_whale.cc
+../../whale/components/history/core/browser/history_database_whale.cc
+../../whale/components/policy/core/common/cloud/cloud_policy_store_whale.cc
+../../whale/components/signin/internal/identity_manager/account_fetcher_service_whale.cc
+../../third_party/boringssl/src/crypto/hpke/hpke.cc
+../../third_party/ink/src/ink/strokes/in_progress_stroke.cc
+../../third_party/ink/src/ink/strokes/stroke.cc
+../../device/fido/cable/v2_handshake.cc
+../../third_party/boringssl/src/ssl/handshake.cc
+../../third_party/perfetto/src/tracing/internal/tracing_muxer_fake.cc
+../../extensions/browser/app_window/app_window_geometry_cache.cc
+../../third_party/blink/renderer/platform/loader/fetch/memory_cache.cc
+../../google_apis/api_key_cache.cc
+../../chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.cc
+[0m
+Source paths are alphabetically grouped. Targeting functional strings: OSCrypt key storage paths, auth token handling, and the push/socket.io channel.
+[0m$ [0mcd /tmp/opencode && strings opt/naver/whale/whale 2>/dev/null | grep -iE 'os_crypt|Local State|encrypted_key|DPAPI|v10|App Bound|keyring|secret_service' | sort -u | head -25; echo "===sync auth==="; strings opt/naver/whale/whale 2>/dev/null | grep -iE 'whaleon|refresh_token|bearer|oauth|access_token|scope=' | grep -vE '^[0-9]' | sort -u | head -25
+Failed to get client id because local state is nullptr
+ KeyringH
+''xv10
+../../components/os_crypt/async/browser/freedesktop_secret_key_provider.cc
+../../components/os_crypt/async/browser/secret_portal_key_provider.cc
+../../components/os_crypt/async/common/encryptor.cc
+../../components/os_crypt/sync/key_storage_libsecret.cc
+../../components/os_crypt/sync/key_storage_linux.cc
+../../components/os_crypt/sync/key_storage_util_linux.cc
+../../components/os_crypt/sync/kwallet_dbus.cc
+../../components/os_crypt/sync/libsecret_util_linux.cc
+../../components/os_crypt/sync/os_crypt_linux.cc
+../../services/network/enterprise/encryption/os_crypt_cache_encryption_delegate.cc
+../../whale/components/os_crypt/sync/os_crypt_whale.cc
+../../whale/components/os_crypt/sync/wbc_wrapper_apis.cc
+Because of quirks in the gnome libsecret API, Chrome needs to store a dummy entry to guarantee that this keyring was properly unlocked. More details at http://crbug.com/660005.
+Belkin F5D7051 802.11g Adapter v1000 [Broadcom 4320]
+Control_V10
+ConvertX AV100U A/V Capture Audio
+ConvertX TV100U A/V Capture
+D-Link V100
+DVD-CAM DZ-MV100A Camcorder
+Dash Drive UV100
+Default Keyring
+Disabled due to previous errors (stored in Local State)
+===sync auth===
+ Bearer H
+ oauth_token=
+!access_token.empty()
+&grant_type=refresh_token
+&scope=
+../../chrome/browser/device_identity/device_oauth2_token_service.cc
+../../chrome/browser/signin/bound_session_credentials/bound_session_oauth_multilogin_delegate_impl.cc
+../../components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.cc
+../../components/signin/internal/identity_manager/oauth_multilogin_helper.cc
+../../components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.cc
+../../components/signin/internal/identity_manager/profile_oauth2_token_service.cc
+../../components/signin/public/identity_manager/access_token_fetcher.cc
+../../components/trusted_vault/trusted_vault_access_token_fetcher_impl.cc
+../../google_apis/gaia/gaia_oauth_client.cc
+../../google_apis/gaia/oauth2_access_token_manager.cc
+../../google_apis/gaia/oauth2_api_call_flow.cc
+../../google_apis/gaia/oauth2_id_token_decoder.cc
+../../google_apis/gaia/oauth_multilogin_result.cc
+../../whale/components/signin/public/identity_manager/whale_refresh_token_revoker.cc
+../../whale/google_apis/gaia/access_token_fetcher_immediate_refresh_token.cc
+../../whale/google_apis/gaia/oauth2_access_token_fetcher_impl_whale.cc
+../../whale/google_apis/login_oauth2_access_token_fetcher_immediate_error.cc
+../../whale/google_apis/naver_access_token_fetcher.cc
+.FromOAuthMultiLogin
+.whaleon.us
+[0m
+Auth stack mapped (`.whaleon.us`, `naver_access_token_fetcher.cc`). Locating trusted-vault and sync-server endpoints.
+[0m$ [0mcd /tmp/opencode && strings opt/naver/whale/whale 2>/dev/null | grep -oE 'https?://[a-z0-9._/-]+' | grep -iE 'whaleon|whalesync|trusted|vault|scopic|sec\.whale|sync' | sort -u | head -25; echo "===whaleon domains==="; strings opt/naver/whale/whale 2>/dev/null | grep -oE '[a-z0-9.-]*whaleon[a-z0-9.-]*' | sort -u | head
+https://api.scopic.naver.com/whale
+https://api.whale.naver.com/whalesync
+https://api.whale.naver.com/whalesync/whalesync
+https://autopush-chromesyncsharedentities-pa.sandbox.googleapis.com/v1
+https://chrome-sync.sandbox.google.com/chrome-sync/alpha
+https://chromesyncsharedentities-pa.googleapis.com/v1
+https://cryptauthvault.googleapis.com/v1/vaults
+https://cryptauthvault.googleapis.com/v1/vaults/0
+https://dev-api.whale.naver.com/whalesync
+https://dev-study.whaleon.naver.com/
+https://dev-web-study.whaleon.naver.com/preview/
+https://dev-web-whaleon.whalespace.io/
+https://dev-web.whaleon.naver.com/
+https://dev-whaleon.whalespace.io/
+https://dev-whaleon.whalespace.io/terms/
+https://dev.whaleon.naver.com/
+https://dev.whaleon.naver.com/my/history
+https://dev.whaleon.naver.com/my/schedule
+https://dev.whaleon.naver.com/terms/
+https://github.com/w3c/webappsec-trusted-types/wiki/
+https://help.whale.naver.com/desktop/sync_passphrase
+https://help.whale.naver.com/desktop/whaleon/fae/7/
+https://pki.globaltrustedsign.com/index.html0
+https://pki.globaltrustedsign.com/root/gts_root.crt0
+https://pki.globaltrustedsign.com/root/gts_root_crl.crl0
+===whaleon domains===
+.whaleon.naver.com
+.whaleon.us
+api.whaleon.naver.com
+dev-files.whaleon.naver.com
+dev-one-whaleon.whalespace.io
+dev-one.whaleon.naver.com
+dev-study.whaleon.naver.com
+dev-web-study.whaleon.naver.com
+dev-web-whaleon.whalespace.io
+dev-web.whaleon.naver.com
+[0m
+[0m$ [0mcd /tmp/opencode && strings opt/naver/whale/whale 2>/dev/null | grep -oE 'https?://[a-z0-9._/-]+' | grep -iE 'whaleon' | sort -u; echo "===vault==="; strings opt/naver/whale/whale 2>/dev/null | grep -iE 'trusted.*vault|vault.*request|vault.*url' | grep -viE 'googleapis|webappsec' | sort -u | head; echo "===prod sync==="; strings opt/naver/whale/whale 2>/dev/null | grep -oE 'https?://[a-z0-9._/-]+' | grep -iE 'chrome-sync' | sort -u
+https://dev-study.whaleon.naver.com/
+https://dev-web-study.whaleon.naver.com/preview/
+https://dev-web-whaleon.whalespace.io/
+https://dev-web.whaleon.naver.com/
+https://dev-whaleon.whalespace.io/
+https://dev-whaleon.whalespace.io/terms/
+https://dev.whaleon.naver.com/
+https://dev.whaleon.naver.com/my/history
+https://dev.whaleon.naver.com/my/schedule
+https://dev.whaleon.naver.com/terms/
+https://help.whale.naver.com/desktop/whaleon/fae/7/
+https://stage-whaleon.whalespace.io/
+https://stage.whaleon.naver.com/
+https://study.whaleon.naver.com/
+https://web-study.whaleon.naver.com/preview/
+https://web-whaleon.whalespace.io/
+https://web.whaleon.naver.com/
+https://whaleon.naver.com/
+https://whaleon.naver.com/my/history
+https://whaleon.naver.com/my/schedule
+https://whaleon.naver.com/on/
+https://whaleon.naver.com/terms/
+https://whaleon.whalespace.io/
+https://whaleon.whalespace.io/my/history
+https://whaleon.whalespace.io/my/schedule
+https://whaleon.whalespace.io/terms/
+===vault===
+../../components/trusted_vault/physical_device_recovery_factor.cc
+../../components/trusted_vault/recovery_key_store_connection_impl.cc
+../../components/trusted_vault/securebox.cc
+../../components/trusted_vault/standalone_trusted_vault_client.cc
+../../components/trusted_vault/trusted_vault_access_token_fetcher_impl.cc
+../../components/trusted_vault/trusted_vault_degraded_recoverability_handler.cc
+../../whale/components/sync/trusted_vault/trusted_vault_request_whale.cc
+AddTrustedVaultDecryptionKeys
+DoJoiningDomainFailedTrustedVaultRegistrationError
+DoJoiningPINToDomainFailedTrustedVaultRegistrationStatusFailure
+===prod sync===
+https://chrome-sync.sandbox.google.com/chrome-sync/alpha
+[0m
+Production sync server is `api.whale.naver.com/whalesync` (overridden by `sync_server_connection_manager_whale.cc`). Dumping all `bootstrap_token` context strings to understand the key-flow mechanism.
+[0m$ [0mcd /tmp/opencode && strings -n 10 opt/naver/whale/whale 2>/dev/null | grep -iE 'bootstrap|whale_need|migration_done|DEPRECATED_BOOTSTRAP' | sort -u; echo "===sync util strings==="; strings opt/naver/whale/whale 2>/dev/null | grep -iE 'passphrase|encryption_key_forced|nigori|key_bag|encryption_bootstrap' | grep -ivE 'keyboard|key_bag' | sort -u | head -30
+(Bootstrapper)
+../../ipc/ipc_mojo_bootstrap.cc
+Bootstrapping
+DEPRECATED_BOOTSTRAP_TOKEN_UPDATED
+DidBootstrapDatabase
+DidGetBootstrapFlag
+DidGetStorageKeysForBootstrap
+DidSetDatabaseBootstrapped
+EnableBootstrapIPRandomizationForDoh
+Exception thrown during bootstrapping
+IO_BOOTSTRAP_TQ
+IPC::mojom::Bootstrap [primary] MessageHeaderValidator
+IPC::mojom::Bootstrap [primary] PipeControlMessageHandler
+IsBucketsBootstrapped
+MIGRATION_DONE
+MIGRATION_DONE but no types specified.
+MaybeBootstrapDatabase
+Sync.BootstrapTokenDecryptionResult
+Sync.BootstrapTokenEncryptionResult
+UI_BOOTSTRAP_TQ
+bootstrap_points
+dns_bootstrap/
+is_bootstrapping_database_
+sync.encryption_bootstrap_token
+sync.encryption_bootstrap_token_per_account
+sync.encryption_bootstrap_token_per_account_migration_done
+sync.passwords_per_account_pref_migration_done
+sync.whale_need_encryption_key_forced_time
+user_experience_metrics.consent_migration_done
+webauthn.enclave_declined_gpm_bootstrapping_count
+===sync util strings===
+../../components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.cc
+../../components/sync/nigori/cross_user_sharing_keys.cc
+../../components/sync/nigori/cryptographer_impl.cc
+../../components/sync/nigori/nigori_data_type_processor.cc
+../../components/sync/nigori/nigori_sync_bridge_impl.cc
+.WithCustomPassphrase
+.WithoutCustomPassphrase
+Can not set explicit passphrase when decryption is needed.
+ClearNigoriDataForMigration
+Explicit Passphrase
+Explicit passphrase Time
+GetNigoriNodeForDebugging
+GetUpdates is manipulated to simluate PASSPHRASE_ERROR
+NEEDS_PASSPHRASE
+NIGORI
+Needs passphrase
+Nigori
+Nigori.bin
+NigoriClH
+NigoriClientTagHash
+NigoriDataTypeProcessor::ModelReadyToSync
+NigoriStorageKey
+OnPassphraseAccepted
+OnPassphraseRequired
+OnPassphraseTypeChanged
+PASSPHRASE_ACCEPTED
+PASSPHRASE_REQUIRED
+PASSPHRASE_TYPE_CHANGED
+PassPhraseHelpIcon
+Passphrase Required
+[0m
+[0m$ [0mcd /tmp/opencode && ls opt/naver/whale/resources/ 2>/dev/null; find opt/naver/whale -maxdepth 3 -name '*.pak' -o -maxdepth 3 -name '*.js' -o -maxdepth 3 -name '*.json' 2>/dev/null | head -20
+accessibility
+inspector_overlay
+naver_smartlens
+quicksearch
+toolbox
+opt/naver/whale/resources.pak
+opt/naver/whale/whale_200_percent.pak
+opt/naver/whale/MEIPreload/manifest.json
+opt/naver/whale/PrivacySandboxAttestationsPreloaded/manifest.json
+opt/naver/whale/whale_100_percent.pak
+opt/naver/whale/resources/accessibility/reading_mode_gdocs_helper_manifest.json
+opt/naver/whale/resources/inspector_overlay/main.js
+opt/naver/whale/locales/ja.pak
+opt/naver/whale/locales/et_FEMININE.pak
+opt/naver/whale/locales/en-US_MASCULINE.pak
+opt/naver/whale/locales/hr_NEUTER.pak
+opt/naver/whale/locales/lv_MASCULINE.pak
+opt/naver/whale/locales/fil_NEUTER.pak
+opt/naver/whale/locales/af.pak
+opt/naver/whale/locales/en-GB_NEUTER.pak
+opt/naver/whale/locales/zh-TW_FEMININE.pak
+opt/naver/whale/locales/hr_FEMININE.pak
+opt/naver/whale/locales/ro_FEMININE.pak
+opt/naver/whale/locales/nl_NEUTER.pak
+opt/naver/whale/locales/es-419.pak
+[0m
+Bootstrap token is client-encrypted (`Sync.BootstrapTokenEncryptionResult` UMA confirms), stored per-account. Checking bundled WebUI/extension resources for sync-setup KDF hints.
+Quick check of the bundled Whale-only resources (naver_smartlens, quicksearch, toolbox) and .pak for sync UI strings, then computing the official binary hash for the record.
+[0m$ [0mcd /tmp/opencode && ls opt/naver/whale/resources/naver_smartlens opt/naver/whale/resources/quicksearch opt/naver/whale/resources/toolbox 2>/dev/null; echo "===pak passphrase strings==="; strings opt/naver/whale/resources.pak 2>/dev/null | grep -iE 'passphrase|encryption key|encrypted|scrypt|pbkdf2' | sort -u | head; echo "===sha256 official whale bin==="; sha256sum opt/naver/whale/whale | cut -c1-20; echo "===sha256 deb==="; sha256sum whale.deb | cut -c1-20
+opt/naver/whale/resources/naver_smartlens:
+_locales
+
+opt/naver/whale/resources/quicksearch:
+_locales
+
+opt/naver/whale/resources/toolbox:
+_locales
+===pak passphrase strings===
+===sha256 official whale bin===
+62da1097f52100f7a533
+===sha256 deb===
+6dd7ebc47d7e8f21da11
+[0m
+[0m$ [0mcd /tmp/opencode && sha256sum whale.deb opt/naver/whale/whale
+6dd7ebc47d7e8f21da1108ad5b0e17fcd562fd92e684da206564b51476e0b47e  whale.deb
+62da1097f52100f7a53339106241c0c46a818af1561c108aa4d6e620674d60e6  opt/naver/whale/whale
+[0m
+All probes complete (passive GET/HEAD, ≤1 rps, zero requests to Naver sync infra). Here is the structured output.
+
+## STEP 1 — DELTA
+- [NEW] Official desktop installer CDN resolved via `whale.naver.com/download` SPA JS → `installer-whale.pstatic.net/downloads/{installers,sa_installers}/*`. Authentic **v4.38.386.14** Linux amd64 `.deb` acquired (164MB, SHA256 `6dd7ebc47d7e8f21da1108ad5b0e17fcd562fd92e684da206564b51476e0b47e`); extracted `whale` binary SHA256 `62da1097f52100f7a53339106241c0c46a818af1561c108aa4d6e620674d60e6`. **Desktop static-analysis gate is now LIVE** (previously believed dead in-sandbox).
+- [NEW] Official binary confirms Whale-only sync tree: `os_crypt_whale.cc`, `wbc_wrapper_apis.cc`, `whale_sync_util.cc`, `whale_sync_auth_manager.cc`, `sync_server_connection_manager_whale.cc`, `data_type_worker_whale.cc`, `trusted_vault_request_whale.cc`, `session_io_handler.cc`, `sync_reset_requester.cc`, `sync_stopped_reporter_whale.cc`.
+- [NEW] Whale-only prefs keys present in official latest build: `sync.encryption_bootstrap_token`, `sync.encryption_bootstrap_token_per_account`, `sync.encryption_bootstrap_token_per_account_migration_done`, `sync.passwords_per_account_pref_migration_done`, `sync.whale_need_encryption_key_forced_time`, `DEPRECATED_BOOTSTRAP_TOKEN_UPDATED`.
+- [NEW] UMA `Sync.BootstrapTokenEncryptionResult`/`DecryptionResult` confirms the bootstrap token is encrypted client-side (passphrase never leaves device, matching vendor docs).
+- [NEW] Sync/auth endpoints extracted: `api.whale.naver.com/whalesync`, `/whalesync/reset`, `api.whaleon.naver.com`, `.whaleon.us`; stock `cryptauthvault.googleapis.com` trusted-vault strings retained.
+- [NEW] `"peanuts"` hardcoded OSCrypt fallback is **absent** from the official Linux build → real deviation from stock Chromium key handling.
+- [NEW] uptodown Android channel yields a **repackaged** APK signed `CN=Uptodown Technologies SL` (SHA256 `abde6f83…747b4`, injected `libuptodown-native.so`, zero `sync.encryption_*`/`bootstrap_token`/real `scrypt` strings) — inauthentic; pinned APKMirror SHA `3c723291…1faf` remains the only authentic Android fingerprint.
+- [CHANGED] Desktop sync lead upgraded from "unverifiable" to "analyzable in-sandbox" via the official binary.
+
+## STEP 2 — PRIORITIZE
+- [PRIO] Desktop sync client v4.38.386.14 (official bin in-sandbox) — score **7.05** — attack 7 business 9 tech 8 gate 3 cloud 6 fresh 8
+- [PRIO] Sidebar/dual-tab boundary, latest desktop — score **6.70** — attack 8 business 7 tech 7 gate 6 cloud 1 fresh 9
+- [PRIO] Desktop sync auth/token lifecycle (whale_sync_auth_manager, naver_access_token_fetcher, .whaleon.us) — score **6.45** — attack 6 business 9 tech 7 gate 3 cloud 5 fresh 7
+
+## STEP 3 — HYPOTHESES
+[HYP] Whale sync passphrase KDF + bootstrap-token envelope, official v4.38.386.14
+class: AUTH
+asset: whale binary (os_crypt_whale.cc / whale_sync_util.cc); key in Local State/keyring
+confidence: 65
+reasoning: Official latest binary contains Whale-only os_crypt_whale.cc + `sync.encryption_bootstrap_token[_per_account]` + migration_done + `whale_need_encryption_key_forced_time` prefs; "peanuts" fallback absent → custom envelope; UMA proves client-side token encryption. KDF/iteration params not yet extracted (stripped binary).
+evidence_needed: PBKDF2/scrypt algorithm + iteration count for passphrase→bootstrap-token key; persistence location of derived key on Linux (keyring vs file vs Local State); brute-force resistance of envelope.
+verify_steps: PASSIVE: string-guided objdump of os_crypt_whale.cc/whale_sync_util.cc code regions, .rodata scan for iteration constants vs Chromium nigori defaults. AUTH_HELPED: authorized Linux login, diff Local State/keyring pre/post sync to observe token envelope + key persistence. Zero requests to sync backend.
+impact: Weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords+bookmarks → PII cascade; High
+testability: AUTH_HELPED
+
+[HYP] Sidebar/dual-tab boundary variant post-CVE-2025-69235, latest desktop
+class: OTHER
+asset: Latest desktop Whale (>=4.35.351.12) sidebar + dual-tab web panels
+confidence: 45
+reasoning: 6 confirmed 2025 CVEs in Whale-only sidebar/dual-tab envs (SOP CWE-346, iframe sandbox, CSP CWE-358), each fixed a release later; v4.38.386.14 is 3 minor bumps past last fix with 0 CVEs in the gap; DevTools-in-sidebar (v4.38.386.12) expanded surface.
+evidence_needed: crafted HTML escaping iframe sandbox / bypassing SOP/CSP in sidebar or dual-tab web panel on v4.38.386.14
+verify_steps: AUTH_HELPED: install latest desktop Whale, open crafted HTML in sidebar and dual-tab web panels, test sandbox escape / cross-origin read / CSP bypass. No server interaction.
+impact: sandbox escape / SOP bypass from webpage → arbitrary script or cross-origin data theft in browser UI; Critical if escalates to renderer
+testability: AUTH_HELPED
+
+[HYP] Sync auth refresh-token storage deviation in Whale client
+class: AUTH
+asset: whale binary — whale_sync_auth_manager.cc, naver_access_token_fetcher.cc, whale_refresh_token_revoker.cc; .whaleon.us tokens
+confidence: 45
+reasoning: Whale forks stock OAuth components (whale_sync_auth_manager.cc, access_token_fetcher_immediate_refresh_token.cc, whale_refresh_token_revoker.cc) — custom token lifecycle code is the deviation; such forks historically mis-store tokens (plaintext prefs/cookies).
+evidence_needed: whether Whale refresh/access tokens persist outside Chromium token_service (plaintext prefs/cookies) and their scope
+verify_steps: PASSIVE: strings around whale auth manager + token-service prefs, look for plaintext token/cookie key names. AUTH_HELPED: authorized login, inspect Preferences/Login Data/Secure Preferences for whale token keys. Zero requests to naver infra.
+impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
+testability: AUTH_HELPED
+
+## STEP 4 — SELF-CRITIQUE
+- [PARKED] Android sync KDF/storage @ 3.9.14.9: authenticity gate — only uptodown-repackaged build obtainable in-sandbox; no authentic binary to analyze, no concrete PASSIVE verify steps remain.
+- [PARKED] socket.io push channel (session_io_handler.cc): already REJECTED as a lead class in prior knowledge; file presence is expected, no new evidence raised.
+- [FINAL] 1. Desktop sync KDF/envelope @ v4.38.386.14 (official bin) — confidence 65, class AUTH 2. Sidebar/dual-tab boundary variant — confidence 45, class OTHER 3. Sync auth token lifecycle — confidence 45, class AUTH
+
+## STEP 5 — NEXT ACTION
+[NEXT] PROBE: continue PASSIVE static analysis of the official binary — (1) scan `locales/en-US.pak` + `resources.pak` for the sync/passphrase UI strings (may document KDF/iteration); (2) objdump the `.rodata` region xref'ing `sync.encryption_bootstrap_token_per_account` to extract the OSCrypt-v10 key-wrap/KDF constants (PBKDF2 iterations / scrypt N,r,p); (3) verify SHA256 of the acquired deb against CDN `Last-Modified` metadata. Zero requests to Naver sync infra.
+
+## STEP 6 — LEARNING
+- [LEARN] REJECTED binary acquisition @ uptodown Android channel: dw.uptodown.com delivers a repackaged APK resigned by "Uptodown Technologies SL" (SHA abde6f83…, injected libuptodown-native.so) — inauthentic, unusable for attributed static analysis
+- [LEARN] ACCEPTED binary acquisition @ installer-whale.pstatic.net: official desktop distribution CDN is reachable with normal-user GET in this sandbox → authentic v4.38.386.14 deb pinned (SHA 6dd7ebc4…)
+- [LEARN] ACCEPTED sync surface @ whale desktop binary: Whale-only crypto layer (os_crypt_whale.cc, bootstrap-token prefs, custom auth manager) confirmed present in the latest official build; "peanuts" hardcoded key absent → genuine Chromium deviation
+- [LEARN] CONFIRMED @ NVD: still 0 Whale CVEs published in 2026 (no change since 2026-08-07)
+
+## STEP 7 — RISK SCORE
+- [RISK] sync: 60 — official latest binary now in-sandbox and the custom client-side encryption layer (bootstrap-token envelope, OSCrypt fork, custom auth manager) is confirmed real; KDF/envelope weakness unproven, so exposure is well-characterized but bug status open
+- [RISK] browser: 78 — unchanged; 6 confirmed 2025 sidebar/dual-tab CVEs, 0 CVEs in the 6-month gap on v4.38.386.14, DevTools-in-sidebar adds surface
+- [RISK] libs: 32 — naverspeech-sdk, naver_smartlens, quicksearch, toolbox confirmed as Whale-only bundled components in the official binary, but no version manifests extractable; still low visibility
