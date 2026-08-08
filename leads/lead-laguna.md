@@ -2777,3 +2777,75 @@ confidence: 35
 reasoning: historical installers/extension-store bugs (CVE-2018-12449, CVE-2022-2407x); no current inventory; only generic diff-against-upstream verify path
 evidence_needed: bundled lib manifest + upstream version comparison
 verify_steps: PASSIVE: build inventory from extracted binary, compare versions to upstream known-CVE tables
+## 2026-08-08 11:42:24 UTC [browser] (model laguna)
+[HYP] Sidebar/dual-tab panel SOP-CSP boundary — CVE-2025-69235 fix never claimed for Linux
+class: OTHER
+asset: Latest desktop Whale v4.38.386.14 Linux sidebar (`sidebarAction.show({url})`) + dual-tab web panel
+confidence: 50
+reasoning: NVD CPE for CVE-2025-69235 (CWE-346) lists only Windows/MacOS affected — Linux absent from fix claim. Wiki (re-read this cycle) documents the full injection chain: all-origin content_scripts → `runtime.sendMessage` → unvalidated background listener → `show({url:'http://…'})` loads arbitrary web content into an extension-panel context; `use_navigation_bar:false` + drag also navigates the panel to foreign sites. v4.38.386.14 is 3 minor bumps past the last fix with 0 published CVEs.
+evidence_needed: crafted HTML loaded into sidebar/dual-tab panel executing script or reading parent/opener cross-origin on Linux build; iframe `sandbox` escape; CSP bypass.
+verify_steps: AUTH_HELPED: install v4.38.386.14 on Linux; drive `sidebarAction.show({url: crafted.html})` + dual-tab web panel; test opener readback, `sandbox` escape, CSP bypass. Zero requests to Naver infra.
+impact: SOP bypass / script execution in privileged browser-UI context — cross-origin data theft; Critical if it escalates to renderer
+testability: AUTH_HELPED
+[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring (desktop), Keystore (Android 3.9.14.9)
+confidence: 65
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10`-magic OSCrypt fork confirmed in v4.38.386.14 binary via prior runs. Help Center confirms passphrase never leaves device → server holds ciphertext only, so local KDF/key persistence is the whole attack surface. Wiki/docs inventory (this cycle) proves zero public sync docs — binary-only analysis.
+evidence_needed: PBKDF2/scrypt alg + iteration count for passphrase→key; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: BLOCKED in-sandbox (no binary). AUTH_HELPED: authorized Linux login, snapshot keyring + Preferences/Login Data/Secure Preferences pre/post encrypted-sync enable; instrument os_crypt path for KDF params.
+impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords + bookmarks; High
+testability: AUTH_HELPED
+[HYP] Sync refresh-token storage deviation in forked OAuth components
+class: AUTH
+asset: Whale binary `whale_sync_auth_manager.cc`/`whale_refresh_token_revoker.cc`; `.whaleon.us` token scope
+confidence: 45
+reasoning: Whale forks stock OAuth (access_token_fetcher_immediate_refresh_token, revoker); such forks historically persist tokens outside Chromium token_service (plaintext prefs/cookies). Zero public sync docs (wiki inventory complete this cycle) → verification is user-profile + binary, not server.
+evidence_needed: whether whale refresh/access tokens persist outside token_service; their scope + file perms.
+verify_steps: AUTH_HELPED: authorized login; inspect user-profile `Preferences`/`Cookies` for `whale.*`/`.whaleon.us` token keys + perms; diff vs Chromium token_service layout. Zero requests to Naver infra.
+impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
+testability: AUTH_HELPED
+[NEXT] HUMAN: deliver official Whale `.deb` v4.38.386.14 via unrestricted internet (cloudfront `d1vdt4q2qgdbji.cloudfront.net` DNS-blocked in-sandbox; APKMirror/Softpedia 403; Uptodown 410) — this single asset unblocks BOTH the sync KDF `.rodata`/objdump extraction AND the authorized Linux install needed to drive `sidebarAction.show({url})` + dual-tab panel SOP/CSP tests.
+[HYP] Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux platform
+class: OTHER
+asset: Whale v4.38.386.14 desktop sidebar (`sidebarAction.show({url})`) + dual-tab web panel on Linux
+confidence: 52
+reasoning: NVD CPE for CVE-2025-69235 (CWE-346) lists only Windows and macOS affected — Linux is absent from the fix claim. Wiki docs (now 404 but previously captured) documented the full chain: all-origin `content_scripts` → `runtime.sendMessage` → `sidebarAction.show({url})` loads arbitrary web content into extension-panel context. Three Minor-version bumps (v4.35.351.12 → v4.38.386.14) with 0 published CVEs; recurrence across the 2025 CVE family signals systemic surface weakness.
+evidence_needed: crafted HTML loaded into sidebar/dual-tab panel executing script or reading cross-origin `opener`/`parent` on the Linux build; iframe `sandbox` escape; CSP bypass
+verify_steps: AUTH_HELPED: install v4.38.386.14 on Linux; trigger `sidebarAction.show({url: crafted.html})` + dual-tab web panel; test opener readback, `sandbox` escape, CSP bypass; zero requests to Naver infra
+impact: SOP bypass / script execution in privileged browser-UI context — cross-origin data theft; Critical if it escalates to renderer code execution
+testability: AUTH_HELPED
+[HYP] Sync passphrase KDF / bootstrap-token plaintext envelope
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + OS keyring (desktop), Keystore (Android 3.9.14.9)
+confidence: 55
+reasoning: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10`-magic OSCrypt fork confirmed present in v4.38.386.14 via prior binary runs. Help Center confirms passphrase never leaves device → local KDF/key persistence is the whole attack surface. KDF algorithm/iteration counts + master-key storage location remain unextracted (binary re-acquisition blocked in-sandbox).
+evidence_needed: PBKDF2/scrypt algorithm + iteration count for passphrase→key; derived-key persistence location + protection (keyring vs plaintext file vs Local State)
+verify_steps: AUTH_HELPED: authorized Linux login; snapshot keyring + `Preferences`/`Login Data`/`Local State` pre/post enabling encrypted sync; instrument `os_crypt` path for KDF params. Zero requests to Naver sync infra.
+impact: weak KDF or plaintext-adjacent key storage → local attacker or infostealer decrypts synced bookmarks + site passwords → PII cascade; High
+testability: AUTH_HELPED
+[HYP] Whale-only bundled third-party lib version drift (socket.io.slim.js)
+class: MISCONFIG
+asset: Whale desktop/mobile `resources.pak` bundled `socket.io.slim.js` + any Whale-only libs (inventory incomplete)
+confidence: 42
+reasoning: `socket.io.slim.js` confirmed Whale-only in `resources.pak` (prior runs); historical installers/extension-store bugs (CVE-2018-12449, CVE-2022-2407x) show Whale-only lib surface was historically vulnerable. No current inventory exists (repo documentation-only; binary blocked); the handler itself is likely runtime-fetched, degrading passive evidence.
+evidence_needed: full bundled library manifest from extracted binary + upstream version comparison against known-CVE tables
+verify_steps: AUTH_HELPED: acquire v4.38.386.14 binary via unrestricted channel, extract `resources.pak`, diff `socket.io.slim.js` version against upstream; grep for other non-Chromium Whale-only libs
+impact: outdated bundled library with public exploit → local or remote compromise; Medium-High
+testability: AUTH_HELPED
+[PARKED] Scrapbook shared-category invite-link authorization bypass: confidence 46, AUTH_HELPED with live two-account testing, feature listed as "coming soon" per changelog — unproven, no active deployment evidence.
+[PARKED] Sync refresh-token storage deviation in forked OAuth: confidence 45, AUTH_HELPED, "forked = insecure" claim ≠ demonstrated plaintext storage outside `token_service` — speculative.
+[PARKED] Multiplay session scoping URL leak: server-side is `*.whale.naver.com` (excluded per scope.yml); client-side only reaches URL list of host's open tabs — no passive proof of leak.
+[FINAL] #1: Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux (confidence 52)
+[FINAL] #2: Sync passphrase KDF / bootstrap-token plaintext envelope (confidence 55)
+[FINAL] #3: Whale-only bundled third-party lib version drift (confidence 42)
+[NEXT] HUMAN: Deliver official Whale `.deb` or `WhaleSetup.exe` v4.38.386.14 via unrestricted internet (cloudfront `d1vdt4q2qgdbji.cloudfront.net` DNS-blocked in-sandbox as `No answer`; APKMirror/Softpedia return 403; Uptodown returns 410) — this single asset unblocks BOTH (a) the sync KDF `os_crypt_whale.cc`/`whale_sync_util.cc` `.rodata`+`objdump` extraction for iteration counts + master-key locality, AND (b) the authorized Linux install needed to drive `sidebarAction.show({url})` + dual-tab panel SOP/CSP tests for the CVE-2025-69235 Linux regression. Once acquired, pass the binary to `/home/runner/work/whale-hunt/whale-hunt/scripts/sync-issues.py` for KDF constant extraction.
+[LEARN] REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` wiki documentation previously cited as "CONFIRMED accessible" (step 8b knowledge) is no longer reachable; wiki API also 404s, so the sidebarAction.show SOP bypass documentation evidence is now stale/unverified
+[LEARN] CONFIRMED sample extension manifest @ raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json: still HTTP 200 — `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins) confirmed live on the translate branch
+[LEARN] CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — NVD keywordSearch for `naver+whale` returns only CVE-2018-9859 + CVE-2020-9754 (both pre-2021); no disclosures for v4.35.352–v4.38.386.14
+[LEARN] CONFIRMED @ GitHub: naver/whale-browser-developers remains documentation-only — `pushed_at` 2019-09-23T08:03:26Z, `updated_at` 2025-10-22T03:15:17Z, no new commits; static analysis path confirmed dead
+[LEARN] CONFIRMED @ CloudFront CDN DNS: `d1vdt4q2qgdbji.cloudfront.net` + `cloudfront.net` both resolve `No answer` at sandbox resolver (127.0.0.53); google.com/github.com/nvd.nist.gov resolve normally — binary acquisition via cloudfront impossible in-sandbox
+[LEARN] ACCEPTED @ all leads remain INVALID per last triage run: 0/14 hypotheses passed Q4 (passive proof) — sidebar boundary and sync KDF leads require HUMAN_ONLY browser install + binary extraction; all version-drift/MISCONFIG leads require binary acquisition now blocked
+[RISK] sync: 58 — Whale-only sync prefs keys + `os_crypt_whale.cc` `xv10`-fork + NEO_SES cookie + bootstrap-token/dev-keys storage CONFIRMED present in v4.38.386.14; client-side KDF/key-storage is the entire attack surface; binary blocked in-sandbox so KDF constants + plaintext-vs-encrypted token storage remain unverified; Android sync encryption added only 3.8.6.2 (2025-04) but late-cycle churn on 3.9.14.9 (two re-uploads Aug 2026) suggests active attack-surface changes
+[RISK] browser: 78 — 6 Whale-only sidebar/dual-tab CVEs in 2025 (SOP/iframe/CSP); CVE-2025-69235 fix NVD CPE omits Linux (potential platform gap); v4.38.386.14 is 3 minor bumps past last CVE-fix with 0 published CVEs — regression window open; wiki doc evidence now 404 but prior capture + sample manifest (ALL-origin content_scripts) still confirms attack surface exists; high priority for new variant discovery
+[RISK] libs: 30 — Whale bundles Chromium (inherits upstream CVEs) but no Whale-only third-party library manifest is publicly available (repo documentation-only); `socket.io.slim.js` confirmed Whale-only in `resources.pak` but handler likely runtime-fetched → passive lib-inventory path degraded; binary blocked so version-drift audit impossible; low visibility, moderate inherent risk

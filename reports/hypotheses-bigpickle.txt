@@ -1,29 +1,29 @@
-## 2026-08-08 11:05:53 UTC [sync] (model bigpickle)
+## 2026-08-08 11:41:11 UTC [sync] (model bigpickle)
+[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable key
+class: AUTH
+asset: Whale v4.38.386.14 binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring (desktop); now acquirable as Windows EXE via uptodown
+confidence: 65
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`) + `xv10`-magic OSCrypt fork confirmed in prior binary runs. Help Center: passphrase never leaves device → server holds ciphertext only, so local KDF/key persistence is the whole attack surface. KDF params never extracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count for passphrase→key; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: acquire EXE via uptodown JS-token flow (verify SHA256 `8bfdd96f81b8...c6c5de`), then passive strings/`.rodata`/objdump scan for iteration constants + `xv10`/`os_crypt_whale` symbols; AUTH_HELPED: authorized Linux login, snapshot keyring + Preferences/Login Data pre/post encrypted-sync enable.
+impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords + bookmarks; High
+testability: AUTH_HELPED
 [HYP] Sidebar/dual-tab panel SOP-CSP boundary — CVE-2025-69235 fix never claimed for Linux
 class: OTHER
 asset: Latest desktop Whale v4.38.386.14 Linux sidebar (`sidebarAction.show({url})`) + dual-tab web panel
 confidence: 50
-reasoning: NVD CPE for CVE-2025-69235 (CWE-346) lists only Windows/MacOS affected — Linux absent from fix claim. Wiki (re-read this cycle) documents the full injection chain: all-origin content_scripts → `runtime.sendMessage` → unvalidated background listener → `show({url:'http://…'})` loads arbitrary web content into an extension-panel context; `use_navigation_bar:false` + drag also navigates the panel to foreign sites. v4.38.386.14 is 3 minor bumps past the last fix with 0 published CVEs.
-evidence_needed: crafted HTML loaded into sidebar/dual-tab panel executing script or reading parent/opener cross-origin on Linux build; iframe `sandbox` escape; CSP bypass.
-verify_steps: AUTH_HELPED: install v4.38.386.14 on Linux; drive `sidebarAction.show({url: crafted.html})` + dual-tab web panel; test opener readback, `sandbox` escape, CSP bypass. Zero requests to Naver infra.
-impact: SOP bypass / script execution in privileged browser-UI context — cross-origin data theft; Critical if it escalates to renderer
+reasoning: CVE-2025-69235/69234 NVD CPEs list only Windows/macOS affected; Linux absent from fix claim. Wiki confirms `show({url})` loads arbitrary URL and `use_navigation_bar:false` allows drag-navigation to foreign sites; sample extension uses all-origin content_scripts.
+evidence_needed: crafted HTML loaded into sidebar/dual-tab panel executing script or reading opener cross-origin on Linux; iframe `sandbox` escape; CSP bypass.
+verify_steps: AUTH_HELPED: install 4.38.386.14 on Linux, drive `sidebarAction.show({url: crafted.html})` + dual-tab web panel; test opener readback, `sandbox` escape, CSP bypass. Zero requests to Naver infra.
+impact: SOP bypass / script execution in privileged browser-UI context; Critical if it escalates to renderer
 testability: AUTH_HELPED
-[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable key
-class: AUTH
-asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring (desktop), Keystore (Android 3.9.14.9)
-confidence: 65
-reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10`-magic OSCrypt fork confirmed in v4.38.386.14 binary via prior runs. Help Center confirms passphrase never leaves device → server holds ciphertext only, so local KDF/key persistence is the whole attack surface. Wiki/docs inventory (this cycle) proves zero public sync docs — binary-only analysis.
-evidence_needed: PBKDF2/scrypt alg + iteration count for passphrase→key; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
-verify_steps: BLOCKED in-sandbox (no binary). AUTH_HELPED: authorized Linux login, snapshot keyring + Preferences/Login Data/Secure Preferences pre/post encrypted-sync enable; instrument os_crypt path for KDF params.
-impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords + bookmarks; High
-testability: AUTH_HELPED
-[HYP] Sync refresh-token storage deviation in forked OAuth components
-class: AUTH
-asset: Whale binary `whale_sync_auth_manager.cc`/`whale_refresh_token_revoker.cc`; `.whaleon.us` token scope
+[HYP] Whale Installer DLL-execution class regression — is current installer still <3.1.0.0?
+class: MISCONFIG
+asset: WhaleSetup.exe (Windows) shipping v4.38.386.14; install-dir ACLs / DLL search path
 confidence: 45
-reasoning: Whale forks stock OAuth (access_token_fetcher_immediate_refresh_token, revoker); such forks historically persist tokens outside Chromium token_service (plaintext prefs/cookies). Zero public sync docs (wiki inventory complete this cycle) → verification is user-profile + binary, not server.
-evidence_needed: whether whale refresh/access tokens persist outside token_service; their scope + file perms.
-verify_steps: AUTH_HELPED: authorized login; inspect user-profile `Preferences`/`Cookies` for `whale.*`/`.whaleon.us` token keys + perms; diff vs Chromium token_service layout. Zero requests to Naver infra.
-impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
+reasoning: CVE-2024-50583 (CWE-427, CVSS 6.3) fixed only in installer 3.1.0.0; installer is a Whale-only component (not Chromium). Current installer version unverified; regressions in improper-permission/DLL-load class are plausible across the 4.35→4.38 window.
+evidence_needed: current WhaleSetup.exe VERSIONINFO ≥3.1.0.0?; install-dir ACLs; whether DLL preload pattern persists.
+verify_steps: acquire WhaleSetup.exe via uptodown (SHA256 `8bfdd96f81b8...c6c5de`), read VERSIONINFO resource + scan for DLL load paths; if <3.1.0.0 → active in-scope bug. AUTH_HELPED: authorized Windows install, check dir ACLs + Procmon DLL loads.
+impact: local DLL planting → code execution in user/admin installer context; Medium (High if LPE)
 testability: AUTH_HELPED
-[NEXT] HUMAN: deliver official Whale `.deb` v4.38.386.14 via unrestricted internet (cloudfront `d1vdt4q2qgdbji.cloudfront.net` DNS-blocked in-sandbox; APKMirror/Softpedia 403; Uptodown 410) — this single asset unblocks BOTH the sync KDF `.rodata`/objdump extraction AND the authorized Linux install needed to drive `sidebarAction.show({url})` + dual-tab panel SOP/CSP tests.
+[NEXT] PROBE: Acquire `WhaleSetup.exe` v4.38.386.14 via uptodown JS-token flow (`https://whale-browser.en.uptodown.com/windows/download` → resolve tokenized `dw.uptodown.com/dwn/...` path from page HTML), verify SHA256=`8bfdd96f81b8...c6c5de` (184.86 MB), then run passive static scan: (a) installer VERSIONINFO to settle the <3.1.0.0 open question (closes/sets CVE-2024-50583 hypothesis), (b) strings/`.rodata` scan of inner browser payload for `xv10`, `os_crypt_whale`, PBKDF2/scrypt iteration constants (advances sync KDF hypothesis). One asset, two hypotheses.
