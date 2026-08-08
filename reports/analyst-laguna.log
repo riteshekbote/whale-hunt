@@ -30294,3 +30294,408 @@ All 3 hypotheses pass: confidence ≥ 40, none on REJECTED classes, all have con
 [RISK] sync: 65 — Custom `/whalesync` + per-account bootstrap tokens + Whale-forked OSCrypt (xv10 magic) + NEO_SES cookie auth confirmed present in v4.38.386.14 binary via prior analysis; key-storage/KDF and `whale_need_encryption_key_forced_time` downgrade semantics unverified (blocked without binary); server-tweakable client heuristics widen attack surface
 [RISK] browser: 82 — Sidebar/dual-tab (6 CVEs in 2025: CWE-346 SOP/iframe-sandbox escape, CWE-358 CSP bypass) remain 3 minor-version bumps past last fix (v4.35.351.12, Dec 2025) with 0 CVEs published in 2026; NVD CPE for CVE-2025-69234/69235 is generic wildcard — Linux fix status unclaimed; sample extension (5 files HTTP 200) confirms ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch from arbitrary web origin — high-priority regression window; Critical severity ($4k SOP reward tier)
 [RISK] libs: 35 — Whale bundles Chromium (inherits upstream CVEs, ineligible per scope); `socket.io.slim.js` confirmed Whale-only in `resources.pak` but push-handler implementation is runtime-fetched (stale evidence); no public third-party library manifest; binary inaccessible so version-drift audit blocked — low visibility, moderate inherent risk
+===== ANALYST laguna 2026-08-08 21:57:51 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+[0m$ [0mls -la
+total 212
+drwxr-xr-x 11 runner runner  4096 Aug  8 21:55 .
+drwxr-xr-x  3 runner runner  4096 Aug  8 21:55 ..
+drwxr-xr-x  7 runner runner  4096 Aug  8 21:55 .git
+drwxr-xr-x  3 runner runner  4096 Aug  8 21:55 .github
+-rw-r--r--  1 runner runner  1057 Aug  8 21:55 README.md
+-rw-r--r--  1 runner runner    39 Aug  8 21:55 analyst-out.txt
+-rw-r--r--  1 runner runner 68259 Aug  8 21:55 analyst-prompt.txt
+-rw-r--r--  1 runner runner 65287 Aug  8 21:55 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  8 21:55 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  8 21:55 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  8 21:55 leads
+-rw-r--r--  1 runner runner   783 Aug  8 21:55 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Aug  8 21:55 reports
+drwxr-xr-x  2 runner runner  4096 Aug  8 21:55 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  8 21:55 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  8 21:55 scripts
+-rw-r--r--  1 runner runner    34 Aug  8 21:55 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  8 21:55 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  8 21:55 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  8 21:55 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  8 21:55 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  8 21:55 triage
+[0m
+[0m$ [0mgit log --oneline -10
+9cc7e13 triage 2026-08-08-21-51
+[0m
+I'll examine the actual repository structure to understand what's present before running the analysis steps.
+[0m→ [0mRead analyst-out.txt
+[0m→ [0mRead state_laguna.json
+[0m→ [0mRead analyst-prompt.txt
+[0m→ [0mRead probe-results.md
+[0m
+[0m$ [0mls -la reports/ leads/ inventory/ knowledge/ triage/ scripts/
+inventory/:
+total 48
+drwxr-xr-x  2 runner runner  4096 Aug  8 21:55 .
+drwxr-xr-x 11 runner runner  4096 Aug  8 21:55 ..
+-rw-r--r--  1 runner runner 39822 Aug  8 21:55 whale.md
+
+knowledge/:
+total 48
+drwxr-xr-x  2 runner runner  4096 Aug  8 21:55 .
+drwxr-xr-x 11 runner runner  4096 Aug  8 21:55 ..
+-rw-r--r--  1 runner runner 40285 Aug  8 21:55 index.md
+
+leads/:
+total 1508
+drwxr-xr-x  2 runner runner   4096 Aug  8 21:55 .
+drwxr-xr-x 11 runner runner   4096 Aug  8 21:55 ..
+-rw-r--r--  1 runner runner 189370 Aug  8 21:55 lead-bigpickle.md
+-rw-r--r--  1 runner runner 666118 Aug  8 21:55 lead-laguna.md
+-rw-r--r--  1 runner runner  16034 Aug  8 21:55 lead-ling3.md
+-rw-r--r--  1 runner runner   1932 Aug  8 21:55 lead-longcat.md
+-rw-r--r--  1 runner runner 304073 Aug  8 21:55 lead-nemotron3.md
+-rw-r--r--  1 runner runner   2883 Aug  8 21:55 reposcan-2026-08-07-18-44.md
+-rw-r--r--  1 runner runner   1240 Aug  8 21:55 reposcan-2026-08-07-18-59.md
+-rw-r--r--  1 runner runner   6783 Aug  8 21:55 reposcan-2026-08-07-19-19.md
+-rw-r--r--  1 runner runner   2370 Aug  8 21:55 reposcan-2026-08-07-19-22.md
+-rw-r--r--  1 runner runner    366 Aug  8 21:55 reposcan-2026-08-07-19-28.md
+-rw-r--r--  1 runner runner    466 Aug  8 21:55 reposcan-2026-08-07-20-06.md
+-rw-r--r--  1 runner runner    617 Aug  8 21:55 reposcan-2026-08-07-20-11.md
+-rw-r--r--  1 runner runner    948 Aug  8 21:55 reposcan-2026-08-07-20-59.md
+-rw-r--r--  1 runner runner   5763 Aug  8 21:55 reposcan-2026-08-07-21-09.md
+-rw-r--r--  1 runner runner   4346 Aug  8 21:55 reposcan-2026-08-07-21-58.md
+-rw-r--r--  1 runner runner   3025 Aug  8 21:55 reposcan-2026-08-07-22-05.md
+-rw-r--r--  1 runner runner   2764 Aug  8 21:55 reposcan-2026-08-07-22-23.md
+-rw-r--r--  1 runner runner   3238 Aug  8 21:55 reposcan-2026-08-07-23-05.md
+-rw-r--r--  1 runner runner    631 Aug  8 21:55 reposcan-2026-08-07-23-08.md
+-rw-r--r--  1 runner runner    610 Aug  8 21:55 reposcan-2026-08-07-23-50.md
+-rw-r--r--  1 runner runner    304 Aug  8 21:55 reposcan-2026-08-07-23-57.md
+-rw-r--r--  1 runner runner   5524 Aug  8 21:55 reposcan-2026-08-08-00-44.md
+-rw-r--r--  1 runner runner   2707 Aug  8 21:55 reposcan-2026-08-08-01-38.md
+-rw-r--r--  1 runner runner   4107 Aug  8 21:55 reposcan-2026-08-08-02-55.md
+-rw-r--r--  1 runner runner   4063 Aug  8 21:55 reposcan-2026-08-08-03-20.md
+-rw-r--r--  1 runner runner    849 Aug  8 21:55 reposcan-2026-08-08-04-14.md
+-rw-r--r--  1 runner runner    504 Aug  8 21:55 reposcan-2026-08-08-04-34.md
+-rw-r--r--  1 runner runner   3307 Aug  8 21:55 reposcan-2026-08-08-05-18.md
+-rw-r--r--  1 runner runner   6278 Aug  8 21:55 reposcan-2026-08-08-05-39.md
+-rw-r--r--  1 runner runner    693 Aug  8 21:55 reposcan-2026-08-08-06-07.md
+-rw-r--r--  1 runner runner   2862 Aug  8 21:55 reposcan-2026-08-08-06-42.md
+-rw-r--r--  1 runner runner    510 Aug  8 21:55 reposcan-2026-08-08-07-44.md
+-rw-r--r--  1 runner runner   3414 Aug  8 21:55 reposcan-2026-08-08-07-49.md
+-rw-r--r--  1 runner runner   6655 Aug  8 21:55 reposcan-2026-08-08-08-23.md
+-rw-r--r--  1 runner runner   6474 Aug  8 21:55 reposcan-2026-08-08-08-35.md
+-rw-r--r--  1 runner runner    966 Aug  8 21:55 reposcan-2026-08-08-09-12.md
+-rw-r--r--  1 runner runner   6653 Aug  8 21:55 reposcan-2026-08-08-09-33.md
+-rw-r--r--  1 runner runner    902 Aug  8 21:55 reposcan-2026-08-08-09-57.md
+-rw-r--r--  1 runner runner    778 Aug  8 21:55 reposcan-2026-08-08-10-26.md
+-rw-r--r--  1 runner runner   2374 Aug  8 21:55 reposcan-2026-08-08-10-37.md
+-rw-r--r--  1 runner runner   3603 Aug  8 21:55 reposcan-2026-08-08-11-01.md
+-rw-r--r--  1 runner runner    737 Aug  8 21:55 reposcan-2026-08-08-11-07.md
+-rw-r--r--  1 runner runner    515 Aug  8 21:55 reposcan-2026-08-08-11-36.md
+-rw-r--r--  1 runner runner    808 Aug  8 21:55 reposcan-2026-08-08-11-44.md
+-rw-r--r--  1 runner runner   4143 Aug  8 21:55 reposcan-2026-08-08-12-08.md
+-rw-r--r--  1 runner runner   3771 Aug  8 21:55 reposcan-2026-08-08-12-37.md
+-rw-r--r--  1 runner runner   1296 Aug  8 21:55 reposcan-2026-08-08-13-17.md
+-rw-r--r--  1 runner runner   6713 Aug  8 21:55 reposcan-2026-08-08-13-42.md
+-rw-r--r--  1 runner runner    694 Aug  8 21:55 reposcan-2026-08-08-13-59.md
+-rw-r--r--  1 runner runner   1058 Aug  8 21:55 reposcan-2026-08-08-14-27.md
+-rw-r--r--  1 runner runner   2225 Aug  8 21:55 reposcan-2026-08-08-14-38.md
+-rw-r--r--  1 runner runner    452 Aug  8 21:55 reposcan-2026-08-08-14-59.md
+-rw-r--r--  1 runner runner    736 Aug  8 21:55 reposcan-2026-08-08-15-07.md
+-rw-r--r--  1 runner runner   2486 Aug  8 21:55 reposcan-2026-08-08-15-35.md
+-rw-r--r--  1 runner runner    820 Aug  8 21:55 reposcan-2026-08-08-15-49.md
+-rw-r--r--  1 runner runner    935 Aug  8 21:55 reposcan-2026-08-08-16-51.md
+-rw-r--r--  1 runner runner   7051 Aug  8 21:55 reposcan-2026-08-08-17-06.md
+-rw-r--r--  1 runner runner   1018 Aug  8 21:55 reposcan-2026-08-08-17-26.md
+-rw-r--r--  1 runner runner   2611 Aug  8 21:55 reposcan-2026-08-08-17-43.md
+-rw-r--r--  1 runner runner   3254 Aug  8 21:55 reposcan-2026-08-08-17-57.md
+-rw-r--r--  1 runner runner   4305 Aug  8 21:55 reposcan-2026-08-08-18-09.md
+-rw-r--r--  1 runner runner    385 Aug  8 21:55 reposcan-2026-08-08-18-34.md
+-rw-r--r--  1 runner runner   4345 Aug  8 21:55 reposcan-2026-08-08-19-05.md
+-rw-r--r--  1 runner runner    538 Aug  8 21:55 reposcan-2026-08-08-19-16.md
+-rw-r--r--  1 runner runner   7217 Aug  8 21:55 reposcan-2026-08-08-19-33.md
+-rw-r--r--  1 runner runner   2887 Aug  8 21:55 reposcan-2026-08-08-19-53.md
+-rw-r--r--  1 runner runner   1632 Aug  8 21:55 reposcan-2026-08-08-20-03.md
+-rw-r--r--  1 runner runner    878 Aug  8 21:55 reposcan-2026-08-08-20-25.md
+-rw-r--r--  1 runner runner    736 Aug  8 21:55 reposcan-2026-08-08-20-27.md
+-rw-r--r--  1 runner runner    726 Aug  8 21:55 reposcan-2026-08-08-20-56.md
+-rw-r--r--  1 runner runner   5093 Aug  8 21:55 reposcan-2026-08-08-21-01.md
+-rw-r--r--  1 runner runner   2274 Aug  8 21:55 reposcan-2026-08-08-21-31.md
+-rw-r--r--  1 runner runner    965 Aug  8 21:55 reposcan-2026-08-08-21-32.md
+-rw-r--r--  1 runner runner    965 Aug  8 21:55 reposcan-latest.md
+
+reports/:
+total 5244
+drwxr-xr-x  2 runner runner    4096 Aug  8 21:55 .
+drwxr-xr-x 11 runner runner    4096 Aug  8 21:55 ..
+-rw-r--r--  1 runner runner 2037990 Aug  8 21:55 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 2876231 Aug  8 21:55 analyst-laguna.log
+-rw-r--r--  1 runner runner   24441 Aug  8 21:55 analyst-ling3.log
+-rw-r--r--  1 runner runner    3330 Aug  8 21:55 analyst-longcat.log
+-rw-r--r--  1 runner runner  356389 Aug  8 21:55 analyst-nemotron3.log
+-rw-r--r--  1 runner runner    5465 Aug  8 21:55 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner    7847 Aug  8 21:55 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner      48 Aug  8 21:55 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner      50 Aug  8 21:55 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner    8042 Aug  8 21:55 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  141894 Aug  8 21:55 hypotheses.md
+-rw-r--r--  1 runner runner    4299 Aug  8 21:55 valid-bugs.md
+
+scripts/:
+total 16
+drwxr-xr-x  2 runner runner 4096 Aug  8 21:55 .
+drwxr-xr-x 11 runner runner 4096 Aug  8 21:55 ..
+-rw-r--r--  1 runner runner 7771 Aug  8 21:55 sync-issues.py
+
+triage/:
+total 532
+drwxr-xr-x  2 runner runner  4096 Aug  8 21:55 .
+drwxr-xr-x 11 runner runner  4096 Aug  8 21:55 ..
+-rw-r--r--  1 runner runner  8463 Aug  8 21:55 run-2026-08-07-19-23.md
+-rw-r--r--  1 runner runner 14983 Aug  8 21:55 run-2026-08-07-21-01.md
+-rw-r--r--  1 runner runner  7882 Aug  8 21:55 run-2026-08-07-21-04.md
+-rw-r--r--  1 runner runner 20203 Aug  8 21:55 run-2026-08-07-21-57.md
+-rw-r--r--  1 runner runner 14629 Aug  8 21:55 run-2026-08-07-22-02.md
+-rw-r--r--  1 runner runner 21701 Aug  8 21:55 run-2026-08-07-22-57.md
+-rw-r--r--  1 runner runner 25767 Aug  8 21:55 run-2026-08-07-23-03.md
+-rw-r--r--  1 runner runner 23210 Aug  8 21:55 run-2026-08-07-23-53.md
+-rw-r--r--  1 runner runner   596 Aug  8 21:55 run-2026-08-08-02-34.md
+-rw-r--r--  1 runner runner 23521 Aug  8 21:55 run-2026-08-08-04-30.md
+-rw-r--r--  1 runner runner 23484 Aug  8 21:55 run-2026-08-08-04-39.md
+-rw-r--r--  1 runner runner 14903 Aug  8 21:55 run-2026-08-08-06-09.md
+-rw-r--r--  1 runner runner   838 Aug  8 21:55 run-2026-08-08-07-30.md
+-rw-r--r--  1 runner runner 19293 Aug  8 21:55 run-2026-08-08-09-06.md
+-rw-r--r--  1 runner runner 16293 Aug  8 21:55 run-2026-08-08-10-02.md
+-rw-r--r--  1 runner runner 11886 Aug  8 21:55 run-2026-08-08-10-56.md
+-rw-r--r--  1 runner runner 18726 Aug  8 21:55 run-2026-08-08-11-50.md
+-rw-r--r--  1 runner runner 10851 Aug  8 21:55 run-2026-08-08-13-00.md
+-rw-r--r--  1 runner runner  5433 Aug  8 21:55 run-2026-08-08-13-16.md
+-rw-r--r--  1 runner runner 10854 Aug  8 21:55 run-2026-08-08-14-00.md
+-rw-r--r--  1 runner runner 13226 Aug  8 21:55 run-2026-08-08-14-06.md
+-rw-r--r--  1 runner runner 11660 Aug  8 21:55 run-2026-08-08-14-38.md
+-rw-r--r--  1 runner runner  4157 Aug  8 21:55 run-2026-08-08-14-55.md
+-rw-r--r--  1 runner runner 16792 Aug  8 21:55 run-2026-08-08-15-52.md
+-rw-r--r--  1 runner runner 13137 Aug  8 21:55 run-2026-08-08-17-00.md
+-rw-r--r--  1 runner runner  5896 Aug  8 21:55 run-2026-08-08-17-58.md
+-rw-r--r--  1 runner runner 11282 Aug  8 21:55 run-2026-08-08-18-00.md
+-rw-r--r--  1 runner runner  1109 Aug  8 21:55 run-2026-08-08-18-17.md
+-rw-r--r--  1 runner runner 14869 Aug  8 21:55 run-2026-08-08-18-30.md
+-rw-r--r--  1 runner runner  5231 Aug  8 21:55 run-2026-08-08-19-06.md
+-rw-r--r--  1 runner runner   236 Aug  8 21:55 run-2026-08-08-19-48.md
+-rw-r--r--  1 runner runner 19156 Aug  8 21:55 run-2026-08-08-20-15.md
+-rw-r--r--  1 runner runner 15573 Aug  8 21:55 run-2026-08-08-20-55.md
+-rw-r--r--  1 runner runner 20472 Aug  8 21:55 run-2026-08-08-21-18.md
+-rw-r--r--  1 runner runner 17869 Aug  8 21:55 run-2026-08-08-21-22.md
+-rw-r--r--  1 runner runner  1799 Aug  8 21:55 run-2026-08-08-21-51.md
+[0m
+[0m→ [0mRead ctx.txt[90m [limit=100][0m
+[0m→ [0mRead leads/reposcan-latest.md
+[0m
+[0m$ [0mfor f in state_*.json; do echo "$f:"; cat "$f"; echo; done
+state_bigpickle.json:
+{"phase": "POC", "target": "sync"}
+state_laguna.json:
+{"phase": "POC", "target": "browser"}
+state_ling3.json:
+{"phase": "POC", "target": "sync"}
+state_longcat.json:
+{"phase": "POC", "target": "libs"}
+state_nemotron3.json:
+{"phase": "POC", "target": "browser"}
+[0m
+[0m→ [0mRead analyst-prompt.txt[90m [offset=244][0m
+[0m→ [0mRead reports/hypotheses-laguna.txt
+[0m→ [0mRead reports/valid-bugs.md
+[0m
+[0m$ [0mls -t leads/reposcan-* | head -5
+leads/reposcan-2026-08-08-17-06.md
+leads/reposcan-2026-08-08-17-26.md
+leads/reposcan-2026-08-08-17-43.md
+leads/reposcan-2026-08-08-17-57.md
+leads/reposcan-2026-08-08-18-09.md
+[0m
+Let me check the current hypotheses files and latest probe artifacts to understand the full state.
+[0m$ [0mcd /tmp/opencode && echo "=== NVD CVE check ===" && curl -s --connect-timeout 10 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00&resultsOnEntireList=true" -o /tmp/nvd_check1.json -w "%{http_code}" 2>&1; echo; curl -s --connect-timeout 10 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale" -o /tmp/nvd_check2.json -w "%{http_code}" 2>&1; echo
+=== NVD CVE check ===
+404
+200
+[0m
+[0m$ [0mecho "=== GitHub repo metadata ===" && curl -s --connect-timeout 10 "https://api.github.com/repos/naver/whale-browser-developers" -H "Accept: application/vnd.github+json" -o /tmp/gh_repo.json -w "%{http_code}" 2>&1; echo; echo "=== GitHub search ===" && curl -s --connect-timeout 10 "https://api.github.com/search/repositories?q=org:naver+whale" -H "Accept: application/vnd.github+json" -o /tmp/gh_search.json -w "%{http_code}" 2>&1; echo
+=== GitHub repo metadata ===
+200
+=== GitHub search ===
+200
+[0m
+[0m$ [0mecho "=== Sample extension files ===" && for f in "manifest.json" "js/background.js" "js/contentscript.js" "js/index.js" "js/index.html"; do code=$(curl -s --connect-timeout 10 -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/$f" 2>&1); echo "$f -> $code"; done && echo "=== Wiki check ===" && curl -s --connect-timeout 10 -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md" 2>&1; echo
+=== Sample extension files ===
+manifest.json -> 200
+js/background.js -> 200
+js/contentscript.js -> 200
+js/index.js -> 200
+js/index.html -> 404
+=== Wiki check ===
+404
+[0m
+[0m$ [0mecho "=== Binary acquisition channels ===" && curl -s --connect-timeout 10 -o /dev/null -w "cloudfront: %{http_code}\n" "https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb" 2>&1 && curl -s --connect-timeout 10 -o /dev/null -w "APKMirror: %{http_code}\n" "https://www.apkmirror.com/apk/naver-corp/whale/" 2>&1 && curl -s --connect-timeout 10 -o /dev/null -w "Uptodown: %{http_code}\n" "https://whale-browser.en.uptodown.com/" 2>&1 && curl -s --connect-timeout 10 -o /dev/null -w "pstatic: %{http_code}\n" "https://static-whale.pstatic.net/WhaleSetup.exe" 2>&1 && curl -s --connect-timeout 10 -o /dev/null -w "APKPure: %{http_code}\n" "https://apkpure.com/app/com.naver.whale" 2>&1
+=== Binary acquisition channels ===
+cloudfront: 000
+[0m
+Now I understand the full context. Let me run fresh read-only probes to check if the surface has changed since the last NO_DELTA report.
+[0m$ [0mecho "=== NVD results ===" && python3 -c "
+import json
+with open('/tmp/nvd_check2.json') as f:
+    data = json.load(f)
+total = data.get('totalResults', 0)
+print(f'Total CVEs: {total}')
+for cve in data.get('vulnerabilities', []):
+    cve_id = cve['cve']['id']
+    descriptions = cve['cve'].get('descriptions', [])
+    desc = next((d['value'] for d in descriptions if d['lang'] == 'en'), 'N/A')
+    print(f'  {cve_id}: {desc[:120]}')
+"
+=== NVD results ===
+Total CVEs: 2
+  CVE-2018-9859: The path of Whale update service was unquoted in NAVER Whale before 1.0.40.7. This vulnerability can be used for persist
+  CVE-2020-9754: NAVER Whale browser mobile app before 1.10.6.2 allows the attacker to bypass its browser unlock function via incognito m
+[0m
+[0m$ [0mecho "=== GitHub repo ===" && python3 -c "
+import json
+with open('/tmp/gh_repo.json') as f:
+    data = json.load(f)
+print(f'pushed_at: {data.get(\"pushed_at\")}')
+print(f'updated_at: {data.get(\"updated_at\")}')
+print(f'open_issues: {data.get(\"open_issues\")}')
+print(f'size: {data.get(\"size\")}')
+print(f'default_branch: {data.get(\"default_branch\")}')
+" && echo "=== GitHub search ===" && python3 -c "
+import json
+with open('/tmp/gh_search.json') as f:
+    data = json.load(f)
+print(f'Total repos: {data.get(\"total_count\")}')
+for item in data.get('items', []):
+    print(f'  {item[\"full_name\"]} pushed_at={item[\"pushed_at\"]}')
+"
+=== GitHub repo ===
+pushed_at: 2019-09-23T08:03:26Z
+updated_at: 2025-10-22T03:15:17Z
+open_issues: 4
+size: 5043
+default_branch: master
+=== GitHub search ===
+Total repos: 1
+  naver/whale-browser-developers pushed_at=2019-09-23T08:03:26Z
+[0m
+[0m$ [0mecho "=== Check remaining binary channels ===" && curl -s --connect-timeout 10 -o /dev/null -w "APKMirror: %{http_code}\n" "https://www.apkmirror.com/apk/naver-corp/whale/" 2>&1; curl -s --connect-timeout 10 -o /dev/null -w "Uptodown: %{http_code}\n" "https://whale-browser.en.uptodown.com/" 2>&1; curl -s --connect-timeout 10 -o /dev/null -w "pstatic: %{http_code}\n" "https://static-whale.pstatic.net/WhaleSetup.exe" 2>&1; curl -s --connect-timeout 10 -o /dev/null -w "APKPure: %{http_code}\n" "https://apkpure.com/app/com.naver.whale" 2>&1; echo "=== index.html at root ===" && curl -s --connect-timeout 10 -o /dev/null -w "index.html: %{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/index.html" 2>&1
+=== Check remaining binary channels ===
+APKMirror: 403
+Uptodown: 404
+pstatic: 404
+APKPure: 301
+=== index.html at root ===
+index.html: 200
+[0m
+[0m$ [0mecho "=== APKPure redirect check ===" && curl -s --connect-timeout 10 -L -o /dev/null -w "final_url: %{url_effective}\nfinal_code: %{http_code}\n" "https://apkpure.com/app/com.naver.whale" 2>&1
+=== APKPure redirect check ===
+final_url: https://apkpure.com/naver-whale-browser/com.naver.whale
+final_code: 200
+[0m
+[0m$ [0mecho "=== Verify sample extension content (key files) ===" && curl -s --connect-timeout 10 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" -o /tmp/sample_manifest.json -w "%{http_code}" 2>&1; echo; curl -s --connect-timeout 10 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" -o /tmp/sample_bg.js -w "%{http_code}" 2>&1; echo; python3 -c "
+import json
+with open('/tmp/sample_manifest.json') as f:
+    m = json.load(f)
+cs = m.get('content_scripts', [])
+for c in cs:
+    print(f'manifest content_scripts matches: {c.get(\"matches\")}')
+" 2>&1; echo "=== background.js head ===" && head -30 /tmp/sample_bg.js 2>&1
+=== Verify sample extension content (key files) ===
+200
+200
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 31 (char 206)
+=== background.js head ===
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message === 'sidebarAction.show') {
+    whale.sidebarAction.show({
+      reload : false
+    }, () => {
+
+    });
+  } else if (message === 'sidebarAction.hide') {
+    whale.sidebarAction.hide(() => {
+    });
+  } else if (message === 'sidebarAction.show2') {
+    whale.windows.create((windowInfo) => {
+      whale.sidebarAction.show(windowInfo.id, () => {
+
+      });
+    });
+  } else if (message === 'sidebarAction.hideAll') {
+    whale.windows.getAll((windowList) => {
+      for(let i = 0, len = windowList.length ; i < len ; i++) {
+        whale.sidebarAction.hide(windowList[i].id, () => {
+        });
+      }
+    });
+[0m
+[0m$ [0mecho "=== APKPure page content ===" && curl -s --connect-timeout 15 "https://apkpure.com/naver-whale-browser/com.naver.whale" -o /tmp/apkpure_page.html -w "%{http_code}" 2>&1; echo; echo "=== Search for download/version info ===" && grep -oiE '(whale[^\"]{0,30}(3\.9\.|4\.38\.)|download[^"]*apk[^"]*|version[^<]*3\.9[^<]*)' /tmp/apkpure_page.html 2>&1 | head -20; echo; echo "=== Look for APK download links ===" && grep -oiE 'href="[^"]*\.apk[^"]*"' /tmp/apkpure_page.html 2>&1 | head -10; echo "=== Look for version elements ===" && grep -oiE 'android-[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' /tmp/apkpure_page.html 2>&1 | head -5
+=== APKPure page content ===
+200
+=== Search for download/version info ===
+Whale Browser 3.9.
+download, Naver Whale Browser apk, Naver Whale Browser android apk, Naver Whale Browser download
+Whale Browser 3.9.
+download.apkpure.com
+download.apkpure.com
+version":"3.9.14.9","operatingSystem":"ANDROID","applicationCategory":"CommunicationApplication","applicationSubCategory":"Communication","offers":{"@type":"Offer","price":"0.00","priceCurrency":"USD"},"datePublished":"2026-08-01","aggregateRating":{"@type":"AggregateRating","ratingValue":"7.8","ratingCount":15,"bestRating":10,"worstRating":1},"publisher":{"@type":"Thing","name":"NAVER Corp."},"interactionStatistic":{"@type":"InteractionCounter","interactionType":"http://schema.org/DownloadAction","userInteractionCount":35000},"screenshot":[{"@type":"ImageObject","url":"https://image.winudf.com/v2/image1/Y29tLm5hdmVyLndoYWxlX3NjcmVlbl8wXzE3ODE1MzcwNDRfMDg0/screen-0.jpg?h=200&fakeurl=1&type=.jpg"},{"@type":"ImageObject","url":"https://image.winudf.com/v2/image1/Y29tLm5hdmVyLndoYWxlX3NjcmVlbl8xXzE3ODE1MzcwNDVfMDkw/screen-1.jpg?h=200&fakeurl=1&type=.jpg"},{"@type":"ImageObject","url":"https://image.winudf.com/v2/image1/Y29tLm5hdmVyLndoYWxlX3NjcmVlbl8yXzE3ODE1MzcwNDVfMDAw/screen-2.jpg?h=200&fakeurl=1&type=.jpg"},{"@type":"ImageObject","url":"https://image.winudf.com/v2/image1/Y29tLm5hdmVyLndoYWxlX3NjcmVlbl8zXzE3ODE1MzcwNDZfMDc3/screen-3.jpg?h=200&fakeurl=1&type=.jpg"},{"@type":"ImageObject","url":"https://image.winudf.com/v2/image1/Y29tLm5hdmVyLndoYWxlX3NjcmVlbl80XzE3ODE1MzcwNDZfMDkx/screen-4.jpg?h=200&fakeurl=1&type=.jpg"},{"@type":"ImageObject","url":"https://image.winudf.com/v2/image1/Y29tLm5hdmVyLndoYWxlX3NjcmVlbl81XzE3ODE1MzcwNDdfMDM5/screen-5.jpg?h=200&fakeurl=1&type=.jpg"},{"@type":"ImageObject","url":"https://image.winudf.com/v2/image1/Y29tLm5hdmVyLndoYWxlX3NjcmVlbl82XzE3ODE1MzcwNDdfMDIz/screen-6.jpg?h=200&fakeurl=1&type=.jpg"},{"@type":"ImageObject","url":"https://image.winudf.com/v2/image1/Y29tLm5hdmVyLndoYWxlX3NjcmVlbl83XzE3ODE1MzcwNDhfMDAw/screen-7.jpg?h=200&fakeurl=1&type=.jpg"}]}]
+versionName":"3.9.14.9","versionCode":15966,"category":"COMMUNICATION","appType":1,"templateLanguage":"en","isReportAct":false,"tapiBaseUrl":"https://tapi.pureapk.com","isPreRegisterApp":false}}
+download-head-info){margin-bottom:16px}}@media screen and (min-width:720px){.dev-partnership-head-info{margin-top:16px}}.dev-partnership-head-info.opt-1507627{align-items:center;gap:16px;margin-top:0;overflow:scroll}.dev-partnership-head-info.opt-1507627 .split-line{background-color:#e7e7e7;flex:0 0 auto;height:24px;width:1px}.dev-partnership-head-info.opt-1507627 li{flex:1;white-space:nowrap}.dev-partnership-head-info.opt-1507627 .head{height:24px}.dev-partnership-head-info li{font-size:14px;justify-content:space-around;line-height:21px}.dev-partnership-head-info .go-reviews,.dev-partnership-head-info li{align-items:center;display:flex;flex-direction:column;text-align:center;width:-moz-fit-content;width:fit-content}.dev-partnership-head-info .go-reviews:hover .desc{color:#00a6ed}.dev-partnership-head-info .head{align-items:center;color:#5e5e5e;display:flex;font-weight:500;gap:6px}.dev-partnership-head-info svg{fill:#fa8b16;height:14px;width:14px}.dev-partnership-head-info .content-ratting .svg-ratting{fill:#000;height:16px;width:16px}.dev-partnership-head-info .virustotal-safe{cursor:pointer}.dev-partnership-head-info .virustotal-safe .safety-score{align-items:center;background:rgba(36,205,119,.1);border:1px solid rgba(36,205,119,.6);border-radius:24px;color:var(--Colors-Brand-100,#24cd77);display:flex;font-size:12px;font-style:normal;font-weight:700;gap:1px;height:24px;justify-content:center;line-height:normal;padding:0 8px;text-align:center}.dev-partnership-head-info .virustotal-safe .safety-icon-detail-large{height:20px;width:20px}.dev-partnership-head-info .virustotal-safe .safety-icon-detail-small{height:14px;width:14px}.dev-partnership-head-info .desc{align-items:center;color:#8b8b8b;display:flex;font-size:12px;gap:2px;justify-content:start;line-height:18px}.dev-partnership{background:rgba(250,139,22,.1);border-radius:4px;color:#fa8b16;cursor:pointer;font-size:12px;line-height:normal;padding:4px 8px;width:-moz-fit-content;width:fit-content}.dev-partnership:hover{background-color:rgba(250,139,22,.15);color:#f58014}#dev-partnership-dialog:not(.fancybox-custom-dialog-2){border-radius:16px;max-width:640px;padding:24px;width:auto}@media screen and (max-width:719px){#dev-partnership-dialog:not(.fancybox-custom-dialog-2){max-height:70vh;padding-bottom:38px}#dev-partnership-dialog:not(.fancybox-custom-dialog-2):not(.download-dev-partnership){margin:auto 10px;padding-bottom:38px;transform:translateY(20px);vertical-align:bottom}#dev-partnership-dialog:not(.fancybox-custom-dialog-2).download-dev-partnership{min-height:100px;top:0;transform:translateY(20px)!important;transform:none}}#dev-partnership-dialog:not(.fancybox-custom-dialog-2) .title{border:none;color:#3c4043;font-size:18px;font-weight:700;line-height:27px;margin-bottom:24px;padding:0 32px 0 0}@media screen and (max-width:719px){#dev-partnership-dialog:not(.fancybox-custom-dialog-2) .title{margin-bottom:20px}}#dev-partnership-dialog:not(.fancybox-custom-dialog-2) .content-wrap{max-height:none;overflow:initial}#dev-partnership-dialog:not(.fancybox-custom-dialog-2) .fancybox-close-small{right:16px;top:16px}#dev-partnership-dialog:not(.fancybox-custom-dialog-2) .fancybox-close-small svg{height:20px;width:20px}#dev-partnership-dialog .content{padding:0}#dev-partnership-dialog .content p{margin-bottom:16px;margin-top:0}#dev-partnership-dialog .content p:not(.dev-partnership){color:#5e5e5e;line-height:21px}#dev-partnership-dialog .content p:last-child{margin-bottom:0}#dev-partnership-dialog .content .dev-partnership{font-weight:500;margin-bottom:24px}@media screen and (max-width:719px){#dev-partnership-dialog .content .dev-partnership{margin-bottom:20px}}#dev-partnership-dialog .content a{color:#00a6ed}#dev-partnership-dialog .content a:hover{text-decoration:underline}.security-statement-tag{background:rgba(36,205,119,.1);border-radius:4px;color:#24cd77;cursor:pointer;font-size:12px;font-weight:500;padding:4px 8px;width:-moz-fit-content;width:fit-content}.security-statement-tag:hover{background-color:rgba(36,205,119,.15);color:#1bbe6d}.security-statement-tag .safety-icon{height:14px;margin-inline-end:4px;vertical-align:text-bottom;width:14px}.security-statement-card{padding:0 16px}.security-statement-card .security-statement-card-wrap{align-self:stretch;background:rgba(36,205,119,.05);border-radius:8px;cursor:pointer;display:flex;gap:8px;padding:16px}@media screen and (max-width:719px){.security-statement-card .security-statement-card-wrap{padding:12px}}.security-statement-card .security-statement-card-wrap p{margin:0}.security-statement-card .security-statement-card-wrap svg.security-statement-icon{flex:0 0 auto;height:24px;margin:0;width:24px}.security-statement-card .security-statement-card-wrap .security-statement-info{align-items:stretch;color:#24cd77;display:flex;flex-direction:column;gap:8px;justify-content:center}.security-statement-card .security-statement-card-wrap .security-statement-info .security-statement-card-title{font-size:14px;font-weight:700;line-height:21px}.security-statement-card .security-statement-card-wrap .security-statement-info .security-statement-card-desc{font-size:12px;line-height:18px}.security-statement-card.security-card-opt-1507627{padding:0}.security-statement-card.security-card-opt-1507627 .security-statement-card-wrap{padding:12px 8px}.security-statement-card.security-card-opt-1507627 .security-statement-card-wrap .security-statement-info{gap:4px;margin-inline-end:8px}.security-statement-card.security-card-opt-1507627 .security-statement-card-wrap .security-statement-card-desc,.security-statement-card.security-card-opt-1507627 .security-statement-card-wrap .security-statement-card-title{line-height:20px}.fancybox-slide:has(>#security-statement-dialog){overflow:hidden}body .fancybox-container{z-index:9999992}#security-statement-dialog:not(.fancybox-custom-dialog-2){border-radius:16px;max-width:640px;padding:24px;width:640px}@media screen and (max-width:719px){#security-statement-dialog:not(.fancybox-custom-dialog-2){border-radius:16px 16px 0 0;max-height:70vh;max-width:none;padding:20px;transform:translateY(6px);vertical-align:bottom}#security-statement-dialog:not(.fancybox-custom-dialog-2):not(.download-security-statement){margin:auto 10px;width:calc(100% - 20px)}#security-statement-dialog:not(.fancybox-custom-dialog-2).download-security-statement{margin:auto 0;width:100%}}#security-statement-dialog:not(.fancybox-custom-dialog-2) .title{border:none;color:#3c4043;font-size:18px;font-weight:700;line-height:27px;margin-bottom:24px;padding:0 32px 0 0}@media screen and (max-width:719px){#security-statement-dialog:not(.fancybox-custom-dialog-2) .title{margin-bottom:20px}}#security-statement-dialog:not(.fancybox-custom-dialog-2) .content-wrap{max-height:none;overflow:initial}#security-statement-dialog:not(.fancybox-custom-dialog-2) .fancybox-close-small{height:44px;padding:12px;right:8px;top:8px;width:44px}#security-statement-dialog:not(.fancybox-custom-dialog-2) .fancybox-close-small svg{height:20px;width:20px}#security-statement-dialog .content{align-items:stretch;display:flex;flex-direction:column;gap:24px;padding:0}@media screen and (max-width:719px){#security-statement-dialog .content{gap:20px}}#security-statement-dialog .content p{margin:0}#security-statement-dialog .content .app-info-card{align-items:stretch;display:flex;gap:16px}#security-statement-dialog .content .app-info-card .app-icon{border:1px solid #eff3f9;border-radius:12px;flex:0 0 auto;height:64px;width:64px}#security-statement-dialog .content .app-info-card .app-info{text-wrap:nowrap;align-items:stretch;display:flex;flex-direction:column;gap:8px;justify-content:center;overflow:hidden;padding:0;text-overflow:ellipsis}#security-statement-dialog .content .app-info-card .app-info .app-name{color:#5e5e5e;font-size:16px;font-weight:500;line-height:24px}#security-statement-dialog .content .app-info-card .app-info .app-version-name{color:#8b8b8b;font-size:14px;line-height:21px}#security-statement-dialog .content .no-report-content{align-items:stretch;color:#5e5e5e;display:flex;flex-direction:column;font-size:14px;gap:12px;line-height:21px}#security-statement-dialog .content .no-report-content .help-link-wrap{align-items:stretch;display:flex;flex-direction:column;gap:8px;padding:8px 0}#security-statement-dialog .content .no-report-content .help-link-wrap .link{color:#00a6ed;padding:8px 0}#security-statement-dialog .content .no-report-content .help-link-wrap .link:hover{text-decoration:underline}#security-statement-dialog .content .no-report-content .help-link-wrap .link .link-icon{fill:#00a6ed;height:14px;margin-left:8px;vertical-align:middle;width:14px}#security-statement-dialog .content .report-content{align-items:stretch;display:flex;flex-direction:column;gap:20px}#security-statement-dialog .content .report-content .virus-total{align-items:center;background:rgba(36,205,119,.1);border-radius:12px;display:flex;gap:16px;padding:16px}#security-statement-dialog .content .report-content .virus-total .virus-num-circle{align-items:center;border:5px solid #24cd77;border-radius:999px;display:flex;flex:0 0 auto;flex-direction:column;gap:4px;height:56px;justify-content:center;width:56px}#security-statement-dialog .content .report-content .virus-total .virus-num-circle .virus-num{color:#24cd77;font-size:16px;font-weight:500;line-height:20px}#security-statement-dialog .content .report-content .virus-total .virus-num-circle .virus-total-num{color:#1bbe6d;font-size:12px;line-height:12px}#security-statement-dialog .content .report-content .virus-total .virus-total-info{align-items:stretch;align-self:stretch;display:flex;flex-direction:column;flex-grow:1;flex-shrink:1;justify-content:space-between}#security-statement-dialog .content .report-content .virus-total .virus-total-info .virus-total-title{color:#1bbe6d;font-size:18px;font-weight:500;line-height:27px}#security-statement-dialog .content .report-content .virus-total .virus-total-info .virus-total-date{color:#24cd77;font-size:14px;line-height:21px;opacity:.8}#security-statement-dialog .content .report-content .virus-item{align-items:center;color:#5e5e5e;display:flex;font-size:14px;font-weight:500;gap:8px;line-height:21px}#security-statement-dialog .content .report-content .virus-item .virus-item-icon{height:20px;width:20px}#security-statement-dialog .content .report-content .certified-by{color:#8b8b8b;font-size:14px;line-height:21px}#security-statement-dialog .content .more-info{align-items:stretch;display:flex;flex-direction:column;gap:8px}#security-statement-dialog .content .more-info .report-link{align-items:center;background:#00a6ed;border-radius:8px;color:#fff;display:flex;font-size:16px;font-weight:500;height:44px;justify-content:center;line-height:24px;padding:0 16px}#security-statement-dialog .content .more-info .report-link:hover{background-color:#0096da}#security-statement-dialog .content .more-info .faq-link{align-items:center;color:#00a6ed;display:flex;font-size:14px;justify-content:center;line-height:21px;padding:8px 0}#security-statement-dialog .content .more-info .faq-link:hover{text-decoration:underline}#security-statement-dialog .content .apk-info{align-items:stretch;display:flex;flex-direction:column;gap:16px}@media screen and (max-width:719px){#security-statement-dialog .content .apk-info{gap:12px}}#security-statement-dialog .content .apk-info .apk-info-item{align-items:stretch;display:flex;flex-direction:column;gap:4px}#security-statement-dialog .content .apk-info .apk-info-item .label{color:#5e5e5e;font-size:14px;font-weight:700;line-height:21px}#security-statement-dialog .content .apk-info .apk-info-item .value{color:#8b8b8b;font-size:12px;line-height:18px;word-break:break-all}.topic-card{align-items:stretch;background:linear-gradient(180deg,#fff1ee,#dae1fb);border-radius:8px;display:flex;flex-direction:column;gap:8px;max-width:100%;overflow:hidden;padding:8px 0}.topic-card .topic-card-header{align-items:flex-start;display:flex;gap:8px;overflow:hidden;padding:4px 12px}@media screen and (min-width:720px){.topic-card .topic-card-header{padding:4px 16px}}.topic-card .topic-card-header .topic-card-title{-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#f77e13,#efab19);background-clip:text;-webkit-background-clip:text;font-size:18px;font-weight:700;line-height:28px}.topic-card .topic-card-header svg{flex-grow:0;flex-shrink:0;height:20px;margin-top:4px;width:20px}.topic-card .swiper-wrapper{display:flex}.topic-card .swiper-wrapper .swiper-slide{flex:0 0 auto;height:100%;width:100%}.topic-card .topic-card-content{align-items:stretch;border-radius:8px;display:grid;flex-direction:column;gap:2px;grid-template-columns:repeat(1,1fr);margin:0 8px;overflow:hidden}@media screen and (min-width:720px){.topic-card .topic-card-content{grid-template-columns:repeat(2,1fr);margin:0 12px}}.topic-card .topic-card-content .topic-item{align-items:stretch;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);background:hsla(0,0%,100%,.9);cursor:pointer;display:flex;flex-direction:column;gap:8px;overflow:hidden;padding:8px 12px}@media screen and (min-width:720px){.topic-card .topic-card-content .topic-item{padding:12px 16px}}.topic-card .topic-card-content .topic-item:hover .topic-title{color:#00a6ed}.topic-card .topic-card-content .topic-item .topic-header{align-items:center;color:#3c4043;display:flex;font-size:14px;font-weight:700;gap:12px;justify-content:space-between;line-height:24px;overflow:hidden}.topic-card .topic-card-content .topic-item .topic-header .tending-mark{align-items:center;color:#fa8b16;display:flex;flex-direction:column;flex-grow:0;flex-shrink:0;font-size:12px;font-weight:700;gap:6px;justify-content:center;line-height:14px;overflow:hidden;width:40px}.topic-card .topic-card-content .topic-item .topic-header .tending-mark .icon-hot{background-image:url(/static-2/assets/svg/img-detail.stack-556bbdb5.svg#icon-fire);background-position:50%;background-repeat:no-repeat;background-size:contain;flex-grow:0;flex-shrink:0;font-size:16px;height:16px;line-height:normal;width:16px}.topic-card .topic-card-content .topic-item .topic-header .tending-mark .trending-value{max-width:100%}.topic-card .topic-card-content .topic-item .topic-summary{color:#5e5e5e;font-size:14px;line-height:20px;max-width:100%}.topic-card .topic-card-content .topic-item .topic-footer{align-items:center;color:#8b8b8b;display:flex;font-size:12px;gap:20px;justify-content:space-between;line-height:20px;max-width:100%;overflow:hidden}.topic-card .topic-card-content .topic-item .topic-footer .topic-info{align-items:center;display:flex;gap:20px;overflow:hidden}.topic-card .topic-card-content .topic-item .topic-footer .icon-container{align-items:center;display:flex;justify-content:center;width:40px}.topic-card .topic-card-content .topic-item .topic-footer .icon-container svg{fill:#8b8b8b;flex-grow:0;flex-shrink:0;height:14px;width:14px}.topic-card .topic-pagination-container{align-items:center;box-sizing:border-box;display:flex;gap:10px;justify-content:center;margin-top:8px;max-width:100%;padding:2px 20px}.topic-card .topic-pagination-bullet{background:rgba(0,0,0,.1);border-radius:50%;cursor:pointer;height:8px;width:8px}.topic-card .topic-pagination-bullet-active{background:#fa8b16}:root{--module-spacing:4px;--app-horizontal-spacing:8px;--app-vertical-spacing:12px;--html-direction:1;--html-rtl:0;--html-ltr:1}@media screen and (min-width:720px) and (max-width:995px){:root{--module-spacing:4px;--app-horizontal-spacing:12px}}@media screen and (min-width:996px){:root{--module-spacing:8px;--app-horizontal-spacing:16px}}html[dir=rtl]{--html-direction:-1;--html-rtl:1;--html-ltr:0}:root{--text-bold:500;--text-bold-700:700}html[lang=ar],html[lang=ja],html[lang=th-TH],html[lang=ur]{--text-bold:bold;--text-bold-700:bold}i.icon{display:inline-block;vertical-align:bottom}.no-scrollbar::-webkit-scrollbar{display:none}.one-line{white-space:nowrap}.double-lines,.one-line,.three-lines{overflow:hidden;text-overflow:ellipsis}.double-lines,.three-lines{-webkit-line-clamp:2;-webkit-box-orient:vertical;display:-webkit-box;white-space:normal}.three-lines{-webkit-line-clamp:3}.shadow-sm{box-shadow:0 1px 10px rgba(0,0,0,.05),0 4px 5px rgba(0,0,0,.08),0 2px 4px -1px rgba(0,0,0,.12)}.shadow-md{box-shadow:0 3px 14px 2px rgba(0,0,0,.05),0 8px 10px 1px rgba(0,0,0,.06),0 5px 5px -3px rgba(0,0,0,.1)}.shadow-lg{box-shadow:0 6px 30px 5px rgba(0,0,0,.05),0 16px 24px 2px rgba(0,0,0,.04),0 8px 10px -5px rgba(0,0,0,.08)}.app-icon{border:1px solid #eff3f9;border-radius:15%;box-sizing:border-box}.svg-align{position:relative;top:-.1em;vertical-align:middle}.reset-button{all:unset;outline:revert}.reset-h-tag{all:unset}.reviews-item{align-items:stretch;background:#fff;border:1px solid #e7e7e7;border-radius:8px;box-sizing:border-box;display:flex;flex:0 0 auto;flex-direction:column;gap:12px;overflow:hidden;padding:12px 8px;position:relative}.reviews-item .reviews-item-top{align-items:center;display:flex;gap:8px;padding:0 8px}.reviews-item .user-icon{flex:0 0 auto;height:40px;position:relative;width:40px}.reviews-item .user-icon img{border-radius:999px;height:100%;width:100%}.reviews-item .reviews-attr-info{align-items:flex-start;display:flex;flex:1;flex-direction:column;gap:8px;justify-content:center;overflow:hidden}.reviews-item .reviews-attr-info .user-info{align-items:center;display:flex;gap:4px;max-width:100%}.reviews-item .reviews-attr-info .user-name{color:#5e5e5e;font-size:14px;font-weight:700;line-height:16px}.reviews-item .reviews-attr-info .vip-badge{background-image:url(/static/imgs/icon_vip_badge.svg);background-position:50%;background-repeat:no-repeat;background-size:cover;flex:0 0 auto;height:14px;width:14px}.reviews-item .reviews-attr-info .star-info{align-items:center;display:flex;gap:12px;max-width:100%}.reviews-item .reviews-attr-info .star-info .reviews-date{color:#8b8b8b;font-size:12px;line-height:12px}.reviews-item .op-menu-container{align-items:center;align-self:stretch;display:flex;position:relative}.reviews-item .op-menu-container.cmt-open .op-menu-list{display:block}.reviews-item .op-menu-container .more-op-btn{color:#c5c5c5;cursor:pointer;display:block;height:20px;padding:0;width:20px}.reviews-item .op-menu-container .more-op-btn:hover{color:#00a6ed}.reviews-item .op-menu-container .more-op-btn svg{stroke:currentColor;height:100%;width:100%}.reviews-item .op-menu-container .op-menu-list{background-color:#fff;border:1px solid #f0f2f4;border-radius:8px;box-shadow:0 4px 4px rgba(0,0,0,.08);display:none;inset-inline-end:0;list-style:none;overflow:hidden;padding:8px 0;position:absolute;top:100%;z-index:999999}.reviews-item .op-menu-container .op-menu-list .op-btn{all:unset;background:none;color:#5e5e5e;cursor:pointer;display:block;height:30px;line-height:30px;padding:0 16px;white-space:nowrap}.reviews-item .op-menu-container .op-menu-list .op-btn:hover{background-color:#f2f5f9;color:#00a6ed}.reviews-item .reviews-item-body{align-items:stretch;display:flex;flex:1;flex-direction:column;gap:12px;padding:0 8px}.reviews-item .reviews-content{align-items:flex-start;color:#5e5e5e;display:flex;flex-direction:column;font-weight:500;gap:12px;line-height:20px}.reviews-item .reviews-content .media-list{display:flex;flex-wrap:wrap;gap:8px;overflow:hidden;width:100%}.reviews-item .reviews-content .media{aspect-ratio:16/9;background-color:#f8f8f8;background-position:50%;background-repeat:no-repeat;background-size:contain;border-radius:8px;max-width:296px;overflow:hidden;position:relative;width:100%}.reviews-item .reviews-content .media.video{background-color:#000}.reviews-item .reviews-content .media.video:before{background-color:rgba(0,0,0,.2);background-image:url(/static-2/assets/svg/img-common.stack-5dfdcab2.svg#icon-play);background-position:50%;background-repeat:no-repeat;background-size:40px;content:
+download-button{align-items:center;background-color:#24cd77;border-radius:4px;color:#fff;display:flex;gap:4px;height:18px;justify-content:center;padding:5px 8px}.buff-store-card .download-button svg{fill:#fff;height:12px;width:12px}.buff-store-card .gift-image{width:80px}.buff-store-card .game-gift{height:16px;width:16px}.buff-store-card .text{color:#4b4b4b;display:flex;flex:1;flex-direction:column;font-weight:500;line-height:18px;min-width:0;text-align:left}.buff-store-card .text span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media screen and (min-width:720px){.buff-store-card .text{flex-direction:row;font-size:16px;line-height:24px}}.buff-store-card .buff-button{background-color:#ff6154;border-radius:4px;color:#fff;font-size:12px;line-height:18px;padding:5px 8px}.buff-store-card .logo-image{height:14px;position:absolute;right:0;top:0;width:14px}@media screen and (min-width:720px){.buff-store-card .logo-image{height:16px;width:16px}}.ar_fix .buff-store-card .text{text-align:right}.apk-com-official-site:not(.additional-info){align-items:center;display:inline-flex;gap:4px;min-height:24px}.apk-com-official-site:not(.additional-info) svg{fill:#00a6ed;height:14px;width:14px}.apk-com-official-site:not(.additional-info) .text{color:#00a6ed;font-size:12px;line-height:18px;white-space:nowrap}.apk-com-official-site:not(.additional-info).other-platform svg{height:20px;margin-right:6px;vertical-align:middle;width:20px}.apk-com-official-site:not(.additional-info).other-platform .text{vertical-align:middle}.ar_fix .apk-com-official-site.other-platform svg{margin-left:6px;margin-right:0}.headline-xxl-large{font-size:64px}.headline-xl-large{font-size:48px}.headline-large{font-size:36px}.headline-medium{font-size:28px}.headline-small{font-size:24px}.headline-xs-small{font-size:20px}.title-bold-xl-large{font-size:18px}.title-bold-large{font-size:16px}.title-bold-medium{font-size:14px}.title-bold-small{font-size:12px}.title-xl-large{font-size:20px}.title-large{font-size:18px}.title-medium{font-size:16px}.title-small{font-size:14px}.body-large{font-size:16px}.body-medium{font-size:14px}.body-small{font-size:12px}:root{--font-weight:500}html[lang=ar],html[lang=ja],html[lang=th-TH],html[lang=ur]{--font-weight:bold}.apk-unit-list.normal-list{box-sizing:border-box;counter-reset:badge-count;display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;padding:0 16px;white-space:nowrap}.apk-unit-list.normal-list::-webkit-scrollbar{display:none}.apk-unit-list.normal-list .apk-unit{display:inline-flex;flex:0 0 auto;flex-direction:column;gap:8px;width:calc(16.66667% - 10px)}@media screen and (max-width:996px){.apk-unit-list.normal-list .apk-unit{min-width:86px}}@media screen and (min-width:996px){.apk-unit-list.normal-list .apk-unit{width:calc(12.5% - 10.5px)}}.apk-unit-list.normal-list .apk-unit .image-ratio{flex:0 0 auto;padding-top:100%;position:relative}.apk-unit-list.normal-list .apk-unit .image-ratio>.apk-unit-image{bottom:0;height:100%;left:0;position:absolute;right:0;top:0;width:100%}.apk-unit-list.normal-list .apk-unit .apk-unit-title{font-weight:var(--text-bold);line-height:22px}.apk-unit-list.normal-list .apk-unit .apk-unit-center{display:flex;flex:1;flex-direction:column;gap:8px;justify-content:space-between}.apk-unit-list.normal-list .apk-unit.with-rank .apk-unit-center{gap:6px}.apk-unit-list.normal-list .apk-unit .apk-download-btn{align-items:center;align-self:stretch;background:#24cd77;border-radius:4px;color:#fff;display:flex;font-size:12px;font-weight:400;gap:4px;justify-content:center;line-height:normal;min-height:22px;padding:0 6px}.apk-unit-list.normal-list .download.with-icon{align-items:center;color:#8b8b8b;display:flex;font-size:12px;font-weight:400;gap:4px;line-height:16px}.apk-unit-list.normal-list .apk-unit-rank{align-self:flex-start;border-radius:12px;box-sizing:border-box;color:#00a6ed;font-size:12px;font-weight:400;line-height:20px;max-width:100%;outline:1px solid #66d1ff;padding:0 8px}.apk-unit-list.normal-list .apk-unit-rank .rank-num{margin-inline-end:2px}.apk-unit-list.normal-list .stars{align-items:center;color:#fa8b16;display:flex;font-size:12px;gap:4px;line-height:16px}.apk-unit-list.normal-list .stars svg{top:0}.apk-unit-list.normal-list .stars.stars-zero{color:transparent}.apk-unit-list.normal-list .stars.stars-zero svg{fill:#c5c5c5}.apk-unit-list.normal-list .preregister{color:#00a6ed;display:flex;flex-direction:column;font-size:12px;line-height:16px}@media screen and (min-width:996px){.side .apk-unit-list.normal-list{flex-direction:column;gap:8px;white-space:normal}.side .apk-unit-list.normal-list .apk-unit{box-sizing:border-box;flex-direction:row;gap:12px;width:100%}.side .apk-unit-list.normal-list .apk-unit .image-ratio{padding-top:60px;width:60px}.side .apk-unit-list.normal-list .apk-unit-center{display:flex;flex:1;flex-direction:column;gap:12px;justify-content:center;width:0}.side .apk-unit-list.normal-list .apk-unit-content{font-size:12px}.side .apk-unit-list.normal-list .apk-unit-title{display:block;height:auto;line-height:24px;white-space:nowrap}.side .apk-unit-list.normal-list .apk-unit-center,.side .apk-unit-list.normal-list .apk-unit-desc,.side .apk-unit-list.normal-list .apk-unit-title{margin-top:0}.side .apk-unit-list.normal-list .preregister{flex-direction:row}}.apk-unit-list .apk-unit.corner-order{position:relative}.apk-unit-list .apk-unit.corner-order:before{background-position:50%;background-repeat:no-repeat;background-size:cover;content:
+download-box .btn{border-radius:4px;box-sizing:border-box;height:40px}.download-box .gp-btn,.download-box .iphone-btn{align-items:center;display:flex;gap:8px;justify-content:center;padding:4px 8px}.download-box .iphone-btn{background:#fff;border:1px solid #100f0d}.download-box .iphone-btn img{max-height:100%;max-width:100%}.download-box .gp-btn-container{align-items:stretch;display:flex;flex-direction:column;gap:8px}.download-box .gp-btn-container .gp-btn{background:#100f0d}.download-box .gp-btn-container .gp-btn svg{height:auto;max-height:100%;max-width:100%;width:auto}.download-box .gp-btn-container .price-box{display:flex;font-size:14px;gap:8px;justify-content:center;line-height:21px}.download-box .gp-btn-container .price-box .price{color:#fa8b16;text-align:center}.download-box .gp-btn-container .price-box .old-price{color:#5e5e5e}.download-box .aipure-btn:not(.btn-as-text-link),.download-box .apk-buff-store-button:not(.btn-as-text-link),.download-box .telegram-btn:not(.btn-as-text-link){align-items:center;display:flex;font-size:14px;gap:8px;justify-content:space-between;line-height:20px;padding:0 16px}.download-box .aipure-btn:not(.btn-as-text-link) .icon-container,.download-box .apk-buff-store-button:not(.btn-as-text-link) .icon-container,.download-box .telegram-btn:not(.btn-as-text-link) .icon-container{align-items:center;display:flex;height:20px;justify-content:center;width:20px}.download-box .aipure-btn:not(.btn-as-text-link) .icon,.download-box .aipure-btn:not(.btn-as-text-link) .telegram,.download-box .apk-buff-store-button:not(.btn-as-text-link) .icon,.download-box .apk-buff-store-button:not(.btn-as-text-link) .telegram,.download-box .telegram-btn:not(.btn-as-text-link) .icon,.download-box .telegram-btn:not(.btn-as-text-link) .telegram{height:16px;width:16px}.download-box .aipure-btn:not(.btn-as-text-link){background:linear-gradient(#fff,#fff) padding-box,linear-gradient(91deg,#00c2cb -10.09%,#a33ee0 107.68%) border-box;border:1px solid transparent;flex-direction:row-reverse}.download-box .aipure-btn:not(.btn-as-text-link):hover{background:linear-gradient(91deg,#00c2cb -10.09%,#a33ee0 107.68%);border:0}.download-box .aipure-btn:not(.btn-as-text-link):hover .text{-webkit-text-fill-color:initial;background:transparent;color:#fff}.download-box .aipure-btn:not(.btn-as-text-link):hover .icon{fill:#fff}.download-box .aipure-btn:not(.btn-as-text-link) .text{-webkit-text-fill-color:transparent;background:linear-gradient(91deg,#00c2cb -10.09%,#a33ee0 107.68%);background-clip:text;-webkit-background-clip:text}.download-box .aipure-btn:not(.btn-as-text-link) .icon{fill:#a33ee0}.download-box .aipure-btn.btn-as-text-link{flex-direction:row-reverse;text-decoration:none}.download-box .aipure-btn.btn-as-text-link:hover .text:after{opacity:0}.download-box .aipure-btn.btn-as-text-link .text{-webkit-text-fill-color:transparent;background:linear-gradient(91deg,#00c2cb -10.09%,#a33ee0 107.68%);background-clip:text;-webkit-background-clip:text;position:relative}.download-box .aipure-btn.btn-as-text-link .text:after{background:linear-gradient(91deg,#00c2cb -10.09%,#a33ee0 107.68%);bottom:0;content:
+download-box .aipure-btn.btn-as-text-link .icon{fill:#a33ee0}.download-box .telegram-btn:not(.btn-as-text-link){border:1px solid #0096da;color:#0096da;flex-direction:row-reverse}.download-box .telegram-btn:not(.btn-as-text-link):hover{background-color:#0096da;color:#fff}.download-box .telegram-btn:not(.btn-as-text-link) .telegram{position:inherit}.download-box .telegram-btn.btn-as-text-link{color:#0096da;flex-direction:row-reverse}.download-box .telegram-btn.btn-as-text-link .telegram{position:inherit}.download-box .apk-buff-store-button:not(.btn-as-text-link){border:1px solid #ff6154;color:#ff6154;flex-direction:row-reverse}.download-box .apk-buff-store-button:not(.btn-as-text-link):hover{background-color:#ff6154;color:#fff}.download-box .apk-buff-store-button.btn-as-text-link{color:#ff6154}.download-box .btn-as-text-link{align-items:center;align-self:center;display:flex;gap:4px;height:auto;justify-content:center;line-height:20px;text-decoration:underline}.download-box .btn-as-text-link:hover{text-decoration:none}.download-box .btn-as-text-link .icon-container{align-items:center;display:flex;height:12px;justify-content:center;width:12px}.download-box .btn-as-text-link .icon-container .icon{height:100%;width:100%}.download-box .coming-soon-btn,.download-box .custom-btn,.download-box .removed-btn{align-items:center;background-color:#24cd77;color:#fff;display:flex;font-size:14px;justify-content:center;line-height:20px}.download-box .off-download-desc{text-align:center}.download-box .custom-btn:hover{background:#24dc83}.download-box .removed-btn{background-color:#e0e0e0;color:#999}.download-box .normal-download-btn{align-items:center;background:#24cd77;color:#fff;display:flex;font-size:16px;font-weight:700;gap:8px;height:52px;justify-content:space-between;line-height:20px;max-width:100%;padding:15px 16px}.download-box .normal-download-btn:hover{background-color:#24dc83}.download-box .normal-download-btn:not(.download-font-weight) .text{font-weight:500}.download-box .normal-download-btn.download-font-weight .text{font-weight:700}.download-box .normal-download-btn.download-btn-breathe{animation:download-btn-breathe-shadow 2s ease-in-out infinite}.download-box .normal-download-btn.download-btn-breathe:hover{animation:none;box-shadow:0 0 12px 0 rgba(36,205,119,.8)}.download-box .normal-download-btn .text{flex:1}.download-box .normal-download-btn .icon{background:url(https://static.apkpure.com/www/static/imgs/icon-download-v1.svg) no-repeat;background-position:50%;background-size:cover;flex-grow:0;flex-shrink:0;height:20px;width:20px}.download-box .normal-download-btn.download-loading{background-color:#7ee8b2;pointer-events:none}.download-box .normal-download-btn.download-loading .icon{animation:download-icon-rotate 1.5s linear infinite;background-image:url(/static-2/assets/svg/img-common.stack-5dfdcab2.svg#icon-loading)}.download-box .normal-download-btn.vip{background:linear-gradient(90deg,#ff7704,#fb05f4) border-box;border:1px solid transparent}.download-box .normal-download-btn.vip:hover{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(90deg,#ff7704,#fb05f4) border-box}.download-box .normal-download-btn.vip:hover .text{-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#ff7704,#fb05f4);background-clip:text;-webkit-background-clip:text}.download-box .normal-download-btn.vip:hover .icon{background-image:url(/static-2/assets/svg/img-common.stack-5dfdcab2.svg#icon-vip-download)}.how-to-link{align-items:center;align-self:center;color:#00a6ed;display:flex;font-size:14px;gap:4px;justify-content:center;line-height:21px}.how-to-link .icon{height:12px;width:12px}.divider-container{align-items:stretch;background:#f2f5f9;display:flex;flex-direction:column;gap:10px;margin:4px 0}.divider-container .detail-buff-store-card{margin:0}.aegon-down-link{align-items:center;background:#fff;display:flex;gap:8px;overflow:hidden;padding:8px 16px}.aegon-down-link .icon{height:44px;width:44px}.aegon-down-link .text{align-items:flex-start;display:flex;flex:auto;flex-direction:column;overflow:hidden}.aegon-down-link .text .title{color:#5e5e5e;font-size:14px;font-weight:500;line-height:28px;max-width:100%}.aegon-down-link .text .desc{color:#8b8b8b;font-size:12px;line-height:20px;max-width:100%}.aegon-down-link .aegon-down-item-btn{align-items:center;background:#24cd77;border-radius:4px;color:#fff;display:flex;flex:0 0 auto;font-size:12px;gap:4px;height:28px;justify-content:center;line-height:normal;padding:0 8px}.questionnaire-entry-box{align-items:center;background-color:#fff;display:flex;flex-direction:column;gap:8px;height:auto;padding:8px 16px;text-align:center}@media screen and (min-width:720px){.questionnaire-entry-box{flex-direction:row;gap:12px;text-align:start}}.questionnaire-entry-box .icon{display:none}@media screen and (min-width:720px){.questionnaire-entry-box .icon{align-items:center;background:rgba(64,135,247,.1);border-radius:50%;display:flex;height:44px;justify-content:center;width:44px}}.questionnaire-entry-box .icon svg{fill:#76a8f9;flex-shrink:0;height:24px;width:24px}.questionnaire-entry-box .text{flex:1}.questionnaire-entry-box .text .title{color:#4b4b4b;font-size:14px;font-weight:500;line-height:21px}@media screen and (min-width:720px){.questionnaire-entry-box .text .title{font-size:16px;line-height:24px}}.questionnaire-entry-box .text .des{color:#a6a6a6;font-size:12px;font-weight:400;line-height:18px;margin-top:2px}.questionnaire-entry-box .emoji-img-box{display:flex;flex-shrink:0;gap:12px}.questionnaire-entry-box .emoji-img-box svg{height:26px;opacity:.8;width:24px}.questionnaire-entry-box .emoji-img-box svg:hover{opacity:1}@media screen and (min-width:720px){.questionnaire-entry-box .emoji-img-box svg{height:32px;width:30px}}.topic-module{background:#fff;margin-bottom:var(--model-spacing);padding:8px}@media screen and (min-width:720px){.topic-module{padding:12px}}.main-body .module.about-module .title{align-items:flex-start;display:flex;gap:12px;justify-content:space-between}.main-body .module.about-module .title .name{overflow:initial;text-overflow:clip;white-space:normal}.main-body .module.about-module .title .icon-link{height:28px}.main-body .module.about-module .title .icon-link:hover{text-decoration:underline}.description-editor-card{align-items:stretch;display:flex;gap:12px;max-width:-moz-max-content;max-width:max-content}.description-editor-card:hover .editor-info .editor-name{color:#00a6ed}.description-editor-card .avatar{border-radius:999px;height:40px;width:40px}.description-editor-card .editor-info{color:#8b8b8b;display:flex;flex:1 0 0;flex-direction:column;font-size:12px;justify-content:space-between;line-height:14px;overflow:hidden;text-overflow:ellipsis}.description-editor-card .editor-info .editor-name{align-items:center;color:#5e5e5e;display:flex;font-size:14px;font-weight:500;gap:6px;line-height:normal;max-width:100%;overflow:hidden}.description-editor-card .editor-info .editor-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.description-editor-card .editor-info .editor-name .tag{align-items:center;background:rgba(100,131,168,.1);border-radius:4px;color:#6483a8;display:flex;flex-shrink:0;font-size:10px;justify-content:center;line-height:20px;padding:0 4px}.description{color:#5e5e5e;font-size:14px;line-height:28px;word-break:break-word}.description .paragraph-bottom{margin-bottom:16px}.description .paragraph-top{margin-top:16px}.description h3,.description h4{color:#3c4043;font-size:16px;font-weight:700;line-height:28px}.description b{font-weight:700}.description ol,.description ul{display:flex;flex-direction:column;gap:4px;padding-inline-start:20px}.description li{list-style:inherit}.additional-content{grid-gap:1px;align-items:flex-start;align-items:stretch;background:#e7e7e7;border:1px solid #e7e7e7;display:grid;flex-direction:column;grid-template-columns:repeat(2,1fr);justify-items:stretch;width:100%}.additional-content .additional-item{align-items:flex-start;background-color:#fff;display:flex;flex-direction:column;gap:4px;padding:8px 12px}.additional-content .additional-item:last-child:not(:nth-child(2n)){grid-column:1/-1}.additional-content .additional-item .label{align-items:center;color:#3c4043;display:flex;font-size:14px;font-weight:500;gap:4px;line-height:24px}.additional-content .additional-item .value{color:#8b8b8b;display:flex;font-size:12px;gap:8px;line-height:20px}.additional-content .additional-item .value.link{color:#00a6ed}.additional-content .additional-item .value .open-security-btn{color:#00a6ed;cursor:pointer}.additional-content .additional-item .icon-gp-license{align-items:center;display:flex;height:14px;width:14px}.additional-content .additional-item .icon-gp-license svg{height:100%;width:100%}.additional-content .additional-item .icon-refresh{align-items:center;background:#4087f7;border-radius:20px;color:#fff;display:flex;height:20px;justify-content:center;width:20px}.additional-content .additional-item .icon-refresh svg{height:12px;width:12px}.additional-content .additional-item .google-logo{height:16px;width:81px}.additional-content .additional-item .virustotal-logo{cursor:pointer;height:20px;width:104px}.tag-module .tag-box{align-items:center;display:flex;flex-wrap:wrap;gap:4px}.tag-module .tag-box .tag-item{align-items:center;background:#f2f5f9;border:1px solid #f2f5f9;border-radius:999px;box-sizing:border-box;color:#5e5e5e;display:flex;font-size:14px;height:36px;justify-content:center;line-height:20px;padding:0 12px}.tag-module .tag-box .tag-item:hover{background:#dbf4ff;border:1px solid #dbf4ff;color:#00a6ed}.whats-new-module .whats-new-container{display:flex;flex-direction:column;gap:4px}.whats-new-module .text{color:#5e5e5e;font-size:14px;line-height:28px}.whats-new-module .update-date{font-weight:700}.secondary-download-box{align-items:stretch;background:#fff;display:flex;flex-direction:column;padding:12px 16px}@media screen and (min-width:720px){.secondary-download-box .btn{align-self:center;width:360px}}.virus-total-module{background:#fff;display:flex;flex-direction:column;gap:16px;padding:12px 16px}.virus-total-module .virus-total-info-box{align-items:flex-start;align-self:stretch;background:linear-gradient(180deg,rgba(36,205,119,.1),rgba(36,205,119,0)),#fff;border:1px solid #c9f5de;border-radius:8px;display:flex;gap:16px;justify-content:space-between;overflow:hidden;padding:16px;position:relative}@media screen and (max-width:719px){.virus-total-module .virus-total-info-box{flex-direction:column}}.virus-total-module .virus-total-info-box .container{display:flex;flex-direction:column;gap:16px}.virus-total-module .virus-total-info-box .vt-main{display:flex;flex-direction:column;gap:16px;width:100%}@media screen and (min-width:720px){.virus-total-module .virus-total-info-box .vt-main{align-items:flex-start;flex-direction:row;justify-content:space-between}}.virus-total-module .virus-total-info-box .vt-main .vt-left{display:flex;flex:1;flex-direction:column;gap:16px;min-width:0}.virus-total-module .virus-total-info-box .top-container{align-items:center;display:flex;gap:16px;width:100%}@media screen and (max-width:719px){.virus-total-module .virus-total-info-box .top-container{align-items:flex-start}}.virus-total-module .virus-total-info-box .top-container .score-ring{flex-shrink:0;position:relative}.virus-total-module .virus-total-info-box .top-container .score-ring .css-ring{border:4px solid #24cd77;border-radius:50%;box-sizing:border-box;height:80px;width:80px}@media screen and (max-width:719px){.virus-total-module .virus-total-info-box .top-container .score-ring .css-ring{height:56px;width:56px}}.virus-total-module .virus-total-info-box .top-container .score-ring .score-text{align-items:center;color:#24cd77;display:flex;flex-direction:column;justify-content:center;left:50%;position:absolute;top:50%;transform:translate(-50%,-50%)}.virus-total-module .virus-total-info-box .top-container .score-ring .score-text .score-num{font-size:28px;font-weight:700;line-height:1}@media screen and (max-width:719px){.virus-total-module .virus-total-info-box .top-container .score-ring .score-text .score-num{font-size:18px}}.virus-total-module .virus-total-info-box .top-container .score-ring .score-text .score-total{font-size:14px;font-weight:400;line-height:1}.virus-total-module .virus-total-info-box .top-container .vt-right{display:flex;flex-direction:column;gap:12px}.virus-total-module .virus-total-info-box .top-container .info{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}.virus-total-module .virus-total-info-box .top-container .info .title{align-items:center;color:#24cd77;display:flex;font-size:20px;font-style:normal;font-weight:700;gap:4px;line-height:28px;overflow:hidden;text-overflow:ellipsis}@media screen and (max-width:719px){.virus-total-module .virus-total-info-box .top-container .info .title{font-size:18px;line-height:26px}}.virus-total-module .virus-total-info-box .top-container .info .title .safe-icon-container{align-items:center;display:inline-flex;margin-left:4px;vertical-align:-3px}.virus-total-module .virus-total-info-box .top-container .info .title .safe-icon{cursor:pointer;flex-shrink:0;height:20px;width:20px}.virus-total-module .virus-total-info-box .top-container .info .desc{color:#24cd77;font-size:14px;font-style:normal;font-weight:500;line-height:20px;overflow:hidden;text-overflow:ellipsis}@media screen and (max-width:719px){.virus-total-module .virus-total-info-box .pc-tag{display:none}}@media screen and (min-width:720px){.virus-total-module .virus-total-info-box .mobile-tag{display:none}}.virus-total-module .virus-total-info-box .security-tag{display:flex;flex-wrap:wrap;gap:12px}.virus-total-module .virus-total-info-box .security-tag .item-tag{align-items:center;color:#3c4043;display:flex;font-size:16px;font-weight:700;gap:6px;line-height:20px}.virus-total-module .virus-total-info-box .security-tag .item-tag .icon{flex-shrink:0;height:16px;width:16px}.virus-total-module .virus-total-info-box .security-tag .item-tag .icon svg{fill:#24cd77;height:100%;width:100%}.virus-total-module .virus-total-info-box .security-tag .item-tag span{color:#5e5e5e;font-size:14px;font-style:normal;font-weight:700;line-height:22px}.virus-total-module .virus-total-info-box .content{display:flex;flex-direction:column;gap:8px;position:relative;width:100%}.virus-total-module .virus-total-info-box .content .row{color:#5e5e5e;font-size:14px;font-style:normal;line-height:20px;word-break:break-all}.virus-total-module .virus-total-info-box .content .row .label{font-weight:700;margin-right:4px}.virus-total-module .virus-total-info-box .content .row .value{font-weight:400}.virus-total-module .virus-total-info-box .content .row .value.img{align-items:center;display:inline-flex;vertical-align:middle}.virus-total-module .virus-total-info-box .content .row .value svg{height:18px;margin-right:8px;vertical-align:middle;width:91px}.virus-total-module .virus-total-info-box .content .content-rows{display:flex;flex-direction:column;gap:8px;mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 32px),transparent);-webkit-mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 32px),transparent)}.virus-total-module .virus-total-info-box .content .expandable-rows{display:none}.virus-total-module .virus-total-info-box .content .toggle{align-items:center;color:#05a5ed;cursor:pointer;display:inline-flex;font-size:14px;font-weight:500;gap:4px;line-height:20px;width:-moz-fit-content;width:fit-content}.virus-total-module .virus-total-info-box .content .toggle .toggle-icon{fill:#05a5ed;height:14px;transition:transform .3s ease;width:14px}.virus-total-module .virus-total-info-box .content .toggle:hover{opacity:.8}.virus-total-module .virus-total-info-box.expanded .content .expandable-rows{display:flex;flex-direction:column}.virus-total-module .virus-total-info-box.expanded .content .toggle .toggle-icon{transform:rotate(180deg)}.virus-total-module .virus-total-info-box.expanded .content .content-rows{mask-image:none;-webkit-mask-image:none}.virus-total-module .virus-total-info-box .logo{background:url(/static-2/assets/svg/img-common.stack-5dfdcab2.svg#icon-safe) no-repeat;bottom:-20px;height:100px;pointer-events:none;position:absolute;right:-16px;width:100px}.virus-total-module .virus-total-info-box .logo svg{fill:#24cd77;height:100%;opacity:.12;width:100%}@media screen and (min-width:720px){.virus-total-module .virus-total-info-box .vt-logo-large{height:86px}.virus-total-module .virus-total-info-box .vt-logo-small{height:62px}}.virus-total-module .virus-total-info-box .vt-logo-container{display:flex;flex-shrink:0;gap:4px;justify-content:center}@media screen and (min-width:720px){.virus-total-module .virus-total-info-box .vt-logo-container{align-items:center;flex-direction:column}}.virus-total-module .virus-total-info-box .vt-logo-container .vt-logo{align-items:center;cursor:pointer;display:flex;justify-content:center}.virus-total-module .virus-total-info-box .vt-logo-container .vt-logo .virustotal{height:29.5px;width:124px}.virus-total-module .virus-total-info-box .vt-logo-container .vt-logo .apkpure-verify{height:29.5px;width:85px}.virus-total-module .virus-total-info-box .vt-logo-container .vt-logo svg{height:100%;width:100%}.virus-total-module .virus-total-info-box .vt-logo-container .vt-brand{color:#3c4043;font-size:16px;font-weight:700;letter-spacing:1px;line-height:24px;white-space:nowrap}.virus-total-module .virus-total-info-box .vt-logo-container .vt-verified{align-items:center;color:#8b8b8b;display:flex;font-size:12px;font-style:normal;font-weight:400;line-height:20px;text-align:center}.virus-total-module .virus-total-info-box .vt-logo-container .vt-verified .vt-link{cursor:pointer;font-weight:500;text-decoration-line:underline;-webkit-text-decoration-skip-ink:none;text-decoration-skip-ink:none;text-decoration-style:solid;text-decoration-thickness:auto;text-underline-offset:auto;text-underline-position:from-font}.virus-total-module .virus-total-info-box .vt-logo-container .vt-verified .vt-link:hover{color:#8b8b8b;text-decoration:none}.screenshots-module .screenshots-container-warper{position:relative}.screenshots-module .screenshots-container{overflow:auto}.screenshots-module .screenshots-list{align-items:center;display:flex;gap:12px;padding-left:16px;padding-right:16px;width:-moz-fit-content;width:fit-content}.screenshots-module .screenshots-list .screenshots-item{border-radius:8px;flex-grow:0;flex-shrink:0;height:180px;overflow:hidden;width:auto}.screenshots-module .screenshots-list .screenshots-item.video{background-position:50%;background-repeat:no-repeat;background-size:100%;cursor:pointer;position:relative;width:320px}.screenshots-module .screenshots-list .screenshots-item.video:before{background-color:rgba(0,0,0,.3);background-image:url(/static-2/assets/svg/img-common.stack-5dfdcab2.svg#icon-play-2);background-position:50%;background-repeat:no-repeat;background-size:32px;border-radius:40px;content:
+version one-line">3.9.14.9
+version="3.9.14.9" data-dt-file_size="381850634" data-dt-version_code="15966" href="https://apkpure.com/naver-whale-browser/com.naver.whale/download" title="Download Naver Whale Browser latest version apk">
+Download APK (364.2 MB)</strong><i class=
+download?from=profile&amp;icn=aegon&amp;ici=image_profile&amp;refapk=com.naver.whale&amp;utm_content=1009
+Version 3.9.14.9
+version="3.9.14.9" data-dt-file_size="381850634" data-dt-version_code="15966" href="https://apkpure.com/naver-whale-browser/com.naver.whale/download" title="Download Naver Whale Browser latest version apk">
+Download APK (364.2 MB)</strong><i class=
+version-item dt-old-versions-item-new dt-old-versions-variant" data-dt-version="3.9.14.9" data-dt-package_name="com.naver.whale" data-dt-version_code="15966" data-dt-file_size="381850634" data-dt-apkid="b/XAPK/Y29tLm5hdmVyLndoYWxlXzE1OTY2X2JjNDA3M2U0">
+Download Naver Whale Browser latest version apk
+
+=== Look for APK download links ===
+href="https://m.apkpure.com/naver-whale-browser/com.naver.whale"
+href="//a.apkpure.com"
+href="//a.apkpure.com"
+href="//i.apkpure.com"
+href="//i.apkpure.com"
+href="//static.apkpure.com"
+href="//static.apkpure.com"
+href="//download.apkpure.com"
+href="//download.apkpure.com"
+href="https://static.apkpures.xyz/www/static/script/base64_v1236.css"
+=== Look for version elements ===
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mecho "=== manifest.json raw content ===" && cat /tmp/sample_manifest.json 2>&1 | head -40 failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+APKPure redirect returned 200, not 403. Let me investigate this potential new download channel.
