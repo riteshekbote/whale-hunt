@@ -1022,3 +1022,26 @@
 - LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-mont
 - LEARN: CONFIRMED @ GitHub repo `naver/whale-browser-developers`: pushed_at=2019-09-23T08:03:26Z, updated_at=2025-10-22T03:15:17Z, 0 releases, 4 branches unchanged — do
 - LEARN: REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown, pstatic): All 100% blocked in-sandbox — cloudfront DNS No-answer (general 
+
+## RANKED HYPOTHESES 2026-08-08 23:01:24 UTC
+- [65] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated sidebarAction.show on v4.38.386.14 (CVE-2025-69234/69235 regression variant) (from reports/hypotheses-laguna.txt)
+- [65] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+- [65] Latest: Sidebar/web-panel SOP-boundary regression on latest — vendor-documented chain, live attack surface (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) into `/tmp/opencode/whale/` via unrestricted internet — sole unlock for b
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver the official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet — all pass
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` w
+- LEARN: ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins 
+- LEARN: CONFIRMED @ NVD (services.nvd.nist.gov alt host): 0 Whale CVEs published in 2026 — keywordSearch `naver whale` returns exactly 2 total (CVE-2018-9859, CVE-2020-
+- LEARN: CONFIRMED @ GitHub repo: `naver/whale-browser-developers` `pushed_at=2019-09-23T08:03:26Z`, `updated_at=2025-10-22T03:15:17Z`, 4 open issues — documentation-onl
+- LEARN: CONFIRMED @ sample extension source (translate branch): all 4 files (manifest.json, background.js, contentscript.js, index.html) HTTP 200 this run — ALL-origin 
+- LEARN: CONFIRMED @ nvd.nist.gov/rest primary endpoint: now Cloudflare-blocked in-sandbox; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable and returns iden
+- LEARN: REJECTED @ binary acquisition (cloudfront/APKMirror/Uptodown/pstatic): all channels still blocked in-sandbox — binary-dependent hypotheses remain HUMAN_ONLY-gat
+- LEARN: REJECTED binary acquisition @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net`+`*.cloudfront.net` still resolve `No answer` (127.0.0.53) — desktop `.deb` path pe
+- LEARN: REJECTED binary acquisition @ pstatic CDN: `static-whale.pstatic.net/WhaleSetup.exe` still HTTP 404 — online installer artifact permanently dead; Naver pstatic 
+- LEARN: REJECTED binary acquisition @ Uptodown: `whale-browser.en.uptodown.com` still HTTP 404 (entire Whale app page removed) — passive WhaleSetup.exe path permanently
+- LEARN: REJECTED GitHub wiki sidebarAction docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` still 404 — SOP evidence rests solely 
+- LEARN: ACCEPTED sample extension source @ translate branch: all 5 files (manifest.json, background.js, contentscript.js, index.html, index.js) still HTTP 200 — ALL-ori
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — keywordSearch returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure g
