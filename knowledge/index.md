@@ -128,3 +128,5 @@
 - 2026-08-08 REJECTED @ uptodown download channel: `whale-browser.en.uptodown.com` now returns HTTP 404 (was 410 Gone) — passive WhaleSetup.exe acquisition path is permanently dead
 - 2026-08-08 REJECTED @ cloudfront CDN binary acquisition: DNS resolution fails for `*.cloudfront.net` (nslookup: No answer) — all binary acquisition paths blocked
 - 2026-08-08 REJECTED GitHub wiki sidebarAction docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` returns HTTP 404 — wiki documentation remains unreachable
+- 2026-08-08 CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 8-month vulnerability disclosure gap
+- 2026-08-08 REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptodown 404 page removed; apkpure.com 403; Naver domains excluded) — binary acquisition requires HUMAN with unrestricted internet access

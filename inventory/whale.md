@@ -251,3 +251,9 @@
 - NEW 2026-08-08 CONFIRMED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` resolve `No answer` (127.0.0.53) — all binary acquisition paths blocked
 - NEW 2026-08-08 CONFIRMED @ GitHub sample extension manifest: HTTP 200 — `content_scripts` matching ALL origins confirmed live on translate branch
 - NEW 2026-08-08 REJECTED GitHub wiki sidebarAction docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` returns HTTP 404 — stale/unverified
+
+## 2026-08-08 15:06:31 UTC
+- NEW CONFIRMED @ GitHub sample extension source (translate branch), `js/background.js`: HTTP 200 — `whale.runtime.onMessage.addListener` handles `sidebarAction.show`/`hide`/`show2`/`hideAll` from ANY `send
+- NEW CONFIRMED @ `static-whale.pstatic.net/WhaleSetup.exe`: HTTP 404 (server: Apache) — the online installer CDN artifact URL from bigpickle hypotheses is also dead; Naver pstatic infra excluded per scope.
+- NEW CONFIRMED @ NVD API (keywordSearch=`naver+whale`, no date filter): returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754); 0 in 2026 — disclosure gap confirmed
+- NEW CONFIRMED @ GitHub search API (`q=org:naver+whale`): 1 repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of additional repos disproven

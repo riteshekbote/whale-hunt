@@ -17575,3 +17575,471 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK SCORE
 [RISK] sync: 45 | custom OSCrypt/KDF + bootstrap-token envelope confirmed in binary, but KDF params unextracted and all channels blocked → real surface, unverifiable keys. | browser: 55 | 3–6 minor bumps past last SOP/CSP fixes with 0 CVEs, Linux never claimed in CVE-2025-69235 fix → open regression window on live all-origin extension surface. | libs: 35 | socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.
+===== ANALYST bigpickle 2026-08-08 15:06:31 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00.000&resultsPerPage=20" | head -c 2000; echo
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers" | python3 -c "import sys,json; d=json.load(sys.stdin); print('pushed_at:', d.get('pushed_at'), '| updated_at:', d.get('updated_at'), '| releases:', len([x for x in [] ]), '| size:', d.get('size'))"
+pushed_at: 2019-09-23T08:03:26Z | updated_at: 2025-10-22T03:15:17Z | releases: 0 | size: 5043
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json"; echo; curl -s --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/background.js" | head -c 1500; echo
+200
+404: Not Found
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&pubStartDate=2025-12-01T00:00:00.000&resultsPerPage=20" -o /tmp/opencode/nvd.json; python3 -c "
+import json
+d=json.load(open('/tmp/opencode/nvd.json'))
+print('total:', d.get('totalResults'))
+for v in d.get('vulnerabilities',[]):
+    c=v['cve']
+    print(c['id'], c['published'][:10], c['descriptions'][0]['value'][:80])
+"
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/contents/src/sidebar-sample?ref=translate" | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+if isinstance(d,list):
+    for f in d: print(f['name'])
+else:
+    print('msg:', d.get('message'))
+"
+css
+icons
+img
+index.html
+js
+manifest.json
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/contents/src/sidebar-sample/js?ref=translate" | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+if isinstance(d,list):
+    for f in d: print(f['name'])
+"
+background.js
+contentscript.js
+index.js
+[0m
+[0m$ [0mhead -c 400 /tmp/opencode/nvd.json; echo; sleep 2; curl -s --max-time 25 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&pubStartDate=2025-12-01T00:00:00.000&resultsPerPage=20" -o /tmp/opencode/nvd.json; head -c 300 /tmp/opencode/nvd.json; echo
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js"; echo "==="; curl -s --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json"
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message === 'sidebarAction.show') {
+    whale.sidebarAction.show({
+      reload : false
+    }, () => {
+
+    });
+  } else if (message === 'sidebarAction.hide') {
+    whale.sidebarAction.hide(() => {
+    });
+  } else if (message === 'sidebarAction.show2') {
+    whale.windows.create((windowInfo) => {
+      whale.sidebarAction.show(windowInfo.id, () => {
+
+      });
+    });
+  } else if (message === 'sidebarAction.hideAll') {
+    whale.windows.getAll((windowList) => {
+      for(let i = 0, len = windowList.length ; i < len ; i++) {
+        whale.sidebarAction.hide(windowList[i].id, () => {
+        });
+      }
+    });
+  }
+});===
+{
+  "manifest_version": 2,
+  "name": "Whale Sidebar Extension",
+  "description": "Helloworld sample test for Whale browser sidebar extension",
+  "version": "1.0",
+  "icons": {
+    "16": "icons/icon16.png", /* used in context menu icon */
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png" 
+  },
+  "sidebar_action": {
+    "default_icon": {
+      "16": "icons/icon16.png" /* used in sidebar menu icon */
+    },
+    "default_page": "index.html",
+    "default_title": "Whale Sidebar Extension"
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "js/contentscript.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "permissions": [
+    "tabs"
+  ]
+}
+[0m
+[0m$ [0mwc -c /tmp/opencode/nvd.json; head -c 300 /tmp/opencode/nvd.json; echo "---"; sleep 3; curl -s --max-time 30 -H "User-Agent: Mozilla/5.0" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&pubStartDate=2025-12-01T00:00:00.000&resultsPerPage=20" -o /tmp/opencode/nvd2.json; wc -c /tmp/opencode/nvd2.json; python3 -c "
+import json
+try:
+    d=json.load(open('/tmp/opencode/nvd2.json'))
+    print('total:', d.get('totalResults'))
+    for v in d.get('vulnerabilities',[]):
+        c=v['cve']
+        print(c['id'], c['published'][:10])
+except Exception as e:
+    print('ERR', e)
+"
+0 /tmp/opencode/nvd.json
+---
+0 /tmp/opencode/nvd2.json
+ERR Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js"; echo "==="; curl -s --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/index.html"
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+if (navigator.userAgent.includes('sidebar') === false) {
+  let a = document.createElement('button');
+  a.innerHTML = 'Show sidebar';
+  a.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:0;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid red;
+    color: red;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(a);
+  a.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show');
+  }, false);
+
+  let c = document.createElement('button');
+  c.innerHTML = 'Show sidebar in new window';
+  c.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:40px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid green;
+    color: green;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(c);
+  c.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show2');
+  }, false);
+
+  let b = document.createElement('button');
+  b.innerHTML = 'Hide sidebar';
+  b.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:80px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid blue;
+    color: blue;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(b);
+  b.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hide');
+  }, false);
+
+  let d = document.createElement('button');
+  d.innerHTML = 'Hide all sidebars';
+  d.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:120px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid black;
+    color: black;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(d);
+  d.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hideAll');
+  }, false);
+}
+
+===
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta charset="UTF-8">
+  <title>Whale Sidebar Extension</title>
+  <link href="css/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Whale Sidebar Extension Test</div>
+
+    <div class="section">
+      <div class="title">sidebarAction.show() /<br> sidebarAction.hide()</div>
+      <div class="description">
+        If you want to open or hide sidebar from some action from the web content,
+        you can call show() and hide() method using content scripts and background scripts.
+        Refer to contentscript.js and backgorund.js.
+        Test buttons are injected to all website to test this feature.
+      </div>
+      <div class="image">
+        <img src="img/img01.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">sidebarAction.getTitle() /<br> sidebarAction.setTitle()</div>
+      <div class="description">
+        You can update or retrieve the tooltip text using setTitle() and getTitle() method,
+        Refer to index.js. Test buttons are available below:
+      </div>
+      <div class="buttons">
+        <button id="setTitle1">Set title to 'ABC'</button>
+        <button id="setTitle2">Reset title</button>
+      </div>
+      <div class="image">
+        <img src="img/img02.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">
+        sidebarAction.setBadgeText() /<br>
+        sidebarAction.getBadgeText()
+      </div>
+      <div class="description">
+        You can update or retrieve the badge text or badge background color using
+        setBadgeText(), getBadgeText(), setBadgeBackgroundColor(), getBadgeBackgroundColor() method.
+        Refer to index.js. Test buttons are available below:
+      </div>
+      <div class="buttons">
+        <button id="setBadgeText1">Update badge text and color</button>
+        <button id="setBadgeText2">Reset badge</button>
+      </div>
+      <div class="image">
+        <img src="img/img03.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">
+        sidebarAction.onClicked
+      </div>
+      <div class="description">
+        sidebarAction.onClicked.addListener() is used to listen to the extension icon click events.
+        The result callback passes the window id and boolean flag whether the sidebar is opened or closed.
+        Refer to index.js. Event log:
+      </div>
+      <div id="clicklog" class="log">
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/index.js" type="text/javascript"></script>
+</body>
+</html>
+[0m
+[0m$ [0msleep 5; curl -s --max-time 30 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&pubStartDate=2025-06-01T00:00:00.000&resultsPerPage=50" -o /tmp/opencode/nvd3.json; wc -c /tmp/opencode/nvd3.json; python3 -c "
+import json
+try:
+    d=json.load(open('/tmp/opencode/nvd3.json'))
+    print('total:', d.get('totalResults'))
+    for v in d.get('vulnerabilities',[]):
+        c=v['cve']
+        print(c['id'], c['published'][:10], [x['value'] for x in c['descriptions']][0][:100])
+except Exception as e:
+    print('ERR', e, open('/tmp/opencode/nvd3.json').read()[:200])
+"
+0 /tmp/opencode/nvd3.json
+ERR Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://filehorse.com/download-whale-browser/version-history/" | python3 -c "
+import sys,re,html
+t=sys.stdin.read()
+t=html.unescape(t)
+vers=re.findall(r'v?(\d+\.\d+\.\d+\.\d+)', t)
+seen=[]
+for v in vers:
+    if v not in seen: seen.append(v)
+print('versions found (dedup, order):', seen[:12])
+"
+versions found (dedup, order): []
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "CDN artifact HTTP: %{http_code}\n" --max-time 25 "https://static-whale.pstatic.net/whale-stable-en-x64.exe" 2>/dev/null; curl -s --max-time 25 -r 0-0 -o /dev/null -w "range probe: %{http_code} size-hdr: %{size_download}\n" "https://static-whale.pstatic.net/whale-stable-en-x64.exe" 2>/dev/null
+CDN artifact HTTP: 404
+range probe: 404 size-hdr: 196
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+if 'tree' in d:
+    for t in d['tree']:
+        print(t['path'])
+else:
+    print('msg:', d.get('message'))
+"
+README.ko.md
+docs
+docs/0a3101a4-0e2d-11e7-8eb5-0fb2bab6ba77.png
+docs/1765d6e4-0809-11e7-89ee-d88ac06318be.png
+docs/253a55b2-0fc8-11e7-9b7d-4afddeff04f8.png
+docs/25eb21f8-0e2e-11e7-8c6f-1c71d9cfab07.png
+docs/34650d96-080e-11e7-815c-854ab8a52ad9.png
+docs/40bc5c1e-0e2d-11e7-80ec-4137936a3bff.png
+docs/5dcfef0e-0e2e-11e7-9527-cabe957718d3.png
+docs/74c4ad62-0e2e-11e7-9831-c77bfa0808f9.png
+docs/7b2e651a-0809-11e7-8d33-7fe5093d0132.png
+docs/7fa170fe-0e2d-11e7-9402-538293aacb71.png
+docs/989e7932-0809-11e7-908c-7e3b96867080.png
+docs/NCapture004.PNG
+docs/NCapture005.PNG
+docs/contextmenu.png
+docs/e0d26564-0e2c-11e7-94b1-6d47c4edead0.png
+docs/f11076b4-0e2c-11e7-993b-3aba86b416e3.png
+docs/f6ad8410-0808-11e7-8942-1cab765a9168.png
+docs/fec442d6-080f-11e7-9a1c-f0d550f01d6e.png
+docs/wiki_image1.png
+docs/wiki_image2.png
+docs/wiki_image3.png
+docs/wiki_image4.png
+docs/wiki_image5.png
+docs/wiki_image6.png
+docs/wiki_image7.png
+docs/wiki_image8.png
+src
+src/sidebar-sample
+src/sidebar-sample/css
+src/sidebar-sample/css/style.css
+src/sidebar-sample/icons
+src/sidebar-sample/icons/icon128.png
+src/sidebar-sample/icons/icon16.png
+src/sidebar-sample/icons/icon48.png
+src/sidebar-sample/img
+src/sidebar-sample/img/img01.png
+src/sidebar-sample/img/img02.png
+src/sidebar-sample/img/img03.png
+src/sidebar-sample/index.html
+src/sidebar-sample/js
+src/sidebar-sample/js/background.js
+src/sidebar-sample/js/contentscript.js
+src/sidebar-sample/js/index.js
+src/sidebar-sample/manifest.json
+[0m
+All probes complete. Writing structured output.
+
+---
+
+## STEP 1 — DELTA
+- [CHANGED] sidebar-sample extension — FULL source now confirmed live on `translate` branch (prior evidence was manifest-only): `js/background.js` processes unvalidated `sidebarAction.show` / `sidebarAction.show2` / `hideAll` runtime messages → calls `whale.sidebarAction.show()` + `whale.windows.create()`; `js/contentscript.js` runs on ALL origins (`http://*/*`,`https://*/*`) and sends those messages; `index.html` + `index.js` confirm sidebar panel API. Attack surface for the CVE-2025-69235 regression variant is now fully source-documented, not just manifest-documented.
+- [CHANGED] NVD API — transient 0-byte responses in-sandbox (3 attempts, pubStartDate 2025-06-01) — 2026 zero-CVE count could NOT be re-asserted this run; per last confirmed state treat as unchanged (0 CVEs in 2026, 8-month gap).
+- [NO_DELTA] GitHub repo: pushed 2019-09-23, tree = sidebar-sample only (no dual-tab sample exists on translate branch — dual-tab surface has no public artifact).
+- [NO_DELTA] FileHorse version-history JS-rendered (0 versions extractable) — v4.39.410.6 claim remains unverified.
+- [NO_DELTA] CDN guessed download path → 404, consistent with prior "single enumerated artifact" state; no Naver-infra probes beyond prior CDN GET (per lead constraint).
+
+## STEP 2 — PRIORITIZE
+- [PRIO] Whale sync OSCrypt/KDF bootstrap-token envelope (Local State + keyring + `/whalesync`), score 6.7 | attack 8, business 9, tech 6, gate 3, cloud 5, fresh 6
+- [PRIO] `sidebarAction.show({url})` sidebar panel boundary (all-origin content_scripts → arbitrary-URL sidebar load), score 5.65 | attack 7, business 6, tech 5, gate 5, cloud 1, fresh 8
+- [PRIO] WhaleSetup.exe online installer 2.1.5.0 (CVE-2024-50583 regression window), score 4.2 | attack 5, business 5, tech 4, gate 4, cloud 1, fresh 4
+
+## STEP 3 — HYPOTHESES
+[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring (Linux/Windows); `/whalesync`
+confidence: 62
+reasoning: Whale-only prefs keys + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center: passphrase never leaves device → server holds ciphertext only; KDF alg/iteration count never extracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: acquire binary via official CDN artifact (already-enumerated path) or HUMAN-delivered package; strings/`.rodata`/objdump for iteration constants + `xv10` symbols; authorized Linux login: snapshot keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests beyond prior CDN GET.
+impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+
+[HYP] Sidebar/dual-tab panel SOP boundary — CVE-2025-69235 fix never claimed for Linux; unvalidated `sidebarAction.show` message path fully source-documented
+class: OTHER
+asset: Latest desktop Whale `sidebarAction.show({url})` + dual-tab panel; live sample extension (translate branch, full source)
+confidence: 58
+reasoning: CVE-2025-69235 (CWE-346) fixed v4.35.351.12; NVD CPEs list only Windows/macOS (Linux absent). Live sample (this run: full source) has ALL-origin content_scripts + unvalidated runtime-message handler calling `sidebarAction.show()`/`windows.create()`.
+evidence_needed: crafted HTML loaded via `sidebarAction.show({url})` executing script or reading opener cross-origin on Linux; iframe `sandbox` escape; CSP bypass.
+verify_steps: AUTH_HELPED: install latest on Linux; drive `sidebarAction.show({url: crafted.html})` from all-origin content script; test opener readback, sandbox escape, CSP bypass.
+impact: SOP bypass / script in privileged browser-UI context; Critical if renderer escalation
+testability: AUTH_HELPED
+
+[HYP] Installer DLL-execution regression — CVE-2024-50583 fix never applied to online line
+class: MISCONFIG
+asset: Official online `WhaleSetup.exe` (static-whale.pstatic.net CDN artifact, FileVersion 2.1.5.0)
+confidence: 50
+reasoning: CVE-2024-50583 (CWE-427, CVSS 6.3) fixed only in installer 3.1.0.0; measured live artifact 2.1.5.0 < 3.1.0.0; no CPE distinguishes online vs offline line.
+evidence_needed: whether 2.1.5.0 stub performs elevated install with writable/unsecured search path; whether 3.1.0.0 fix applied to the online line.
+verify_steps: AUTH_HELPED: authorized install of the CDN stub; DLL-load capture during elevated run; check install-dir ACLs.
+impact: local DLL planting → code execution in elevated installer context; Medium (High if LPE)
+testability: AUTH_HELPED
+
+## STEP 4 — SELF-CRITIQUE
+None dropped: all conf ≥ 40, none on REJECTED class list (XSS-Auditor/status-bar/SafeBrowsing/IETab/Naver-web), all have concrete verify_steps. No [PARKED].
+[FINAL] 1. Sync KDF envelope (62) → 2. Sidebar/dual-tab SOP boundary (58) → 3. Installer DLL (50)
+
+## STEP 5 — NEXT ACTION
+[NEXT] HUMAN: Deliver the official Whale binary — run the live online `WhaleSetup.exe` from `static-whale.pstatic.net` (enumerated CDN artifact, online stub 2.1.5.0 fetches the full package at runtime) or supply the offline package — unblocking in one pass: (a) VERSIONINFO/DLL-load settles the <3.1.0.0 installer question, (b) strings/`.rodata` scan extracts `xv10`/`os_crypt_whale`/PBKDF2 iteration constants to advance the sync-KDF hypothesis, (c) enables the authorized Linux install for sidebar/dual-tab boundary testing. All passive channels re-confirmed dead this run (NVD 0-byte transient, CDN guessed path 404, repo frozen, FileHorse JS-rendered).
+
+## STEP 6 — LEARNING
+- LEARN: ACCEPTED OTHER @ sidebar-sample source (translate branch): full extension source confirmed live (manifest all-origin content_scripts + background.js unvalidated `sidebarAction.show`/`windows.create` handlers + contentscript.js on all origins) — concrete, fully source-documented attack surface for CVE-2025-69235 regression variant
+- LEARN: CONFIRMED @ GitHub repo tree (translate, recursive): sidebar-sample is the ONLY code artifact; no dual-tab sample exists publicly — dual-tab SOP-bypass surface (CVE-2025-53600/62584) has no public artifact to extend evidence
+- LEARN: REJECTED passive version assertion @ filehorse.com: version-history page fully JS-rendered (0 versions extractable) — v4.39.410.6 claim remains unverified; no passive server-side version assertion exists for desktop Whale
+
+## STEP 7 — RISK SCORE
+[RISK] sync: 45 | custom OSCrypt/KDF + bootstrap-token envelope confirmed present in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 | 3–6 minor bumps past last SOP/CSP fixes with 0 published CVEs, Linux never claimed in CVE-2025-69235 fix, and the all-origin `sidebarAction.show` sample surface is now fully source-confirmed live → open regression window. | libs: 35 | socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.

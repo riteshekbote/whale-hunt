@@ -683,3 +683,21 @@
 - LEARN: REJECTED @ uptodown download channel: `whale-browser.en.uptodown.com` now returns HTTP 404 (was 410 Gone) — passive WhaleSetup.exe acquisition path is permanent
 - LEARN: REJECTED @ cloudfront CDN binary acquisition: DNS resolution fails for `*.cloudfront.net` (nslookup: No answer) — all binary acquisition paths blocked
 - LEARN: REJECTED GitHub wiki sidebarAction docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` returns HTTP 404 — wiki documentation 
+
+## RANKED HYPOTHESES 2026-08-08 15:06:31 UTC
+- [65] Whale: Sync bootstrap-token envelope / KDF — Whale OSCrypt deviation on Linux (from reports/hypotheses-laguna.txt)
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/aut
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver the official Whale binary — run the live online `WhaleSetup.exe` from `static-whale.pstatic.net` (enumerated CDN artifact, online stub 2.1.5.0 fe
+- LEARN: REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+- LEARN: ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- LEARN: ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- LEARN: REJECTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- LEARN: REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests ava
+- LEARN: REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 8-month vulnerability disclos
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=053ffa4b..., `_migration_done`, `whale_need_encry
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` w
+- LEARN: CONFIRMED sample extension manifest @ raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json: still HTTP 200 — `con

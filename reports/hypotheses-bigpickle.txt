@@ -1,30 +1,31 @@
-## 2026-08-08 14:36:25 UTC [sync] (model bigpickle)
+## 2026-08-08 15:03:43 UTC [sync] (model bigpickle)
 [HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable key
 class: AUTH
-asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring (Linux/Windows); `/whalesync` endpoint (NEO_SES cookie)
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring (Linux/Windows); `/whalesync`
 confidence: 62
-reasoning: Whale-only prefs keys + `xv10`-magic OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → server holds ciphertext only, local KDF/key persistence is the whole attack surface. KDF alg/iteration count never extracted.
-evidence_needed: PBKDF2/scrypt alg + iteration count for passphrase→key; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
-verify_steps: AUTH_HELPED: acquire latest binary via official `static-whale.pstatic.net` CDN artifact (or HUMAN-delivered offline package), then strings/`.rodata`/objdump scan for iteration constants + `xv10` symbols; authorized Linux login: snapshot keyring + Preferences pre/post encrypted-sync enable. Zero requests to Naver infra beyond already-made CDN GET.
-impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords + bookmarks; High
+reasoning: Whale-only prefs keys + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center: passphrase never leaves device → server holds ciphertext only; KDF alg/iteration count never extracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: acquire binary via official CDN artifact (already-enumerated path) or HUMAN-delivered package; strings/`.rodata`/objdump for iteration constants + `xv10` symbols; authorized Linux login: snapshot keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests beyond prior CDN GET.
+impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords+bookmarks; High
 testability: AUTH_HELPED
-[HYP] Sidebar/dual-tab panel SOP-CSP boundary — CVE-2025-69235 fix never claimed for Linux
+[HYP] Sidebar/dual-tab panel SOP boundary — CVE-2025-69235 fix never claimed for Linux; unvalidated `sidebarAction.show` message path fully source-documented
 class: OTHER
-asset: Latest desktop Whale sidebar (`sidebarAction.show({url})`) + dual-tab web panel
+asset: Latest desktop Whale `sidebarAction.show({url})` + dual-tab panel; live sample extension (translate branch, full source)
 confidence: 58
-reasoning: CVE-2025-69235/69234 NVD CPEs list only Windows/macOS; Linux absent from fix claim. Sample extension manifest (live HTTP 200) uses all-origin content_scripts; wiki (previously captured) documents arbitrary-URL sidebar loading + `use_navigation_bar:false` drag-navigation.
-evidence_needed: crafted HTML in sidebar/dual-tab panel executing script or reading opener cross-origin on Linux; iframe `sandbox` escape; CSP bypass.
-verify_steps: AUTH_HELPED: install latest on Linux, drive `sidebarAction.show({url: crafted.html})` + dual-tab panel; test opener readback, sandbox escape, CSP bypass.
+reasoning: CVE-2025-69235 (CWE-346) fixed v4.35.351.12; NVD CPEs list only Windows/macOS (Linux absent). Live sample (this run: full source) has ALL-origin content_scripts + unvalidated runtime-message handler calling `sidebarAction.show()`/`windows.create()`.
+evidence_needed: crafted HTML loaded via `sidebarAction.show({url})` executing script or reading opener cross-origin on Linux; iframe `sandbox` escape; CSP bypass.
+verify_steps: AUTH_HELPED: install latest on Linux; drive `sidebarAction.show({url: crafted.html})` from all-origin content script; test opener readback, sandbox escape, CSP bypass.
 impact: SOP bypass / script in privileged browser-UI context; Critical if renderer escalation
 testability: AUTH_HELPED
-[HYP] Installer DLL-execution class still below fixed threshold — CVE-2024-50583 regression window on official channel
+[HYP] Installer DLL-execution regression — CVE-2024-50583 fix never applied to online line
 class: MISCONFIG
-asset: Official online `WhaleSetup.exe` (static-whale.pstatic.net), FileVersion 2.1.5.0
+asset: Official online `WhaleSetup.exe` (static-whale.pstatic.net CDN artifact, FileVersion 2.1.5.0)
 confidence: 50
-reasoning: CVE-2024-50583 (CWE-427, CVSS 6.3) fixed only in installer 3.1.0.0; measured live CDN artifact is 2.1.5.0 < 3.1.0.0 with no CPE distinguishing online vs offline line. Installer is a Whale-only (non-Chromium) component — in scope.
-evidence_needed: whether 2.1.5.0 stub performs elevated install with writable/unsecured search path; whether 3.1.0.0 fix applied to this online line.
+reasoning: CVE-2024-50583 (CWE-427, CVSS 6.3) fixed only in installer 3.1.0.0; measured live artifact 2.1.5.0 < 3.1.0.0; no CPE distinguishes online vs offline line.
+evidence_needed: whether 2.1.5.0 stub performs elevated install with writable/unsecured search path; whether 3.1.0.0 fix applied to the online line.
 verify_steps: AUTH_HELPED: authorized install of the CDN stub; DLL-load capture during elevated run; check install-dir ACLs.
 impact: local DLL planting → code execution in elevated installer context; Medium (High if LPE)
 testability: AUTH_HELPED
-[NEXT] HUMAN: Deliver the official Whale binary — run the live online `WhaleSetup.exe` from `static-whale.pstatic.net` (online stub 2.1.5.0 fetches full package at runtime) or provide the offline installer — to unblock in one pass: (a) VERSIONINFO/DLL-load check settles the <3.1.0.0 installer question, (b) strings/`.rodata` scan of the browser payload extracts `xv10`/`os_crypt_whale`/PBKDF2 iteration constants to advance the sync-KDF hypothesis, (c) enables the authorized Linux install for sidebar boundary testing. All passive channels remain dead (uptodown 404, cloudfront DNS `No answer`, APKMirror 403, Naver domains excluded).
-[RISK] sync: 45 | custom OSCrypt/KDF + bootstrap-token envelope confirmed in binary, but KDF params unextracted and all channels blocked → real surface, unverifiable keys. | browser: 55 | 3–6 minor bumps past last SOP/CSP fixes with 0 CVEs, Linux never claimed in CVE-2025-69235 fix → open regression window on live all-origin extension surface. | libs: 35 | socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.
+[FINAL] 1. Sync KDF envelope (62) → 2. Sidebar/dual-tab SOP boundary (58) → 3. Installer DLL (50)
+[NEXT] HUMAN: Deliver the official Whale binary — run the live online `WhaleSetup.exe` from `static-whale.pstatic.net` (enumerated CDN artifact, online stub 2.1.5.0 fetches the full package at runtime) or supply the offline package — unblocking in one pass: (a) VERSIONINFO/DLL-load settles the <3.1.0.0 installer question, (b) strings/`.rodata` scan extracts `xv10`/`os_crypt_whale`/PBKDF2 iteration constants to advance the sync-KDF hypothesis, (c) enables the authorized Linux install for sidebar/dual-tab boundary testing. All passive channels re-confirmed dead this run (NVD 0-byte transient, CDN guessed path 404, repo frozen, FileHorse JS-rendered).
+[RISK] sync: 45 | custom OSCrypt/KDF + bootstrap-token envelope confirmed present in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 | 3–6 minor bumps past last SOP/CSP fixes with 0 published CVEs, Linux never claimed in CVE-2025-69235 fix, and the all-origin `sidebarAction.show` sample surface is now fully source-confirmed live → open regression window. | libs: 35 | socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.
