@@ -53,4 +53,10 @@
   - | **VALID** | **0** | — |
 
 - 1 lead(s) marked VALID at 2026-08-08 17:00:02 UTC
-  - | **VALID** | **0** |
+  - | **VALID** | **0** | — |
+
+- 13 lead(s) triaged at 2026-08-08 18:00 UTC — **0 VALID / 0 HOLD / 13 INVALID**
+  - Full 7Q analysis per lead; uniform killer is Q4 (no passive proof) + Q7 (no evidence)
+  - All binary-acquisition channels blocked; all verify_steps are HUMAN_ONLY or AUTH_HELPED
+  - 5 models de-duplicated to 13 distinct lead categories — all INVALID
+  - See `triage/run-2026-08-08-18-00.md` for full analysis
