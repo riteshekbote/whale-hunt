@@ -31,3 +31,7 @@ https://whale-browser.en.uptodown.com/windows/download` -> HTTP 404
 
 ## 2026-08-08 21:57:51 UTC
 
+
+## 2026-08-08 22:29:16 UTC
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246 type=text/html;charset=UTF-8
+https://whale-browser.en.uptodown.com/windows/download` -> HTTP 400

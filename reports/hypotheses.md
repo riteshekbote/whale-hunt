@@ -953,3 +953,72 @@
 - LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
 - LEARN: CONFIRMED @ GitHub search API: 1 whale-named repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of addi
 - LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (same as CVE-2025-69235), shares identical gen
+
+## RANKED HYPOTHESES 2026-08-08 22:29:16 UTC
+- [65] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+- [65] Latest: Sidebar/web-panel SOP-boundary regression on latest — vendor-documented chain, live attack surface (from reports/hypotheses-bigpickle.txt)
+- [62] Whale: Sidebar/dual-tab boundary regression — CVE-2025-69235 variant on v4.38.386.14 (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) into `/tmp/opencode/whale/` via unrestricted internet — sole unlock for b
+- NEXT(hypotheses-laguna.txt): HUMAN: Install Whale browser v4.38.386.14 from a non-Naver mirror (all sandbox download paths blocked: cloudfront DNS No-answer, APKMirror 403, Uptodown 404, AP
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` w
+- LEARN: ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins)
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
+- LEARN: CONFIRMED @ GitHub search API: 1 whale-named repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of addi
+- LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (same as CVE-2025-69235), shares identical gen
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
+- LEARN: CONFIRMED @ GitHub repo: `naver/whale-browser-developers` `pushed_at=2019-09-23T08:03:26Z`, `updated_at=2025-10-22T03:15:17Z`, 4 open issues — documentation-onl
+- LEARN: CONFIRMED @ sample extension manifest (translate branch): HTTP 200 — `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins) still live; sidebar S
+- LEARN: REJECTED @ binary acquisition (cloudfront/APKMirror/Uptodown/pstatic): all channels still blocked in-sandbox — binary-dependent hypotheses remain HUMAN_ONLY-gat
+- LEARN: CONFIRMED @ sample extension manifest.json (translate branch, HTTP 200): content_scripts matching `http://*/*` + `https://*/*` (ALL origins) still live — attack
+- LEARN: CONFIRMED @ sample extension background.js (translate branch, HTTP 200): `whale.runtime.onMessage.addListener` dispatches `sidebarAction.show`/`show2`/`hide`/`h
+- LEARN: CONFIRMED @ sample extension contentscript.js (translate branch, HTTP 200): `whale.runtime.sendMessage('sidebarAction.show')`/`'sidebarAction.show2'` fired from
+- LEARN: CONFIRMED @ sample extension index.js (translate branch, HTTP 200): `onMessage` listener does only `console.log(message)` — no origin validation anywhere in the
+- LEARN: CONFIRMED @ sample extension index.html (translate branch, HTTP 200): "Test buttons are injected to all website to test this feature" — confirms design intent: 
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — no public disclosures for v4.35.352–v4.38.386.14, confirming 8-month disclosure gap since CVE-2025-69235 fix (
+- LEARN: REJECTED @ GitHub wiki sidebarAction docs: raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md returns HTTP 404 — wiki documentation 
+- LEARN: REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown): All blocked in-sandbox — DNS No-answer for *.cloudfront.net (general reso
+- LEARN: REJECTED @ naver/whale-browser-developers repo: Documentation-only (last commit 2019-09-23, 0 releases) — no browser binary source available for static analysis
+- LEARN: REJECTED class @ installer: DLL search-order regression — conf 50 < 60; all passive channels dead; DLL-load needs live elevated Windows install.
+- LEARN: CONFIRMED @ sample extension manifest/background.js (translate branch): both HTTP 200 (re-asserted 17:39:59 UTC) — `content_scripts` match ALL origins + unvalid
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs in 2026 (2 total, both pre-2021) — disclosure gap static for v4.35.352–v4.38.386.14.
+- LEARN: REJECTED @ GitHub repo: documentation-only (last commit 2019-09-23, 0 releases, 1 repo) — static path permanently dead; binary acquisition is only vector.
+- LEARN: REJECTED @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net`+`*.cloudfront.net` still `No answer` (127.0.0.53) — `.deb` path permanently dead in-sandbox.
+- LEARN: REJECTED @ GitHub wiki `sidebarAction` docs: still HTTP 404 — SOP evidence rests solely on live sample extension source.
+- LEARN: ACCEPTED @ GitHub sample extension `js/contentscript.js` (translate branch, HTTP 200): confirms `whale.runtime.sendMessage('sidebarAction.show')` / `'sidebarAct
+- LEARN: CONFIRMED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net`+`*.cloudfront.net` resolve `No answer` (127.0.0.53) — desktop `.deb` path permanently dead in-sandbo
+- LEARN: CONFIRMED @ GitHub wiki `sidebarAction` docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` still 404 — wiki documentation un
+- LEARN: CONFIRMED @ sample extension manifest.json (translate branch, HTTP 200): content_scripts matching `http://*/*` + `https://*/*` (ALL origins) still live — attack
+- LEARN: CONFIRMED @ sample extension background.js (translate branch, HTTP 200): `whale.runtime.onMessage.addListener` dispatches `sidebarAction.show`/`show2`/`hide`/`h
+- LEARN: CONFIRMED @ sample extension contentscript.js (translate branch, HTTP 200): `whale.runtime.sendMessage('sidebarAction.show')`/`'sidebarAction.show2'` fired from
+- LEARN: CONFIRMED @ sample extension index.js (translate branch, HTTP 200): `onMessage` listener does only `console.log(message)` — no origin validation anywhere in the
+- LEARN: CONFIRMED @ sample extension index.html (translate branch, HTTP 200): "Test buttons are injected to all website to test this feature" — confirms design intent: 
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — no public disclosures for v4.35.352–v4.38.386.14, confirming 8-month disclosure gap since CVE-2025-69235 fix (
+- LEARN: REJECTED @ GitHub wiki sidebarAction docs: raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md returns HTTP 404 — wiki documentation 
+- LEARN: REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown): All blocked in-sandbox — DNS No-answer for *.cloudfront.net (general reso
+- LEARN: REJECTED @ naver/whale-browser-developers repo: Documentation-only (last commit 2019-09-23, 0 releases) — no browser binary source available for static analysis
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` w
+- LEARN: ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins)
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
+- LEARN: CONFIRMED @ GitHub search API: 1 whale-named repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of addi
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — disclosure gap static for v4.35.352–v4.38.386.14 (8 months since CVE-2025-69235 fix)
+- LEARN: CONFIRMED @ GitHub sample extension source (translate branch): all 4 files (manifest.json, background.js, contentscript.js, index.html) still HTTP 200 — ALL-ori
+- LEARN: REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown, pstatic): All 100% blocked in-sandbox — DNS No-answer for *.cloudfront.net
+- LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (same as CVE-2025-69235), shares identical gen
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; disclosure gap s
+- LEARN: CONFIRMED @ sample extension index.js (translate branch, HTTP 200): onMessage listener does only `console.log(message)` — confirms NO sender origin validation a
+- LEARN: REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown, pstatic): All 100% blocked in-sandbox — DNS No-answer for *.cloudfront.net
+- LEARN: CONFIRMED @ changelog.whale.naver.com: Fully JS-rendered (empty text fetch), no server-side version assertion available passively; version data only fetched via
+- LEARN: REJECTED @ Wayback Machine archive of wiki sidebarAction.md: No archived snapshots exist — sidebarAction API documentation evidence permanently unavailable; att
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apk.support/apkpure: Cloudflare 403 on curl egress in this sandbox — PASSIVE binary-download path is dead here;
+- LEARN: ACCEPTED Android sync asset @ com.naver.whale 3.9.14.9: version + SHA256 pinned via non-Naver mirror metadata (APKMirror/Uptodown) — in-scope sync surface confi
+- LEARN: CONFIRMED desktop latest @ changelog.whale.naver.com: page is fully JS-rendered (empty text fetch) — no server-side version assertion available passively; v4.38
+- LEARN: REJECTED @ GitHub wiki sidebarAction docs: raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md still HTTP 404 — wiki documentation pe
+- LEARN: CONFIRMED @ sample extension source (translate branch): all 5 files (manifest.json, background.js, contentscript.js, index.html, index.js) still HTTP 200 — ALL-
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-mont
+- LEARN: CONFIRMED @ GitHub repo `naver/whale-browser-developers`: pushed_at=2019-09-23T08:03:26Z, updated_at=2025-10-22T03:15:17Z, 0 releases, 4 branches unchanged — do
+- LEARN: REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown, pstatic): All 100% blocked in-sandbox — cloudfront DNS No-answer (general 
