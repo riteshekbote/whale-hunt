@@ -106,3 +106,9 @@
 
 ## 2026-08-08 04:14:14 UTC
 - NEW 2026-08-08 00:35:12 UTC — ~45 minutes since last inventory aggregation (2026-08-07 23:49:41 UTC); no new public CVEs, no new GitHub commits, no new wiki edits detected in context
+
+## 2026-08-08 05:17:32 UTC
+- NEW NO_DELTA — inventory, knowledge, and leads unchanged since last aggregated hypotheses (2026-08-08 04:14:14 UTC); no new public CVEs, no new GitHub commits, no new wiki edits detected in context
+- NEW Android sync asset pinned for the first time: com.naver.whale 3.9.14.9 (vc 15965), arm64-v8a XAPK 166.29 MB, SHA256 3c7232913cd054651eae6151d82cfd7719da1f35bf69e3cbc3da79bf1e011faf, published 2026-07-
+- NEW Android patch cadence: 3.9.14.5 → 3.9.14.9 in ~6 weeks (2026-06-27 → 2026-08-05) with TWO re-uploads of 3.9.14.9 (2026-08-02, 08-05) — rapid churn on latest, sync encryption (added 3.8.6.2, 2025-04) s
+- NEW 2026-08-08 00:35:12 UTC — ~45 minutes since last inventory aggregation (2026-08-07 23:49:41 UTC); no new public CVEs, no new GitHub commits, no new wiki edits detected in context

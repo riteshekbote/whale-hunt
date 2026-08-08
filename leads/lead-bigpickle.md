@@ -620,3 +620,46 @@ verify_steps: AUTH_HELPED: install latest desktop Whale, open crafted HTML in si
 impact: sandbox escape / SOP bypass from a webpage → arbitrary script execution or cross-origin data theft in browser UI; Critical if escalates to renderer code execution
 testability: AUTH_HELPED
 ## 2026-08-08 03:58:17 UTC [sync] (model bigpickle)
+## 2026-08-08 05:01:09 UTC [sync] (model bigpickle)
+[NEW] Android sync asset pinned for the first time: com.naver.whale 3.9.14.9 (vc 15965), arm64-v8a XAPK 166.29 MB, SHA256 3c7232913cd054651eae6151d82cfd7719da1f35bf69e3cbc3da79bf1e011faf, published 2026-07-23 (APKMirror) / 2026-08-05 (Uptodown); APKMirror listing shows 4 variants (arm-v7a/arm64, APK+BUNDLE)
+[NEW] Android patch cadence: 3.9.14.5 → 3.9.14.9 in ~6 weeks (2026-06-27 → 2026-08-05) with TWO re-uploads of 3.9.14.9 (2026-08-02, 08-05) — rapid churn on latest, sync encryption (added 3.8.6.2, 2025-04) still maturing
+[PRIO] Desktop sync client (OSCrypt/bootstrap-token envelope, Local State) v4.38.386.14 — score 7.05 — attack 7 business 9 tech 8 gate 3 cloud 6 fresh 8
+[PRIO] Android sync client com.naver.whale 3.9.14.9 — score 7.00 — attack 7 business 9 tech 7 gate 3 cloud 6 fresh 9
+[PRIO] Sidebar/dual-tab environment, latest desktop >=4.35.351.12 — score 6.70 — attack 8 business 7 tech 7 gate 6 cloud 1 fresh 9
+[HYP] Whale sync passphrase KDF + local key storage, desktop OSCrypt envelope (v4.38.386.14)
+class: AUTH
+asset: Whale sync client, whale://settings/syncSetup; key material in Local State/OS keychain/Preferences
+confidence: 60
+reasoning: Vendor help center: passphrase never sent to/stored server-side, re-entered per new device → client-side derivation. Prior binary-string recon shows Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`, `_migration_done`) absent from upstream Chromium, indicating a custom OSCrypt/key-migration deviation.
+evidence_needed: KDF algorithm + iteration counts; per-OS envelope of derived key; whether token/key persists in Local State
+verify_steps: PASSIVE: acquire installer (non-Naver mirror), extract binaries, grep sync modules for "PBKDF2"/"scrypt"/"passphrase"/"bootstrap_token"/"xv10"; AUTH_HELPED: authorized test login, diff Local State pre/post to observe key lifecycle. Zero requests to naver sync infra.
+impact: Weak KDF or weak envelope → local attacker/infostealer decrypts synced bookmarks + saved passwords → PII cascade; High
+testability: AUTH_HELPED
+[HYP] Android sync encryption key derivation/storage, com.naver.whale 3.9.14.9
+class: AUTH
+asset: com.naver.whale 3.9.14.9 (vc 15965) sync client; EncryptedSharedPreferences/Keystore
+confidence: 58
+reasoning: Sync encryption only added 2025-04 (3.8.6.2); TLS-only before. 3.9.14.9 SHA256 now pinned (3c723291…) via non-Naver mirror, confirming latest Android build reachable for static analysis once download channel is solved. Prefs key family (`sync.encryption_*`) already evidenced in prior binary strings.
+evidence_needed: KDF constants, EncryptedSharedPreferences use, master-key source, bootstrap-token persistence path
+verify_steps: PASSIVE: obtain 3.9.14.9 XAPK, extract APK, decompile dex, grep for scrypt/PBKDF2/Keystore/bootstrap_token strings and manifest-referenced sync hostnames; AUTH_HELPED: authorized login on test device to observe filesystem key/token lifecycle.
+impact: Weak/plaintext-adjacent key storage → local attacker decrypts synced passwords; High
+testability: AUTH_HELPED
+[HYP] Sidebar/dual-tab boundary variant post-CVE-2025-69235, latest desktop
+class: OTHER
+asset: Latest desktop Whale (>=4.35.351.12) sidebar + dual-tab web panels
+confidence: 45
+reasoning: 6 confirmed 2025 CVEs across these Whale-only environments (SOP CWE-346, iframe sandbox escape, CSP CWE-358), each fixed a release later; recurrence across 3 releases signals systemic boundary weak spot; DevTools-in-sidebar added v4.38.386.12 expands the surface.
+evidence_needed: crafted HTML escaping iframe sandbox / bypassing SOP/CSP in sidebar or dual-tab web panel on the LATEST build
+verify_steps: AUTH_HELPED: install latest desktop Whale, open crafted HTML in sidebar and dual-tab web panels, test sandbox escape / cross-origin read / CSP bypass on v4.38.386.14
+impact: Sandbox escape / SOP bypass from webpage → arbitrary script or cross-origin data theft in browser UI; Critical if it escalates to renderer
+testability: AUTH_HELPED
+[PARKED] Whale-only bundled third-party libs version drift: confidence 35 < 40; also binary-inventory verify path is currently unexecutable (Cloudflare egress block)
+[PARKED] Android sync hypothesis merged with desktop sync hypothesis — same KDF/envelope design, only asset pin differs; both survive as one lead
+[FINAL] 1. Whale sync client KDF + local key/envelope storage (desktop v4.38.386.14 + Android 3.9.14.9 SHA256 3c723291…) — confidence 58-60, class AUTH 2. Sidebar/dual-tab SOP/sandbox variant on v4.38.386.14 — confidence 45, class OTHER
+[NEXT] PROBE: resolve the uptodown session-signed direct link to obtain com.naver.whale 3.9.14.9 XAPK: (1) `curl -c /tmp/opencode/utd.jar -s "https://naver-whale-browser.en.uptodown.com/android/download"` and re-extract the fresh `data-url` token (session-bound, re-fetched per request); (2) `curl -b /tmp/opencode/utd.jar -H "Referer: https://naver-whale-browser.en.uptodown.com/android/download" -o /tmp/opencode/whale_3.9.14.9.xapk "https://dw.uptodown.com/<fresh-token>"`; (3) verify `sha256sum` equals 3c7232913cd054651eae6151d82cfd7719da1f35bf69e3cbc3da79bf1e011faf before unzip; (4) unzip APK, grep dex for sync module strings ("passphrase", "PBKDF2", "scrypt", "bootstrap_token", "EncryptedSharedPreferences", "whale_need_encryption_key_forced_time"). Fallback if dw still 404s: try apkpure.net JS-resolved link or APKCombo browser-referenced GET. Zero requests to naver infra.
+[LEARN] REJECTED binary acquisition @ APKMirror/APKCombo/apk.support/apkpure: Cloudflare 403 on curl egress in this sandbox — PASSIVE binary-download path is dead here; only session/JS-resolved channels (uptodown dw, apkpure.net) remain
+[LEARN] ACCEPTED Android sync asset @ com.naver.whale 3.9.14.9: version + SHA256 pinned via non-Naver mirror metadata (APKMirror/Uptodown) — in-scope sync surface confirmed real, latest, and verifiable once the download channel is solved
+[LEARN] CONFIRMED desktop latest @ changelog.whale.naver.com: page is fully JS-rendered (empty text fetch) — no server-side version assertion available passively; v4.38.386.14 claim remains from prior recon
+[RISK] sync: 56 — Android 3.9.14.9 now SHA-pinned and latest (3.9.14.5→.9 in 6 weeks, two re-uploads), sync encryption still only ~15 months old with Whale-only prefs keys (`sync.encryption_*`, `_migration_done`) evidencing custom OSCrypt/migration deviations; but in-sandbox binary access is egress-blocked, so the KDF/envelope design stays unverifiable → moderate-high exposure, unchanged in kind
+[RISK] browser: 78 — 6 confirmed 2025 CVEs in Whale-only sidebar/dual-tab envs (SOP CWE-346, iframe sandbox, CSP CWE-358); v4.38.386.14 is 3 minor bumps past last CVE-fix with 0 CVEs in the 6-month gap; DevTools-in-sidebar (v4.38.386.12) added attack surface
+[RISK] libs: 30 — no Whale-only third-party manifests or version lists public; repo documentation-only; inventory impossible without binary access; low visibility, moderate inherent risk
