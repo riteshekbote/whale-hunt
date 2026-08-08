@@ -100,3 +100,9 @@
 - 2 lead(s) marked VALID at 2026-08-08 22:53:34 UTC
   - VALID bugs total: 0
   - **VALID bugs total: 0** — disclosure channel TBD per scope.yml.
+
+- 4 lead(s) marked VALID at 2026-08-08 23:16:58 UTC
+  - | Q6 | YES | SOP bypass is a valid vuln class |
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Valid class |
+  - **VALID count: 0** — no reportable vulnerability this cycle. Disclosure channel per scope.yml is TBD (operator-provided; not yet confirmed).
