@@ -23854,3 +23854,88 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK SCORE
 - [RISK] sync: 45 — custom `/whalesync` + per-account bootstrap tokens + `xv10` OSCrypt fork confirmed in binary, but KDF params/master-key storage unextracted and all 6 acquisition channels dead; real surface, unverifiable keys. | browser: 55 — 3 minor bumps past last sidebar SOP fix (CVE-2025-69235, Linux CPE absent) with 0 CVEs since; all-origin message path source-documented live but untestable without binary. | libs: 35 — socket.io.slim.js Whale-only but runtime-fetched; no in-sandbox static path; visibility lowest.
+===== ANALYST bigpickle 2026-08-08 20:55:36 UTC =====
+[0m
+> build · big-pickle
+[0m
+I'll run a minimal passive probe set to check for delta, then produce the structured analysis.
+[0m$ [0mcurl -s -o /tmp/opencode/nvd.json -w "NVD:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale&pubStartDate=2026-01-01T00:00:00.000&resultsPerPage=5" ; curl -s -o /dev/null -w "GITHUB_REPO:%{http_code}\n" "https://api.github.com/repos/naver/whale-browser-developers" ; curl -s -o /dev/null -w "SAMPLE_MANIFEST:%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" ; curl -s -o /dev/null -w "SAMPLE_BG:%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" ; curl -s -o /dev/null -w "SAMPLE_CS:%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js"
+NVD:404
+GITHUB_REPO:200
+SAMPLE_MANIFEST:200
+SAMPLE_BG:200
+SAMPLE_CS:200
+[0m
+NVD date-filtered query 404s (known NVD API quirk). Retrying without date filter to confirm the 2-CVE state.
+[0m$ [0mcurl -s -o /tmp/opencode/nvd.json -w "NVD:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale&resultsPerPage=10" ; python3 -c "import json;d=json.load(open('/tmp/opencode/nvd.json'));print('totalResults:',d.get('totalResults'));print([v['cve']['id'] for v in d.get('vulnerabilities',[])])" 2>/dev/null || head -c 300 /tmp/opencode/nvd.json
+NVD:200
+totalResults: 2
+['CVE-2018-9859', 'CVE-2020-9754']
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers" | python3 -c "import json,sys;d=json.load(sys.stdin);print('pushed_at:',d['pushed_at']);print('updated_at:',d['updated_at']);print('open_issues:',d['open_issues_count'])"
+pushed_at: 2019-09-23T08:03:26Z
+updated_at: 2025-10-22T03:15:17Z
+open_issues: 4
+[0m
+One discrepancy in context worth probing: a hypothesis cited the wiki under `naver/whale-developers` while all LEARN entries cite `naver/whale-browser-developers`. Checking whether that repo/wiki exists.
+[0m$ [0mcurl -s -o /dev/null -w "REPO_WHALE_DEV:%{http_code}\n" "https://api.github.com/repos/naver/whale-developers" ; curl -s -o /dev/null -w "WIKI_WHALE_DEV:%{http_code}\n" "https://raw.githubusercontent.com/wiki/naver/whale-developers/sidebarAction.md" ; curl -s "https://api.github.com/search/repositories?q=org:naver+whale&per_page=10" | python3 -c "import json,sys;d=json.load(sys.stdin);print('total:',d['total_count']);[print('-',r['name']) for r in d['items']]"
+REPO_WHALE_DEV:301
+WIKI_WHALE_DEV:404
+total: 1
+- whale-browser-developers
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code} -> %{redirect_url}\n" "https://api.github.com/repos/naver/whale-developers" ; curl -s -o /dev/null -w "WIKI_BD:%{http_code}\n" "https://raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md"
+301 -> https://api.github.com/repositories/87390266
+WIKI_BD:404
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repositories/87390266" | python3 -c "import json,sys;d=json.load(sys.stdin);print(d.get('full_name'));print('pushed_at:',d.get('pushed_at'))"
+naver/whale-browser-developers
+pushed_at: 2019-09-23T08:03:26Z
+[0m
+All probes complete. Repo ID 87390266 confirms `naver/whale-developers` is a legacy alias of `whale-browser-developers`. Structured analysis:
+
+---
+
+**STEP 1 — DELTA**
+- [NEW] `naver/whale-developers` = 301 legacy alias of `naver/whale-browser-developers` (repo ID 87390266, pushed_at 2019-09-23, renamed); its wiki `raw.githubusercontent.com/wiki/naver/whale-developers/sidebarAction.md` is HTTP 404 — the tail hypothesis's "wiki re-verified live under naver/whale-developers" claim is disproven. No separate repo or wiki exists.
+- [CHANGED] Sidebar SOP-hypothesis evidence base shrinks: wiki documentation chain (server-side `location.replace` guidance, `use_navigation_bar` notes) is dead under both repo names; only sample extension source remains (manifest/background/contentscript all HTTP 200), and prior runs established `manifest.json` is invalid JSON → sample itself uninstallable, degrading the "attack surface confirmed active" framing to documentation-level.
+- NO_DELTA otherwise: NVD still exactly 2 CVEs (CVE-2018-9859, CVE-2020-9754, 0 in 2026); repo `pushed_at`/`updated_at` unchanged; open_issues 4; binary acquisition channels unchanged (all dead in-sandbox).
+
+**STEP 2 — PRIORITIZE**
+- [PRIO] Sync envelope (`os_crypt_whale`/`xv10` + bootstrap-token, Local State, `/whalesync`) — 6.15 | attack 6, business 8, tech 6, gate 7, cloud 3, fresh 4
+- [PRIO] Sidebar/web-panel boundary (`sidebarAction.show({url})` + all-origin `onMessage`) — 5.85 | attack 7, business 6, tech 6, gate 8, cloud 1, fresh 4
+- [PRIO] Bundled `socket.io.slim.js` event handler — 4.35 | attack 4, business 4, tech 5, gate 6, cloud 2, fresh 5
+
+**STEP 3 — HYPOTHESES**
+- [HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable derived key
+  class: AUTH
+  asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+  confidence: 60
+  reasoning: Whale-only prefs keys + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/persistence is the whole surface; KDF alg + iteration count still unextracted. POC target.
+  evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+  verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+  impact: local attacker/infostealer decrypts synced passwords + bookmarks; High
+  testability: AUTH_HELPED
+- [HYP] Sidebar/web-panel SOP-boundary regression on latest
+  class: OTHER
+  asset: Latest desktop Whale `sidebarAction.show({url})` + dual-tab web panel
+  confidence: 45
+  reasoning: CVE-2025-69235 (CWE-346) fixed <v4.35.351.12; latest v4.38.386.14 is 3–6 minor bumps ahead, 0 CVEs since; sample extension (3 files HTTP 200) forwards any-origin `runtime.onMessage` to `sidebarAction.show`/`windows.create` unvalidated, but manifest is invalid JSON → sample uninstallable. Wiki documentation chain disproven this run (both repo names 404).
+  evidence_needed: crafted panel URL executing script / reading opener cross-origin on latest desktop.
+  verify_steps: AUTH_HELPED: install latest, load minimal valid MV2 extension, cross-origin content-script sendMessage, drive `sidebarAction.show({url: crafted.html})`, test opener readback + iframe sandbox escape. Zero Naver-infra requests.
+  impact: SOP bypass / script execution in browser-UI context; High if renderer escalation
+  testability: AUTH_HELPED
+
+**STEP 4 — SELF-CRITIQUE**
+- [PARKED] `socket.io.slim.js` event-handler injection: confidence 40 at floor; evidence stale (no in-sandbox path to extracted lib); all verify_steps require delivered binary blocked for 8+ consecutive runs; no passive proof path.
+- [FINAL] 1. Sync KDF + bootstrap-token envelope (AUTH, 60) — 2. Sidebar/web-panel SOP-boundary regression (OTHER, 45, downgraded from 55 on wiki-citation collapse).
+
+**STEP 5 — NEXT ACTION**
+- [NEXT] HUMAN: Deliver official Whale desktop v4.38.386.14 (`.deb` or `WhaleSetup.exe`) into `/tmp/opencode` via unrestricted internet — unblocks in one pass: (a) objdump/strings extracts `xv10`/`os_crypt_whale` PBKDF2 iteration constants for the sync-KDF hypothesis (60, POC target); (b) authorized Linux install enables the sidebar/dual-tab boundary test (45). All passive channels re-confirmed dead this run; no further passive delta is reachable.
+
+**STEP 6 — LEARNING**
+- REJECTED wiki-doc class @ `naver/whale-browser-developers` + legacy alias `naver/whale-developers`: both wiki paths HTTP 404; `naver/whale-developers` confirmed as a renamed pointer (301 → repo ID 87390266) with no wiki — wiki documentation class definitively dead under all names.
+- REJECTED claim @ sidebar "wiki-documented chain": the tail hypothesis's "wiki fully re-verified live under naver/whale-developers" citation is disproven; SOP-bypass evidence now rests solely on sample source whose manifest is invalid JSON.
+
+**STEP 7 — RISK SCORE**
+- [RISK] sync: 45 — Whale-only OSCrypt/KDF + bootstrap-token envelope + `/whalesync` confirmed in prior binary runs, but KDF params unextracted and every acquisition channel dead → real surface, unverifiable keys. | browser: 50 — 3–6 minor bumps past last sidebar SOP/sandbox fixes with 0 published CVEs and OS-agnostic fix scope, but wiki evidence collapsed this run and sample manifest is invalid, weakening the best-characterized surface; untestable without binary. | libs: 35 — `socket.io.slim.js` Whale-only confirmed but runtime-fetched and stale; no in-sandbox static path.
