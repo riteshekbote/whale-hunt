@@ -780,3 +780,32 @@ verify_steps: AUTH_HELPED: authorized login, inspect Preferences/Cookies for `wh
 impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
 testability: AUTH_HELPED
 [NEXT] HUMAN: (a) deliver official Whale `.deb` v4.38.386.14 (cloudfront `d1vdt4q2qgdbji.cloudfront.net` DNS-blocked in-sandbox; APKMirror 403; softpedia Cloudflare) for passive `.rodata`/objdump extraction of PBKDF2/scrypt iteration constants + derived-key persistence; (b) install latest on Linux and drive `sidebarAction.show({url})` + dual-tab panels with crafted HTML to test the SOP/CSP boundary the CVE-2025-69235 fix never claimed for Linux.
+## 2026-08-08 11:05:53 UTC [sync] (model bigpickle)
+[HYP] Sidebar/dual-tab panel SOP-CSP boundary — CVE-2025-69235 fix never claimed for Linux
+class: OTHER
+asset: Latest desktop Whale v4.38.386.14 Linux sidebar (`sidebarAction.show({url})`) + dual-tab web panel
+confidence: 50
+reasoning: NVD CPE for CVE-2025-69235 (CWE-346) lists only Windows/MacOS affected — Linux absent from fix claim. Wiki (re-read this cycle) documents the full injection chain: all-origin content_scripts → `runtime.sendMessage` → unvalidated background listener → `show({url:'http://…'})` loads arbitrary web content into an extension-panel context; `use_navigation_bar:false` + drag also navigates the panel to foreign sites. v4.38.386.14 is 3 minor bumps past the last fix with 0 published CVEs.
+evidence_needed: crafted HTML loaded into sidebar/dual-tab panel executing script or reading parent/opener cross-origin on Linux build; iframe `sandbox` escape; CSP bypass.
+verify_steps: AUTH_HELPED: install v4.38.386.14 on Linux; drive `sidebarAction.show({url: crafted.html})` + dual-tab web panel; test opener readback, `sandbox` escape, CSP bypass. Zero requests to Naver infra.
+impact: SOP bypass / script execution in privileged browser-UI context — cross-origin data theft; Critical if it escalates to renderer
+testability: AUTH_HELPED
+[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring (desktop), Keystore (Android 3.9.14.9)
+confidence: 65
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10`-magic OSCrypt fork confirmed in v4.38.386.14 binary via prior runs. Help Center confirms passphrase never leaves device → server holds ciphertext only, so local KDF/key persistence is the whole attack surface. Wiki/docs inventory (this cycle) proves zero public sync docs — binary-only analysis.
+evidence_needed: PBKDF2/scrypt alg + iteration count for passphrase→key; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: BLOCKED in-sandbox (no binary). AUTH_HELPED: authorized Linux login, snapshot keyring + Preferences/Login Data/Secure Preferences pre/post encrypted-sync enable; instrument os_crypt path for KDF params.
+impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords + bookmarks; High
+testability: AUTH_HELPED
+[HYP] Sync refresh-token storage deviation in forked OAuth components
+class: AUTH
+asset: Whale binary `whale_sync_auth_manager.cc`/`whale_refresh_token_revoker.cc`; `.whaleon.us` token scope
+confidence: 45
+reasoning: Whale forks stock OAuth (access_token_fetcher_immediate_refresh_token, revoker); such forks historically persist tokens outside Chromium token_service (plaintext prefs/cookies). Zero public sync docs (wiki inventory complete this cycle) → verification is user-profile + binary, not server.
+evidence_needed: whether whale refresh/access tokens persist outside token_service; their scope + file perms.
+verify_steps: AUTH_HELPED: authorized login; inspect user-profile `Preferences`/`Cookies` for `whale.*`/`.whaleon.us` token keys + perms; diff vs Chromium token_service layout. Zero requests to Naver infra.
+impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
+testability: AUTH_HELPED
+[NEXT] HUMAN: deliver official Whale `.deb` v4.38.386.14 via unrestricted internet (cloudfront `d1vdt4q2qgdbji.cloudfront.net` DNS-blocked in-sandbox; APKMirror/Softpedia 403; Uptodown 410) — this single asset unblocks BOTH the sync KDF `.rodata`/objdump extraction AND the authorized Linux install needed to drive `sidebarAction.show({url})` + dual-tab panel SOP/CSP tests.

@@ -1626,3 +1626,38 @@ testability: HUMAN_ONLY
 [LEARN] ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`, `_migration_done`, `whale_need_encryption_key_forced_time`) + Whale-forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` + `xv10` magic CONFIRMED present in v4.38.386.14 binary via prior bigpickle/laguna runs — KDF constants/iteration counts + master-key storage location remain unextracted (stale until re-acquired)
 
 [RISK] sync: 65 — custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 78 — sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; binary now available enables repro-first variant hunting | libs: 35 — paks now parseable for a bundled-lib inventory, and Whale-only `socket.io.slim.js` is confirmed bundled (content runtime-fetched); version-drift assessment still requires upstream comparison
+===== ANALYST nemotron3 2026-08-08 11:06:56 UTC =====
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[NO_DELTA]
+
+[PRIO] Whale sidebar environment (whale.sidebarAction.show) on v4.38.386.14, 7.55, atk=9 biz=10 tech=7 gate=2 cloud=4 fresh=9
+[PRIO] Whale sync bootstrap-token envelope (OSCrypt deviation on Linux, v4.38.386.14), 6.55, atk=7 biz=8 tech=9 gate=2 cloud=3 fresh=8
+[PRIO] Whale sync passphrase KDF + bootstrap-token envelope (desktop v4.38.386.14 + Android 3.9.14.9), 6.45, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=7
+[PRIO] Whale dual-tab environment on v4.38.386.14, 6.15, atk=7 biz=7 tech=6 gate=2 cloud=3 fresh=6
+[PRIO] Bundled socket.io.slim.js in resources.pak (Whale-only), 4.85, atk=5 biz=4 tech=6 gate=8 cloud=2 fresh=4
+
+[HYP] Sidebar context SOP bypass — new variant post-CVE-2025-69235 on v4.38.386.14
+class: OTHER
+asset: whale.sidebarAction.show({url}) sidebar panel loader
+confidence: 60
+reasoning: CVE-2025-69235 (CWE-346) fixed in v4.35.351.12; v4.38.386.14 is 3 minor bumps ahead with 0 CVEs. Wiki confirms show({url}) loads arbitrary URL in panel; use_navigation_bar=false exposes drag-navigation. Sample extension content_scripts match ALL origins and background.js calls sidebarAction.show() without origin validation.
+evidence_needed: Running browser v4.38.386.14 demonstrating cross-origin data access from sidebar context via show({url:'https://victim.com'}) or drag-drop navigation bypass
+verify_steps: PASSIVE: Inspect sidebarAction.show URL loading behavior in extension manifest; check use_navigation_bar defaults; review wiki mitigation code for gaps. HUMAN_ONLY: Install Whale v4.38.386.14 → load sidebar-sample extension → call whale.sidebarAction.show({url:'https://httpbin.org/headers'}) → attempt cross-origin fetch from panel content script → test drag-drop with use_navigation_bar:false
+impact: Cross-origin data theft from sidebar context → credential/CSRF-token exfiltration, potential privilege escalation (Critical)
+testability: HUMAN_ONLY
+
+[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
+class: AUTH
+asset: whalesync client engine (api.whale.naver.com/whalesync) + profile prefs sync.encryption_bootstrap_token_per_account
+confidence: 62
+reasoning: v4.38.386.14 binary confirms Whale-only prefs keys + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic); /whalesync authed by NEO_SES cookie only; sync.cookies/sync.passwords in type list; per-account bootstrap token envelope deviates from upstream Chromium sync.encryption_bootstrap_token.
+evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to stale key
+verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util call sites for bootstrap-token envelope and /whalesync/reset request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network
+impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
+testability: PASSIVE
+
+[HYP] Whale sync passphrase KDF weakness / plaintext-adjacent key storage
+class: AUTH
+asset: Whale sync client (whale://settings/sync

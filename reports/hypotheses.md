@@ -495,3 +495,54 @@
 - LEARN: REJECTED passive binary acquisition @ cloudfront CDN: DNS resolution blocked at sandbox resolver level — confirmed general to all cloudfront domains; google.com
 - LEARN: REJECTED @ APKMirror/APKCombo/apkpure/Uptodown: All paths 403/410 or legacy-only — not latest 3.9.14.9
 - LEARN: REJECTED @ naver web services (developers/lab/store.whale.naver.com): Excluded per scope.yml out_of_scope
+
+## RANKED HYPOTHESES 2026-08-08 11:06:56 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-laguna.txt)
+- [60] whale.sidebarAction.show({url}): Sidebar context SOP bypass — new variant post-CVE-2025-69235 on v4.38.386.14 (from reports/hypotheses-nemotron3.txt)
+- [50] Latest: Sidebar/dual-tab panel SOP-CSP boundary — CVE-2025-69235 fix never claimed for Linux (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: deliver official Whale `.deb` v4.38.386.14 via unrestricted internet (cloudfront `d1vdt4q2qgdbji.cloudfront.net` DNS-blocked in-sandbox; APKMirror/Softpe
+- NEXT(hypotheses-laguna.txt): PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/aut
+- LEARN: REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+- LEARN: ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- LEARN: ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- LEARN: ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- LEARN: REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests ava
+- LEARN: REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- LEARN: CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability dis
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`, `_migration_done`, `whale_need_enc
+- LEARN: CONFIRMED @ GitHub wiki: `whale.sidebarAction` page accessible via raw.githubusercontent.com/wiki/ — confirms `show({url})` loads arbitrary URL in sidebar panel
+- LEARN: CONFIRMED @ GitHub sample extension (translate branch): `manifest.json` declares content_scripts matching ALL origins; background.js calls `sidebarAction.show()
+- LEARN: REJECTED passive binary acquisition @ cloudfront CDN: DNS resolution blocked at sandbox resolver level — confirmed general to all cloudfront domains; google.com
+- LEARN: REJECTED @ APKMirror/APKCombo/apkpure/Uptodown: All paths 403/410 or legacy-only — not latest 3.9.14.9
+- LEARN: REJECTED @ naver web services (developers/lab/store.whale.naver.com): Excluded per scope.yml out_of_scope
+- LEARN: REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+- LEARN: ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- LEARN: ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- LEARN: ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- LEARN: REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests ava
+- LEARN: REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- LEARN: CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability dis
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`, `_migration_done`, `whale_need_enc
+- LEARN: CONFIRMED @ GitHub wiki: `whale.sidebarAction` page accessible via raw.githubusercontent.com/wiki/ — confirms `show({url})` loads arbitrary URL in sidebar panel
+- LEARN: CONFIRMED @ GitHub sample extension (translate branch): `manifest.json` declares content_scripts matching ALL origins; background.js calls `sidebarAction.show()
+- LEARN: REJECTED passive binary acquisition @ cloudfront CDN: DNS resolution blocked at sandbox resolver level — confirmed general to all cloudfront domains; google.com
+- LEARN: REJECTED @ APKMirror/APKCombo/apkpure/Uptodown: All paths 403/410 or legacy-only — not latest 3.9.14.9
+- LEARN: REJECTED @ naver web services (developers/lab/store.whale.naver.com): Excluded per scope.yml out_of_scope
+- LEARN: REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+- LEARN: ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- LEARN: ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- LEARN: ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- LEARN: REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests ava
+- LEARN: REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- LEARN: ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest
+- LEARN: ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 
+- LEARN: CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system meta
+- LEARN: CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowled
+- LEARN: REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+- LEARN: ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- LEARN: ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- LEARN: ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- LEARN: REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests ava
+- LEARN: REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
