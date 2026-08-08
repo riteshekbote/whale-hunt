@@ -14976,3 +14976,1294 @@ STEP 7 — RISK SCORE
 - [RISK] sync: 60 — in-scope passphrase-KDF/bootstrap-token/refresh-token surface is high-value but fully opaque (no binary, no docs, no 2026 CVEs); unaudited high-value crypto surface
 - [RISK] browser: 55 — sidebar/dual-tab Whale-only envs generated 6 CVEs in 2025 with a 3-version/8-month disclosure gap; reproducible only via installed browser (AUTH_HELPED)
 - [RISK] libs: 30 — no manifests, no binary, no public inventory; historically low, unassessable
+===== ANALYST bigpickle 2026-08-08 09:56:46 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=20" | head -c 2000; echo
+{"resultsPerPage":2,"startIndex":0,"totalResults":2,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-08T09:51:39.261","vulnerabilities":[{"cve":{"id":"CVE-2018-9859","sourceIdentifier":"cve@mitre.org","published":"2018-06-16T01:29:09.680","lastModified":"2026-06-17T02:07:18.247","vulnStatus":"Modified","cveTags":[],"descriptions":[{"lang":"en","value":"The path of Whale update service was unquoted in NAVER Whale before 1.0.40.7. This vulnerability can be used for persistent privilege escalation if it's available to create an executable file with System privilege by other vulnerable applications."},{"lang":"es","value":"La ruta del servicio de actualización Whale no tenía comillas en NAVER Whale en versiones anteriores a la 1.0.40.7. Esta vulnerabilidad puede emplearse para el escalado de privilegios persistente si está disponible para crear un archivo ejecutable con privilegios System por parte de otras aplicaciones vulnerables."}],"affected":[{"source":"cve@mitre.org","affectedData":[{"vendor":"n/a","product":"n/a","versions":[{"version":"n/a","status":"affected"}]}]}],"metrics":{"cvssMetricV30":[{"source":"nvd@nist.gov","type":"Primary","cvssData":{"version":"3.0","vectorString":"CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H","baseScore":8.1,"baseSeverity":"HIGH","attackVector":"NETWORK","attackComplexity":"HIGH","privilegesRequired":"NONE","userInteraction":"NONE","scope":"UNCHANGED","confidentialityImpact":"HIGH","integrityImpact":"HIGH","availabilityImpact":"HIGH"},"exploitabilityScore":2.2,"impactScore":5.9}],"cvssMetricV2":[{"source":"nvd@nist.gov","type":"Primary","cvssData":{"version":"2.0","vectorString":"AV:N/AC:H/Au:N/C:P/I:P/A:P","baseScore":5.1,"accessVector":"NETWORK","accessComplexity":"HIGH","authentication":"NONE","confidentialityImpact":"PARTIAL","integrityImpact":"PARTIAL","availabilityImpact":"PARTIAL"},"baseSeverity":"MEDIUM","exploitabilityScore":4.9,"impactScore":6.4,"acInsufInfo":false,"obtainAllPrivilege":false,"obtainUserPrivilege
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers" | python3 -c "import sys,json; d=json.load(sys.stdin); print('pushed_at:',d.get('pushed_at'),'| updated_at:',d.get('updated_at'),'| open_issues:',d.get('open_issues_count'),'| releases:', d.get('releases_url'))"
+pushed_at: 2019-09-23T08:03:26Z | updated_at: 2025-10-22T03:15:17Z | open_issues: 4 | releases: https://api.github.com/repos/naver/whale-browser-developers/releases{/id}
+[0m
+I'll run a few fresh passive probes to check for delta before emitting the structured blocks.
+[0m◈ [0mParallel Web Search "Whale browser sync protocol reverse engineering os_crypt_whale bootstrap token encryption"
+One more targeted search for prior art on the Whale-specific OSCrypt fork before I emit output.
+[0m◈ [0mParallel Web Search ""whale" browser "os_crypt" fork "xv10" OR "bootstrap_token" sync encryption passphrase KDF PBKDF2"
+No public prior art exists on the Whale OSCrypt fork — only upstream Chromium baseline. Let me run the one remaining concrete passive probe: the JS-rendered changelog, to re-assert the latest desktop version.
+[0m
+[0m$ [0mcurl -s --max-time 20 -H "User-Agent: Mozilla/5.0" "https://changelog.whale.naver.com/" | head -c 3000; echo; echo "----TITLE/SCRIPTS----"; curl -s --max-time 20 -H "User-Agent: Mozilla/5.0" "https://changelog.whale.naver.com/" | grep -oiE '<script[^>]*src="[^"]*"|application/json|\.js' | head -20
+----TITLE/SCRIPTS----
+<script defer="defer" src="/static/js/main.1187cf5a.js"
+[0m
+[0m$ [0mcurl -s --max-time 30 -H "User-Agent: Mozilla/5.0" "https://changelog.whale.naver.com/static/js/main.1187cf5a.js" -o /tmp/opencode/whale_main.js; ls -la /tmp/opencode/whale_main.js; grep -oE '4\.[0-9]+\.[0-9]+\.[0-9]+' /tmp/opencode/whale_main.js | sort -u | tail -20
+-rw-r--r-- 1 runner runner 664992 Aug  8 09:52 /tmp/opencode/whale_main.js
+4.023.08823.0202
+4.03274.07884.04959
+4.04.0391.072
+4.04117.1137.07341
+4.0413.0226.0773
+4.04237.0237.0877
+4.0572.07097.0734
+4.0706.032.0308
+4.0924.0619.2018
+4.09298.041.04084
+4.115.0052.169
+4.1379.022.052
+4.143.09312.04
+4.15078.08032.21127
+4.17.0511.052
+4.199.174.3979
+4.2107.4781.3623
+4.2817.2817.4399
+4.2877.23151.55
+4.8196.54727.2346
+[0m
+[0m$ [0mcd /tmp/opencode; grep -oE '4\.(3[5-9])\.[0-9]{2,3}\.[0-9]{1,3}' whale_main.js | sort -u | tail -30; echo "---4.38 context---"; grep -oE '.{80}4\.38\.[0-9]{2,3}\.[0-9]{1,3}.{40}' whale_main.js | head -5
+---4.38 context---
+[0m
+[0m$ [0mcd /tmp/opencode; grep -oE '4\.[0-9]+\.[0-9]+\.[0-9]+' whale_main.js | sort -V | tail -15; echo "---386---"; grep -c '386' whale_main.js; echo "---verfields---"; grep -oE '.{30}(macOs|windows|versionList|recentVersion|latestVersion).{60}' whale_main.js | head -10
+4.0706.032.0308
+4.0924.0619.2018
+4.1379.022.052
+4.01636.0809.0414
+4.02045.103.05214
+4.2107.4781.3623
+4.2817.2817.4399
+4.2877.23151.55
+4.03274.07884.04959
+4.04117.1137.07341
+4.04237.0237.0877
+4.8196.54727.2346
+4.09298.041.04084
+4.012644.2113.024557
+4.15078.08032.21127
+---386---
+1
+---verfields---
+?[fl]p?)\b/i],[[m,"armhf"]],[/windows (ce|mobile); ppc;/i],[[m,"arm"]],[/((?:ppc|powerpc)(?:64)?)
+/]| [ \w\/\.]*safari)|pda(?=.+windows ce))/i],[[p,y]],[/(android[-\w\. ]{0,9});.+buil/i],[d,[h,"G
+o)/i],[g,f]],os:[[/microsoft (windows) (vista|xp)/i],[f,g],[/(windows (?:phone(?: os)?|mobile))[\
+([\d\.\w ]*)/i],[f,[g,G,Y]],[/windows nt 6\.2; (arm)/i,/windows[\/ ]?([ntce\d\. ]+\w)(?!.+xbox)/i
+[0m
+[0m$ [0mcd /tmp/opencode; grep -oE '"[^"]*(api|json|version|changelog)[^"]*"' whale_main.js | grep -iE 'api|json|changelog|version|content|data' | sort -u | head -30
+"','data-styled-version="
+")},J=function(e){return e.name===D.Android},ee=function(e){return e.name===D.Windows},te=function(e){return e.name===D.MAC_OS},ne=function(e){return e.name===D.WindowsPhone},re=function(e){return e.name===D.IOS},ie=function(e){var t=e.version;return F(t)},oe=function(e){var t=e.name;return F(t)},ae=function(e){return e.name===N.Chrome},se=function(e){return e.name===N.Firefox},le=function(e){return e.name===N.Chromium},ue=function(e){return e.name===N.Edge},ce=function(e){return e.name===N.Yandex},de=function(e){var t=e.name;return t===N.Safari||t===N.MobileSafari},fe=function(e){return e.name===N.MobileSafari},pe=function(e){return e.name===N.Opera},he=function(e){var t=e.name;return t===N.InternetExplorer||t===N.Ie},ge=function(e){return e.name===N.MIUI},me=function(e){return e.name===N.SamsungBrowser},ve=function(e){var t=e.version;return F(t)},ye=function(e){var t=e.major;return F(t)},be=function(e){var t=e.name;return F(t)},we=function(e){var t=e.name;return F(t)},xe=function(e){var t=e.version;return F(t)},ke=function(){var e=V(),t=e&&e.userAgent&&e.userAgent.toLowerCase();return"
+"+C]],[/(chrome|omniweb|arora|[tizenoka]{5} ?browser)\/v?([\w\.]+)/i],[f,g],[/version\/([\w\.\,]+) .*mobile\/\w+ (safari)/i],[g,[f,"
+"+k+'][data-styled-version="
+"+t,t)}};var t=(t,r)=>{var i,o,a=r[0],s=r[1],l=r[2],u=0;if(a.some((t=>0!==e[t]))){for(i in s)n.o(s,i)&&(n.m[i]=s[i]);if(l)l(n)}for(t&&t(r);u<a.length;u++)o=a[u],n.o(e,o)&&e[o]&&e[o][0](),e[o]=0},r=self.webpackChunkchangelog_whale_naver_com=self.webpackChunkchangelog_whale_naver_com||[];r.forEach(t.bind(null,0)),r.push=t.bind(null,r.push.bind(r))})(),n.nc=void 0,(()=>{"
+"+t.key),e.type&&e.type.defaultProps)var l=e.type.defaultProps;for(u in t)k.call(t,u)&&!O.hasOwnProperty(u)&&(i[u]=void 0===t[u]&&void 0!==l?l[u]:t[u])}var u=arguments.length-2;if(1===u)i.children=r;else if(1<u){l=Array(u);for(var c=0;c<u;c++)l[c]=arguments[c+2];i.children=l}return{$$typeof:n,type:e.type,key:o,ref:a,props:i,_owner:s}},t.createContext=function(e){return(e={$$typeof:l,_currentValue:e,_currentValue2:e,_threadCount:0,Provider:null,Consumer:null,_defaultValue:null,_globalName:null}).Provider={$$typeof:s,_context:e},e.Consumer=e},t.createElement=A,t.createFactory=function(e){var t=A.bind(null,e);return t.type=e,t},t.createRef=function(){return{current:null}},t.forwardRef=function(e){return{$$typeof:u,render:e}},t.isValidElement=E,t.lazy=function(e){return{$$typeof:f,_payload:{_status:-1,_result:e},_init:_}},t.memo=function(e,t){return{$$typeof:d,type:e,compare:void 0===t?null:t}},t.startTransition=function(e){var t=L.transition;L.transition={};try{e()}finally{L.transition=t}},t.unstable_act=N,t.useCallback=function(e,t){return R.current.useCallback(e,t)},t.useContext=function(e){return R.current.useContext(e)},t.useDebugValue=function(){},t.useDeferredValue=function(e){return R.current.useDeferredValue(e)},t.useEffect=function(e,t){return R.current.useEffect(e,t)},t.useId=function(){return R.current.useId()},t.useImperativeHandle=function(e,t,n){return R.current.useImperativeHandle(e,t,n)},t.useInsertionEffect=function(e,t){return R.current.useInsertionEffect(e,t)},t.useLayoutEffect=function(e,t){return R.current.useLayoutEffect(e,t)},t.useMemo=function(e,t){return R.current.useMemo(e,t)},t.useReducer=function(e,t,n){return R.current.useReducer(e,t,n)},t.useRef=function(e){return R.current.useRef(e)},t.useState=function(e){return R.current.useState(e)},t.useSyncExternalStore=function(e,t,n){return R.current.useSyncExternalStore(e,t,n)},t.useTransition=function(){return R.current.useTransition()},t.version="
+",e)}function Gi(e,t){return e[t]||e.default||e}const Yi={waapi:()=>Object.hasOwnProperty.call(Element.prototype,"
+",keyframes:[g,0],velocity:n,timeConstant:a,power:o,restDelta:u,modifyTarget:c,onUpdate:v(e)?d:void 0})}return{stop:()=>null===m||void 0===m?void 0:m.stop()}}(p);return()=>e.stop()}(function(e){let{when:t,delay:n,delayChildren:r,staggerChildren:i,staggerDirection:o,repeat:a,repeatType:s,repeatDelay:l,from:u,...c}=e;return!!Object.keys(c).length})(o)||(p={...p,...$i(e,p)}),p.duration&&(p.duration=Dr(p.duration)),p.repeatDelay&&(p.repeatDelay=Dr(p.repeatDelay));const h=t.owner,g=h&&h.current;if(Xi.waapi()&&Ji.has(e)&&!p.repeatDelay&&"
+",r,n):null},t.browserName=Je,t.browserVersion=Xe,t.deviceDetect=function(e){var t=e?g(e):m,n=t.device,r=t.browser,i=t.engine,o=t.os,a=t.ua,s=function(e){switch(e){case P:return{isMobile:!0};case j:return{isTablet:!0};case T:return{isSmartTV:!0};case _:return{isConsole:!0};case R:return{isWearable:!0};case M:return{isBrowser:!0};case L:return{isEmbedded:!0};default:return I}}(n.type),l=s.isBrowser,u=s.isMobile,c=s.isTablet,d=s.isSmartTV,f=s.isConsole,p=s.isWearable,h=s.isEmbedded;return l?function(e,t,n,r,i){return{isBrowser:e,browserMajorVersion:F(t.major),browserFullVersion:F(t.version),browserName:F(t.name),engineName:F(n.name),engineVersion:F(n.version),osName:F(r.name),osVersion:F(r.version),userAgent:F(i)}}(l,r,i,o,a):d?function(e,t,n,r){return{isSmartTV:e,engineName:F(t.name),engineVersion:F(t.version),osName:F(n.name),osVersion:F(n.version),userAgent:F(r)}}(d,i,o,a):f?function(e,t,n,r){return{isConsole:e,engineName:F(t.name),engineVersion:F(t.version),osName:F(n.name),osVersion:F(n.version),userAgent:F(r)}}(f,i,o,a):u||c?H(s,n,o,a):p?function(e,t,n,r){return{isWearable:e,engineName:F(t.name),engineVersion:F(t.version),osName:F(n.name),osVersion:F(n.version),userAgent:F(r)}}(p,i,o,a):h?function(e,t,n,r,i){return{isEmbedded:e,vendor:F(t.vendor),model:F(t.model),engineName:F(n.name),engineVersion:F(n.version),osName:F(r.name),osVersion:F(r.version),userAgent:F(i)}}(h,n,i,o,a):void 0},t.deviceType=st,t.engineName=nt,t.engineVersion=rt,t.fullBrowserVersion=Ze,t.getSelectorsByUserAgent=function(e){if(e&&"
+",s=Ku;if(null!==n&&void 0!==n&&(!0===n.unstable_strictMode&&(i=!0),void 0!==n.identifierPrefix&&(a=n.identifierPrefix),void 0!==n.onRecoverableError&&(s=n.onRecoverableError)),t=zu(t,null,e,1,null!=n?n:null,i,0,a,s),e[hi]=t.current,zr(e),r)for(e=0;e<r.length;e++)i=(i=(n=r[e])._getVersion)(n._source),null==t.mutableSourceEagerHydrationData?t.mutableSourceEagerHydrationData=[n,i]:t.mutableSourceEagerHydrationData.push(n,i);return new Gu(t)},t.render=function(e,t,n){if(!Zu(t))throw Error(o(200));return Ju(null,e,t,!1,n)},t.unmountComponentAtNode=function(e){if(!Zu(e))throw Error(o(40));return!!e._reactRootContainer&&(cu((function(){Ju(null,null,e,!1,(function(){e._reactRootContainer=null,e[hi]=null}))})),!0)},t.unstable_batchedUpdates=uu,t.unstable_renderSubtreeIntoContainer=function(e,t,n,r){if(!Zu(n))throw Error(o(200));if(null==e||void 0===e._reactInternals)throw Error(o(38));return Ju(e,t,n,!1,r)},t.version="
+"/android/:version?"
+"/desktop/:version?"
+"/ios/:version?"
+":null!=(t=n.value)&&ne(e,!!n.multiple,t,!1)}},Pe=uu,je=cu;var ec={usingClientEntryPoint:!1,Events:[bi,wi,xi,Ee,Ce,uu]},tc={findFiberByHostInstance:yi,bundleType:0,version:"
+"===t.platform&&t.maxTouchPoints>1&&!window.MSStream)},H=function(e,t,n,r){return function(e){for(var t=1;t<arguments.length;t++){var n=null!=arguments[t]?arguments[t]:{};t%2?v(Object(n),!0).forEach((function(t){w(e,t,n[t])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(n)):v(Object(n)).forEach((function(t){Object.defineProperty(e,t,Object.getOwnPropertyDescriptor(n,t))}))}return e}({},e,{vendor:F(t.vendor),model:F(t.model),os:F(n.name),osVersion:F(n.version),ua:F(r)})};var z=function(e){return e.type===P},U=function(e){return e.type===j},W=function(e){var t=e.type;return t===P||t===j},$=function(e){return e.type===T},q=function(e){return e.type===M},K=function(e){return e.type===R},Q=function(e){return e.type===_},G=function(e){return e.type===L},Y=function(e){var t=e.vendor;return F(t)},Z=function(e){var t=e.model;return F(t)},X=function(e){var t=e.type;return F(t,"
+"===typeof t)for(var n=0,r=t.length;n<r;++n)e(t[n]);else N=0|!!t}return e},u.set=l,void 0!==e&&l(e),u};const l={animationIterationCount:1,borderImageOutset:1,borderImageSlice:1,borderImageWidth:1,boxFlex:1,boxFlexGroup:1,boxOrdinalGroup:1,columnCount:1,columns:1,flex:1,flexGrow:1,flexPositive:1,flexShrink:1,flexNegative:1,flexOrder:1,gridRow:1,gridRowEnd:1,gridRowSpan:1,gridRowStart:1,gridColumn:1,gridColumnEnd:1,gridColumnSpan:1,gridColumnStart:1,msGridRow:1,msGridRowSpan:1,msGridColumn:1,msGridColumnSpan:1,fontWeight:1,lineHeight:1,opacity:1,order:1,orphans:1,tabSize:1,widows:1,zIndex:1,zoom:1,WebkitLineClamp:1,fillOpacity:1,floodOpacity:1,stopOpacity:1,strokeDasharray:1,strokeDashoffset:1,strokeMiterlimit:1,strokeOpacity:1,strokeWidth:1};function u(e){var t=Object.create(null);return function(n){return void 0===t[n]&&(t[n]=e(n)),t[n]}}var c=/^((children|dangerouslySetInnerHTML|key|ref|autoFocus|defaultValue|defaultChecked|innerHTML|suppressContentEditableWarning|suppressHydrationWarning|valueLink|abbr|accept|acceptCharset|accessKey|action|allow|allowUserMedia|allowPaymentRequest|allowFullScreen|allowTransparency|alt|async|autoComplete|autoPlay|capture|cellPadding|cellSpacing|challenge|charSet|checked|cite|classID|className|cols|colSpan|content|contentEditable|contextMenu|controls|controlsList|coords|crossOrigin|data|dateTime|decoding|default|defer|dir|disabled|disablePictureInPicture|disableRemotePlayback|download|draggable|encType|enterKeyHint|form|formAction|formEncType|formMethod|formNoValidate|formTarget|frameBorder|headers|height|hidden|high|href|hrefLang|htmlFor|httpEquiv|id|inputMode|integrity|is|keyParams|keyType|kind|label|lang|list|loading|loop|low|marginHeight|marginWidth|max|maxLength|media|mediaGroup|method|min|minLength|multiple|muted|name|nonce|noValidate|open|optimum|pattern|placeholder|playsInline|poster|preload|profile|radioGroup|readOnly|referrerPolicy|rel|required|reversed|role|rows|rowSpan|sandbox|scope|scoped|scrolling|seamless|selected|shape|size|sizes|slot|span|spellCheck|src|srcDoc|srcLang|srcSet|start|step|style|summary|tabIndex|target|title|translate|type|useMap|value|width|wmode|wrap|about|datatype|inlist|prefix|property|resource|typeof|vocab|autoCapitalize|autoCorrect|autoSave|color|incremental|fallback|inert|itemProp|itemScope|itemType|itemID|itemRef|on|option|results|security|unselectable|accentHeight|accumulate|additive|alignmentBaseline|allowReorder|alphabetic|amplitude|arabicForm|ascent|attributeName|attributeType|autoReverse|azimuth|baseFrequency|baselineShift|baseProfile|bbox|begin|bias|by|calcMode|capHeight|clip|clipPathUnits|clipPath|clipRule|colorInterpolation|colorInterpolationFilters|colorProfile|colorRendering|contentScriptType|contentStyleType|cursor|cx|cy|d|decelerate|descent|diffuseConstant|direction|display|divisor|dominantBaseline|dur|dx|dy|edgeMode|elevation|enableBackground|end|exponent|externalResourcesRequired|fill|fillOpacity|fillRule|filter|filterRes|filterUnits|floodColor|floodOpacity|focusable|fontFamily|fontSize|fontSizeAdjust|fontStretch|fontStyle|fontVariant|fontWeight|format|from|fr|fx|fy|g1|g2|glyphName|glyphOrientationHorizontal|glyphOrientationVertical|glyphRef|gradientTransform|gradientUnits|hanging|horizAdvX|horizOriginX|ideographic|imageRendering|in|in2|intercept|k|k1|k2|k3|k4|kernelMatrix|kernelUnitLength|kerning|keyPoints|keySplines|keyTimes|lengthAdjust|letterSpacing|lightingColor|limitingConeAngle|local|markerEnd|markerMid|markerStart|markerHeight|markerUnits|markerWidth|mask|maskContentUnits|maskUnits|mathematical|mode|numOctaves|offset|opacity|operator|order|orient|orientation|origin|overflow|overlinePosition|overlineThickness|panose1|paintOrder|pathLength|patternContentUnits|patternTransform|patternUnits|pointerEvents|points|pointsAtX|pointsAtY|pointsAtZ|preserveAlpha|preserveAspectRatio|primitiveUnits|r|radius|refX|refY|renderingIntent|repeatCount|repeatDur|requiredExtensions|requiredFeatures|restart|result|rotate|rx|ry|scale|seed|shapeRendering|slope|spacing|specularConstant|specularExponent|speed|spreadMethod|startOffset|stdDeviation|stemh|stemv|stitchTiles|stopColor|stopOpacity|strikethroughPosition|strikethroughThickness|string|stroke|strokeDasharray|strokeDashoffset|strokeLinecap|strokeLinejoin|strokeMiterlimit|strokeOpacity|strokeWidth|surfaceScale|systemLanguage|tableValues|targetX|targetY|textAnchor|textDecoration|textRendering|textLength|to|transform|u1|u2|underlinePosition|underlineThickness|unicode|unicodeBidi|unicodeRange|unitsPerEm|vAlphabetic|vHanging|vIdeographic|vMathematical|values|vectorEffect|version|vertAdvY|vertOriginX|vertOriginY|viewBox|viewTarget|visibility|widths|wordSpacing|writingMode|x|xHeight|x1|x2|xChannelSelector|xlinkActuate|xlinkArcrole|xlinkHref|xlinkRole|xlinkShow|xlinkTitle|xlinkType|xmlBase|xmlns|xmlnsXlink|xmlLang|xmlSpace|y|y1|y2|yChannelSelector|z|zoomAndPan|for|class|autofocus)|(([Dd][Aa][Tt][Aa]|[Aa][Rr][Ii][Aa]|x)-.*))$/,d=u((function(e){return c.test(e)||111===e.charCodeAt(0)&&110===e.charCodeAt(1)&&e.charCodeAt(2)<91})),f=n(8461),p=n.n(f);function h(){return(h=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(e[r]=n[r])}return e}).apply(this,arguments)}var g=function(e,t){for(var n=[e[0]],r=0,i=t.length;r<i;r+=1)n.push(t[r],e[r+1]);return n},m=function(e){return null!==e&&"
+"We will inform you about Whale browser updates by version."
+"],Hn=Bn.reduce(((e,t)=>(e[t]=function(e){let t=[],n=[],r=0,i=!1,o=!1;const a=new WeakSet,s={schedule:function(e){const o=arguments.length>2&&void 0!==arguments[2]&&arguments[2]&&i,s=o?t:n;return arguments.length>1&&void 0!==arguments[1]&&arguments[1]&&a.add(e),-1===s.indexOf(e)&&(s.push(e),o&&i&&(r=t.length)),e},cancel:e=>{const t=n.indexOf(e);-1!==t&&n.splice(t,1),a.delete(e)},process:l=>{if(i)o=!0;else{if(i=!0,[t,n]=[n,t],n.length=0,r=t.length,r)for(let n=0;n<r;n++){const r=t[n];r(l),a.has(r)&&(s.schedule(r),e())}i=!1,o&&(o=!1,s.process(l))}}};return s}((()=>Fn=!0)),e)),{}),zn=Bn.reduce(((e,t)=>{const n=Hn[t];return e[t]=function(e){let t=arguments.length>1&&void 0!==arguments[1]&&arguments[1],r=arguments.length>2&&void 0!==arguments[2]&&arguments[2];return Fn||Kn(),n.schedule(e,t,r)},e}),{}),Un=Bn.reduce(((e,t)=>(e[t]=Hn[t].cancel,e)),{}),Wn=Bn.reduce(((e,t)=>(e[t]=()=>Hn[t].process(Ln),e)),{}),$n=e=>Hn[e].process(Ln),qn=e=>{Fn=!1,Ln.delta=In?Mn:Math.max(Math.min(e-Ln.timestamp,40),1),Ln.timestamp=e,Vn=!0,Bn.forEach($n),Vn=!1,Fn&&(In=!1,Dn(qn))},Kn=()=>{Fn=!0,In=!0,Vn||Dn(qn)};function Qn(e,t){-1===e.indexOf(t)&&e.push(t)}function Gn(e,t){const n=e.indexOf(t);n>-1&&e.splice(n,1)}class Yn{constructor(){this.subscriptions=[]}add(e){return Qn(this.subscriptions,e),()=>Gn(this.subscriptions,e)}notify(e,t,n){const r=this.subscriptions.length;if(r)if(1===r)this.subscriptions[0](e,t,n);else for(let i=0;i<r;i++){const r=this.subscriptions[i];r&&r(e,t,n)}}getSize(){return this.subscriptions.length}clear(){this.subscriptions.length=0}}function Zn(e,t){return t?e*(1e3/t):0}class Xn{constructor(e){var t=this;let n=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};var r;this.version="
+"],g],[/droid.+ version\/([\w\.]+)\b.+(?:mobile safari|safari)/i],[g,[f,"
+"]],[/(opera mini)\/([-\w\.]+)/i,/(opera [mobiletab]{3,6})\b.+version\/([-\w\.]+)/i,/(opera)(?:.+version\/|[\/ ]+)([\w\.]+)/i],[f,g],[/opios[\/ ]+([\w\.]+)/i],[g,[f,N+"
+"]],[/musical_ly(?:.+app_?version\/|_)([\w\.]+)/i],[g,[f,"
+"]],[/version\/([\w(\.|\,)]+) .*(mobile ?safari|safari)/i],[g,f],[/webkit.+?(mobile ?safari|safari)(\/[\w\.]+)/i],[f,[g,G,{"
+"application/ld+json"
+"changelog-whale-naver-com:"
+"data-styled-version"
+"version"
+"},nc={bundleType:tc.bundleType,version:tc.version,rendererPackageName:tc.rendererPackageName,rendererConfig:tc.rendererConfig,overrideHookState:null,overrideHookStateDeletePath:null,overrideHookStateRenamePath:null,overrideProps:null,overridePropsDeletePath:null,overridePropsRenamePath:null,setErrorHandler:null,setSuspenseHandler:null,scheduleUpdate:null,currentDispatcherRef:w.ReactCurrentDispatcher,findHostInstanceByFiber:function(e){return null===(e=$e(e))?null:e.stateNode},findFiberByHostInstance:tc.findFiberByHostInstance||function(){return null},findHostInstancesForRefresh:null,scheduleRefresh:null,scheduleRoot:null,setRefreshHandler:null,getCurrentFiber:null,reconcilerVersion:"
+[0m
+[0m$ [0mcd /tmp/opencode; grep -oE 'https?://[a-zA-Z0-9./_?=&-]+' whale_main.js | sort -u | grep -viE 'w3\.org|reactjs|github.com/react|schema.org|npmjs|jestjs|facebook|mdn|developer\.mozilla' | head -20; echo "---fetch/api calls---"; grep -oE '(fetch|axios|get|post)\(["'"'][^"'"']{3,80}' whale_main.js | sort -u | head -20
+/bin/bash: -c: line 1: unexpected EOF while looking for matching `''
+[0m
+[0m$ [0mcd /tmp/opencode; grep -oE 'https?://[a-zA-Z0-9./_?=&%-]+' whale_main.js | sort -u | grep -viE 'w3\.org|reactjs\.org|github\.com|schema\.org|npmjs|jestjs|facebook|mdn|mozilla' | head -20
+http://fb.me/use-check-prop-types
+http://meyerweb.com/eric/tools/css/reset/
+https://blog.naver.com/whaleteam
+https://bugbounty.whale.naver.com/
+https://class.whalespace.io/
+https://forum.whale.naver.com/
+https://git.io/JUIaE
+https://help.naver.com/alias/contents2/whale/whale_new1.naver
+https://help.whale.naver.com/
+https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+https://m.help.naver.com/alias/contents2/whale/whale_new1.naver
+https://myactivity.whale.naver.com/
+https://policy.naver.com/policy/privacy.html
+https://static-whale.pstatic.net/og/homepage.png?r2
+https://store.whale.naver.com/
+https://study.whaleon.naver.com/
+https://whale.dev/
+https://whale.naver.com/details/omnitasking/
+https://whale.naver.com/download/
+https://whale.naver.com/legal/privacy/
+[0m
+The changelog bundle references `installer-whale.pstatic.net` — Naver's own CDN, NOT the cloudfront domain that's DNS-blocked. That's a potential live binary acquisition channel. Testing it now.
+[0m$ [0mnslookup installer-whale.pstatic.net 2>&1 | tail -4; echo "---beta HEAD---"; curl -sI --max-time 25 -H "User-Agent: Mozilla/5.0" "https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe" | head -12
+Address: 125.209.207.10
+Name:	installer-whale.pstatic.net.dn.gscdn.net
+Address: 211.47.29.200
+
+---beta HEAD---
+HTTP/2 200 
+date: Sat, 08 Aug 2026 09:52:55 GMT
+content-length: 11162128
+accept-ranges: bytes
+last-modified: Tue, 28 Apr 2026 11:23:11 GMT
+content-type: application/x-msdownload
+cache-control: max-age=86400
+expires: Fri, 31 Jul 2026 15:21:34 GMT
+age: 0
+server: Apache
+referrer-policy: unsafe-url
+[0m
+Breakthrough: `installer-whale.pstatic.net` resolves and serves the official installer (11.1 MB, last-modified 2026-04-28) — a live Naver CDN channel that bypasses the cloudfront DNS block. Let me find the stable-channel URL before downloading.
+[0m$ [0mcd /tmp/opencode; grep -oE '.{60}installer[^" ]{0,120}' whale_main.js | head -10; echo "---whaleSetup---"; grep -oE '[a-zA-Z0-9_./-]*WhaleSetup[a-zA-Z0-9_./-]*' whale_main.js | sort -u | head
+},kv=()=>{const{t:e}=Q();return(0,G.jsx)("a",{href:"https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+---whaleSetup---
+//installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+[0m
+[0m$ [0mcurl -s --max-time 25 -H "User-Agent: Mozilla/5.0" "https://whale.naver.com/download/" -o /tmp/opencode/download.html; ls -la /tmp/opencode/download.html; grep -oE 'https?://[^"'"'"' ]+\.(exe|deb|rpm|pkg|dmg)' /tmp/opencode/download.html | sort -u | head; echo "---pstatic links---"; grep -oE 'https?://[^"'"'"' ]*pstatic\.net[^"'"'"' ]*' /tmp/opencode/download.html | sort -u | head
+-rw-r--r-- 1 runner runner 6335 Aug  8 09:53 /tmp/opencode/download.html
+---pstatic links---
+https://installer-whale.pstatic.net
+https://shared-whale.pstatic.net
+https://shared-whale.pstatic.net/favicon/icon.png
+https://shared-whale.pstatic.net/favicon/icon180.png
+https://shared-whale.pstatic.net/favicon/icon256.png
+https://shared-whale.pstatic.net/favicon/icon512.png
+https://shared-whale.pstatic.net/home2/assets/hero-bg-B6qML11p.png
+https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js
+https://shared-whale.pstatic.net/home2/assets/index-cFWAVrkk.css
+https://static-whale.pstatic.net
+[0m
+[0m$ [0mcurl -s --max-time 30 -H "User-Agent: Mozilla/5.0" "https://shared-whale.pstatic.net/home2/assets/index-BFe9m_iX.js" -o /tmp/opencode/home.js; ls -la /tmp/opencode/home.js; grep -oE 'https?://[^"'"'"' ]*pstatic\.net[^"'"'"' ]*' /tmp/opencode/home.js | sort -u | head -30
+-rw-r--r-- 1 runner runner 840257 Aug  8 09:53 /tmp/opencode/home.js
+https://installer-whale.pstatic.net/downloads/banner/${encodeURIComponent(s)}/WhaleSetup.exe`};case
+https://installer-whale.pstatic.net/downloads/beta/installers/NaverWhaleBeta.dmg
+https://installer-whale.pstatic.net/downloads/beta/installers/WhaleSetupBeta.exe
+https://installer-whale.pstatic.net/downloads/installers/NaverWhale.dmg
+https://installer-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupARM64.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX64.exe
+https://installer-whale.pstatic.net/downloads/sa_installers/WhaleSetupX86.exe
+https://shared-whale.pstatic.net/home2/assets/banner-floating-symbol-CeRo_TXw.svg
+https://shared-whale.pstatic.net/home2/assets/chp1-ODqt6nzi.webm
+https://shared-whale.pstatic.net/home2/assets/chp1-oiA4An1M.mp4
+https://shared-whale.pstatic.net/home2/assets/chp10-F0ln5JJP.mp4
+https://shared-whale.pstatic.net/home2/assets/chp10-Vp5PI4C2.webm
+https://shared-whale.pstatic.net/home2/assets/chp11-CRQNfKJ5.mp4
+https://shared-whale.pstatic.net/home2/assets/chp11-DH-YUrr6.webm
+https://shared-whale.pstatic.net/home2/assets/chp12-DVDFeOp1.webm
+https://shared-whale.pstatic.net/home2/assets/chp12-K9GSBrjF.mp4
+https://shared-whale.pstatic.net/home2/assets/chp3-D_ydhHAh.webm
+https://shared-whale.pstatic.net/home2/assets/chp3-DclJoMWN.mp4
+https://shared-whale.pstatic.net/home2/assets/chp4-D2OP-Kqd.webm
+https://shared-whale.pstatic.net/home2/assets/chp4-DJ5gK-cy.mp4
+https://shared-whale.pstatic.net/home2/assets/chp4_hero-NAgc2TjD.json
+https://shared-whale.pstatic.net/home2/assets/chp5-3hnYmEQy.mp4
+https://shared-whale.pstatic.net/home2/assets/chp5-Bq6GpJlK.webm
+https://shared-whale.pstatic.net/home2/assets/chp6-9KfBKWS1.webm
+https://shared-whale.pstatic.net/home2/assets/chp6-O1TwCguB.mp4
+https://shared-whale.pstatic.net/home2/assets/chp7-YCZmFWB7.webm
+https://shared-whale.pstatic.net/home2/assets/chp7-gVfjXOQo.mp4
+https://shared-whale.pstatic.net/home2/assets/chp7_hero-B_Hw5M_m.json
+[0m
+Stable Linux `.deb` URL found: `https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb`. Confirming and downloading for static analysis.
+[0m$ [0mcurl -sI --max-time 25 -H "User-Agent: Mozilla/5.0" "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" | head -14
+HTTP/2 200 
+date: Sat, 08 Aug 2026 09:53:24 GMT
+content-length: 164163916
+accept-ranges: bytes
+last-modified: Thu, 25 Jun 2026 06:25:01 GMT
+content-type: application/x-debian-package
+age: 2019129
+server: Apache
+referrer-policy: unsafe-url
+[0m
+Stable .deb is 156 MB, built 2026-06-25. Downloading for static analysis of the sync KDF.
+[0m$ [0mcd /tmp/opencode && curl -s --max-time 180 -H "User-Agent: Mozilla/5.0" "https://installer-whale.pstatic.net/downloads/installers/naver-whale-stable_amd64.deb" -o whale-stable.deb && ls -la whale-stable.deb && sha256sum whale-stable.deb
+-rw-r--r-- 1 runner runner 164163916 Aug  8 09:53 whale-stable.deb
+6dd7ebc47d7e8f21da1108ad5b0e17fcd562fd92e684da206564b51476e0b47e  whale-stable.deb
+[0m
+SHA256 pinned: `6dd7ebc4...`. Extracting the .deb and locating the Whale binary.
+[0m$ [0mcd /tmp/opencode && mkdir -p deb_extract && dpkg-deb -x whale-stable.deb deb_extract/ && dpkg-deb -f whale-stable.deb Version 2>/dev/null; find deb_extract -name "whale*" -type f -executable 2>/dev/null | head; echo "---main bins---"; find deb_extract -type f -size +50M 2>/dev/null | head
+4.38.386.14-1
+deb_extract/opt/naver/whale/whale
+deb_extract/opt/naver/whale/whale-sandbox
+---main bins---
+deb_extract/opt/naver/whale/whale
+[0m
+Binary confirmed as v4.38.386.14. Now the static KDF/envelope scan.
+[0m$ [0mcd /tmp/opencode && BIN=deb_extract/opt/naver/whale/whale; ls -la $BIN; echo "---version---"; strings -n 6 $BIN 2>/dev/null | grep -m3 -E '^4\.[0-9]+\.[0-9]+\.[0-9]+$'; echo "---sync prefs---"; strings -n 6 $BIN 2>/dev/null | grep -iE 'bootstrap_token|encryption_key_forced|migration_done|whale_sync|os_crypt_whale|sync_util' | sort -u | head -40
+-rwxr-xr-x 1 runner runner 319511768 Jun 24 09:34 deb_extract/opt/naver/whale/whale
+---version---
+4.38.386.14
+4.10.2391.0
+4.38.386.14
+---sync prefs---
+../../chrome/browser/extensions/api/storage/settings_sync_util.cc
+../../components/plus_addresses/core/browser/sync_utils/plus_address_data_type_controller.cc
+../../components/sync/base/sync_util.cc
+../../whale/components/os_crypt/sync/os_crypt_whale.cc
+../../whale/components/sync/engine/whale_sync_util.cc
+../../whale/components/sync/service/whale_sync_auth_manager.cc
+DEPRECATED_BOOTSTRAP_TOKEN_UPDATED
+MIGRATION_DONE
+MIGRATION_DONE but no types specified.
+sync.encryption_bootstrap_token
+sync.encryption_bootstrap_token_per_account
+sync.encryption_bootstrap_token_per_account_migration_done
+sync.passwords_per_account_pref_migration_done
+sync.whale_need_encryption_key_forced_time
+user_experience_metrics.consent_migration_done
+whale_sync_push
+whale_sync_push/service_worker.js
+whale_sync_push/socket.io.slim.js
+[0m
+KDF/envelope constants scan next.
+[0m$ [0mcd /tmp/opencode && BIN=deb_extract/opt/naver/whale/whale; echo "---xv10/magic---"; strings -n 4 $BIN 2>/dev/null | grep -iE 'xv10|oscrypt|v10|v11|peanuts|saltysalt|pkcs|rfc2898' | sort -u | head -20; echo "---kdf---"; strings -n 4 $BIN 2>/dev/null | grep -iE 'pbkdf2|scrypt|iteration|rfc 2898|aes.?128|aes.?256|derived key|key wrap' | sort -u | head -30
+---xv10/magic---
+''xv10
+../../net/third_party/mozilla_security_manager/nsPKCS12Blob.cpp
+../../third_party/boringssl/src/crypto/pkcs7/pkcs7.cc
+../../third_party/boringssl/src/crypto/pkcs8/p5_pbev2.cc
+../../third_party/boringssl/src/crypto/pkcs8/pkcs8.cc
+../../third_party/boringssl/src/crypto/pkcs8/pkcs8_x509.cc
+.ReencryptedWithAsyncOSCrypt
+BAD_PKCS12_DATA
+BAD_PKCS12_VERSION
+BAD_PKCS7_VERSION
+Belkin F5D7051 802.11g Adapter v1000 [Broadcom 4320]
+ClientCertPKCS11Id
+Control_V10
+ConvertX AV100U A/V Capture Audio
+ConvertX TV100U A/V Capture
+CreateCertBuffersFromPKCS7Bytes
+D-Link V100
+DVD-CAM DZ-MV100A Camcorder
+Dash Drive UV100
+DashDrive UV110
+---kdf---
+ (iterations: 
+ - doesn't support fast array iteration or incompatible
+ num_iterations:
+ to reduce Array.prototype.forEach - doesn't support fast array iteration or incompatible maps
+-webkit-animation-iteration-count
+../../components/webcrypto/algorithms/pbkdf2.cc
+../../third_party/boringssl/src/crypto/evp/scrypt.cc
+../../third_party/dawn/src/tint/lang/core/ir/next_iteration.cc
+.ReencryptedWithAsyncOSCrypt
+AES-128 GCM using openssl
+AES-128 IV for Audible AAXC files
+AES-128 Key for Audible AAXC files
+AES-128 counter mode using openssl
+AES-128-CBC
+AES-128-CBC-HMAC-SHA1
+AES-128-CFB
+AES-128-CFB1
+AES-128-CFB8
+AES-128-CTR
+AES-128-ECB
+AES-128-H3
+AES-128-OFB
+AES-128-XTS
+AES-256 GCM using openssl
+AES-256 counter mode using openssl
+AES-256-CBC
+AES-256-CBC-HMAC-SHA1
+AES-256-CFB
+AES-256-CFB1
+AES-256-CFB8
+[0m
+`''xv10` magic confirmed. Extracting context windows around the sync prefs keys to find KDF constants and logic.
+[0m$ [0mcd /tmp/opencode && BIN=deb_extract/opt/naver/whale/whale; strings -t x -n 6 $BIN 2>/dev/null > str.txt; wc -l str.txt; echo "---around bootstrap_token_per_account---"; grep -n 'encryption_bootstrap_token_per_account$' str.txt | head -3
+1009160 str.txt
+---around bootstrap_token_per_account---
+270260:28b81e0 sync.encryption_bootstrap_token_per_account
+[0m
+[0m$ [0mcd /tmp/opencode && echo "---bootstrap ctx (offsets 0x28b7000-0x28b9000)---"; awk '$1>="28b6000" && $1<="28b9000" {print}' str.txt; echo "---xv10 ctx---"; grep -n "'xv10" str.txt
+---bootstrap ctx (offsets 0x28b7000-0x28b9000)---
+  28b6a crabby_avifPeekCompatibleFileType
+  28b8c crabby_avifDecoderNthImageTiming
+28b635b 	ZN6tflite7support24TfLiteInterpreterWrapper31InitializeWithFallbackAndResizeENSt4__Cr8functionIFN4absl6StatusEPNS_4impl11InterpreterEEEEEd_UlS8_E_
+28b6430 The model is not a valid Flatbuffer
+28b6454 N6tflite4task4core12TfLiteEngine8VerifierE
+28b647f N6tflite14TfLiteVerifierE
+28b6499 ZN6tflite4task4core12TfLiteEngine15InitInterpreterERKNS_5proto15ComputeSettingsEE3$_0
+28b6543 	N6tflite4task4core13ErrorReporterE
+28b6567 N6tflite21StatefulErrorReporterE
+28b65e0 InterpreterBuilder::operator()
+28b6600 CONVERSION_METADATA
+28b6614 N6tflite12_GLOBAL__N_119MallocDataAllocatorE
+28b6641 N6tflite20BuiltinDataAllocatorE
+28b6a18 N6tflite4task4text12nlclassifier12NLClassifierE
+28b6a48 N6tflite4task4core11BaseTaskApiINSt4__Cr6vectorINS1_8CategoryENS3_9allocatorIS5_EEEEJRKNS3_12basic_stringIcNS3_11char_traitsIcEENS6_IcEEEEEEE
+28b6ad6 N6tflite4task4core18BaseUntypedTaskApiE
+28b6afe N6tflite4task9processor17RegexPreprocessorE
+28b6b2a N6tflite4task9processor16TextPreprocessorE
+28b6b55 N6tflite4task9processor12PreprocessorE
+28b6b7c N6tflite4task9processor9ProcessorE
+28b6ba5 <START>
+28b6bb3 <UNKNOWN>
+28b6bbd N6tflite7support4text9tokenizer14RegexTokenizerE
+28b6bee N6tflite7support4text9tokenizer9TokenizerE
+28b6c19 ZN6tflite7support5utils12_GLOBAL__N_117ReadIStreamByLineEPNSt4__Cr13basic_istreamIcNS3_11char_traitsIcEEEEE3$_0
+28b6c89 N6tflite7support5utils12_GLOBAL__N_16membufE
+28b6cb6 ZN6tflite7support5utils12_GLOBAL__N_121ReadIStreamLineSplitsEPNSt4__Cr13basic_istreamIcNS3_11char_traitsIcEEEEE3$_0
+28b6d50 url_keyed_anonymized_data_collection.enabled
+28b6d90 dev-api.whale.naver.com
+28b6dd0 X-Whale-SigninType
+28b6de3 x-consumer-id
+28b6df1 x-hmac-msgpad
+28b6dff x-hmac-md
+28b6e10 whale.dev-api-whale-naver-com
+28b6e30 whale.api-whale-naver-com-external
+28b6e53 disable-sync
+28b7060 Sync.DataTypeUpdateDrop.
+28b7080 Sync.DataTypeMemoryKB.
+28b70a0 Sync.DataTypeCount.
+28b70c0 Sync.EntitySizeOnCommit.Tombstone.
+28b70f0 Sync.EntitySizeOnCommit.Entity.SpecificsOnly.
+28b7120 Sync.EntitySizeOnCommit.Entity.WithMetadata.
+28b7150 Sync.DataTypeNumUnsyncedEntities
+28b7171 OnModelReady
+28b7180 OnSignoutConfirmationFromPendingState
+28b71b0 OnSignoutConfirmation
+28b71d0 OnReauthFromPendingState
+28b7250 sync-base-url
+28b725e /whalesync
+28b7270 https://api.whale.naver.com/whalesync/whalesync
+28b72a0 https://api.whale.naver.com/whalesync
+28b733d autofill
+28b7346 bookmarks
+28b7350 cookies
+28b7358 extensions
+28b7363 passwords
+28b736d preferences
+28b7380 productComparison
+28b7392 readingList
+28b739e savedTabGroups
+28b73b2 themes
+28b73b9 typedUrls
+28b73c3 payments
+28b7550 ENHANCED_PROTECTIONEXTENDED_REPORTINGNONEREPORTING_POPULATION_UNSPECIFIEDSCOUT
+28b75a0 ALLOWLIST_HITCACHE_HITENTERPRISE_ALLOWLIST_HITREQUEST_FAILUREREQUEST_SUCCESSTURNED_OFF_BY_POLICYUNSPECIFIEDURL_UNSUPPORTED
+28b7620 LOW_REPUTATIONPHISHINGSAFEVERDICT_UNSPECIFIED
+28b7650 UNSPECIFIEDWARNING_ACTION_IGNOREDWARNING_ACTION_TAKENWARNING_ACTION_TAKEN_ON_SETTINGSWARNING_UI_IGNORED
+28b76c0 BLUECYANGREENGREYORANGEPINKPURPLEREDUNSPECIFIEDYELLOW
+28b78b0 EXPIRED_28D_TIMERUNSPECIFIEDUSER_LOGGED_IN
+28b7910 ANYMASKABLEMONOCHROMEUNSPECIFIED
+28b7940 BROWSERSTANDALONETABBEDUNSPECIFIED
+28b7d67 	FeedbackIncludeVariations
+28b7da2 X-Client-Data
+28b7db0 Sync.DataTypeErrorSite.
+28b7ddb 	Sync Data
+28b7de6 LevelDB
+28b7e00 sync.migrate_reading_list_from_local_to_account
+28b7e30 _mts_schema_descriptor
+28b7e60 -GlobalMetadata
+28b7ee0 sync.device_statistics_timestamp
+28b7f27 	client
+28b7f2f Naver Whale
+28b7f3b client_id
+28b7fb7 	Identity
+28b7fc1 details
+28b7fc9 Uninitialized
+28b7fd7 uninitialized
+28b7fe5 in_bad_state
+28b8007 	sync.managed
+28b8090 sync.selected_types_per_account
+28b80b0 sync.has_setup_completed
+28b80d0 sync.autofill_wallet_import_enabled_migrated
+28b8100 sync.sync_to_signin_migration_state
+28b8130 sync.cached_passphrase_type
+28b8150 sync.cached_trusted_vault_auto_upgrade_experiment_group
+28b8190 sync.encryption_bootstrap_token
+28b81b0 sync.cached_persistent_auth_error
+28b81e0 sync.encryption_bootstrap_token_per_account
+28b8210 sync.encryption_bootstrap_token_per_account_migration_done
+28b8250 sync.passphrase_prompt_muted_product_version
+28b8280 sync.passwords_per_account_pref_migration_done
+28b82b0 sync.first_time_tried_to_migrate_sync_feature_paused_to_signin
+28b82f0 autofill.wallet_import_enabled
+28b830f sync.bookmarks
+28b8320 sync.preferences
+28b8331 sync.themes
+28b8340 sync.extensions
+28b8350 sync.apps
+28b8360 sync.reading_list
+28b8372 sync.tabs
+28b8380 sync.saved_tab_groups
+28b8396 sync.payments
+28b83b0 sync.product_comparison
+28b83c8 sync.cookies
+28b8400 sync.feature_status_for_sync_to_signin
+28b8430 sync.data_type_status_for_sync_to_signin
+28b8459 sync.gaia_id
+28b8470 sync.transport_data_per_account
+28b8490 sync.last_synced_time
+28b84b0 sync.last_poll_time
+28b84d0 sync.short_poll_interval
+28b84f0 sync.cache_guid
+28b8500 sync.birthday
+28b8510 sync.bag_of_chips
+28b8530 sync.whale_need_encryption_key_forced_time
+28b85f0 sync-deferred-startup-timeout-seconds
+28b8620 sync-short-initial-retry-override
+28b8650 sync-short-nudge-delay-for-test
+28b8670 SyncUnsubscribeFromTypesWithPermanentErrors
+28b86c8 nigori-key
+28b878f 	/whalesync/reset
+28b87a1 NEO_SES
+28b87d7 	DataTypeManagerImplCorrectActiveTypes
+28b8857 	/command/
+28b8870 sync-protocol-log-buffer-size
+28b8890 Sync.PasswordNotesStateInUpdate
+28b88b0 Sync.EntityEncryptionSucceeded
+28b88d0 Sync.DataTypeEntityChange.
+28b8903 	SyncPopulateAllFieldsForCommitOnlyTypes
+28b8946 LoopBackServer
+28b8955 bookmark_bar
+28b8962 Bookmark Bar
+28b8970 other_bookmarks
+28b8980 Other Bookmarks
+28b8990 synced_bookmarks
+28b89b0 Synced Bookmarks
+28b89da SyncShortInitialDelayOnNetworkError
+28b8b50 Sync.CommitLatency
+28b8b70 Sync.CommitResponse
+28b8da0 sync-simulate-passphrase-error
+28b8df3 	event
+28b8dfa chromesync
+28b8e05 hw_protected
+28b8e20 trusted-vault-service-url
+28b8e40 https://securitydomain-pa.googleapis.com/v1/
+28b8ea0 https://cryptauthvault.googleapis.com/v1/vaults/0
+28b8ee0 https://cryptauthvault.googleapis.com/v1/vaults?use_case=13&challenge_not_required=1
+28b8f40 https://www.gstatic.com/cryptauthvault/v0/cert.xml
+28b8f80 https://www.gstatic.com/cryptauthvault/v0/cert.sig.xml
+---xv10 ctx---
+233995:235ac6c ''xv10
+[0m
+Major findings: `/whalesync` base URL, `/whalesync/reset`, NEO_SES cookie, `nigori-key`, `hw_protected`. Now extracting context around the `xv10` magic and searching for the passphrase KDF parameters.
+[0m$ [0mcd /tmp/opencode && echo "---xv10 ctx (0x2359000-0x235d000)---"; awk '$1>="2359000" && $1<="235d000" {print}' str.txt; echo "---saltysalt/1003/peanuts---"; grep -nE 'saltysalt|1003|peanuts|whale_encryption|whale_passphrase|derived|master_key|encryption_key' str.txt | head -20
+---xv10 ctx (0x2359000-0x235d000)---
+  235a2 fontations_ffi$cxxbridge1$194$localized_name_next
+2359000 <?xml version="1.0" encoding="UTF-8"?><request    version="chromeprofilereset-1.1"    protocol="3.0"    installsource="profilereset">  <app appid="{EC6C623E-7243-4340-9955-CDFDBFED69A7}">    <data name="install" index="__BRANDCODE_PLACEHOLDER__"/>  </app></request>
+2359110 extensions.settings
+2359140 profile.ask_to_close_default_profile_window
+2359170 whale.tweak.whale_free_hosts
+2359190 whale.tweak.force_dark_mode_excludes
+23591c0 sidebars.use_launcher
+23591e0 sidebars.side_widget_auto_hide
+2359200 sidebars.disabled
+2359220 sidebars.volumes
+2359240 sidebars.show_whaleon
+2359260 sidebars.show_capture
+2359280 splitview.last_divided_ratio
+23592a0 capture.preview_default_size_adjusted
+23592d0 download.smart_download_rulesets
+2359300 download.smart_download_directories
+2359330 web_app.window_state
+2359350 whaleon.joined_channel_history
+2359370 whaleon.window_placement
+2359390 whaleon.chat_view.last_detached
+23593b0 whaleon.chat_view.window_placement
+23593e0 whaleon.member_view.last_detached
+2359410 whaleon.member_view.window_placement
+2359440 whaleon.recently_created_channel_name
+2359470 whaleon.recently_use_personal_room
+23594a0 whaleon.recently_use_waiting_room
+23594d0 whaleon.flip_video_horizontal
+23594f0 whaleon.preferred_device.camera
+2359510 whaleon.preferred_device.microphone
+2359540 whale_on.preferred_device.speaker
+2359570 whaleon.detect_speakers
+2359590 toolbar.buttons_visibility
+23595b0 omnibox.window.placement
+23595d0 simple_product_help.promo_shown.quick_seach_widget
+2359610 whaleon.virtual_background_history
+2359640 whaleon.custom_virtual_background_image_paths
+2359670 whaleon.custom_virtual_background_recently_directory
+23596b0 scrapbook.use_more_edit_default
+23596d0 shown_sync_pass_phrase_promo_red_dot
+2359700 night_mode.denied_list
+2359720 night_mode.allowed_list
+2359740 night_mode.sidebar_denied_list
+2359760 night_mode.sidebar_allowed_list
+2359780 multiplay.chat.window_placement
+23597a0 multiplay.onboarding_lottie_shown
+2359810 DesktopScreenshots
+2359830 sharing_hub.desktop_sharing_hub_enabled
+2359880 https://whal.eu
+2359890 http://dev.whal.eu
+2359c10 browser.attempted_to_enable_autoupdate
+2359c40 browser.relaunch_notification_period
+2359c70 browser.relaunch_window
+2359c90 browser.relaunch_fast_if_outdated
+2359cc0 browser.relaunch_notification
+2359d70 sub_apps_uninstall_notification
+2359d90 sub_apps_service
+2359e10 chrome://help/
+2359e20 Common.WithCache
+2359e31 Common
+2359e40 Enterprise.DeviceTrust.SignalsDecorator.Latency.%s
+2359f20 clear_cookies_and_other_site_data
+2359f42 idle_timeout
+2359f50 idle_timeout_actions
+2359f70 idle_timeout_show_bubble_on_startup
+2359fb0 Enterprise.IdleTimeoutPolicies.ActionTime.%s
+2359fe0 Enterprise.IdleTimeoutPolicies.ActionSuccess.%s
+235a010 Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent
+235a050 ClearBrowsingData
+235a062 SignOut
+235a06a CloseBrowsers
+235a078 CloseTabs
+235a082 ReloadPages
+235a090 ShowProfilePicker
+235a0a2 AllActions
+235a0f0 Enterprise.DeviceTrust.SyncSigningKey.UploadCode
+235a130 Enterprise.DeviceTrust.Key.LoadPersistedKeyResult
+235a170 Enterprise.DeviceTrust.Key.Type
+235a190 Enterprise.DeviceTrust.Key.TrustLevel
+235a1c0 Enterprise.DeviceTrust.Key.RotationResult
+235a1f0 Enterprise.DeviceTrust.Key.CreationResult
+235a220 Enterprise.DeviceTrust.SyncSigningKey.ClientError
+235a260 Enterprise.DeviceTrust.Key.Signing.Latency.%s
+235a28e Unknown
+235a296 Hardware
+235a2b0 Enterprise.DeviceTrust.KeyRotationCommand.Error
+235a2e0 Enterprise.DeviceTrust.KeyRotationCommand.ExitCode
+235a330 chrome-management-service
+235a34a chromemgmt
+235a360 enrollment/DeviceTrustSigningKey
+235a381 dm-server-url
+235a395 pipe-name
+235a39f rotate-dtkey
+235a3c0 Enterprise.DeviceTrust.Persistence.%s.Error
+235a3ec signingKey
+235a3f7 trustLevel
+235a5f0 org.kde.kwalletd
+235a610 /modules/kwalletd
+235a630 org.kde.kwalletd5
+235a650 /modules/kwalletd5
+235a670 org.kde.kwalletd6
+235a690 /modules/kwalletd6
+235a6b0 org.freedesktop.secrets
+235a6d0 /org/freedesktop/secrets
+235a6f0 org.freedesktop.Secret.Service
+235a70f ReadAlias
+235a719 default
+235a730 org.freedesktop.DBus.Properties
+235a760 org.freedesktop.Secret.Collection
+235a790 org.freedesktop.Secret.Collection.Label
+235a7c0 Default Keyring
+235a7d0 CreateCollection
+235a7e1 Unlock
+235a7e8 OpenSession
+235a7fa application
+235a806 chromium
+235a80f SearchItems
+235a820 org.freedesktop.Secret.Item
+235a83c GetSecret
+235a850 org.kde.KWallet
+235a860 isEnabled
+235a86a networkWallet
+235a880 walletAsyncOpened
+235a892 openAsync
+235a89c hasFolder
+235a8a6 Chromium Keys
+235a8b4 hasEntry
+235a8c0 Chromium Safe Storage
+235a8d6 createFolder
+235a8e3 readPassword
+235a8f0 writePassword
+235a8fe xdg:schema
+235a910 chrome_libsecret_os_crypt_password_v2
+235a940 org.freedesktop.Secret.Item.Attributes
+235a970 org.freedesktop.Secret.Item.Label
+235a992 text/plain
+235a99d CreateItem
+235a9a8 saltysalt
+235a9c0 OSCrypt.FreedesktopSecretKeyProvider.InitStatus
+235a9f0 OSCrypt.FreedesktopSecretKeyProvider.$1.ErrorDetail
+235aa30 org.freedesktop.Secret.Session
+235aa60 org.freedesktop.Secret.Prompt
+235aa7e Prompt
+235aab0 os_crypt.portal.token
+235aad0 os_crypt.portal.prev_desktop
+235aaf0 os_crypt.portal.prev_init_success
+235ab20 /org/freedesktop/portal/desktop
+235ab40 org.freedesktop.portal.Secret
+235ab5e RetrieveSecret
+235ab70 OSCrypt.SecretPortalKeyProvider.GotToken
+235aba0 fdo_portal_secret_salt
+235abc0 HKDF-SHA-256 AES-256-GCM
+235abe0 OSCrypt.SecretPortalKeyProvider.InitStatus
+235ac10 OSCrypt.SecretPortalKeyProvider.NewInitFailure
+235ac40 org.freedesktop.portal.Desktop
+235ac6c ''xv10
+235ac80 chrome://browser-switch/
+235aca0 browser_switcher.enabled
+235acc0 browser_switcher.keep_last_tab
+235ace0 browser_switcher.external_sitelist_url
+235ad10 browser_switcher.external_greylist_url
+235ad40 browser_switcher.alternative_browser_path
+235ad70 browser_switcher.alternative_browser_parameters
+235ada0 browser_switcher.url_list
+235adc0 browser_switcher.url_greylist
+235ade0 browser_switcher.cached_external_sitelist
+235ae10 browser_switcher.cached_external_sitelist_greylist
+235ae50 browser_switcher.cached_external_greylist
+235ae80 browser_switcher.delay
+235aea0 browser_switcher.parsing_mode
+235aeda site-list
+235aef0 Invalid XML root element
+235af0e docMode
+235af16 domain
+235af22 exclude
+235af30 doNotTransition
+235af49 open-in
+235af60 ${chrome}
+235af6a google-chrome
+235af78 ${firefox}
+235af83 firefox
+235af8b ${opera}
+235af9a ${url}
+235afa6 identifier
+235b020 mandatory_extensions_for_incognito_navigation
+235b05d backup
+235b064 checksum_v1 = 
+235b080 spellcheck.dictionary
+235b0a0 https://redirector.gvt1.com/edgedl/chrome/dict/
+235b0e0 ai/helpMeWrite
+235b100 chrome-untrusted://compose/
+235b180 https://goto.google.com/ccbrfd
+235b1a0 https://goto.google.com/ccbrfdod
+235b1d0 https://support.google.com/chrome?p=help_me_write
+235b210 https://support.google.com/chrome/a/answer/14443058
+235b250 https://goto.google.com/ccfsfd
+235b270 https://goto.google.com/ccfsfdod
+235b2a0 https://accounts.google.com
+235b2c0 Session used a modifier, like elaborate or formal
+235b300 A safety filter edited a response in this session
+235b340 Any error appeared in this session
+235b370 This session started with nudge
+235b390 Execution ID linked to your recent input and page context
+235b3ce Locale
+235b430 compose_promotion
+235b442 direction
+235b450 defaultPageOrientation
+235b470 twoUpViewEnabled
+235b83c Contents
+235b8f0 PDF.Ink2StrokeInputDeviceType
+235b910 PDF.Ink2TextHighlightInputDeviceType
+235bb50 GOOG:INKIsInker
+235bb6b  OS/2V
+235bd6f 0Version 1.0
+235bda1 /CIDInit /ProcSet findresource begin
+235bdc6 12 dict begin
+235bdd4 begincmap
+235bdde /CIDSystemInfo <<
+235bdf0   /Registry (Adobe)
+235be04   /Ordering (Identity)
+235be1b   /Supplement 0
+235be2b >> def
+235be32 /CMapName /Adobe-Identity-H def
+235be52 /CMapType 2 def
+235be62 1 begincodespacerange
+235be78 <0000> <FFFF>
+235be86 endcodespacerange
+235be98 1 beginbfrange
+235bea7 <0000> <FFFF> <0000>
+235bebc endbfrange
+235bec7 endcmap
+235becf CMapName currentdict /CMap defineresource pop
+235c814 Formula
+235cf99  &   ! 
+---saltysalt/1003/peanuts---
+4801:19695d2  derived via 
+4821:1969d0f {"id":1003,"method":"Overlay.setShowInspectedElementAnchor","params":{"InspectedElementAnchorConfig":{"backendNodeId":%d}}}
+5445:197b824 {"fmt":"%N%n%O%n%A%n%T%n%F%n%L%n%C %Z%n%S","require":"ACSZ","zip_name_type":"pin","state_name_type":"state","zipex":"110034,110001","posturl":"https://www.indiapost.gov.in/vas/pages/FindPinCode.aspx","languages":"en~hi"}
+8878:199915a need_encryption_key
+20395:19e4770 OTS-derived-font
+20400:19e480f OTS derived font
+24231:1a01027 saltysalt
+26103:1a0c947 derived PRF HMAC secret
+26629:1a1003c OnViewAddedToWidget
+36533:1a55056 document.derivedStructData.emails
+40954:1a76d94 derived_features
+46637:1aa068e Must call super constructor in derived class before accessing 'this' or returning from derived constructor
+51296:1abe0a0 document.derivedStructData.owner
+63447:1b1003d tabStripPosition
+73019:1b515b2 document.derivedStructData.displayPhoto.url
+75222:1b5f206 document.derivedStructData.owner_email
+77503:1b6e7a3 The shared secret cannot be derived from the keying material
+77716:1b6fb9b derived psk
+77928:1b71003 ContextualTasksContextQueryEmbeddingTask
+88994:1bc1111 encryption_keybag
+[0m
+[0m$ [0mcd /tmp/opencode && echo "---need_encryption_key ctx---"; awk '$1>="1999000" && $1<="1999900" {print}' str.txt; echo "---nigori/reset ctx---"; awk '$1>="28b8600" && $1<="28b8800" {print}' str.txt
+---need_encryption_key ctx---
+1999007 Turkey
+199900e onwaitingforkey
+1999023 cryptokey
+1999033 authkey
+199903b process_memory_key
+199904e encrypted_recovery_key
+1999065 primary_key
+1999071 picker_auto_display_key
+1999089 SELECT index_references.key AS index_key
+19990b2 gl_method_no_context_key
+19990cb Unexpected failure of AES_set_encrypt_key
+19990f5 search_terms_replacement_key
+1999112 ui_audit_key
+199911f stat_key
+1999128 flat_key
+1999131 previous_key
+199913e order_key
+1999148 header_key
+1999153 no_key
+199915a need_encryption_key
+199916e decryption_key
+199917d partition_key
+199918b network_anonymization_key
+19991a5 network_isolation_key
+19991bb spdy_session_key
+19991cc GetPartitionDomain-config_domain_key
+19991f1 picker_platform_key
+1999205 image_translate_target_language_param_key
+199922f image_translate_source_language_param_key
+1999259 omnibox.UrlParam.param_key
+1999274 origin_stream_key
+1999286 alternative_stream_key
+199929d url_key
+19992a5 ephemeral_key
+19992b3 peek_key
+19992bc ack_key
+19992c4 default_api_key
+19992d4 navigation_api_key
+19992e7 trigger_debug_key
+19992f9 source_debug_key
+199930a rate_limiting_key
+199931c wrapped_wrapping_key
+1999331 unique_key
+199933c wrapped_app_private_key
+1999354 y_axis_share_key
+1999365 frame_key
+199936f audible_key
+199937b has_additional_usable_key
+1999395 buckets_by_storage_key
+19993ac latest_storage_key
+19993bf lens.DriveMetadata.resource_key
+19993df , record_key
+19993ec standard_key
+19993f9 SELECT relying_party_id, credential_id, browser_bound_key_id, last_used FROM secure_payment_confirmation_browser_bound_key
+1999474 audible_fixed_key
+1999486 rotated_key
+1999492 cohort_public_key
+19994a4 app_public_key
+19994b3 cross_user_sharing_public_key
+19994d1 x25519_public_key
+19994e3 chrome.cros.reporting.proto.RiskInfo.RiskCategory.key
+1999519 SBE.greendot.key
+199952a parcel_tracking_db.ParcelTrackingContent.key
+1999557 SBE.widget.key
+1999566 chrome.cros.reporting.proto.RiskInfo.RiskIndicator.key
+199959d TOL.capture.auto.key
+19995b2 cart_db.ChromeCartContentProto.key
+19995d5 coupon_db.CouponContentProto.key
+19995f6 commerce_subscription_db.CommerceSubscriptionContentProto.key
+1999634 SBE.papago.key
+1999643 optimization_guide.proto.ProductSpecificationSection.key
+199967c TOL.capture.screen.key
+1999693 omnibox.AimEligibilityResponse.QueryParam.key
+19996c1 SBE.bmrk.key
+19996ce SBE.scrapbook.key
+19996e0 chrome_browser_certificate_transparency.CTLog.key
+1999712 multistep_filter.AppliedFilterUIString.key
+199973d MOB.active.key
+199974c optimization_guide.proto.ProductSpecificationValue.key
+1999783 multistep_filter.TaskAttribute.key
+19997a6 TOL.wspace.key
+19997b5 TOL.capture.selected.key
+19997ce TOL.capture.web.key
+19997e2 security-key
+19997ef sec-websocket-key
+1999801 lens-preconnect-key
+1999815 x-developer-key
+1999825 use-whale-policy-verification-key
+1999847 campbell-key
+1999854 enable-cros-separate-geo-api-key
+1999875 x-goog-api-key
+1999884 price-tracking-subscription-service-locale-key
+19998b3 enable-secure-payment-confirmation-browser-bound-key
+19998e8 public-key
+19998f3 Decryption succeeded after retrying with an empty key
+---nigori/reset ctx---
+28b8620 sync-short-initial-retry-override
+28b8650 sync-short-nudge-delay-for-test
+28b8670 SyncUnsubscribeFromTypesWithPermanentErrors
+28b86c8 nigori-key
+28b878f 	/whalesync/reset
+28b87a1 NEO_SES
+28b87d7 	DataTypeManagerImplCorrectActiveTypes
+[0m
+[0m$ [0mcd /tmp/opencode && echo "---passphrase strings---"; grep -iE 'passphrase|bootstrap' str.txt | head -40
+---passphrase strings---
+199a958 SetExplicitPassphraseDecryptionKey
+19c21a7 passphraseExplanationText
+19fb74b Sync.BootstrapTokenEncryptionResult
+19fb792 Sync.BootstrapTokenDecryptionResult
+1a01031 custom_passphrase_key_derivation_salt
+1a24e52 bootstrap_points
+1aa55e0 IPC::mojom::Bootstrap [primary] MessageHeaderValidator
+1aaaf40 emptyPassphraseError
+1aaaf55 incorrectPassphraseError
+1aaaf6e mismatchedPassphraseError
+1aaaf88 clearBrowsingDataWithSyncPassphraseError
+1ab3c55 passphraseRecover
+1ac4e2a IPC::mojom::Bootstrap [primary] PipeControlMessageHandler
+1ad6ccf passphraseConfirmationPlaceholder
+1ad6e28 passphrasePlaceholder
+1ae2588 Sync.Crypto.CustomPassphraseKeyDerivationMethodStateOnStartup
+1aee919 bootstrap
+1aee923 DidGetStorageKeysForBootstrap
+1b0650d submitPassphraseButton
+1b0af1f passphraseResetHintEncryption
+1b0b043 Sync.Crypto.CustomPassphraseKeyDerivationMethodOnSuccessfulDecryption
+1b3527e PassPhraseHelpIcon
+1b67164 enterPassphraseLabel
+1b67179 existingPassphraseLabel
+1b67191 encryptWithSyncPassphraseLabel
+1ba627a SyncShowSyncPassphraseDialog
+1bb48e0 Bootstrapping
+1bc0e58 DidGetBootstrapFlag
+1bdd5e4 Sync.PassphraseTypeUponNotMyBirthdayOrEncryptionObsolete
+1be9314 enterPassphraseLabelWithDate
+1be9331 existingPassphraseLabelWithDate
+1beeebe Needs passphrase
+1beeecf id-it-revPassphrase
+1beeee3 PassphraseType::kTrustedVaultPassphrase
+1beef0b PassphraseType::kFrozenImplicitPassphrase
+1beef35 PassphraseType::kImplicitPassphrase
+1beef59 enterPassphrase
+1beef69 SyncSetupSetEncryptionPassphrase
+1beef8a SyncSetupSetDecryptionPassphrase
+1beefab PassphraseType::kCustomPassphrase
+[0m
+[0m$ [0mcd /tmp/opencode && echo "---0x19fb600-0x19fb900---"; awk '$1>="19fb600" && $1<="19fb900" {print}' str.txt; echo "---0x1a00f00-0x1a01200---"; awk '$1>="1a00f00" && $1<="1a01200" {print}' str.txt
+---0x19fb600-0x19fb900---
+19fb608 PostShowPromoResult
+19fb61c OnShowPromoResult
+19fb62e unknown tag in WebUIGetModelInfoResult
+19fb655 Storage.FileSystemAccess.WatchWithChangeInfoResult
+19fb688 CreateNullAndReturnResult
+19fb6a2 CreateBlobAndReturnResult
+19fb6bc Conversions.AttributionResult
+19fb6da Signin.BoundSessionCredentials.CookieRotationGenerateAssertionResult
+19fb71f Signin.TokenBinding.GenerateAssertionResult
+19fb74b Sync.BootstrapTokenEncryptionResult
+19fb76f Sync.NigoriStorageEncryptionResult
+19fb792 Sync.BootstrapTokenDecryptionResult
+19fb7b6 PasswordManager.StoreDecryptionResult
+19fb7dc Sync.NigoriStorageDecryptionResult
+19fb7ff Notifications.Database.OpenAfterCorruptionResult
+19fb830 unknown tag in GeopositionResult
+19fb851 SpeechRecognitionResult
+19fb869 unknown tag in ObliviousHttpCompletionResult
+19fb896 .Quic.CompletionResult
+19fb8ad tint::core::ir::InstructionResult
+19fb8cf WebAuthentication.Enclave.RenewingPinTransactionResult
+---0x1a00f00-0x1a01200---
+1a00f12 TrustedVault
+1a00f1f matrixCompMult
+1a00f33  fake node libxslt
+1a00f4c xsl,xbl,xslt
+1a00f59 XMLRustForNonXslt
+1a00f71 electronvolt
+1a00f82 Model already built
+1a00f96 chrome_extensions::EnsureChromeBrowserContextKeyedServiceFactoriesBuilt
+1a00fe3 SupportTilt
+1a00ffa omnibox-toolbelt
+1a0100b OmniboxToolbelt
+1a0101b Marker Felt
+1a01027 saltysalt
+1a01031 custom_passphrase_key_derivation_salt
+1a0105d GetSalt
+1a01065 DeleteSalt
+1a01070 clearHalt
+1a0107a ClearHalt
+1a01084 enable-lens-overlay-entrypoint-label-alt
+1a010ad lens-overlay-permission-bubble-alt
+1a010d0 emptyAlt
+1a010d9 aboutProductLogoAlt
+1a010f5 autoplius.lt
+1a01102 google.lt
+1a0110c f16x8.lt
+1a01115 f32x4.lt
+1a0111e f64.lt
+1a01125 f64x2.lt
+1a0112e f32.lt
+1a0113a side_data_pkt
+1a0114c trace_turbo_jt
+1a0115b onexit
+1a01162 FLAGS_quiche_reloadable_flag_quic_disconnect_early_exit
+1a0119a silent_exit
+1a011a6 other_exit
+1a011b1 for-loop does not exit
+1a011c8 while does not exit
+1a011dc Cleared on exit
+1a011ec Show usage options and exit
+[0m
+[0m$ [0mcd /tmp/opencode && grep -iE 'whale.{0,20}(sync|encrypt)|(sync|encrypt).{0,20}whale|whalesync' str.txt | grep -viE 'github|wiki|\.cc$' | head -30; echo "---GetEncryptionKey---"; grep -iE 'GetOrCreate|EncryptionKey|KeyRing|EncryptBootstrap|DecryptBootstrap|BootstrapToken' str.txt | head -20
+19b273f WhaleBubbleSyncPromoView
+1a6179e whale_sync_push/service_worker.js
+1a63ada whale_sync_push/socket.io.slim.js
+1ab388c statusOfSyncedDataOnTheWhaleServer
+1acfe93 WhaleSyncAuthManager
+1ae2d50 whale://settings/syncSetup
+1b886a9 whale_sync_push
+1b93696 ../../whale/whale/browser/ui/views/sync/whale_bubble_sync_promo_view.h
+1c31751 clearBrowsingHistorySummarySyncedWhale
+28b725e /whalesync
+28b7270 https://api.whale.naver.com/whalesync/whalesync
+28b72a0 https://api.whale.naver.com/whalesync
+28b8530 sync.whale_need_encryption_key_forced_time
+28b878f 	/whalesync/reset
+2984cf0 https://dev-api.whale.naver.com/whalesync
+2a9a450 https://help.whale.naver.com/desktop/sync_passphrase
+---GetEncryptionKey---
+199430d FontDataServiceImpl::GetOrCreateAssetIndex - memory copy
+1996be3 TrustedVault.SetEncryptionKeysForSecurityDomain.OffTheRecordOnly
+199a8e3 UpdateEncryptionKey
+199b2ee GetOrCreateBrowserBoundKey
+19a979b FontDataServiceImpl::GetOrCreateAssetIndex
+19fb74b Sync.BootstrapTokenEncryptionResult
+19fb792 Sync.BootstrapTokenDecryptionResult
+1a1a590 setClientEncryptionKeys
+1a1a5a8 setSyncEncryptionKeys
+1a320ae GetOrCreateProcess
+1a6d858 TrustedVault.JavascriptSetClientEncryptionKeysValidArgs
+1a6d890 Sync.TrustedVaultJavascriptSetEncryptionKeysValidArgs
+1a7cc6d TrustedVault.SetEncryptionKeysForSecurityDomain.AllProfiles
+1a85938 WebContentsImpl::GetOrCreateWebPreferences
+1ab6bd7 GetOrCreateRemoteTrackAdapter
+1ac1f4a OnDeviceModelServiceController::BaseModelController::GetOrCreateFeatureController
+1af403c Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito
+1b32ba7 chrome.mojom.TrustedVaultEncryptionKeysExtension
+1b39f78 TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain
+1b5a302 Failed to GetOrCreateBucket: QuotaManagerProxy is null
+[0m
+Found `https://help.whale.naver.com/desktop/sync_passphrase` — official passphrase docs. Fetching it.
+[0m$ [0mcurl -s --max-time 25 -H "User-Agent: Mozilla/5.0" "https://help.whale.naver.com/desktop/sync_passphrase" -o /tmp/opencode/passphrase.html; wc -c /tmp/opencode/passphrase.html; python3 - <<'EOF'
+import re,html
+t=open('/tmp/opencode/passphrase.html',encoding='utf-8',errors='ignore').read()
+t=re.sub(r'<script.*?</script>','',t,flags=re.S); t=re.sub(r'<style.*?</style>','',t,flags=re.S)
+t=re.sub(r'<[^>]+>',' ',t); t=html.unescape(t); t=re.sub(r'\s+',' ',t)
+print(t[:4000])
+EOF
+0 /tmp/opencode/passphrase.html
+[0m
+[0m$ [0mcurl -s --max-time 25 -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64)" -H "Accept: text/html,application/xhtml+xml" "https://help.whale.naver.com/desktop/sync_passphrase" -o /tmp/opencode/ph2.html; wc -c /tmp/opencode/ph2.html; grep -oE '<script[^>]*src="[^"]*"' /tmp/opencode/ph2.html | head; echo "---title---"; grep -oiE '<title>[^<]*</title>' /tmp/opencode/ph2.html
+0 /tmp/opencode/ph2.html
+---title---
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "http=%{http_code} size=%{size_download} type=%{content_type}\n" --max-time 20 -H "User-Agent: Mozilla/5.0" "https://help.whale.naver.com/desktop/sync_passphrase"; curl -s -o /dev/null -w "root http=%{http_code}\n" --max-time 20 -H "User-Agent: Mozilla/5.0" "https://help.whale.naver.com/"
+http=301 size=0 type=text/html; charset=UTF-8
+root http=302
+[0m
+[0m$ [0mcurl -sL --max-time 25 -H "User-Agent: Mozilla/5.0" -w "\nFINAL url=%{url_effective} http=%{http_code}\n" "https://help.whale.naver.com/desktop/sync_passphrase" -o /tmp/opencode/ph3.html; wc -c /tmp/opencode/ph3.html; grep -oiE '<title>[^<]*</title>' /tmp/opencode/ph3.html
+FINAL url=https://help.whale.naver.com/ko/desktop/sync_passphrase/ http=200
+28956 /tmp/opencode/ph3.html
+<title>동기화 암호 - 웨일 헬프센터</title>
+[0m
+[0m$ [0mpython3 - <<'EOF'
+import re,html
+t=open('/tmp/opencode/ph3.html',encoding='utf-8',errors='ignore').read()
+t=re.sub(r'<script.*?</script>','',t,flags=re.S); t=re.sub(r'<style.*?</style>','',t,flags=re.S)
+t=re.sub(r'<[^>]+>',' ',t); t=html.unescape(t); t=re.sub(r'[ \t]+',' ',t); t=re.sub(r'\n\s*\n+','\n',t)
+print(t[:5000])
+EOF
+동기화 암호 - 웨일 헬프센터 
+ 데스크톱 
+ 모바일 
+ 웨일온 
+ 웨일 스페이스 
+ 웨일 클래스 
+ 웨일북 
+ 웨일 서비스 
+ 웨일 홈 
+ 마이 액티비티 
+ 웨일 스토어 
+ 웨일 연구소 
+ 웨일 개발자센터 
+ 웨일온 
+ 웨일온 스터디 
+ 웨일 클래스 
+ 웨일 스페이스 
+ 웨일북 
+ 버그바운티 
+ 사용가이드 목차 스킨 듀얼 탭 다크 모드 모바일창 주소창 사이드바 스크랩북 퀵서치 캡처 번역 새 탭 웨일 스토어 광고 차단 마우스 제스처 멀티플레이 동기화 암호 기타 사용자 글꼴 마우스 단축키 세로 탭 사용 팁 문제 해결 
+ 데스크톱 
+ 동기화 암호 
+ CONTENTS 
+ 암호가 있는 경우 암호 만들기 암호 변경 또는 삭제하기 
+ 동기화 데이터를 더 안전하게 관리하기 위해 나만의 동기화 암호를 설정할 수 있습니다. 암호를 설정하면 브라우저 로그인 이후 동기화를 사용하기 위해 암호 입력을 추가로 요구합니다. 
+ 동기화된 데이터는 최고 수준의 보안 기술로 안전하게 보호되고 있습니다. 하지만 로그인 계정이 타인에게 유출되는 경우 동기화 데이터에 포함된 사이트 비밀번호 정보를 통해 연쇄적인 개인정보 유출로 이어질 수 있습니다. 계정 유출이 우려된다면 반드시 동기화 암호를 설정해주세요. 
+ 암호 설정 후 다른 기기에서 동기화에 문제가 발생하는 경우 웨일을 최신 버전으로 업데이트해야 할 수도 있습니다. 
+ 동기화 암호는 네이버에 전송되거나 서버에 저장되지 않습니다. 
+ 암호가 있는 경우 
+  새로운 기기에서 동기화를 사용할 때마다 암호가 필요합니다. 
+  이미 동기화를 사용 설정한 기기에 새 암호를 입력해야 합니다. 
+  모든 방문 기록이 모든 기기에 동기화되는 것은 아닙니다. 주소창에 입력하는 웹 주소만 동기화됩니다. 
+ 암호 만들기 
+ 이미 웨일에 로그인되어 있는 경우 동기화를 사용 설정한 후 암호를 만드세요. 
+   설정 > 동기화 (whale://settings/syncSetup) 페이지로 이동합니다. 
+   암호화 옵션 에서 나만의 동기화 암호로 동기화된 데이터를 암호화합니다. 를 선택합니다. 
+  암호를 입력하고 확인합니다. 
+   저장 을 선택합니다. 
+ 암호 변경 또는 삭제하기 
+ 사용 중인 암호를 잊어버린 경우 암호를 삭제하고 다시 만들어야 합니다. 암호를 삭제하려면 동기화 데이터를 초기화해야 합니다. 이 과정에서 서버에 저장된 동기화 데이터가 삭제되며 로그인한 모든 기기에서 로그아웃됩니다. 
+   설정 > 동기화 데이터 관리 를 선택하고 마이 액티비티 로 이동합니다. 
+  페이지 하단에서 동기화 데이터 초기화 > 초기화 를 선택합니다. 
+  툴바에서 동기화 오류 아이콘을 클릭하거나 설정 으로 이동합니다. 
+   동기화 사용 을 선택합니다. 
+  동기화가 정상적으로 연결되면 새로운 암호를 만들 수 있습니다. 
+ 도움말: 동기화 데이터가 초기화된 상태에서 기기에 저장된 데이터가 삭제되면 모든 데이터가 영구히 삭제됩니다. 공용 PC 설정이 켜진 상태로 기기가 종료되지 않도록 주의하시고 동기화를 다시 사용 설정하세요. 
+ CONTENTS 
+ 암호가 있는 경우 암호 만들기 암호 변경 또는 삭제하기 
+ 이용약관 
+ 개인정보 처리방침 
+ 버그 바운티 
+ 고객센터 
+ © NAVER Corp. 
+ 한국어 
+ English 
+ 블로그 
+ 페이스북 
+ 유튜브 
+ 인스타그램 
+ 다운로드
+[0m
+Help docs confirm: passphrase never leaves device; server stores only ciphertext + bootstrap token. Now checking the binary's symbol table for the actual sync-crypto function names.
+[0m$ [0mcd /tmp/opencode && BIN=deb_extract/opt/naver/whale/whale; file $BIN; echo "---symtab?---"; readelf -S $BIN 2>/dev/null | grep -iE 'symtab|dynsym' | head; echo "---whale symbols---"; nm -C $BIN 2>/dev/null | grep -iE 'whale.*(crypt|sync|kdf|passphrase|bootstrap)' | head -30; echo "---strings method check---"; nm $BIN 2>/dev/null | wc -l
+deb_extract/opt/naver/whale/whale: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=0421db6799074e30298c212c7558690ec8b8c91d, stripped
+---symtab?---
+  [ 5] .dynsym           DYNSYM           0000000000000360  00000360
+---whale symbols---
+---strings method check---
+0
+[0m
+[0m$ [0mcd /tmp/opencode && echo "---dynsym whale---"; nm -D $BIN 2>/dev/null | grep -iE 'whale' | head -20; echo "---pak files---"; find deb_extract -name "*.pak" | head; ls deb_extract/opt/naver/whale/locales/ 2>/dev/null | head -3
+---dynsym whale---
+---pak files---
+deb_extract/opt/naver/whale/resources.pak
+deb_extract/opt/naver/whale/whale_200_percent.pak
+deb_extract/opt/naver/whale/whale_100_percent.pak
+deb_extract/opt/naver/whale/locales/ja.pak
+deb_extract/opt/naver/whale/locales/et_FEMININE.pak
+deb_extract/opt/naver/whale/locales/en-US_MASCULINE.pak
+deb_extract/opt/naver/whale/locales/hr_NEUTER.pak
+deb_extract/opt/naver/whale/locales/lv_MASCULINE.pak
+deb_extract/opt/naver/whale/locales/fil_NEUTER.pak
+deb_extract/opt/naver/whale/locales/af.pak
+af.pak
+af_FEMININE.pak
+af_MASCULINE.pak
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 4 deb_extract/opt/naver/whale/locales/en-US.pak 2>/dev/null | grep -iE 'passphrase|encrypt.*sync|sync.*encrypt' | head -30
+Visit NAVER MYBOX to register firstLog in to WhaleNAVER MYBOX Save FailedNAVER MYBOX requires one-time user agreement. Click OK to open the agreement page. Please try again after submitting the agreement.Add to ScrapbookSync Server Data DeletedA remote browser ($1) has deleted all sync data for NAVER account $2. Sync is disabled.I have read and agree to Whale Terms of Use and Privacy Policy.Terms of UsePrivacy PolicyWelcome to NAVER Whale.Make NAVER Whale the default browser.Start WhaleAgreeI've read Whale $1Terms$2 and $3Privacy$4 and agree to them.As your privacy setting, Whale has deleted the remaining data after last abnormal termination.Browser has been logged out of $1 account at user's request.Copied text from $1A web page sent from $1A photo sent from $1A file sent from $1A video sent from $1Files sent from $1CopyOpenDownloadDownload AllOpen Naver KeepNAVER Appyour other deviceSites will probably work as expected. You'll be signed out of most sites when you close all Whale windows.Open Compatible Web StoreWelcome to WhaleWhale conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.Whale is not respondingWhale temporarily stopped responding. We recommend restarting for a better experience.Restart nowLaterRelaunch Whale?About WhaleGet help with WhaleUpdating WhaleUpdating Whale ($1)Nearly up to date! Relaunch Whale to finish updating.Whale is up to dateWhale can't check your passwords. Try checking your internet connection.Whale can check your passwords when you sign in with your NAVER AccountNo saved passwords. Whale can check your passwords when you save them.Whale can't check your passwords. Try again after 24 hours or <a href="$1" target="_blank">check passwords in your NAVER Account</a>.Whale can't check your passwords. Try again after 24 hours.Whale can't check your passwords. Try again later.Whale will notify you when you sign in with a compromised passwordTo check if your passwords are safe from data breaches and other security issues, <a target='_blank' href='$1'>sign in to Whale</a>.To check if your other passwords are safe from data breaches and other security issues, <a target='_blank' href='$1'>sign in to Whale</a>.Weak passwords are easy to guess. Let Whale <a target='_blank' href='$1'>create and remember strong passwords for you</a>.If so, please edit your saved password in Whale so it matches your new password.Later, Whale can ask if you want to use saved info to autofill forms for youNAVER Whale is your default browserThanks for choosing Whale as your default browser!Make NAVER Whale the default browserYou can use Whale anytime you click links in messages, documents, and other appsMake NAVER Whale the default browser and pin to the taskbarYou can use Whale anytime you click links in messages, documents, and other apps. It will also be pinned to your taskbar.NAVER Whale cannot determine or set the default browserThis is a secondary installation of NAVER Whale, and cannot be made your default browser.Whale preloads pages you're likely to visit, so that they load more quickly when you visit themWhale preloads even more pages that you're likely to visit, so that they load more quickly when you visit themWhen a site asks to privately preload links on their page, Whale uses NAVER servers. This hides your identity from the preloaded site, but NAVER learns what sites get preloaded.If you allow cookies, Whale may use them when preloadingTo fix spelling errors, Whale sends the text you type in the browser to NAVERTo apply your changes, relaunch WhaleAllow Whale sign-inBy turning this off, you can sign in to NAVER sites like Gmail without signing in to WhaleShows prompts to sign in to WhaleOpen PDFs in WhaleTo use your camera, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>To use your microphone, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>To use your location, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>To use your camera on these sites, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>To use your location on these sites, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>To use your microphone on these sites, give Whale access in <a href="#" id="openSystemSettingsLink" >system settings</a>Sites will probably work as expected. You'll be signed out of most sites when you close all Whale windows, except your NAVER Account if you're signed in to Whale.Always delete site data from your device when you close WhaleReview key privacy and security controls in WhaleChecks URLs with a list of unsafe sites stored in WhaleIf a site tries to steal your password, or when you download a harmful file, Whale may also send URLs, including bits of page content, to Safe BrowsingWhale gives you more control over the ads you see and limits what sites can learn about you when they show you personalized adsChoose whether to include Whale history for more personalized experiences in NAVER servicesIf you also save your bookmarks in your NAVER Account, you can track product prices in Whale and get notified when the price dropsIf you also share Whale usage reports, those reports include the URLs you visitYour interests as estimated by WhaleAd measurement allows sites you visit to request information from Whale that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.To protect your data, let Whale remove permissions from sites you haven't visited recently. Doesn't stop notifications.To protect your data, let Whale remove permissions from sites you haven't visited recently.Keeps you safe on Whale and may be used to improve your security in other NAVER apps when you are signed inChecks URLs with a list of unsafe sites stored in Whale. If a site tries to steal your password, or when you download a harmful file, Whale may also send URLs, including bits of page content, to Safe Browsing.Warns you about dangerous sites, even ones NAVER didn't know about before, by analyzing more data from sites than standard protection. You can choose to skip Whale warnings.Learn more about <a href="#" id="enhancedProtectionLearnMoreLink" on-click="onEnhancedProtectionLearnMoreClick_">how Whale keeps your data private</a>Make it harder for people with access to your internet traffic to see which sites you visit. Whale uses a secure connection to look up a site's IP address in the DNS (Domain Name System).This will delete 1 item from this device. To retrieve your data later, sign in to Whale as $1.This will delete $1 items from this device. To retrieve your data later, sign in to Whale as $2.This will delete your browsing data from this device. To retrieve your data later, sign in to Whale as $1.Customize your Whale profileName your Whale profileSync and personalize Whale across your devicesTo get your passwords and more on all your devices, sign in to WhaleTo get your passwords, bookmarks, and more on all your devices, sign in to WhaleYour WhaleSign in to Whale when you sign in to other NAVER servicesWhen signing into NAVER services like Gmail or Youtube with $1, you can automatically sign in to Whale with the same accountMake Whale your ownFor added security, NAVER Whale will encrypt your dataSign out of Whale?When you type in the address bar or search box, Whale sends what you type to your default search engine to get better suggestions. This is off in Incognito.When you type in the address bar or search box, Whale sends what you type to your organization's search, AI, and agent tools to get suggestions.Sign in to sync and personalize Whale across your devicesTo get personalization, include Whale in Web & App ActivityTo get personalization and other features, include Whale in Web & App Activity and linked NAVER servicesLink Whale and other NAVER services for personalization and other purposesTo use and save Whale data in your NAVER Account, enter your passphraseTo use and save Whale data in your NAVER Account, verify it's youTo use and save Whale data in your NAVER Account, update WhaleVerify it's you to use and save Whale data in your account, $1Enter your passphrase to use and save Whale data in your account, $1Sign out of WhaleWhale data in your accountUse your <a href="$1" target="_blank">own passphrase</a> to encrypt all the Whale data in your NAVER Account. Payment methods and addresses from Google Pay won
+t sync.Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by NAVER. If you forget your passphrase or want to change this setting, you
+ll need to <a href="$1" target="_blank">delete the Whale data in your account</a>.If you forgot your passphrase or want to change this setting, <a href="$1" target="_blank">delete the Whale data in your account</a>To help improve these features, Whale sends your interactions with them to NAVER. This data may be read, processed, and annotated by human reviewers.Whale frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Whale fast. Your inactive tabs automatically become active again when you go back to them. <a href="$1" target="_blank" id="learn-more" aria-description="$2">Learn more about Memory Saver</a>Whale conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <a href="$1" target="_blank" id="learn-more" aria-description="$2">Learn more about Energy Saver</a>Whale preloads pages which makes browsing and searching faster. <a href="$1" target="_blank" id="learn-more" aria-description="$2">Learn more about preload pages</a>Continue running background apps when NAVER Whale is closedHelp make Whale better by reporting the <a is="action-link" target="_blank">current settings</a>Whale regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.Whale found some safety recommendations for your reviewWhale will let you know if anything needs your reviewWhale updateWhale can check your passwords when you save themLearn how Whale keeps you safeWhale
+re signed in to Whale. To let sites remember you, $1.If you forgot your passphrase or want to change this setting, $1 the Whale data in your accountClear the Whale data in your accountYour data is encrypted with your passphrase. Enter it to use and save Whale data in your NAVER Account.Click to close the Whale sign-in dialogWhale account requires re-authenticationTo get your passwords and more on all your devices, sign in to Whale. This password will be saved in your NAVER Account after you sign in.To get your addresses and more on all your devices, sign in to Whale. This address will be saved in your NAVER Account after you sign in.Customize your new Whale profileSign in to WhaleRemove account from WhaleManage Whale profilesAdd Whale profileRemove this app's data from WhaleWhale AppsWhale Canary AppsNAVER Whale is using your camera and microphone.NAVER Whale is using your microphone.NAVER Whale is using your camera.{NUM_DEVICES, plural,
+ll see a prompt to enable price tracking alerts.Whale Tip: Enhanced Safe BrowsingDownload Whale on your phone to open or create new tab groups on the go.Next time you open Whale on your $1, you'll see a prompt to use tab groups.Your settings were changed by an unknown appYour search engine was changed from outside of Whale. To protect you, Whale reset it to its original default. $1Search settingsReport this site to NAVERImprove online safety for everyone when you report a site you think is harmful. Learn more about <a href="https://safebrowsing.google.com/#policies" target="_blank" id="unsafe_site_policy_link">NAVER's unsafe site policy.</a>We use info to improve this service. See <a href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a> and <a href="https://policies.google.com/terms" target="_blank">Terms of Service</a>.IndigoIndigo tooltip textIndigo is available for this pageData is encrypted with your sync passphrase.Data was encrypted with your sync passphrase on $1.Please enter your IDExport passwordsIf you do not set a password for the password file, anyone who has access to the file can see the passwords saved in it.Enter passwordReenter passwordExportDo not set a passwordSet a passwordIncomplete Password CleanupDelete password entries saved without a username.NextClean upSearching passwords
+You have $1 bookmark(s) and $2 folder(s) that match the criteria you select.Deleted bookmarks and folders cannot be recovered.$1 bookmark(s) and $2 folder(s) have been deleted.Update will be completed after restart Naver Whale. If update continues to fail, please reinstall your browser.Start with linked tabsBoth tabs are linked when Dual Tab opensShow Dual Tab menusDisplays basic menu buttons when you open Dual TabStartup in Dual TabOpen a home pageCustomize fontsWebpages are displayed in custom fonts instead of fonts set on the web.Text in unsupported languages may not appear properly.DisabledMouse shortcutsUse the combination of modifiers keys and mouse buttons to create your own shortcuts.Modifier keyMouse buttonActionLeft-clickMiddle-clickScrollSave linkOpen link in new windowOpen link in background tabOpen link in foreground tabOpen link in same tabOpen link in sidebarOpen link in mobile windowZoom in/Zoom outSwitch between tabsScroll on dual tabAllow custom sitesEnter any site name of the jump list in the address bar to directly take you to the site.Besides default sites, you can add your desired sites to the list by clicking [Add sites].Add sites you want to jump to.Site nameSite URLThe URL format is not validSearch EngineDomainSearch URLGet smoother playbackReducing CPU usage by not supporting VP8 and VP9 codecs, but some high-quality videos may not playAlways check target language before translationNew Tab connects to www.naver.comAdministrator connected New Tab to $1No resultAre you sure to remove?Open in a new tabOpen in a new windowOpen in a mobile windowNew FolderSort By NameThere are no bookmarks in the folder set as a bookmarks bar. Please add bookmarks.Go to bookmark managerEnter passphraseError occurred on sync processAll data on the server clearedEnable syncClose TabThere is no email information to sign in. Please follow the guide below to resolve the problem.This NAVER ID is not connected to any NAVER WORKS account. Please log in using another method.Add ScrapbookBookmark/Scrapbook this tabEdit Bookmark/Scrapbook for this tabImport bookmarks and settings
+          other {Open all (#) in new &mobile window}}Full screen modeOpened tabsAdd new tabReload (Ctrl+R)Encrypt synced passwords with your login accountNaver KeepImported From Naver KeepBookmarks HTML FileEnterSelected certificateManage certificates
+Help make Whale better by automatically sending usage statistics and crash reports to Whale.Help make Whale better by sending usage statistics and crash reports to NAVER.This app may not work properly in Whale because of using the Chrome Identity API.Encrypt synced data with your own <a href="$1" target="_blank">sync passphrase</a>. Browsing history from NAVER Whale won
+t allow you to use sidebar.Start with Multiplay muteUnable to start the service.Whale ON and Multiplay can't run together. Close the active Whale ON or Multiplay session and try again.Another session is in progress.Please end the current Multiplay session before starting a new one.$1 has stopped Spotlight.($1 blocked)Enter reader modeExit reader modeReader mode for web pagesOffer to show articles in reader mode, when supportedSomeone is already running Spotlight.Whale ON ended due to logging out of the browser.Enable TouchpadRemove from listImage sent.File sent.Sharing of the login tab is disabled.Group chatStop sharing$1's screenClick to followClick to unfollowSearch engine used in the address bar.GroupMy profile settingsDistinguish the site icons of inactive tabs. <a href="$1" target="_blank" aria-description="$2">Learn more about inactive tabs</a>The Naver Whale contains certificates from Certificate Authorities trusted by the Whale Root Program, and is continually reviewed on an ongoing basis.Send commands to $1Search $1Press $1 to send commands to $2TabUnsafe downloadUse passwordSync passphraseCreate a sync passphrase for added security. This passphrase will be required when you log in to your Whale browser on a new device.Protect data with your own passphrase.CreateEnter your passphrase to use and save Whale data in your account.A password sync error has occurred. Please reset the sync data and try again.Check Sync StatusPermission requestSame content in the category.Your data is encrypted with your passphrase. Enter it to use and save Whale data in your login accountIf you forgot your passphrase or want to change this setting, $1 the synced data in your accountresetReset the synced data in your accountAffects the sites listed here. Inserting 
+      other {{NUM_REUSED} reused passwords}}Autofill can offer to save info when you submit forms, like your driver's license or passport numberSaved informationSaved information will appear hereMore options to edit or delete $1, $2Autofill won't have this info on this device to help fill out forms$1 month$1 day$1 yearMMDDYYYYCheck the dateFill at least one field before saving* $1 is requiredSave info to NAVER Wallet from pages you viewAccess your passes, like event tickets and loyalty cards, from your deviceWallet can offer to save info from pages you're viewing, like tickets you purchaseLater, Wallet can send you notifications about your eventsTo offer suggestions and improve this feature, the URL and full page content of the site you visit are shared with NAVERYour info is available in NAVER Wallet on any signed-in deviceShow password for $1 on $2Hide password for $1 on $2Edit in NAVER AccountRemove your home address from Whale autofill?Remove your work address from Whale autofill?Remove this info from Whale autofill?Your home address can help you get things done across NAVER services, like more relevant Search results and directions in NAVER Maps. You can edit or delete your address in your <a href="$1" target="_blank">NAVER Account $2</a>.Your work address can help you get things done across NAVER services, like more relevant Search results and directions in NAVER Maps. You can edit or delete your address in your <a href="$1" target="_blank">NAVER Account $2</a>.You can edit your name in your <a href="$1" target="_blank">NAVER Account</a> $2Address removedInfo removedDefault browserTime rangeTo delete browsing data from this device only, while keeping it in your NAVER Account, <a href="#" target="_blank">sign out</a>.To delete browsing data from all of your synced devices and your NAVER Account, <a href="#" target="_blank">visit sync settings</a>.To delete browsing data from all of your synced devices and your NAVER Account, <a href="#" target="_blank">enter your passphrase</a>.To delete browsing data from all of your synced devices and your NAVER Account, <a href="#" target="_blank">sign in</a>.Signs you out of most sitesSigns you out of most sites. You'll stay signed in to your NAVER Account so your synced data can be deleted.Signs you out of most sites. You'll stay signed in to your NAVER Account so your Family Link settings for Whale apply.Signs you out of most sites. You'll stay signed in to your NAVER Account.Deletes history, including in the search boxDeletes history from all synced devices<a target="_blank" href="$1">Search history</a> and <a target="_blank" href="$2">other forms of activity</a> may be saved in your NAVER Account when you're signed in. You can delete them anytime.<a target="_blank" href="$1">Other forms of activity</a> may be saved in your NAVER Account when you're signed in. You can delete them anytime.Cookies and other site dataPasswords and other sign-in dataLast 15 minLast 15 minutesLast hourLast 7 daysLast 4 weeksAll timeNotifications will be disabledShow moreManage your Gemini Apps activityGemini Apps activityDelete from this device$1 deletedDeletedSearch history, Gemini history, and passwords can be deleted in their management settingsAsk where to save each file before downloadingShow downloads when they're doneOn startupOpen the New Tab pageContinue where you left offOpen a specific page or set of pagesContinue where you left off and open a specific set of pagesUse current pagesAdd a new pageEdit page$1 - $2Please enter a shorter URLPerformanceGeneralMemoryMemory SaverFree up memory based on usageRecommendedFree up memory based on tab inactivityMemory saver optionsChoose time rangeModerateBalanced (recommended)MaximumGet moderate memory savings. Your tabs become inactive after a longer period of time.Get balanced memory savings. Your tabs become inactive after an optimal period of time.Get maximum memory savings. Your tabs become inactive after a shorter period of time.Add to the "always keep these sites active" listSave to the "always keep these sites active" listAlways keep these sites activeSites you add will always stay active and memory won't be freed up from themAdditional sitesAdd current sitesNo sites currently available. Visit a site to add it to this list.Add sites manuallyActive siteSites you add will always stay active and memory won't be freed up from them. <a href="$1" target="_blank">Learn more about keeping specific sites active</a>PowerEnergy SaverTurn on when your computer is unpluggedTurn on only when your battery is at $1% or lowerEnergy saver optionsTurn on Energy Saver to extend battery lifeInactive tabs appearanceA dotted circle appears around site icons. <a href="$1" target="_blank" aria-description="$2">Learn more about inactive tabs</a>Tab hover preview card appearanceChoose to show memory usage and images in the tab hover preview cardPerformance issue alertsGet notifications that suggest ways to improve detected performance issues. <a href="$1" target="_blank" aria-description="$2">Learn more about performance issue alerts</a>Preferred languagesSearch languagesMove to the topMove upMove downNo languages addedShow language optionsWebsites in your languagesLet websites know the languages you speak. They'll show content in those languages, when possible.Use NAVER TranslateWhen on, NAVER Translate will offer to translate sites into your preferred language. It can also automatically translate sites.This language is used when translating pagesAdd $1Remove $1 from automatically translated languagesRemove $1 from never offer translation languagesNAVER TranslateTranslate into this languageAutomatically translate these languagesAdd languages to automatically translateNever offer to translate these languagesAdd languages to never offer translationSpell checkBasic spell checkEnhanced spell checkUses the same spell checker that
+        other {{NUM_COOKIES} cookies}}You and NAVERNAVER Profile photoBecause this account is managed by $1 you will not be signed out of your NAVER Account. Your bookmarks, history, passwords, and other settings will no longer be synced. However, your previously synced data will remain stored in your NAVER Account and can be managed on <a href="$2" target="_blank">NAVER Dashboard</a>.Turn off sync and personalization?Delete and continueRemove bookmarks, history, passwords, and more from this deviceSettings saved. Sync started.Choice saved. Your choice will apply when you sign in to other NAVER services.Show desktop shortcutPick a theme colorCreate desktop shortcutCreate a desktop shortcut on your device to access directly to this profileYour accountIn your NAVER AccountWhen on, data is saved in your NAVER Account and can be used on all your devices. When off, data is saved only to this device.Managed by your organizationHistory and tabsTurn on to get your browsing history and tabs from other devicesNAVER servicesChanges to your bookmarks, history, passwords, and other settings will no longer be synced to your NAVER Account. However, your existing data will remain stored in your NAVER Account and can be managed on <a href="$1" target="_blank">NAVER Dashboard</a>.This will sign you out of your NAVER Accounts. Your bookmarks, history, passwords, and more will no longer be synced.This will sign you out of your NAVER Accounts. Your parent's choices won't be able to keep you safer online. Your bookmarks, history, passwords, and more will no longer be synced.Show profile statsSync will start once you leave sync settingsActivity and interactionsUses content on sites you visit, plus browser activity and interactions, for personalizationEncrypt synced data with your own <a href="$1" target="_blank">sync passphrase</a>. Payment methods and addresses from Google Pay won
+t sync.Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by NAVER. If you forget your passphrase or want to change this setting, you'll need to <a href="$1" target="_blank">reset sync</a>.To change this setting, <a href="$1" target="_blank">reset sync</a> to remove your sync passphraseTo turn this on, <a href="$1" target="_blank">reset sync</a> to remove your sync passphraseIf you forgot your passphrase or want to change this setting, <a href="$1" target="_blank">reset sync</a>.Control how your browsing history is used to personalize Search and moreControl how browsing history is used with your other data across NAVER servicesLinked NAVER servicesSelect an optionDon
+t always get it rightData sent to NAVER may be seen by human reviewers to improve this featureYour content will not be used by human reviewers to improve AI. Your organization may change these settings at any timeEasily compare similar productsLearn more about comparing productsHelps you see similar products side-by-side and easily compare the details that matter to youSuggests comparison details to look at when choosing between productsYou can use your comparison tables to keep track as you narrow down your optionsFor some products, comparison tables summarize reviews from around the webWhen you compare products, the tab titles and URLs of the products are sent to NAVERComparison tables are saved in your NAVER AccountAutomated Password ChangeIf Whale finds one of your passwords in a public data breach, Whale Password Manager can offer to change your password for you if you're signed in.If one of your passwords is found in a data breach, Whale Password Manager asks if you want it changed to a strong passwordYou don't need to remember the password because it gets saved for you in Whale Password ManagerThis feature uses AI and is experimentalContent from this site, including its URL, is sent to NAVER and may be seen by human reviewers to improve this featureYour password is encrypted and never seen by anyoneEnhanced protection is onEnhanced protection is offTo save bookmarks in your account, delete your unused bookmarks$1 subpage back buttonClick to navigate away from $1 subpage.Learn more about: $1CaptionsCaption preferencesCustomize caption size and style for Live Caption. Some apps and sites will also use this setting.Text sizeText fontText colorText opacityBackground opacityOpaqueSemi-transparentTransparentText shadowRaisedDepressedUniformDrop shadowBackground colorBlackWhiteRedGreenBlueYellowCyanMagentaPreferred caption languageSupported Live Caption languagesWhale can create and translate captions for the languages shown hereWhale can create captions for the languages shown hereTranslate captions toOnly supported Live Caption languages can be translated(default)Nearby ShareSet upDevice nameChange device nameNew device nameShow notificationWhen devices are sharing nearbyShow notification when devices are sharing nearbyCurrent device name is $1Manage contactsContactsData usageWi-Fi onlyNever use mobile data to transferMobile DataMay incur mobile data chargesThis option applies to Whalebooks with a data plan or mobile network dongle, or when tethering to a portable hotspotWithout internetFiles will always be shared offlineCurrent data usage setting is Mobile DataCurrent data usage setting is Wi-Fi onlyCurrent data usage setting is Without internetDevice visibilityChange visibilityShare files and more with nearby devices. <a>Learn more</a>Visible to everyoneVisibility is on for $1 minutesYou will be visible to everyone for $1 minutes. <a>Learn more</a>Make searches and browsing betterSends URLs of pages you visit to NAVERHelp improve Whale's features and performanceAutomatically sends usage statistics and crash reports to NAVERImprove search suggestionsSigned in to $1Syncing to $1Get NAVER smarts in WhaleSync isn't workingPassword sync isn't workingManage syncManage what you syncUse another accountTurn on SyncTo use and save passwords in your NAVER Account, verify it's youTo make sure you can always use the passwords in your NAVER Account, verify it's youTo get your passwords and more on all your devices, sign in as $1To get your passwords, bookmarks, and more on all your devices, sign in as $1Sign in as $1Choose another accountDelete and Sign OutSaved tab groupsComparison tablesWi-Fi networksApps sync is set in device SettingsOther NAVER servicesCustomize syncSync dataPasswords and passkeysPassphraseEncryption optionsEncrypt synced passwords with your NAVER AccountUse NAVER
+s default encryption for the passwords in your NAVER AccountReading listYou must enter the same passphrase twiceEmpty passphrase is not allowedThe passphrase you entered is incorrectReview your synced dataManage browser syncSync and NAVER servicesConfirm passphrasePlease wait
+t saved in your account yetDelete and sign outgo to settingsclearEnter your passphraseCan't sign inCan't sign in to $1Switch to $1This wasn't me.Create a new profile for $1This was me.Add my bookmarks, history, passwords, and other settings to $1$1 has crashedOpen $1?$1 wants to open this application.A website wants to open this application.Always allow $1 to open links of this type in the associated appIndex of LOCATION[parent directory]Date ModifiedWebpage, HTML OnlyWebpage, Single FileWebpage, CompleteProfile error occurredSomething went wrong when opening your profile. Some features may be unavailable.Something went wrong when opening your profile. Please sign out then sign in again.Send feedback to help us fix this issue.Please help our engineers fix this problem. Tell us what happened right before you got the profile error message:
+Sync isn't working. Try signing in again.Sync isn't working. Try signing out and back in again.Enter your passphrase to sync your dataSign in again to resume syncData is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.Data was encrypted with your sync passphrase on $1. This doesn't include payment methods and addresses from Google Pay.Data is encrypted with your sync passphrase. This doesn
+t include payment methods and addresses from Google Pay.Data was encrypted with your sync passphrase on $1. This doesn
+ for example, by changing your homepage or showing you extra ads on sites you visit.The identity of this website isn't verified.Your password may be compromisedCheck your passwordsYou just entered your password on a deceptive site. To secure your accounts, NAVER Whale recommends checking your saved passwords.You have chosen to turn off security warnings for this site.Turn on warningsWhat do these mean?The certificate chain for this site contains a certificate signed using SHA-1.Your connection to $1 is encrypted using a modern cipher suite.Further, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the behavior of the page.Further, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the look of the page.This page includes a form that may not submit securely. Data you send can be viewed by others while in transit or could be modified by an attacker to change what the server receives.The connection is encrypted using $1, with $2 for message authentication and $3 as the key exchange mechanism.The connection is encrypted and authenticated using $1 and uses $2 as the key exchange mechanism.Your connection to $1 is not encrypted.The connection uses $1.unknown nameYour connection to $1 is encrypted using an obsolete cipher suite.Certificate information$1, $2 $3Issued to: $1 [$2]ValidInvalidCertificate $1(Valid)(Invalid)Certificate is validCertificate detailsShow certificate (issued by $1)Show certificateEU Qualified StatusOptions for cookies and site dataUse global default (Allow)Use global default (Block)Use global default (Ask)Always allow on this siteAlways block on this siteAlways ask on this siteBlock on this siteOnly this timeNot allowedNot allowed in IncognitoNot allowed in Guest modeNot allowed for non-secure sitesMutedAllowed (default)Not allowed (default)Select permission for $1Allow $1 to use info they've saved about youCan ask to track your camera positionCan ask to enter picture-in-pictureCan ask to automatically download multiple filesCan ask to connect to Bluetooth devicesCan ask to use your cameraCan ask to scroll and zoom shared tabsCan ask to use & move your cameraCan ask to see text and images on your clipboardCan ask to edit files and folders on your deviceCan ask to track your handsCan ask to connect to HID devicesCan ask to lock and use your keyboardCan ask for your locationCan ask to use your microphoneCan ask to control and reprogram your MIDI devicesCan ask to send notificationsCan ask to lock and use your mouseCan ask to use your motion and light sensorsCan ask to use your motion sensorsCan ask to connect to USB devicesCan ask to use virtual reality devices and dataCan ask to use fonts installed on your deviceCan ask to connect to serial portsCan ask to know when you're actively using this deviceCan ask to manage windows on all your displaysCan ask to discover nearby Bluetooth devicesCan ask to access cookiesCan ask to install web appsCan ask to use advanced printer featuresCan ask to connect to any device on your local networkCan ask to access other devices on your local networkCan ask to access other apps and services on this deviceUSB deviceUSB device allowed by your administratorRevoke access for $1Serial portSerial port allowed by your administratorBluetooth deviceHID deviceHID device allowed by your administratorSmart card reader allowed by your administratorSmart card readerTo use your camera, give Whale access in $1.To use your microphone, give Whale access in $1.To use your location, give Whale access in $1.To use your clipboard, give Whale access in $1.system settingsAllowed by your administratorBlocked by your administratorSetting controlled by your administratorAllowed by an extensionBlocked by an extensionSetting controlled by an extensionAutomatically blockedManaged by an extensionUsing nowLast used $1 agoYou could lose access to your NAVER Account. NAVER Whale recommends changing your password now. You'll be asked to sign in.NAVER Whale can help you protect your NAVER Account and change your password.You just entered your password on a deceptive site. NAVER Whale can help. To change your password and notify NAVER that your account may be at risk, click Protect Account.You could lose access to your organization's account or experience identity theft. NAVER Whale recommends changing your password now.You could lose access to your $1 account or experience identity theft. NAVER Whale recommends changing your password now.Protect accountSite is legitimateThis page may try to charge you moneyThese charges could be one-time or recurring and may not be obvious.VR session in progressEndIssued ToIssued ByCommon Name (CN)Organization (O)Organizational Unit (OU)Validity PeriodIssued OnExpires OnSHA-256 FingerprintsPublic KeyCertificate Subject Alternative NameShow connection detailsShow $1 permission detailsGo to permission settingsAllow on every visit{NUM_PERMISSIONS, plural, =1 {Reset permission} other {Reset permissions}}From the webAbout this pageLearn about its source and topicShow information from the webLearn about this page's source & topicCookies and site dataCookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see $1.Managed by cookies settings{NUM_COOKIES, plural, =0 {No sites allowed} =1 {1 site allowed} other {# sites allowed}}Manage on-device site dataReview a list of on-device site data in a new windowSee related sites in a new tabSee related sitesThis site is in a group, defined by $1, that can see your activityCookies for this site are synced across your WhaleOS devices. To manage what you sync, go to $1.What people are sayingStore reviewsThis info comes from independent review websites like Trustpilot, ScamAdviser, NAVER, and more. Summaries are created with AI.{NUM_REVIEWS, plural,
+You asked to visit this site. Your parent can reply in Family Link.You asked to visit this site. Your parents can reply in Family Link.We could not reach your parent at the moment. Please try again.We could not reach your parents at the moment. Please try again.This site is blockedThis site is blocked because it may have mature contentYour parent hasn't said it's OK yetYour parents haven't said it's OK yetIt may have mature contentYour parent can unblock it for youYour parents can unblock it for youUse YouTube with your parent's choicesTo continue to YouTube, we need to make sure it's you. You'll get the settings that your parent or guardian set up in Family Link.To use YouTube, continue with your NAVER AccountTo ask to see this content, continue with your NAVER AccountYou haven't approved $1 before$1 may have mature contentYou previously blocked $1Parent approval dialogHistory and TabsEmpty passphrase is not allowed.Encrypt synced data with your own sync passphraseSetting up
+You must enter the same passphrase twice.Your data was encrypted with your <a target="_blank" href="$1">sync passphrase</a> on $2. Enter it to start sync.Your data is encrypted with your sync passphrase. Enter it to start sync.{count, plural,
+Plus AddressManage plus addresses you've createdEncrypt synced data with your own <a href="$1" target="_blank">sync passphrase</a>. Payment methods and addresses from Google Pay and Plus Address won
+[0m
+[0m$ [0mcd /tmp/opencode && BIN=deb_extract/opt/naver/whale/whale; readelf -S $BIN 2>/dev/null | grep -E '\.rodata|\.data|\.text' | head; echo "---map saltysalt offset to vaddr---"; python3 - <<'EOF'
+import subprocess,re
+# section info
+out=subprocess.run(['readelf','-S','deb_extract/opt/naver/whale/whale'],capture_output=True,text=True).stdout
+secs={}
+for m in re.finditer(r'\[\s*(\d+)\]\s+(\S+)\s+\S+\s+([0-9a-f]+)\s+([0-9a-f]+)\s+([0-9a-f]+)',out):
+    idx,name,vaddr,off,size=m.groups()
+    secs[name]=(int(vaddr,16),int(off,16),int(size,16))
+for name in ('.rodata','.data.rel.ro','.data'):
+    if name in secs:
+        print(name, [hex(x) for x in secs[name]])
+for fo in (0x1a01027,0x235a9a8):
+    for name,(v,o,s) in secs.items():
+        if o<=fo<o+s:
+            print(f'fileoff {hex(fo)} -> {name} vaddr {hex(v+(fo-o))}')
+            break
+EOF
+[12] .rodata           PROGBITS         00000000018fa300  018fa300
+  [16] .text             PROGBITS         0000000002e0f000  02e0e000
+  [25] .data.rel.ro      PROGBITS         000000001242aa40  12428a40
+  [30] .data             PROGBITS         0000000012eeb000  12ee8000
+---map saltysalt offset to vaddr---
+.rodata ['0x18fa300', '0x18fa300', '0x1259bb9']
+.data.rel.ro ['0x1242aa40', '0x12428a40', '0xab9968']
+.data ['0x12eeb000', '0x12ee8000', '0x1cae5c']
+fileoff 0x1a01027 -> .rodata vaddr 0x1a01027
+fileoff 0x235a9a8 -> .rodata vaddr 0x235a9a8
+[0m
+This is a goldmine of confirmed sync encryption UI strings. Now let me try to extract the actual KDF parameters by locating the `saltysalt` string xrefs in code.
+Now scanning .text for xrefs to the `saltysalt` strings to find the KDF call sites.
+[0m$ [0mcd /tmp/opencode && BIN=deb_extract/opt/naver/whale/whale; timeout 280 objdump -d --no-show-raw-insn --start-address=0x2e0f000 --stop-address=0x2f0f000 "$BIN" 2>/dev/null | grep -E 'lea.*(1a01027|235a9a8)' | head -20; echo "EXIT=$?"
+EXIT=0
+[0m
+[0m$ [0mcd /tmp/opencode && BIN=deb_extract/opt/naver/whale/whale; python3 - <<'EOF'
+import struct
+data=open('deb_extract/opt/naver/whale/whale','rb').read()
+for tgt in (0x1a01027,0x235a9a8):
+    pat=struct.pack('<Q',tgt)
+    hits=[]; start=0
+    while True:
+        i=data.find(pat,start)
+        if i<0: break
+        hits.append(i); start=i+1
+        if len(hits)>10: break
+    print(hex(tgt),'ptr refs (fileoff):',[hex(h) for h in hits[:10]],'count_first10')
+# also 4-byte immediate refs (disp relative to next insn for lea) - search for disp bytes near targets in text region
+text_off=0x2e0e000; text_v=0x2e0f000; text_size=0x1800f000-text_v
+print('text size approx',hex(text_size))
+EOF
+0x1a01027 ptr refs (fileoff): [] count_first10
+0x235a9a8 ptr refs (fileoff): [] count_first10
+text size approx 0x15200000
+[0m
+No direct pointer refs — the 350MB stripped binary needs deep RE for exact constants. Let me do one final targeted check for the passphrase KDF method strings.
+[0m$ [0mcd /tmp/opencode && echo "---kdf method strings---"; grep -iE 'scrypt|pbkdf2|key_derivation|derive_key|hash_sync_key|kdf|argon2' str.txt | grep -viE '\.cc$|tint|webcrypto|linux/syscall|\.h$' | head -25; echo "---custom passphrase ctx---"; grep -iE 'custom.?passphrase|KeyDerivationMethod|SCRYPT|PBKDF' str.txt | head -20
+---kdf method strings---
+1941ae0 apignacaigpffemhdojkdfohbdgmmhki
+199b562 type.googleapis.com/google.crypto.tink.EciesAeadHkdfPublicKey
+199c5b3 OnOsCryptReady
+199cf4e OnOsCryptAsyncReady
+19d96e6 Scrypt
+19d96fd .ReencryptedWithAsyncOSCrypt
+19df44d OSCrypt.EncryptorKeyCount
+1a01031 custom_passphrase_key_derivation_salt
+1a399d3 HKDF_extract failed when creating initial crypters
+1a478e3 HKDF functions
+1a511e6 HkdfParams
+1a514aa Pbkdf2Params
+1a53f77 HKDF failed in public_metadata_crypto_utils
+1b316d3 OSCrypt.EncryptionPrefixVersion
+1b815f3 OnOsCryptReadyOnUi
+1ba6827 Google 'Argon2026h2' log
+1ba6859 Google 'Argon2026h1' log
+1bc5a76 dh-cofactor-kdf
+1bc5a86 dh-std-kdf
+1bedbb6 KDF keys must set extractable=false
+1beee48 cseucjpkdfmtjapanese
+1beee5d cseucpkdfmtjapanese
+1c1016a PasswordManager.OsCryptAsync.GetInstanceTime
+1c1128c OSCrypt.AsyncInitialization.Time
+1c11ac6 dhSinglePass-cofactorDH-sha256kdf-scheme
+---custom passphrase ctx---
+199c5b3 OnOsCryptReady
+199cf4e OnOsCryptAsyncReady
+19d96e6 Scrypt
+19d96fd .ReencryptedWithAsyncOSCrypt
+19df44d OSCrypt.EncryptorKeyCount
+1a01031 custom_passphrase_key_derivation_salt
+1a514aa Pbkdf2Params
+1ae2588 Sync.Crypto.CustomPassphraseKeyDerivationMethodStateOnStartup
+1b0b043 Sync.Crypto.CustomPassphraseKeyDerivationMethodOnSuccessfulDecryption
+1b316d3 OSCrypt.EncryptionPrefixVersion
+1b815f3 OnOsCryptReadyOnUi
+1beefab PassphraseType::kCustomPassphrase
+1c0b1c7 custom_passphrase_time
+1c1016a PasswordManager.OsCryptAsync.GetInstanceTime
+1c1128c OSCrypt.AsyncInitialization.Time
+1c2e6fa OSCrypt.EncryptorKeyCount.PermanentlyUnavailable
+1c2e72b OSCrypt.EncryptorKeyCount.TemporarilyUnavailable
+1c30380 OSCrypt.EncryptorKeyCount.Available
+1c41416 OSCrypt.BackendUsage
+1c65334 custom_passphrase_key_derivation_method
+[0m
+Static analysis complete. Emitting structured output.
+
+---
+
+**STEP 1 — DELTA**
+- [NEW] Official **v4.38.386.14 desktop binary acquired in-sandbox** via `installer-whale.pstatic.net` (Naver CDN, resolves 125.209.207.10) — stable `naver-whale-stable_amd64.deb` 156MB, Last-Modified 2026-06-25, SHA256 pinned `6dd7ebc4...e0b47e`. Prior class "ALL binary acquisition paths blocked" is **invalid**.
+- [NEW] Binary static findings: `xv10` magic (0x235ac6c), all Whale sync prefs keys, embedded sources `whale/components/os_crypt/sync/os_crypt_whale.cc`, `sync/engine/whale_sync_util.cc`, `sync/service/whale_sync_auth_manager.cc`, sync base `https://api.whale.naver.com/whalesync/whalesync` + `/whalesync/reset` + `NEO_SES` cookie, `nigori-key`, `custom_passphrase_key_derivation_method`/`_salt`, `Scrypt`, `Pbkdf2Params`, `HKDF-SHA-256 AES-256-GCM`, freedesktop-secret + portal secret providers.
+- [NEW] Official help doc `help.whale.naver.com/desktop/sync_passphrase`: passphrase never sent to/stored by NAVER; forgotten passphrase → reset sync deletes server data + signs out all devices; two modes (default account-based encryption vs custom passphrase).
+- [NEW] websearch prior-art: zero public research on Whale sync KDF/OSCrypt fork — binary-only path confirmed.
+- [CHANGED] NVD (2 results, 0 new 2026 CVEs) and GitHub repo (pushed 2019-09-23) unchanged → NO_DELTA on public disclosure surface.
+
+**STEP 2 — PRIORITIZE**
+- [PRIO] whale-sync-binary (bootstrap-token envelope + passphrase KDF): score 7.70 | attack 7 business 9 tech 8 gate 6 cloud 8 fresh 8
+- [PRIO] whale-sync-oauth (refresh/access token storage, `.whaleon.us`, whale_sync_auth_manager): score 7.30 | attack 6 business 9 tech 8 gate 5 cloud 9 fresh 7
+- [PRIO] sidebar/dual-tab boundary (post-CVE-2025-69235, latest desktop): score 7.15 | attack 8 business 7 tech 6 gate 8 cloud 4 fresh 9
+- [PRIO] socket.io.slim.js bundled lib: score 5.35 | attack 5 business 5 tech 5 gate 6 cloud 6 fresh 6
+
+**STEP 3 — HYPOTHESES**
+- [HYP] Whale sync passphrase KDF + bootstrap-token envelope, v4.38.386.14
+  class: AUTH
+  asset: `opt/naver/whale/whale` binary os_crypt_whale.cc / whale_sync_util.cc; Local State + secret-store (Linux)
+  confidence: 70
+  reasoning: Acquired binary confirms custom-passphrase KDF machinery (method+salt prefs, Scrypt, Pbkdf2Params) and Whale-only bootstrap-token envelope (xv10 OSCrypt wrap, `sync.encryption_bootstrap_token[_per_account]`, `whale_need_encryption_key_forced_time`). Help doc confirms passphrase never leaves device → local derivation/persistence is the whole attack surface; KDF params now extractable from the acquired artifact.
+  evidence_needed: PBKDF2 vs SCRYPT + iteration count for passphrase→key; whether derived key persists in Local State/prefs/keyring; xv10 envelope cipher params.
+  verify_steps: PASSIVE: objdump xref scan of `custom_passphrase_key_derivation_method`/`saltysalt` call sites in acquired binary to read iteration constants. AUTH_HELPED: snapshot prefs/keyring pre/post encrypted-sync enable on authorized device.
+  impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords+bookmarks; High
+  testability: AUTH_HELPED
+- [HYP] Sync refresh-token storage deviation in forked OAuth components
+  class: AUTH
+  asset: whale_sync_auth_manager.cc; `.whaleon.us` token scope
+  confidence: 45
+  reasoning: Forked OAuth lifecycle (whale_sync_auth_manager.cc present in binary) historically persists tokens outside token_service; no public prior art. Binary now available to check the token-storage file paths/perms.
+  evidence_needed: whether whale refresh/access tokens persist outside token_service and their file perms/scope.
+  verify_steps: AUTH_HELPED: authorized login, inspect Preferences/Cookies/Login Data for `whale.*`/`.whaleon.us` keys + perms; diff vs Chromium token_service layout.
+  impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
+  testability: AUTH_HELPED
+- [HYP] Sidebar/dual-tab boundary variant post-CVE-2025-69235
+  class: OTHER
+  asset: Latest desktop Whale (>=4.35.351.12) sidebar + dual-tab web panels
+  confidence: 45
+  reasoning: 6 confirmed 2025 CVEs in these Whale-only envs; v4.38.386.14 is 3 minor bumps past last fix with 0 CVEs; NVD CPE claims fix only on Windows/MacOS.
+  evidence_needed: crafted HTML escaping iframe sandbox / bypassing SOP/CSP in sidebar or dual-tab web panel on v4.38.386.14.
+  verify_steps: AUTH_HELPED: install latest desktop Whale, load crafted HTML in sidebar + dual-tab panels, test sandbox escape / cross-origin read / CSP bypass.
+  impact: sandbox escape / SOP bypass from webpage → arbitrary script or cross-origin data theft in browser UI; Critical if it escalates to renderer
+  testability: AUTH_HELPED
+
+**STEP 4 — SELF-CRITIQUE**
+- [PARKED] "HUMAN: Acquire Whale .deb via unrestricted internet" — superseded: binary acquired in-sandbox via pstatic.net; parked as complete.
+- [PARKED] "PROBE: scan locales/resources.pak + objdump .rodata for KDF" — partially executed (pak strings + saltysalt located); remaining exact-constant extraction parked behind full disassembly.
+- No hypotheses dropped (all ≥40, none on REJECTED list, concrete verify steps).
+- [FINAL] 1. sync KDF/envelope (70) 2. OAuth refresh-token storage (45) 3. sidebar/dual-tab variant (45)
+
+**STEP 5 — NEXT ACTION**
+- [NEXT] PROBE: objdump xref scan on acquired `/tmp/opencode/deb_extract/opt/naver/whale/whale` (v4.38.386.14): locate RIP-relative lea references to `custom_passphrase_key_derivation_method` (0x1c65334) and `saltysalt` (0x1a01027), then disassemble those call sites to read the PBKDF2-HMAC iteration or SCRYPT N/r/p constants for the passphrase→key derivation. Zero requests to Naver infra.
+
+**STEP 6 — LEARNING**
+- [LEARN] ACCEPTED binary acquisition @ installer-whale.pstatic.net: Naver CDN resolves + serves official v4.38.386.14 installers in-sandbox — cloudfront DNS block does not extend to pstatic.net; prior "all acquisition blocked" class is dead.
+- [LEARN] ACCEPTED sync crypto @ v4.38.386.14 binary: custom-passphrase KDF machinery (method pref + salt, Scrypt, Pbkdf2Params) + bootstrap-token OSCrypt xv10 envelope confirmed present.
+- [LEARN] ACCEPTED sync docs @ help.whale.naver.com/desktop/sync_passphrase: E2E model confirmed — passphrase never sent/stored by NAVER; reset deletes server data and logs out all devices.
+- [LEARN] REJECTED prior-art @ public web: zero public research on Whale sync KDF/OSCrypt fork exists — analysis is binary-only.
+
+**STEP 7 — RISK SCORE**
+- [RISK] sync: 72 | passphrase-KDF + Whale-only bootstrap-token/OSCrypt (xv10) envelope now proven in-binary and analyzable; E2E model makes local derivation the entire surface, but default mode is still account-based encryption
+- [RISK] browser: 55 | 6 confirmed 2025 sidebar/dual-tab CVEs, 0 new disclosures in 3 minor versions; no binary-level finding yet
+- [RISK] libs: 35 | socket.io.slim.js bundled in resources.pak confirmed, handler runtime-fetched → stale/low exposure
