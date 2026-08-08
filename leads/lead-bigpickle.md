@@ -1388,3 +1388,4 @@ evidence_needed: extracted `socket.io.slim.js` + its event-handler wiring; wheth
 verify_steps: AUTH_HELPED: extract `resources.pak` from delivered binary, diff against upstream socket.io, audit event handlers for injection.
 impact: script injection in built-in extension context; Medium
 testability: AUTH_HELPED
+## 2026-08-08 19:00:48 UTC [sync] (model bigpickle)

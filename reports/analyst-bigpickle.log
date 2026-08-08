@@ -20628,3 +20628,1667 @@ STEP 7 — RISK SCORE
 - [RISK] sync: 45 — custom OSCrypt/KDF + bootstrap-token envelope confirmed present in the binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys.
 - [RISK] browser: 58 — the CVE-2025-69235-class chain is now vendor-documented end-to-end (wiki + live sample source) and still live; v4.38.386.14 is 3–6 minor bumps past the last SOP/CSP fixes with 0 published CVEs; remote HTTP/HTTPS web panels remain a documented feature → open regression window, best-characterized surface.
 - [RISK] libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path; visibility low.
+===== ANALYST bigpickle 2026-08-08 19:03:55 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/ 2>/dev/null && echo "---" && ls -la /home/runner/work/whale-hunt/whale-hunt/reports/ 2>/dev/null; ls /tmp/opencode 2>/dev/null
+total 196
+drwxr-xr-x 11 runner runner  4096 Aug  8 18:54 .
+drwxr-xr-x  3 runner runner  4096 Aug  8 18:54 ..
+drwxr-xr-x  7 runner runner  4096 Aug  8 18:54 .git
+drwxr-xr-x  3 runner runner  4096 Aug  8 18:54 .github
+-rw-r--r--  1 runner runner  1057 Aug  8 18:54 README.md
+-rw-r--r--  1 runner runner    32 Aug  8 18:54 analyst-out.txt
+-rw-r--r--  1 runner runner 58385 Aug  8 18:54 analyst-prompt.txt
+-rw-r--r--  1 runner runner 55413 Aug  8 18:54 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 leads
+-rw-r--r--  1 runner runner   609 Aug  8 18:54 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 reports
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  8 18:54 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 scripts
+-rw-r--r--  1 runner runner    34 Aug  8 18:54 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  8 18:54 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  8 18:54 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  8 18:54 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  8 18:54 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 triage
+---
+total 4692
+drwxr-xr-x  2 runner runner    4096 Aug  8 18:54 .
+drwxr-xr-x 11 runner runner    4096 Aug  8 18:54 ..
+-rw-r--r--  1 runner runner 1721666 Aug  8 18:54 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 2654267 Aug  8 18:54 analyst-laguna.log
+-rw-r--r--  1 runner runner   23145 Aug  8 18:54 analyst-ling3.log
+-rw-r--r--  1 runner runner    2790 Aug  8 18:54 analyst-longcat.log
+-rw-r--r--  1 runner runner  306218 Aug  8 18:54 analyst-nemotron3.log
+-rw-r--r--  1 runner runner   50237 Aug  8 18:54 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner    7110 Aug  8 18:54 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner      48 Aug  8 18:54 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner      50 Aug  8 18:54 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner    7945 Aug  8 18:54 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  124123 Aug  8 18:54 hypotheses.md
+-rw-r--r--  1 runner runner    3236 Aug  8 18:54 valid-bugs.md
+[0m
+[0m$ [0mcat /home/runner/work/whale-hunt/whale-hunt/scope.yml; echo "=== analyst-out ==="; cat /home/runner/work/whale-hunt/whale-hunt/analyst-out.txt; echo "=== probe-results ==="; cat /home/runner/work/whale-hunt/whale-hunt/probe-results.md
+programs:
+  whale:
+    name: Naver Whale Browser
+    disclosure_policy: TBD - operator-provided program scope (update once public channel confirmed)
+    assets:
+      - name: "Whale browser - latest version (reproducible at time of reporting)"
+        priority: In
+      - name: "Third-party libraries used ONLY by Whale (not Chromium)"
+        priority: In
+      - name: "Synchronization"
+        priority: In
+    out_of_scope:
+      - "All Naver web services (*.naver.com, *.navercorp.com)"
+      - "Web servers of built-in extensions (Papago, Belli)"
+      - "URL preview spoofing in status bar"
+      - "Bypassing XSS Auditor"
+      - "IETab extension"
+      - "SafeBrowsing false positives / false negatives"
+    github_orgs:
+      - naver
+
+rules:
+  passive_first: true          # GET/HEAD reads first; client-side scope: static analysis + repro-first
+  max_requests_per_second: 1   # never hammer
+  no_doom: true                # no DoS/DDoS
+  no_account_creation: true
+  no_data_modification: true
+  no_pre_disclosure: true
+  latest_version_required: true  # bug must reproduce on the LATEST Whale version at report time
+  redact_secrets_in_commits: true
+
+# Multi-model ensemble: every hunt run picks a rotation of the 5 models.
+models:
+  - { id: opencode/big-pickle, name: bigpickle }
+  - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+  - { id: opencode/longcat-2.0-free, name: longcat }
+  - { id: opencode/ling-3.0-flash-free, name: ling3 }
+  - { id: opencode/laguna-s-2.1-free, name: laguna }
+=== analyst-out ===
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/ 2>/dev/null && echo "---" && ls -la /home/runner/work/whale-hunt/whale-hunt/reports/ 2>/dev/null; ls /tmp/opencode 2>/dev/null
+total 196
+drwxr-xr-x 11 runner runner  4096 Aug  8 18:54 .
+drwxr-xr-x  3 runner runner  4096 Aug  8 18:54 ..
+drwxr-xr-x  7 runner runner  4096 Aug  8 18:54 .git
+drwxr-xr-x  3 runner runner  4096 Aug  8 18:54 .github
+-rw-r--r--  1 runner runner  1057 Aug  8 18:54 README.md
+-rw-r--r--  1 runner runner    32 Aug  8 18:54 analyst-out.txt
+-rw-r--r--  1 runner runner 58385 Aug  8 18:54 analyst-prompt.txt
+-rw-r--r--  1 runner runner 55413 Aug  8 18:54 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 knowledge
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 leads
+-rw-r--r--  1 runner runner   609 Aug  8 18:54 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 reports
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  8 18:54 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 scripts
+-rw-r--r--  1 runner runner    34 Aug  8 18:54 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  8 18:54 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  8 18:54 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  8 18:54 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  8 18:54 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 triage
+---
+total 4692
+drwxr-xr-x  2 runner runner    4096 Aug  8 18:54 .
+drwxr-xr-x 11 runner runner    4096 Aug  8 18:54 ..
+-rw-r--r--  1 runner runner 1721666 Aug  8 18:54 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 2654267 Aug  8 18:54 analyst-laguna.log
+-rw-r--r--  1 runner runner   23145 Aug  8 18:54 analyst-ling3.log
+-rw-r--r--  1 runner runner    2790 Aug  8 18:54 analyst-longcat.log
+-rw-r--r--  1 runner runner  306218 Aug  8 18:54 analyst-nemotron3.log
+-rw-r--r--  1 runner runner   50237 Aug  8 18:54 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner    7110 Aug  8 18:54 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner      48 Aug  8 18:54 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner      50 Aug  8 18:54 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner    7945 Aug  8 18:54 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  124123 Aug  8 18:54 hypotheses.md
+-rw-r--r--  1 runner runner    3236 Aug  8 18:54 valid-bugs.md
+[0m
+=== probe-results ===
+
+## 2026-08-08 17:04:37 UTC
+
+
+## 2026-08-08 17:42:50 UTC
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246 type=text/html;charset=UTF-8
+https://d1vdt4q2qgdbji.cloudfront.net/whale/...` -> ERR <urlopen error [Errno -5] No address associated wi
+https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb` -> ERR <urlopen error [Errno -5] No address associated wi
+
+## 2026-08-08 18:06:07 UTC
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246 type=text/html;charset=UTF-8
+https://whale-browser.en.uptodown.com/windows/download` -> HTTP 404
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/knowledge/ /home/runner/work/whale-hunt/whale-hunt/inventory/ /home/runner/work/whale-hunt/whale-hunt/leads/ /home/runner/work/whale-hunt/whale-hunt/triage/ /home/runner/work/whale-hunt/whale-hunt/scripts/ 2>/dev/null
+/home/runner/work/whale-hunt/whale-hunt/inventory/:
+total 48
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 .
+drwxr-xr-x 11 runner runner  4096 Aug  8 18:54 ..
+-rw-r--r--  1 runner runner 37951 Aug  8 18:54 whale.md
+
+/home/runner/work/whale-hunt/whale-hunt/knowledge/:
+total 44
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 .
+drwxr-xr-x 11 runner runner  4096 Aug  8 18:54 ..
+-rw-r--r--  1 runner runner 34754 Aug  8 18:54 index.md
+
+/home/runner/work/whale-hunt/whale-hunt/leads/:
+total 1340
+drwxr-xr-x  2 runner runner   4096 Aug  8 18:54 .
+drwxr-xr-x 11 runner runner   4096 Aug  8 18:54 ..
+-rw-r--r--  1 runner runner 183645 Aug  8 18:54 lead-bigpickle.md
+-rw-r--r--  1 runner runner 609674 Aug  8 18:54 lead-laguna.md
+-rw-r--r--  1 runner runner  15746 Aug  8 18:54 lead-ling3.md
+-rw-r--r--  1 runner runner   1632 Aug  8 18:54 lead-longcat.md
+-rw-r--r--  1 runner runner 256989 Aug  8 18:54 lead-nemotron3.md
+-rw-r--r--  1 runner runner   2883 Aug  8 18:54 reposcan-2026-08-07-18-44.md
+-rw-r--r--  1 runner runner   1240 Aug  8 18:54 reposcan-2026-08-07-18-59.md
+-rw-r--r--  1 runner runner   6783 Aug  8 18:54 reposcan-2026-08-07-19-19.md
+-rw-r--r--  1 runner runner   2370 Aug  8 18:54 reposcan-2026-08-07-19-22.md
+-rw-r--r--  1 runner runner    366 Aug  8 18:54 reposcan-2026-08-07-19-28.md
+-rw-r--r--  1 runner runner    466 Aug  8 18:54 reposcan-2026-08-07-20-06.md
+-rw-r--r--  1 runner runner    617 Aug  8 18:54 reposcan-2026-08-07-20-11.md
+-rw-r--r--  1 runner runner    948 Aug  8 18:54 reposcan-2026-08-07-20-59.md
+-rw-r--r--  1 runner runner   5763 Aug  8 18:54 reposcan-2026-08-07-21-09.md
+-rw-r--r--  1 runner runner   4346 Aug  8 18:54 reposcan-2026-08-07-21-58.md
+-rw-r--r--  1 runner runner   3025 Aug  8 18:54 reposcan-2026-08-07-22-05.md
+-rw-r--r--  1 runner runner   2764 Aug  8 18:54 reposcan-2026-08-07-22-23.md
+-rw-r--r--  1 runner runner   3238 Aug  8 18:54 reposcan-2026-08-07-23-05.md
+-rw-r--r--  1 runner runner    631 Aug  8 18:54 reposcan-2026-08-07-23-08.md
+-rw-r--r--  1 runner runner    610 Aug  8 18:54 reposcan-2026-08-07-23-50.md
+-rw-r--r--  1 runner runner    304 Aug  8 18:54 reposcan-2026-08-07-23-57.md
+-rw-r--r--  1 runner runner   5524 Aug  8 18:54 reposcan-2026-08-08-00-44.md
+-rw-r--r--  1 runner runner   2707 Aug  8 18:54 reposcan-2026-08-08-01-38.md
+-rw-r--r--  1 runner runner   4107 Aug  8 18:54 reposcan-2026-08-08-02-55.md
+-rw-r--r--  1 runner runner   4063 Aug  8 18:54 reposcan-2026-08-08-03-20.md
+-rw-r--r--  1 runner runner    849 Aug  8 18:54 reposcan-2026-08-08-04-14.md
+-rw-r--r--  1 runner runner    504 Aug  8 18:54 reposcan-2026-08-08-04-34.md
+-rw-r--r--  1 runner runner   3307 Aug  8 18:54 reposcan-2026-08-08-05-18.md
+-rw-r--r--  1 runner runner   6278 Aug  8 18:54 reposcan-2026-08-08-05-39.md
+-rw-r--r--  1 runner runner    693 Aug  8 18:54 reposcan-2026-08-08-06-07.md
+-rw-r--r--  1 runner runner   2862 Aug  8 18:54 reposcan-2026-08-08-06-42.md
+-rw-r--r--  1 runner runner    510 Aug  8 18:54 reposcan-2026-08-08-07-44.md
+-rw-r--r--  1 runner runner   3414 Aug  8 18:54 reposcan-2026-08-08-07-49.md
+-rw-r--r--  1 runner runner   6655 Aug  8 18:54 reposcan-2026-08-08-08-23.md
+-rw-r--r--  1 runner runner   6474 Aug  8 18:54 reposcan-2026-08-08-08-35.md
+-rw-r--r--  1 runner runner    966 Aug  8 18:54 reposcan-2026-08-08-09-12.md
+-rw-r--r--  1 runner runner   6653 Aug  8 18:54 reposcan-2026-08-08-09-33.md
+-rw-r--r--  1 runner runner    902 Aug  8 18:54 reposcan-2026-08-08-09-57.md
+-rw-r--r--  1 runner runner    778 Aug  8 18:54 reposcan-2026-08-08-10-26.md
+-rw-r--r--  1 runner runner   2374 Aug  8 18:54 reposcan-2026-08-08-10-37.md
+-rw-r--r--  1 runner runner   3603 Aug  8 18:54 reposcan-2026-08-08-11-01.md
+-rw-r--r--  1 runner runner    737 Aug  8 18:54 reposcan-2026-08-08-11-07.md
+-rw-r--r--  1 runner runner    515 Aug  8 18:54 reposcan-2026-08-08-11-36.md
+-rw-r--r--  1 runner runner    808 Aug  8 18:54 reposcan-2026-08-08-11-44.md
+-rw-r--r--  1 runner runner   4143 Aug  8 18:54 reposcan-2026-08-08-12-08.md
+-rw-r--r--  1 runner runner   3771 Aug  8 18:54 reposcan-2026-08-08-12-37.md
+-rw-r--r--  1 runner runner   1296 Aug  8 18:54 reposcan-2026-08-08-13-17.md
+-rw-r--r--  1 runner runner   6713 Aug  8 18:54 reposcan-2026-08-08-13-42.md
+-rw-r--r--  1 runner runner    694 Aug  8 18:54 reposcan-2026-08-08-13-59.md
+-rw-r--r--  1 runner runner   1058 Aug  8 18:54 reposcan-2026-08-08-14-27.md
+-rw-r--r--  1 runner runner   2225 Aug  8 18:54 reposcan-2026-08-08-14-38.md
+-rw-r--r--  1 runner runner    452 Aug  8 18:54 reposcan-2026-08-08-14-59.md
+-rw-r--r--  1 runner runner    736 Aug  8 18:54 reposcan-2026-08-08-15-07.md
+-rw-r--r--  1 runner runner   2486 Aug  8 18:54 reposcan-2026-08-08-15-35.md
+-rw-r--r--  1 runner runner    820 Aug  8 18:54 reposcan-2026-08-08-15-49.md
+-rw-r--r--  1 runner runner    935 Aug  8 18:54 reposcan-2026-08-08-16-51.md
+-rw-r--r--  1 runner runner   7051 Aug  8 18:54 reposcan-2026-08-08-17-06.md
+-rw-r--r--  1 runner runner   1018 Aug  8 18:54 reposcan-2026-08-08-17-26.md
+-rw-r--r--  1 runner runner   2611 Aug  8 18:54 reposcan-2026-08-08-17-43.md
+-rw-r--r--  1 runner runner   3254 Aug  8 18:54 reposcan-2026-08-08-17-57.md
+-rw-r--r--  1 runner runner   4305 Aug  8 18:54 reposcan-2026-08-08-18-09.md
+-rw-r--r--  1 runner runner    385 Aug  8 18:54 reposcan-2026-08-08-18-34.md
+-rw-r--r--  1 runner runner    385 Aug  8 18:54 reposcan-latest.md
+
+/home/runner/work/whale-hunt/whale-hunt/scripts/:
+total 16
+drwxr-xr-x  2 runner runner 4096 Aug  8 18:54 .
+drwxr-xr-x 11 runner runner 4096 Aug  8 18:54 ..
+-rw-r--r--  1 runner runner 7771 Aug  8 18:54 sync-issues.py
+
+/home/runner/work/whale-hunt/whale-hunt/triage/:
+total 424
+drwxr-xr-x  2 runner runner  4096 Aug  8 18:54 .
+drwxr-xr-x 11 runner runner  4096 Aug  8 18:54 ..
+-rw-r--r--  1 runner runner  8463 Aug  8 18:54 run-2026-08-07-19-23.md
+-rw-r--r--  1 runner runner 14983 Aug  8 18:54 run-2026-08-07-21-01.md
+-rw-r--r--  1 runner runner  7882 Aug  8 18:54 run-2026-08-07-21-04.md
+-rw-r--r--  1 runner runner 20203 Aug  8 18:54 run-2026-08-07-21-57.md
+-rw-r--r--  1 runner runner 14629 Aug  8 18:54 run-2026-08-07-22-02.md
+-rw-r--r--  1 runner runner 21701 Aug  8 18:54 run-2026-08-07-22-57.md
+-rw-r--r--  1 runner runner 25767 Aug  8 18:54 run-2026-08-07-23-03.md
+-rw-r--r--  1 runner runner 23210 Aug  8 18:54 run-2026-08-07-23-53.md
+-rw-r--r--  1 runner runner   596 Aug  8 18:54 run-2026-08-08-02-34.md
+-rw-r--r--  1 runner runner 23521 Aug  8 18:54 run-2026-08-08-04-30.md
+-rw-r--r--  1 runner runner 23484 Aug  8 18:54 run-2026-08-08-04-39.md
+-rw-r--r--  1 runner runner 14903 Aug  8 18:54 run-2026-08-08-06-09.md
+-rw-r--r--  1 runner runner   838 Aug  8 18:54 run-2026-08-08-07-30.md
+-rw-r--r--  1 runner runner 19293 Aug  8 18:54 run-2026-08-08-09-06.md
+-rw-r--r--  1 runner runner 16293 Aug  8 18:54 run-2026-08-08-10-02.md
+-rw-r--r--  1 runner runner 11886 Aug  8 18:54 run-2026-08-08-10-56.md
+-rw-r--r--  1 runner runner 18726 Aug  8 18:54 run-2026-08-08-11-50.md
+-rw-r--r--  1 runner runner 10851 Aug  8 18:54 run-2026-08-08-13-00.md
+-rw-r--r--  1 runner runner  5433 Aug  8 18:54 run-2026-08-08-13-16.md
+-rw-r--r--  1 runner runner 10854 Aug  8 18:54 run-2026-08-08-14-00.md
+-rw-r--r--  1 runner runner 13226 Aug  8 18:54 run-2026-08-08-14-06.md
+-rw-r--r--  1 runner runner 11660 Aug  8 18:54 run-2026-08-08-14-38.md
+-rw-r--r--  1 runner runner  4157 Aug  8 18:54 run-2026-08-08-14-55.md
+-rw-r--r--  1 runner runner 16792 Aug  8 18:54 run-2026-08-08-15-52.md
+-rw-r--r--  1 runner runner 13137 Aug  8 18:54 run-2026-08-08-17-00.md
+-rw-r--r--  1 runner runner  5896 Aug  8 18:54 run-2026-08-08-17-58.md
+-rw-r--r--  1 runner runner 11282 Aug  8 18:54 run-2026-08-08-18-00.md
+-rw-r--r--  1 runner runner  1109 Aug  8 18:54 run-2026-08-08-18-17.md
+[0m
+[0m$ [0mcat /home/runner/work/whale-hunt/whale-hunt/leads/reposcan-latest.md; echo "=== 18-34 ==="; cat /home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-08-18-34.md; echo "=== 18-09 ==="; cat /home/runner/work/whale-hunt/whale-hunt/leads/reposcan-2026-08-08-18-09.md
+===== REPOSCAN 2026-08-08 18:34:34 UTC =====
+## Grep hits:
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+
+## Model analysis:
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[93m[1m! [0mpermission requested: external_directory (/home/runner/work/whale-hunt/*); auto-rejecting
+[0m✗ [0mls -la failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+=== 18-34 ===
+
+===== REPOSCAN 2026-08-08 18:34:34 UTC =====
+## Grep hits:
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+
+## Model analysis:
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[93m[1m! [0mpermission requested: external_directory (/home/runner/work/whale-hunt/*); auto-rejecting
+[0m✗ [0mls -la failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+=== 18-09 ===
+
+===== REPOSCAN 2026-08-08 18:09:57 UTC =====
+## Grep hits:
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+
+## Model analysis:
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[0m◈ [0mExa Web Search "gladiaio github org repos"
+[0m
+[0m$ [0mnpm view @gladiaio/sdk --json 2>/dev/null || echo "Package not found or npm not available"
+{
+  "_id": "@gladiaio/sdk@1.1.0",
+  "_rev": "129-8d16ae11f6d0f01320400f5fcaa4e9e8",
+  "name": "@gladiaio/sdk",
+  "dist-tags": {
+    "latest": "1.1.0"
+  },
+  "versions": [
+    "0.1.0",
+    "0.1.1",
+    "0.1.2",
+    "0.2.0",
+    "0.2.1",
+    "0.3.0",
+    "0.3.1",
+    "0.4.0",
+    "0.4.1",
+    "0.4.2",
+    "0.4.3",
+    "0.5.0",
+    "0.5.1",
+    "0.5.2",
+    "0.5.3",
+    "0.6.0",
+    "0.6.1",
+    "1.0.0",
+    "1.0.4",
+    "1.0.5",
+    "1.0.7",
+    "1.1.0"
+  ],
+  "time": {
+    "created": "2025-09-09T15:01:20.684Z",
+    "modified": "2026-07-23T20:48:35.899Z",
+    "0.8.9": "2022-10-28T08:45:13.203Z",
+    "0.8.10": "2022-10-28T09:20:28.511Z",
+    "0.8.11": "2022-10-28T10:16:20.446Z",
+    "0.8.12": "2022-11-02T13:40:47.351Z",
+    "0.8.13": "2022-11-02T14:22:51.825Z",
+    "0.8.14": "2022-11-10T15:46:41.656Z",
+    "0.8.15": "2022-11-10T16:20:33.692Z",
+    "0.8.16": "2022-11-13T18:27:04.269Z",
+    "0.8.17": "2022-11-18T16:07:37.254Z",
+    "0.9.1": "2022-11-22T14:38:02.436Z",
+    "0.9.2": "2022-11-23T07:38:30.338Z",
+    "0.9.3": "2022-11-30T09:32:14.398Z",
+    "0.9.4": "2022-11-30T10:05:06.541Z",
+    "0.9.5": "2022-12-09T11:31:31.615Z",
+    "0.10.1": "2022-12-09T12:39:20.544Z",
+    "0.10.2": "2022-12-09T14:22:43.928Z",
+    "0.10.3": "2022-12-09T15:13:00.720Z",
+    "0.10.4": "2022-12-09T17:23:13.026Z",
+    "0.10.5": "2022-12-12T17:13:58.447Z",
+    "0.10.6": "2022-12-12T17:29:59.221Z",
+    "0.10.7": "2022-12-19T19:29:04.531Z",
+    "0.10.8": "2023-01-10T13:24:01.450Z",
+    "0.10.9": "2023-01-10T15:17:51.295Z",
+    "0.10.10": "2023-01-10T15:37:49.001Z",
+    "0.10.11": "2023-01-11T09:01:49.220Z",
+    "0.10.12": "2023-01-11T13:12:36.873Z",
+    "0.10.13": "2023-01-11T21:12:54.881Z",
+    "0.10.14": "2023-01-12T09:10:07.435Z",
+    "0.10.15": "2023-01-17T10:19:35.165Z",
+    "0.10.16": "2023-01-17T12:05:23.330Z",
+    "0.10.17": "2023-01-17T12:58:17.730Z",
+    "0.10.18": "2023-01-17T16:09:20.768Z",
+    "0.10.19": "2023-01-18T15:26:15.155Z",
+    "0.10.20": "2023-01-18T18:04:32.626Z",
+    "0.10.21": "2023-01-20T08:16:14.497Z",
+    "0.10.22": "2023-01-20T10:04:28.819Z",
+    "0.10.23": "2023-01-20T15:04:40.649Z",
+    "0.10.24": "2023-01-20T15:11:16.682Z",
+    "0.10.25": "2023-01-20T15:13:48.025Z",
+    "0.10.26": "2023-01-20T15:31:50.478Z",
+    "0.10.27": "2023-01-20T15:39:56.257Z",
+    "0.10.28": "2023-01-20T15:42:19.092Z",
+    "0.10.29": "2023-01-20T15:50:28.108Z",
+    "0.10.30": "2023-01-24T08:25:37.753Z",
+    "0.10.31": "2023-01-27T09:03:39.648Z",
+    "0.10.32": "2023-01-27T13:42:54.782Z",
+    "0.10.33": "2023-01-30T16:53:45.752Z",
+    "0.10.34": "2023-01-31T10:05:22.344Z",
+    "0.10.35": "2023-01-31T16:26:08.125Z",
+    "0.10.36": "2023-01-31T18:05:57.019Z",
+    "0.10.37": "2023-02-01T09:07:05.551Z",
+    "0.10.38": "2023-02-08T13:16:19.390Z",
+    "0.10.39": "2023-02-09T11:04:51.004Z",
+    "0.10.40": "2023-02-10T16:05:17.732Z",
+    "0.10.41": "2023-02-10T16:39:30.367Z",
+    "0.10.42": "2023-02-13T20:05:28.053Z",
+    "0.10.43": "2023-02-14T14:05:13.700Z",
+    "0.10.44": "2023-02-14T15:41:25.199Z",
+    "0.10.45": "2023-02-21T09:05:46.595Z",
+    "0.10.47": "2023-02-22T15:05:00.452Z",
+    "0.10.48": "2023-02-22T15:20:28.452Z",
+    "0.10.49": "2023-02-22T16:44:44.559Z",
+    "0.10.50": "2023-02-22T17:34:36.357Z",
+    "0.10.51": "2023-02-23T12:06:26.120Z",
+    "0.10.52": "2023-02-27T10:05:37.941Z",
+    "0.10.53": "2023-02-28T10:05:00.048Z",
+    "0.10.54": "2023-02-28T11:04:57.740Z",
+    "0.10.55": "2023-03-06T17:10:50.627Z",
+    "0.10.56": "2023-03-07T13:42:28.741Z",
+    "0.10.57": "2023-03-10T08:35:13.404Z",
+    "0.10.58": "2023-03-14T13:12:41.710Z",
+    "0.10.59": "2023-03-14T16:06:56.161Z",
+    "0.10.60": "2023-03-15T20:45:18.851Z",
+    "0.10.61": "2023-03-16T12:33:03.265Z",
+    "0.10.62": "2023-03-16T16:55:15.030Z",
+    "0.10.63": "2023-03-17T08:41:22.881Z",
+    "0.10.64": "2023-03-17T10:05:27.471Z",
+    "0.10.65": "2023-03-22T10:47:01.768Z",
+    "0.10.66": "2023-03-22T14:36:58.372Z",
+    "0.10.67": "2023-03-24T15:34:12.413Z",
+[0m
+[0m$ [0mcat /home/runner/work/whale-hunt/whale-hunt/reports/valid-bugs.md; echo "=== hypotheses-nemotron3 ==="; cat /home/runner/work/whale-hunt/whale-hunt/reports/hypotheses-nemotron3.txt
+# Validated Bugs
+
+- 2026-08-07 ~18:00 UTC - SEED STATE: 0 valid bugs. Pipeline not yet run; hypotheses are recon-based and UNVALIDATED.
+
+- 2026-08-07 23:53 UTC — Triage run (14 hypotheses): 0 VALID / 4 HOLD / 10 INVALID.
+- 2026-08-08 04:30 UTC — Follow-up triage (same 14 hypotheses, no new evidence): **0 VALID / 0 HOLD / 14 INVALID**.
+
+| Verdict | Count | Summary |
+|---------|-------|---------|
+| **VALID** | 0 | No lead passes all 7 gates |
+| **HOLD** | 0 | Prior HOLDs resolved to INVALID — no new evidence gathered |
+| **INVALID** | 14 | All leads are recon-level hypotheses without proof of a vulnerability on v4.38.386.14 |
+
+**Key findings:**
+- **No probe results** were produced (`probe-results.txt` empty) — all leads are model hypotheses without HTTP-level evidence
+- **Sidebar SOP bypass** was the #1 hypothesis across all 5 models, but every instance fails Q4 (HUMAN_ONLY), Q5 (no novel variant evidence), and Q7 (speculative)
+- **Most promising recon surface**: Whale sync engine — binary static analysis confirmed Whale-only prefs keys, custom OSCrypt fork, and socket.io bundled in core, but token-storage format and KDF constants remain **unverified**
+- **0 valid bugs** to report. Disclosure channel per scope.yml is TBD (operator-provided; not yet confirmed).
+
+- 3 lead(s) marked VALID at 2026-08-08 04:39:28 UTC
+  - VALID  : 0
+  - | **VALID** | 0 | No lead passes all 7 gates |
+  - VALID  : 0
+
+- 2 lead(s) marked VALID at 2026-08-08 06:09:27 UTC
+  - | **VALID** | 0 | — |
+  - | **VALID** | 0 | — |
+
+- 1 lead(s) marked VALID at 2026-08-08 09:06:43 UTC
+  - | **VALID** | 0 | — |
+
+- 1 lead(s) marked VALID at 2026-08-08 10:02:28 UTC
+  - | **VALID** | 0 | No lead passes all 7 gates |
+
+- 11 lead(s) triaged at 2026-08-08 13:00 UTC — **0 VALID / 0 HOLD / 11 INVALID**
+  - All leads fail Q4 (no passive GET/HEAD proof) and Q7 (no evidence of actual vulnerability)
+  - See `triage/run-2026-08-08-13-00.md` for full 7Q analysis per lead
+
+- 2 lead(s) marked VALID at 2026-08-08 13:16:49 UTC
+  - valid-bugs.md
+  - | **VALID** | 0 | No lead passes all 7 gates |
+
+- 11 lead(s) triaged at 2026-08-08 14:00 UTC — **0 VALID / 0 HOLD / 11 INVALID**
+  - All leads fail Q4 (no passive GET/HEAD proof) and Q7 (no evidence of actual vulnerability)
+  - See `triage/run-2026-08-08-14-00.md` for full 7Q analysis per lead
+
+- 14 lead(s) triaged at 2026-08-08 14:38 UTC — **0 VALID / 0 HOLD / 14 INVALID**
+  - Full 7Q analysis per lead; uniform killer is Q4 (no passive proof) + Q7 (no evidence)
+  - All binary-acquisition channels blocked; most leads require HUMAN_ONLY interactive testing
+  - See `triage/run-2026-08-08-14-38.md` for full analysis
+
+- 1 lead(s) marked VALID at 2026-08-08 15:52:59 UTC
+  - | **VALID** | **0** | — |
+
+- 1 lead(s) marked VALID at 2026-08-08 17:00:02 UTC
+  - | **VALID** | **0** | — |
+
+- 13 lead(s) triaged at 2026-08-08 18:00 UTC — **0 VALID / 0 HOLD / 13 INVALID**
+  - Full 7Q analysis per lead; uniform killer is Q4 (no passive proof) + Q7 (no evidence)
+  - All binary-acquisition channels blocked; all verify_steps are HUMAN_ONLY or AUTH_HELPED
+  - 5 models de-duplicated to 13 distinct lead categories — all INVALID
+  - See `triage/run-2026-08-08-18-00.md` for full analysis
+=== hypotheses-nemotron3 ===
+## 2026-08-08 18:05:11 UTC [browser] (model nemotron3)
+[NEW] NO_DELTA — inventory, knowledge, and leads unchanged since last aggregated hypotheses (2026-08-08 17:42:49 UTC); no new public CVEs, no new GitHub commits, no new wiki edits, all binary acquisition paths remain blocked in-sandbox
+[PRIO] Whale sync bootstrap-token envelope (OSCrypt deviation on Linux, v4.38.386.14), 6.55, atk=7 biz=8 tech=9 gate=2 cloud=3 fresh=8
+[PRIO] Whale sidebar/dual-tab boundary (sidebarAction.show + ALL-origin content_scripts + background.js no origin check, v4.38.386.14 Linux), 6.40, atk=8 biz=8 tech=8 gate=2 cloud=3 fresh=10
+[PRIO] Whale sync passphrase KDF + bootstrap-token envelope (desktop v4.38.386.14 + Android 3.9.14.9), 6.15, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=7
+[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
+class: AUTH
+asset: whalesync client engine (api.whale.naver.com/whalesync) + profile prefs sync.encryption_bootstrap_token_per_account sha256=053ffa4b...
+confidence: 62
+reasoning: v4.38.386.14 binary confirms Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic); /whalesync authed by NEO_SES cookie only; sync.cookies/sync.passwords in type list; per-account bootstrap token envelope deviates from upstream Chromium sync.encryption_bootstrap_token
+evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to stale key
+verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util call sites for bootstrap-token envelope and /whalesync/reset request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network
+impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
+testability: PASSIVE
+[HYP] Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux
+class: OTHER
+asset: Whale v4.38.386.14 desktop Linux sidebar (sidebarAction.show({url})) + dual-tab web panel
+confidence: 58
+reasoning: CVE-2025-69235 (CWE-346) NVD CPE lists only Windows/macOS — Linux absent. v4.38.386.14 is 3 minor-version bumps past the fix with 0 published CVEs. Sample extension translate/src/sidebar-sample/manifest.json (HTTP 200) confirms content_scripts match ALL origins; background.js (HTTP 200) calls sidebarAction.show()/hide()/show2()/hideAll() from ANY sendMessage origin without validation.
+evidence_needed: Script execution or cross-origin fetch in sidebar/dual-tab panel on Linux; window.opener/parent readback from foreign origin; iframe sandbox escape; CSP bypass via non-http(s) scheme
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load sidebar-sample extension → whale.sidebarAction.show({url:'https://attacker.com/exploit.html'}) → attempt cross-origin fetch from panel content script → test drag-drop with use_navigation_bar:false → check opener/parent readback. Zero requests to Naver infra.
+impact: SOP bypass / script execution in privileged browser-UI context — cross-origin cookie/DOM/CSRF-token theft; Critical if escalates to renderer code execution
+testability: HUMAN_ONLY
+[HYP] Whale sync passphrase KDF + bootstrap-token envelope — KDF constants/iteration counts unknown
+class: AUTH
+asset: Whale v4.38.386.14 desktop + Android 3.9.14.9 sync engine (api.whale.naver.com/whalesync)
+confidence: 55
+reasoning: Whale-only prefs confirm bootstrap_token_per_account + _migration_done + whale_need_encryption_key_forced_time exist; Whale-forked os_crypt_whale.cc with xv10 magic confirmed in binary; /whalesync endpoint uses NEO_SES cookie auth; but KDF constants (PBKDF2 iterations, salt derivation), master-key storage location on Linux, and /whalesync/reset auth flow remain unextracted — binary acquisition blocked in-sandbox
+evidence_needed: PBKDF2 iteration count + salt source for passphrase→master-key; master-key storage path on Linux (libsecret? kwallet? file?); /whalesync/reset request shape (POST body, headers, NEO_SES validation); whether _migration_done downgrades encryption
+verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util for KDF constants, salt derivation, master-key storage calls; strings on binary for /whalesync/reset handler; zero network. Requires binary.
+impact: Weak KDF or predictable master-key storage → local attacker derives sync encryption key → decrypts all synced passwords/cookies/autofill across devices (High)
+testability: PASSIVE
+[PARKED] Whale sync passphrase KDF + bootstrap-token envelope — KDF constants/iteration counts unknown: confidence 55 but verify_steps requires binary acquisition which is blocked in-sandbox (all channels dead); no passive-first probe possible without binary — stale until HUMAN delivers binary
+[FINAL] 1. Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (confidence 62, class AUTH, testability PASSIVE)
+[FINAL] 2. Sidebar/dual-tab boundary regression — CVE-2025-69235 fix omits Linux (confidence 58, class OTHER, testability HUMAN_ONLY)
+[NEXT] PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network — local static analysis of acquired binary only
+[LEARN] REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptodown 404 page removed; apkpure.com 403; Naver domains excluded) — binary acquisition requires HUMAN with unrestricted internet access
+[LEARN] REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+[LEARN] REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` wiki documentation previously cited as "CONFIRMED accessible" is no longer reachable; wiki API also 404s
+[LEARN] ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins); `background.js` (HTTP 200) confirms `onMessage` handler dispatches `sidebarAction.show`/`hide`/`show2`/`hideAll` from ANY sender without origin validation
+[LEARN] CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap confirmed for v4.35.352–v4.38.386.14
+[LEARN] CONFIRMED @ GitHub search API: 1 whale-named repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of additional repos disproven
+[RISK] sync: 65 — custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 82 — sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; Linux absent from CVE-2025-69235 fix CPE; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show() message handling — high-priority regression window unchanged | libs: 35 — Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk
+[0m
+[0m→ [0mRead scripts/sync-issues.py
+[0m
+[0m$ [0mhead -100 /home/runner/work/whale-hunt/whale-hunt/knowledge/index.md
+# Knowledge Base (seed)
+
+## Program rules (from scope.yml)
+- Eligible: latest-version Whale browser bugs (must reproduce on latest at report time); third-party libraries used ONLY by Whale (not Chromium); synchronization bugs
+- NOT eligible: all Naver web services (*.naver.com, *.navercorp.com), web servers of built-in extensions (Papago, Belli), URL preview spoofing in status bar, bypassing XSS Auditor, IETab extension, SafeBrowsing FP/FN
+- Client-side software: static source analysis + repro-first validation; no server probing
+- Secrets in commits: sha256 only, never raw
+
+## Baseline surface (2026-08-07 passive recon)
+- Official GitHub repo: naver/whale-browser-developers (no public releases API; repo is developers channel)
+- Naver org is HUGE: reposcan clones ONLY whale-name repos
+- Known excluded classes to never report: XSS Auditor bypass, status-bar URL preview spoofing, SafeBrowsing FP/FN, anything in IETab
+
+## Rejected / parked
+- (none yet)
+- 2026-08-07 REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- 2026-08-07 REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+- 2026-08-07 REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CVEs published
+- 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+- 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+- 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo remains documentation-only (last commit 2019-09-23; 2025-10-22 metadata-only refresh) — no source code, sync implementation, or library manifests available for static analysis
+- 2026-08-07 CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability disclosure gap
+- 2026-08-07 REJECTED @ store.whale.naver.com: Issue #23 maps to Naver web service, excluded per scope.yml out_of_scope (confirmed unchanged)
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346 SOP bypass) confirmed fixed in v4.35.351.12 (Dec 2025); latest v4.38.386.14 is 3 minor bumps ahead with 0 CVEs — regression window remains open
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358 CSP bypass) confirmed fixed in v4.33.325.17 (Oct 2025); ~8 months of undisclosed changes since
+- 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072 + CVE-2024-40618 confirmed — built-in extension processing is a recurring Whale-only injection vector
+- 2026-08-07 REJECTED @ naver/whale-browser-developers: Repo remains documentation-only (last real commit 2019-09-23; 2025-10-22 metadata-only refresh) — no browser binary source, sync flow code, or library manifests available for static analysis
+- 2026-08-07 REJECTED @ naver web services (developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com): All excluded per scope rules
+- 2026-08-07 CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability disclosure gap
+- 2026-08-07 REJECTED class @ lead: 1 (Lead 2/6/14 — Sync KDF/bootstrap-token/OSCrypt):
+- 2026-08-07 REJECTED class @ lead: 2 (Lead 5 — Bundled library inventory):
+- 2026-08-07 REJECTED class @ lead: 3 (Lead 7/13 — socket.io push channel):
+- 2026-08-07 REJECTED class @ lead: 4 (Leads 2/6/14 consolidated as sync analysis; Lead 5 as lib inventory;
+- 2026-08-07 REJECTED class @ lead: 10 (speculative variant hunting, HUMAN_ONLY-only, or no evidence)
+- 2026-08-08 REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+- 2026-08-08 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- 2026-08-08 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- 2026-08-08 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- 2026-08-08 REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+- 2026-08-08 REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- 2026-08-08 REJECTED @ store.whale.naver.com: Issue #23 maps to Naver web service, excluded per scope.yml out_of_scope (confirmed unchanged)
+- 2026-08-08 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346 SOP bypass) confirmed fixed in v4.35.351.12 (Dec 2025); latest v4.38.386.14 is 3 minor bumps ahead with 0 CVEs — regression window remains open
+- 2026-08-08 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358 CSP bypass) confirmed fixed in v4.33.325.17 (Oct 2025); ~8 months of undisclosed changes since
+- 2026-08-08 ACCEPTED XSS @ extension API: CVE-2022-24072 + CVE-2024-40618 confirmed — built-in extension processing is a recurring Whale-only injection vector
+- 2026-08-08 REJECTED @ naver/whale-browser-developers: Repo remains documentation-only (last real commit 2019-09-23; 2025-10-22 metadata-only refresh) — no browser binary source, sync flow code, or library manifests available for static analysis
+- 2026-08-08 REJECTED @ naver web services (developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com): All excluded per scope rules
+- 2026-08-08 CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability disclosure gap
+- 2026-08-08 REJECTED binary acquisition @ APKMirror/APKCombo/apk.support/apkpure: Cloudflare 403 on curl egress in this sandbox — PASSIVE binary-download path is dead here; only session/JS-resolved channels (uptodown dw, apkpure.net) remain
+- 2026-08-08 ACCEPTED Android sync asset @ com.naver.whale 3.9.14.9: version + SHA256 pinned via non-Naver mirror metadata (APKMirror/Uptodown) — in-scope sync surface confirmed real, latest, and verifiable once the download channel is solved
+- 2026-08-08 CONFIRMED desktop latest @ changelog.whale.naver.com: page is fully JS-rendered (empty text fetch) — no server-side version assertion available passively; v4.38.386.14 claim remains from prior recon
+- 2026-08-08 REJECTED @ naver/whale-browser-developers: Repo remains documentation-only (last code commit 2019-09-23; 2025-10-22 metadata-only) — static analysis path is dead; binary acquisition is the only static analysis vector.
+- 2026-08-08 ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + Whale-forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` + `xv10` magic CONFIRMED present in v4.38.386.14 binary via prior bigpickle/laguna runs — the KDF/envelope gap is the unfilled verification.
+- 2026-08-08 REJECTED passive binary acquisition @ APKMirror/APKCombo/apkpure: Cloudflare 403 on curl egress — confirmed dead in-sandbox; only uptodown session-token or JS-resolved channels remain for Android, and CDN `.deb` for desktop.
+- 2026-08-08 ACCEPTED @ socket.io.slim.js bundled: Confirmed Whale-only in `resources.pak` (prior bigpickle/laguna recon strings) — a non-Chromium runtime-bundled lib worth auditing for event-handler injection; however the handler itself may be runtime-fetched, degrading passive evidence — stale until re-acquired.
+- 2026-08-08 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+- 2026-08-08 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CVEs published
+- 2026-08-08 CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+- 2026-08-08 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+- 2026-08-08 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+- 2026-08-08 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CVEs published
+- 2026-08-08 CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+- 2026-08-08 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+- 2026-08-08 REJECTED @ cloudfront CDN binary acquisition: DNS resolution fails for `*.cloudfront.net` (nslookup: No answer) — the desktop `.deb` download path from `d1vdt4q2qgdbji.cloudfront.net` is confirmed dead in-sandbox; combined with APKMirror 403, uptodown 410 Gone, apkpure.com 403, and Naver-domain exclusion, ALL binary acquisition paths are blocked.
+- 2026-08-08 ACCEPTED @ GitHub wiki documentation: `naver/whale-browser-developers` wiki is publicly accessible via `raw.githubusercontent.com/wiki/` — confirms `sidebarAction.show({url})` loads arbitrary URL in sidebar panel, `use_navigation_bar=false` exposes drag-navigation with opt-in mitigation, server-side applications redirect via `location.replace`, and sample extension content_scripts match ALL origins. This is concrete documentation-level evidence for the SOP bypass attack surface.
+- 2026-08-08 ACCEPTED @ GitHub sample extension source: `translate/src/sidebar-sample/` on GitHub repo — `manifest.json` declares `content_scripts` matching `http://*/*` and `https://*/*`, `contentscript.js` detects sidebar context via `navigator.userAgent.includes('sidebar')`, `background.js` uses `whale.runtime.onMessage` listener. Confirms extension API surface is accessible from all origins.
+- 2026-08-08 REJECTED @ APKMirror: Only hosts legacy Whale Android versions (01.0.0.48/49) under `/apk/naver-corp/whale/` — not the latest 3.9.14.9 referenced in prior recon; download link path is stale and cannot provide the target binary.
+- 2026-08-08 CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — NVD API (keywordSearch=naver+whale) returns 2 total results (CVE-2018-9859, CVE-2020-9754), both pre-2021; no 2026 disclosures exist, confirming the 6-month vulnerability disclosure gap for v4.35.352–v4.38.386.14.
+- 2026-08-08 CONFIRMED @ GitHub repo: `naver/whale-browser-developers` remains documentation-only — last pushed 2019-09-23, updated 2025-10-22 (metadata-only), 4 branches (master, translate, v2, jdkim/update_documents), 0 releases, 4 open issues (1 REJECTED BC47 store, 3 feature requests — no security surface).
+- 2026-08-08 ACCEPTED @ prior binary analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token[_per_account]`, `_migration_done`, `whale_need_encryption_key_forced_time`), Whale-forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic, `socket.io.slim.js` in `resources.pak`, and custom `/whalesync` endpoint with NEO_SES cookie auth are CONFIRMED present in v4.38.386.14 via prior bigpickle/laguna runs, but KDF constants/iteration counts and master-key storage location remain unextracted.
+- 2026-08-08 ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`, `_migration_done`, `whale_need_encryption_key_forced_time`) + Whale-forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` + `xv10` magic CONFIRMED present in v4.38.386.14 binary via prior bigpickle/laguna runs — KDF constants/iteration counts + master-key storage location remain unextracted (stale until re-acquired)
+- 2026-08-08 REJECTED @ naver/whale-browser-developers: Repo remains documentation-only (last code commit 2019-09-23; 2025-10-22 metadata-only refresh) — static analysis path is dead; binary acquisition is the only static analysis vector
+- 2026-08-08 REJECTED passive binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptodown 410; apkpure.com 403; Naver domains excluded) — binary acquisition requires HUMAN with unrestricted internet access
+- 2026-08-08 REJECTED @ naver web services (developers/lab/store.whale.naver.com): All excluded per scope.yml out_of_scope rules
+- 2026-08-08 CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for v4.35.352–v4.38.386.14, confirming 6-month disclosure gap
+- 2026-08-08 REJECTED @ GitHub repo `naver/whale-browser-developers`: Documentation-only (0 releases, 0 code commits since 2019-09-23) — no browser binary source, sync flow code, or library manifests available
+- 2026-08-08 REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptodown 410; apkpure.com 403; Naver domains excluded) — binary acquisition requires HUMAN with unrestricted internet access
+- 2026-08-08 REJECTED @ cloudfront CDN: `cloudfront.net` DNS resolution blocked at sandbox resolver level — confirmed general to ALL cloudfront domains, not domain-specific; google.com, github.com, nvd.nist.gov, raw.githubusercontent.com all resolve normally. Binary acquisition via cloudfront is impossible in-sandbox.
+- 2026-08-08 CONFIRMED @ GitHub repo `naver/whale-browser-developers`: 0 new activity — last commit 2019-09-23, 4 open issues (1 REJECTED BCP47, 3 feature requests), 0 releases, 4 branches unchanged
+- 2026-08-08 CONFIRMED @ NVD: 0 Whale CVEs in 2026 — NVD API (keywordSearch=naver+whale) returns 2 total results (CVE-2018-9859, CVE-2020-9754), both pre-2021; no 2026 disclosures for v4.35.352–v4.38.386.14
+- 2026-08-08 CONFIRMED @ GitHub wiki: `whale.sidebarAction` page accessible via `raw.githubusercontent.com/wiki/` — confirms `show({url})` loads arbitrary URL in sidebar panel, `use_navigation_bar` false exposes drag-navigation risk, server-side apps redirect via `location.replace` or `location.href`, content_scripts match ALL origins in sample extension
+- 2026-08-08 CONFIRMED @ GitHub sample extension source (translate branch): `src/sidebar-sample/manifest.json` declares `content_scripts` matching `http://*/*` + `https://*/*`; `contentscript.js` detects sidebar context via `navigator.userAgent.includes('sidebar')` and sends `whale.runtime.sendMessage('sidebarAction.show')` from ALL web origins; `background.js` calls `whale.sidebarAction.show()` + `whale.windows.create()` without origin validation
+- 2026-08-08 REJECTED @ APKMirror/APKCombo/apkpure: Cloudflare 403 on all paths; only hosts legacy Whale Android versions (01.0.0.48/49), not latest 3.9.14.9
+- 2026-08-08 REJECTED @ Uptodown: HTTP 410 Gone — download channel dead
+- 2026-08-08 REJECTED @ Naver web services: developers/lab/store.whale.naver.com excluded per scope.yml out_of_scope
+- 2026-08-08 CONFIRMED @ GitHub wiki: `whale.sidebarAction` page accessible via raw.githubusercontent.com/wiki/ — confirms `show({url})` loads arbitrary URL in sidebar panel, `use_navigation_bar` false exposes drag-navigation, server-side apps redirect via location.replace
+- 2026-08-08 CONFIRMED @ GitHub sample extension (translate branch): `manifest.json` declares content_scripts matching ALL origins; background.js calls `sidebarAction.show()` without origin validation
+- 2026-08-08 REJECTED passive binary acquisition @ cloudfront CDN: DNS resolution blocked at sandbox resolver level — confirmed general to all cloudfront domains; google.com/github.com/nvd.nist.gov resolve normally
+- 2026-08-08 REJECTED @ APKMirror/APKCombo/apkpure/Uptodown: All paths 403/410 or legacy-only — not latest 3.9.14.9
+- 2026-08-08 REJECTED @ naver web services (developers/lab/store.whale.naver.com): Excluded per scope.yml out_of_scope
+- 2026-08-08 REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` wiki documentation previously cited as "CONFIRMED accessible" (step 8b knowledge) is no longer reachable; wiki API also 404s, so the sidebarAction.show SOP bypass documentation evidence is now stale/unverified
+- 2026-08-08 CONFIRMED sample extension manifest @ raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json: still HTTP 200 — `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins) confirmed live on the translate branch
+- 2026-08-08 CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — NVD keywordSearch for `naver+whale` returns only CVE-2018-9859 + CVE-2020-9754 (both pre-2021); no disclosures for v4.35.352–v4.38.386.14
+- 2026-08-08 CONFIRMED @ GitHub: naver/whale-browser-developers remains documentation-only — `pushed_at` 2019-09-23T08:03:26Z, `updated_at` 2025-10-22T03:15:17Z, no new commits; static analysis path confirmed dead
+- 2026-08-08 CONFIRMED @ CloudFront CDN DNS: `d1vdt4q2qgdbji.cloudfront.net` + `cloudfront.net` both resolve `No answer` at sandbox resolver (127.0.0.53); google.com/github.com/nvd.nist.gov resolve normally — binary acquisition via cloudfront impossible in-sandbox
+- 2026-08-08 ACCEPTED @ all leads remain INVALID per last triage run: 0/14 hypotheses passed Q4 (passive proof) — sidebar boundary and sync KDF leads require HUMAN_ONLY browser install + binary extraction; all version-drift/MISCONFIG leads require binary acquisition now blocked
+[0m
+[0m$ [0mcat /home/runner/work/whale-hunt/whale-hunt/state_bigpickle.json; echo; cat /home/runner/work/whale-hunt/whale-hunt/state_nemotron3.json; echo; git -C /home/runner/work/whale-hunt/whale-hunt log --oneline -5
+{"phase": "POC", "target": "sync"}
+{"phase": "POC", "target": "browser"}
+07e7976 reposcan 2026-08-08-18-34
+[0m
+Let me probe the one potentially-live channel flagged in probe-results (uptodown Android page returned 200) since my target is sync and the Android binary is the in-scope sync asset.
+[0m$ [0mcurl -s -o /tmp/opencode/utd.html -w "HTTP %{http_code} len=%{size_download}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" "https://naver-whale-browser.en.uptodown.com/android" ; echo "---version scan---"; grep -oE '3\.[0-9]+\.[0-9]+\.[0-9]+' /tmp/opencode/utd.html | sort -u | head; echo "---version meta---"; grep -oE 'latest[^<]{0,40}|version[^<]{0,40}' /tmp/opencode/utd.html | head -20
+HTTP 200 len=156332
+---version scan---
+3.9.14.5
+3.9.14.6
+3.9.14.7
+3.9.14.9
+---version meta---
+version {
+version span.beta {
+version:lang(ja),
+version:lang(hi),
+version:lang(zh),
+version:lang(th),
+version:lang(ru),
+version:lang(ko),
+version:lang(ar),
+version:lang(vi),
+version:lang(ro),
+version:lang(tr),
+version,
+version {
+version:empty {
+version),
+version,
+versions .content {
+version {
+version):has(.devices):has(.external-store) .ma
+[0m
+The uptodown Android page is live with v3.9.14.9 listed — the target sync asset. Let me try to resolve the actual download link.
+[0m$ [0msleep 1; curl -s -o /tmp/opencode/utd_dl.html -w "HTTP %{http_code} len=%{size_download}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" "https://naver-whale-browser.en.uptodown.com/android/download"; echo "---download link candidates---"; grep -oE 'https?://[^"]*\.(apk|xapk)[^"]*' /tmp/opencode/utd_dl.html | head; echo "---post params---"; grep -oE 'name="(post_id|version_id|page_subdomain|page_url)"[^>]*value="[^"]*"' /tmp/opencode/utd_dl.html | head
+HTTP 200 len=155246
+---download link candidates---
+---post params---
+[0m
+[0m$ [0mgrep -oE 'data-url="[^"]*"|data-version="[^"]*"|data-post="[^"]*"|form action="[^"]*"|value="[0-9]+"' /tmp/opencode/utd_dl.html | sort -u | head -20; echo "---subdomains/hosts---"; grep -oE 'https?://[a-z0-9.-]+' /tmp/opencode/utd_dl.html | sort -u | head -30
+data-url="TwlV3zZzBcysOQUTS6EJZJvfywDx6G_39VAEsqesv8HedTXK8LI19C4rMbSS47ftRjqQPrTjCfBRucNaBZOi9R1nUcGMyAAq2jYd8E_fBztekIfqmkZM6p6r7phHXeD3/NYWwEWXsl5tTDdxMthxEFRb3XaVqfRDTJyx16m_mCepdABDmV7BofrsESK1wy1ZptnIGP7ujOJY_p9SnWBXV-miwRcOv7a3tU_qExnJQUL7oPrdOzTffHRKPSBJLHsVe/lNl8UfQHrD03wu6EUs_Ys2IpW6BlKZxOGzgSkPOuuWJg0_nnWVMxwYfa2RTTSvuXXkSB2UA90LpsGJthIxnUtVhAucvKlNWxzJmHsw2SC1A=/"
+data-url="apps"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+data-url="https://naver-whale-browser.en.uptodown.com/android/versions"
+data-url="https://play.google.com/store/apps/details?id=com.naver.whale"
+data-version="13659252"
+---subdomains/hosts---
+http://www.w3.org
+https://ads.uptodown.dev
+https://apktool-m.en.uptodown.com
+https://ar.uptodown.com
+https://ares-the-iron-vanguard.en.uptodown.com
+https://battle-royale-gd.en.uptodown.com
+https://blackmagic-camera.en.uptodown.com
+https://blog.en.uptodown.com
+https://br.uptodown.com
+https://cn.uptodown.com
+https://com-meitu-wink.en.uptodown.com
+https://de.uptodown.com
+https://discord-chat-for-gamers.en.uptodown.com
+https://doubao.en.uptodown.com
+https://emochi.en.uptodown.com
+https://en.uptodown.com
+https://esim-go-unlimited-esim-travel.en.uptodown.com
+https://euro-truck-simulator-2026.en.uptodown.com
+https://fr.uptodown.com
+https://free-fire-battlegrounds.en.uptodown.com
+https://frontline-2042.en.uptodown.com
+https://fundingchoicesmessages.google.com
+https://gmail.en.uptodown.com
+https://google-sheets.en.uptodown.com
+https://id.uptodown.com
+https://img.utdstc.com
+https://in.uptodown.com
+https://instagram.com
+https://instagram.en.uptodown.com
+https://it.uptodown.com
+[0m
+[0m$ [0mgrep -oE 'src="[^"]*\.js[^"]*"' /tmp/opencode/utd_dl.html | sort -u | head -20; echo "---data-url context---"; grep -oE '.{80}data-url="Twl.{120}' /tmp/opencode/utd_dl.html | head -3
+src="//geo.cookie-script.com/s/a52be48a31f50475bd697e1db8507f9d.js?country=no-is-li-gb-ch-br&state=ca&region=eu"
+src="https://stc.utdstc.com/1786093238827/download.js"
+src="https://stc.utdstc.com/1786093238827/vendor.js"
+---data-url context---
+[0m
+The uptodown page is live and serves the target version (data-version="13659252"). The download link is JS-obfuscated. Let me examine the decode logic.
+[0m$ [0mcurl -s -o /tmp/opencode/download.js -w "HTTP %{http_code} len=%{size_download}\n" "https://stc.utdstc.com/1786093238827/download.js"; grep -oE 'data-url|decodeURIComponent|atob|rotate|substring|split|join' /tmp/opencode/download.js | sort | uniq -c | sort -rn | head
+HTTP 200 len=28453
+[0m
+[0m$ [0mwc -c /tmp/opencode/download.js; head -c 600 /tmp/opencode/download.js; echo; echo "=== structure ==="; grep -oE 'function [a-zA-Z_]+|=>|decodeURIComponent|atob|charAt|fromCharCode|\.split|\.join|data-' /tmp/opencode/download.js | sort | uniq -c | sort -rn | head -20
+28453 /tmp/opencode/download.js
+������0�=+��u`NZ= ��f$(wm��* 
+1��0�30{�0{c���/n�~x1����u����iَ����|�����n�-�l+v~��ȡ�/m��/�D�T�GR�i���f�'M[��S���`�t��9n��'���`�{�4�S ���Y���&�i�e:Č%G��	pmߝ���OSq���yEB�޻W¥��}KS�j�?�Bv���(��[9O�Q��XXȱ�2[5��5�p��i�fo�C��p��T��v?d�>F��1�+pE��`�&��P��Β�۬���� Z
+&�B��m�����z1)�M&S^h�>8BZk�w��0�ȷ�N�O/��P�qa�/�Z	�����c:��6VJ�m���SE������(M�ޗ.�����%�-��fQ��a^�x�} �aZ+��M���H��5${ݝ=~���f� ����{���+�y�x+C�);$���ej5��DBm�:w��zJ1X�o�����������bgV6�
+�LHuh"
+ ��ϟ?Y��� �v{(��L;R��M����T�w�=��
+�%�Js��4����q��9�ר���VBz��7�-{�
+=== structure ===
+grep: /tmp/opencode/download.js: binary file matches
+[0m
+[0m$ [0mfile /tmp/opencode/download.js; for enc in br gzip deflate; do if curl -s -H "Accept-Encoding: $enc" "https://stc.utdstc.com/1786093238827/download.js" -o /tmp/opencode/dl_$enc 2>/dev/null; then echo "$enc: $(file /tmp/opencode/dl_$enc)"; fi; done
+/tmp/opencode/download.js: data
+br: /tmp/opencode/dl_br: data
+gzip: /tmp/opencode/dl_gzip: gzip compressed data, max speed, from Unix, original size modulo 2^32 111158
+deflate: /tmp/opencode/dl_deflate: HTML document, ASCII text
+[0m
+[0m$ [0mzcat /tmp/opencode/dl_gzip > /tmp/opencode/download.js.txt 2>/dev/null; wc -c /tmp/opencode/download.js.txt; grep -oE 'data-url|decodeURIComponent|atob|charAt|fromCharCode|split|join|substring|WebAssembly|DecompressionStream' /tmp/opencode/download.js.txt | sort | uniq -c | sort -rn | head -20
+111158 /tmp/opencode/download.js.txt
+     11 data-url
+      9 split
+      3 charAt
+      2 substring
+      1 join
+      1 decodeURIComponent
+[0m
+[0m$ [0mgrep -n 'data-url' /tmp/opencode/download.js.txt | head; echo "=== decode function ==="; grep -n -B3 -A15 'decodeURIComponent\|fromCharCode\|charCodeAt' /tmp/opencode/download.js.txt | head -60
+...output truncated...
+
+Full output saved to: /home/runner/.local/share/opencode/tool-output/tool_fe2baa1910010RL7OxA1zjoNj8
+
+e Nachricht","Notification":"Benachrichtigung","There has been an error. Please, check your data":"Es ist ein Fehler aufgetreten. Bitte überprüfe deine Angaben.","Your request could not be completed":"Deine Anfrage konnte nicht bearbeitet werden","Pre-registration":"Vorregistrierung","Cancel registration":"Registrierung abbrechen","To be able to register you need to":"Um dich registrieren zu können, musst du dich","login":"einloggen","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"Wenn du deine Vorregistrierung stornierst, wirst du nicht benachrichtigt, wenn %s verfügbar wird. Bist du sicher?","Yes":"Ja","No":"Nein","This app is not suitable for %s, but you can still find it in our catalog":"Diese App ist nicht für %s geeignet, aber du kannst sie trotzdem in unserem Katalog finden","Download %s for %s":"%1$s für %2$s herunterladen","Add to wishlist":"Zur Wishlist hinzufügen","Add to recommended":"Zu Empfohlen hinzufügen","Delete from wishlist":"Von der Wishlist löschen","Delete from recommended":"Aus Empfohlen löschen","To be able to vote you need to login":"Zum Abstimmen anmelden","Vote comment":"Kommentar bewerten","Wishlist":"Wunschliste","Recommended apps":"Empfohlene Apps","Please, log in to add this app to your %s":"Bitte melde dich an, um diese App zu deiner %s hinzuzufügen","Install on other devices":"Auf anderen Geräten installieren","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"Deine Anfrage wurde erfolgreich übermittelt. Unser Marketingteam wird sich so schnell wie möglich mit dir in Verbindung setzen.","DMCA notification sent successfully":"DMCA-Benachrichtigung erfolgreich gesendet","We will get back to you soon":"Wir werden uns bald bei dir melden","Copied to clipboard":"In Zwischenablage kopiert","SHARE":"TEILEN","Categories":"Kategorien","Is this your app? Unlock detailed insights!":"Ist das deine App? Schalte detaillierte Einblicke frei!"}')},9712:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"Oops! It looks like there was an error","Please enter a valid password (provide correct format)":"Please enter a valid password (provide correct format)","Please, rewrite your new password correctly":"Please, rewrite your new password correctly","Please, enter a valid password":"Please, enter a valid password","This is not a valid username":"This is not a valid username","Please, rewrite your new username correctly":"Please, rewrite your new username correctly","Please rate the app":"Please rate the app","Like":"Like","Reply":"Reply","comments":"comments","comment":"comment","Please write a message":"Please write a message","Notification":"Notification","There has been an error. Please, check your data":"There has been an error. Please, check your data","Your request could not be completed":"Your request could not be completed","Pre-registration":"Pre-registration","Cancel registration":"Cancel registration","To be able to register you need to":"To be able to register you need to","login":"login","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?","Yes":"Yes","No":"No","This app is not suitable for %s, but you can still find it in our catalog":"This app is not suitable for %s, but you can still find it in our catalog","Download %s for %s":"Download %1$s for %2$s","Add to wishlist":"Add to wishlist","Add to recommended":"Add to recommended","Delete from wishlist":"Delete from wishlist","Delete from recommended":"Delete from recommended","To be able to vote you need to login":"To be able to vote you need to login","Vote comment":"Vote comment","Wishlist":"Wishlist","Recommended apps":"Recommended apps","Please, log in to add this app to your %s":"Please, log in to add this app to your %s","Install on other devices":"Install on other devices","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"Your request has been successfully submitted. Our marketing team will get back to you as soon as possible","DMCA notification sent successfully":"DMCA notification sent successfully","We will get back to you soon":"We will get back to you soon","Copied to clipboard":"Copied to clipboard","SHARE":"Share","Categories":"Categories","Is this your app? Unlock detailed insights!":"Is this your app? Unlock detailed insights!"}')},658:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"¡Vaya! Parece que ha habido un error","Please enter a valid password (provide correct format)":"Escribe una contraseña válida (con un formato correcto)","Please, rewrite your new password correctly":"Escribe de nuevo tu contraseña correctamente","Please, enter a valid password":"Por favor, introduce una contraseña válida","This is not a valid username":"Este no es un nombre de usuario válido","Please, rewrite your new username correctly":"Vuelve a escribir tu nombre de usuario correctamente","Please rate the app":"Por favor, valora la app","Like":"Me gusta","Reply":"Responder","comments":"Comentarios","comment":"comentar","Please write a message":"Redacta un mensaje","Notification":"Notificación","There has been an error. Please, check your data":"Hubo un error. Comprueba tus datos","Your request could not be completed":"Tu petición no ha podido ser completada","Pre-registration":"Registro previo","Cancel registration":"Anular registro","To be able to register you need to":"Para poder registrarte debes","login":"iniciar sesión","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"Si anulas el registro previo, no te notificaremos cuando %s esté disponible. ¿Seguro que quieres continuar?","Yes":"Si","No":"No","This app is not suitable for %s, but you can still find it in our catalog":"Esta app no es compatible con %s, pero también está disponible","Download %s for %s":"Descarga %1$s para %2$s","Add to wishlist":"Añadir a lista de deseos","Add to recommended":"Añadir a recomendadas","Delete from wishlist":"Eliminar de lista de deseos","Delete from recommended":"Eliminar de recomendadas","To be able to vote you need to login":"Para poder votar debes iniciar sesión","Vote comment":"Votar comentario","Wishlist":"Lista de deseos","Recommended apps":"Apps recomendadas","Please, log in to add this app to your %s":"Inicia sesión para añadir esta aplicación a %s","Install on other devices":"Instalar en otros dispositivos","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"Tu solicitud se ha enviado correctamente. Nuestro equipo de Marketing se pondrá en contacto contigo tan pronto como le sea posible","DMCA notification sent successfully":"Notificación de DMCA enviada correctamente","We will get back to you soon":"Nos pondremos en contacto contigo tan pronto como nos sea posible","Copied to clipboard":"Copiado al Portapapeles","SHARE":"Comparte","Categories":"Categorías","Is this your app? Unlock detailed insights!":"¿Es tu app? ¡Desbloquea información detallada!"}')},4884:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"Oups ! Il semble qu\'il y ait eu une erreur","Please enter a valid password (provide correct format)":"Merci de saisir un mot de passe valide (fournir un format correct)","Please, rewrite your new password correctly":"Merci de réécrire correctement ton nouveau mot de passe","Please, enter a valid password":"Veuillez saisir un mot de passe valide","This is not a valid username":"Ce n\'est pas un nom d\'utilisateur valide","Please, rewrite your new username correctly":"Réécris s\'il te plaît correctement ton nouveau nom d\'utilisateur","Please rate the app":"Merci d\'évaluer l\'application","Like":"Aime","Reply":"Répondre","comments":"commentaires","comment":"Commente","Please write a message":"Merci d\'écrire ton message","Notification":"Notification","There has been an error. Please, check your data":"Une erreur est survenue. Vérifie tes données","Your request could not be completed":"Ta demande n\'a pas pu aboutir","Pre-registration":"Préinscription","Cancel registration":"Annuler l\'inscription","To be able to register you need to":"Pour pouvoir t\'inscrire, tu dois","login":"te connecter","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"Si tu annules ta pré-inscription, tu ne sauras pas lorsque %s sera disponible. Es-tu sûr ?","Yes":"Oui","No":"Non","This app is not suitable for %s, but you can still find it in our catalog":"Cette application n\'est pas adaptée à %s, mais tu peux toujours la trouver dans notre catalogue","Download %s for %s":"Télécharger %1$s pour %2$s","Add to wishlist":"Ajouter à tes envies","Add to recommended":"Ajouter aux suggestions","Delete from wishlist":"Retirer de tes envies","Delete from recommended":"Retirer des suggestions","To be able to vote you need to login":"Connecte-toi pour voter","Vote comment":"Vote pour le commentaire","Wishlist":"Liste des envies","Recommended apps":"Applications recommandées","Please, log in to add this app to your %s":"Connecte-toi pour ajouter cette application à ta %s","Install on other devices":"Installer sur d\'autres appareils","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"Ta demande a été soumise avec succès. Notre équipe marketing te répondra dans les plus brefs délais","DMCA notification sent successfully":"Notification DMCA envoyée avec succès","We will get back to you soon":"Nous te recontacterons bientôt","Copied to clipboard":"Copié dans le Presse-papiers","SHARE":"PARTAGER","Categories":"Catégories","Is this your app? Unlock detailed insights!":"Est-ce qu\'il s\'agit de ton application? Débloque des informations détaillées!"}')},3190:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"ओ ओह! ऐसा लगता है कि कोई त्रुटि हुई","Please enter a valid password (provide correct format)":"कृपया एक वैध पासवर्ड डालें (सही फॉर्मेट प्रदान करें)","Please, rewrite your new password correctly":"कृपया, अपना नया पासवर्ड सही से लिखें","Please, enter a valid password":"कृपया, एक मान्य पासवर्ड दर्ज करें","This is not a valid username":"यह एक अमान्य उपयोगकर्ता नाम है","Please, rewrite your new username correctly":"कृपया अपना नया उपयोगकर्ता नाम सही ढंग से दोबारा लिखें","Please rate the app":"कृपया इस एप्प को रेट करें","Like":"लाइक","Reply":"उत्तर","comments":"कॉमेंट्स","comment":"टिप्पणी","Please write a message":"कृपया एक संदेश लिखें","Notification":"अधिसूचना","There has been an error. Please, check your data":"एक त्रुटि हुई है। आपके डेटा की जांच करें","Your request could not be completed":"आपका अनुरोध पूरा नहीं हो सका","Pre-registration":"पूर्व-पंजीकरण","Cancel registration":"पंजीकरण रद्द करें","To be able to register you need to":"पंजीकरण करने में सक्षम होने के लिए आपको करना होगा","login":"लॉगिन","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"यदि आप अपना पूर्व-पंजीकरण रद्द करते हैं, तो %s के उपलब्ध होने पर आपको सूचित नहीं किया जाएगा। क्या आप सुनिश्चित हैं?","Yes":"हाँ","No":"नही","This app is not suitable for %s, but you can still find it in our catalog":"यह एप्प %s के लिए उपयुक्त नहीं है, लेकिन आप इसे अभी भी हमारे कैटलॉग में पा सकते हैं","Download %s for %s":"%2$s के लिए %1$s डाउनलोड करें","Add to wishlist":"इच्छासूची में जोड़ें","Add to recommended":"अनुशंसित में जोड़े","Delete from wishlist":"इच्छासूची से डिलीट करे","Delete from recommended":"अनुशंसित से डिलीट करें","To be able to vote you need to login":"वोट करने के लिए लॉगिन करें","Vote comment":"टिप्पणी पर वोट करें","Wishlist":"इच्छा सूची","Recommended apps":"अनुशंसित एप्पस","Please, log in to add this app to your %s":"इस एप्प को अपनी %s में जोड़ने के लिए कृपया लॉग इन करें","Install on other devices":"अन्य डिवाइस पर इन्स्टॉल करें","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"आपका अनुरोध सफलतापूर्वक सबमिट कर दिया गया है। हमारी मार्केटिंग टीम शीघ्रातिशीघ्र आपसे संपर्क करेगी।","DMCA notification sent successfully":"DMCA अधिसूचना सफलतापूर्वक भेजी गई","We will get back to you soon":"हम जल्द ही आपसे संपर्क करेंगे","Copied to clipboard":"क्लिपबोर्ड पर प्रतिलिपि बनाएँ","SHARE":"शेयर","Categories":"श्रेणियाँ","Is this your app? Unlock detailed insights!":"क्या यह आपका एप्प है? विस्तृत विश्लेषण प्राप्त करें!"}')},1792:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"Oops! Sepertinya ada kesalahan","Please enter a valid password (provide correct format)":"Mohon masukkan kata sandi yang valid (dengan format yang benar)","Please, rewrite your new password correctly":"Mohon tulis kembali sandi baru Anda dengan benar","Please, enter a valid password":"Harap masukkan kata sandi yang valid","This is not a valid username":"Nama pengguna ini tidak valid","Please, rewrite your new username correctly":"Mohon tulis ulang nama pengguna baru Anda dengan benar","Please rate the app":"Mohon nilai aplikasi","Like":"Like","Reply":"Balas","comments":"komentar","comment":"comentar","Please write a message":"Mohon tuliskan pesan","Notification":"Notifikasi","There has been an error. Please, check your data":"Telah terjadi kesalahan. Harap periksa data Anda","Your request could not be completed":"Permintaan Anda tidak dapat diselesaikan","Pre-registration":"Prapendaftaran","Cancel registration":"Batalkan pendaftaran","To be able to register you need to":"Untuk dapat mendaftar, kamu harus","login":"masuk","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"Jika Anda membatalkan prapendaftaran, Anda tidak akan diberi tahu saat %s sudah tersedia. Anda yakin?","Yes":"Ya","No":"Tidak","This app is not suitable for %s, but you can still find it in our catalog":"Aplikasi ini tidak cocok untuk %s, tetapi Anda masih dapat menemukannya di katalog kami","Download %s for %s":"Unduh %1$s untuk %2$s","Add to wishlist":"Tambah ke dft keinginan","Add to recommended":"Tambah ke rekomendasi","Delete from wishlist":"Hapus dari dft keinginan","Delete from recommended":"Hapus dari rekomendasi","To be able to vote you need to login":"Masuk untuk voting","Vote comment":"Voting komentar","Wishlist":"Daftar keinginan","Recommended apps":"Aplikasi yang direkomendasikan","Please, log in to add this app to your %s":"Silakan masuk untuk tambah aplikasi ini ke %s Anda","Install on other devices":"Instal di perangkat lain","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"Permintaan Anda berhasil dikirimkan. Tim pemasaran kami akan segera menghubungi Anda kembali.","DMCA notification sent successfully":"Notifikasi DMCA berhasil dikirimkan","We will get back to you soon":"Kami akan segera menghubungi Anda","Copied to clipboard":"Disalin ke Clipboard","SHARE":"BAGIKAN","Categories":"Kategori","Is this your app? Unlock detailed insights!":"Ini aplikasi milik Anda? Buka wawasan lengkap tentangnya!"}')},6610:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"Ops! Sembra ci sia stato un errore","Please enter a valid password (provide correct format)":"Per favore inserisci una password valida (nel formato corretto)","Please, rewrite your new password correctly":"Per favore, scrivi la tua nuova password correttamente","Please, enter a valid password":"Inserire una password valida","This is not a valid username":"Il nome utente non è valido","Please, rewrite your new username correctly":"Per favore, scrivi il tuo nuovo nome utente correttamente","Please rate the app":"Per favore valuta quest\'app","Like":"Mi piace","Reply":"Rispondi","comments":"commenti","comment":"Commento","Please write a message":"Per favore scrivi un messaggio","Notification":"Avviso","There has been an error. Please, check your data":"Errore, controlla i tuoi dati","Your request could not be completed":"Impossibile completare la richiesta","Pre-registration":"Pre-registrazione","Cancel registration":"Annulla la registrazione","To be able to register you need to":"Per poterti registrare devi effettuare il","login":"login","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"Se annulli la pre-registrazione, non verrai avvisato quando %s sarà disponibile. Sei sicuro?","Yes":"Si","No":"No","This app is not suitable for %s, but you can still find it in our catalog":"Questa applicazione non è adatta a %s, ma è comunque possibile trovarla nel nostro catalogo","Download %s for %s":"Scarica %1$s per %2$s","Add to wishlist":"Aggiungi alla lista dei desideri","Add to recommended":"Aggiungi ai consigliati","Delete from wishlist":"Cancella dalla lista dei desideri","Delete from recommended":"Cancella dai consigliati","To be able to vote you need to login":"Accedi per votare","Vote comment":"Vota commento","Wishlist":"Lista dei desideri","Recommended apps":"Applicazioni consigliate","Please, log in to add this app to your %s":"Effettua il login per aggiungere questa applicazione a %s","Install on other devices":"Installa su più dispositivi","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"La tua richiesta è stata inoltrata con successo. Il nostro team di marketing ti contatterà al più presto.","DMCA notification sent successfully":"La notifica DCMA è stata inviata correttamente","We will get back to you soon":"Ti ricontatteremo al più presto","Copied to clipboard":"Copiato negli Appunti","SHARE":"CONDIVIDI","Categories":"Categorie","Is this your app? Unlock detailed insights!":"È questa la tua app? Sblocca informazioni dettagliate!"}')},1063:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"おっと！エラーがありました。","Please enter a valid password (provide correct format)":"有効なパスワードを入力して下さい","Please, rewrite your new password correctly":"正確にパスワードを入力して下さい。","Please, enter a valid password":"パスワードを入力してください","This is not a valid username":"このユーザー名は無効です","Please, rewrite your new username correctly":"新しいユーザー名を正しく再入力してください","Please rate the app":"アプリを評価して下さい","Like":"いいね！","Reply":"返信","comments":"コメント","comment":"コメント","Please write a message":"メッセージを入力して下さい","Notification":"通知","There has been an error. Please, check your data":"データ送信中にエラーが発生しました。データをご確認ください。","Your request could not be completed":"リクエストを完了できませんでした","Pre-registration":"事前登録","Cancel registration":"登録をキャンセルする","To be able to register you need to":"登録には以下のものが必要です。","login":"ログイン","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"事前登録をキャンセルされた場合、%sが利用可能になっても通知されません。よろしいですか？","Yes":"はい","No":"いいえ","This app is not suitable for %s, but you can still find it in our catalog":"このアプリは%sには適していませんが、カタログには含まれています","Download %s for %s":"%2$s用%1$sをダウンロードしてください。","Add to wishlist":"ウィッシュリストに追加","Add to recommended":"おすすめに追加","Delete from wishlist":"ウィッシュリストから削除","Delete from recommended":"おすすめから削除","To be able to vote you need to login":"ログインして投票","Vote comment":"コメントに投票","Wishlist":"ウィッシュリスト","Recommended apps":"おすすめアプリ","Please, log in to add this app to your %s":"このアプリを%sに追加するには、ログインしてください","Install on other devices":"他のデバイスにインストールする","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"リクエストは正常に送信されました。できるだけ早くマーケティングチームよりご返信いたします","DMCA notification sent successfully":"DMCA通知が正常に送信されました","We will get back to you soon":"すぐにご返信いたします","Copied to clipboard":"クリップボードにコピーされました","SHARE":"共有する","Categories":"カテゴリ","Is this your app? Unlock detailed insights!":"あなたのアプリですか？ 詳細なインサイトをアンロックしましょう！"}')},5054:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"이런! 오류가 발생한 것 같습니다","Please enter a valid password (provide correct format)":"유효한 비밀번호를 입력해주세요 (올바른 형식으로 입력하세요)","Please, rewrite your new password correctly":"새 비밀번호를 다시 한 번 정확하게 입력해주세요","Please, enter a valid password":"올바른 비밀번호를 입력하십시오","This is not a valid username":"올바른 아이디가 아닙니다","Please, rewrite your new username correctly":"새로운 사용자 이름을 올바르게 작성해주세요","Please rate the app":"이 앱을 평가해주세요","Like":"좋아요","Reply":"답변","comments":"댓글","comment":"댓글","Please write a message":"메세지를 작성하세요 ","Notification":"안내문","There has been an error. Please, check your data":"오류가 발생했습니다. 입력한 정보를 확인해주십시오","Your request could not be completed":"요청하신 작업을 수행하지 못했습니다","Pre-registration":"사전등록","Cancel registration":"등록 취소","To be able to register you need to":"등록하기 위해서는 로그인해야 합니다.","login":"로그인","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"사전 등록 취소 시, %s 이용이 가능하더라도 공지를 받으실 수 없습니다. 정말 취소하시겠습니까?","Yes":"네","No":"아니오","This app is not suitable for %s, but you can still find it in our catalog":"이 앱은 %s에 적합하지 않지만, 여전히 카탈로그에서 볼 수 있습니다","Download %s for %s":"%2$s용 %1$s을(를) 다운로드하세요.","Add to wishlist":"위시리스트에 추가하기","Add to recommended":"추천 항목에 추가하기","Delete from wishlist":"위시리스트에서 삭제하기","Delete from recommended":"추천 항목에서 삭제하기","To be able to vote you need to login":"투표하려면 로그인하세요","Vote comment":"댓글 투표","Wishlist":"위시리스트","Recommended apps":"추천 앱","Please, log in to add this app to your %s":"이 앱을 %s에 추가하려면 로그인하세요","Install on other devices":"다른 기기에 설치하기","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"귀하의 요청이 성공적으로 제출되었습니다. 마케팅팀에서 최대한 빨리 연락드릴 것입니다.","DMCA notification sent successfully":"DMCA 알림이 성공적으로 전송되었습니다.","We will get back to you soon":"곧 다시 연락드리겠습니다.","Copied to clipboard":"클립보드로 복사됨","SHARE":"공유하기","Categories":"카테고리","Is this your app? Unlock detailed insights!":"본인 앱인가요? 상세 정보를 확인하세요!"}')},293:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"Oops! Parece que ocorreu um erro","Please enter a valid password (provide correct format)":"Por favor, insira uma senha válida (providenciar formato correto)","Please, rewrite your new password correctly":"Por favor, digite sua nova senha corretamente","Please, enter a valid password":"Por favor, insira uma senha válida","This is not a valid username":"Este nome de usuário não é válido","Please, rewrite your new username correctly":"Por favor, digite seu novo nome de usuário corretamente","Please rate the app":"Por favor, avalie o app","Like":"Curtir","Reply":"Responder","comments":"comentários","comment":"comentário","Please write a message":"Por favor, escreva uma mensagem","Notification":"Notificação","There has been an error. Please, check your data":"Ocorreu um erro. Por favor, verifique as informações","Your request could not be completed":"Sua solicitação não pôde ser concluída","Pre-registration":"Pré-registro","Cancel registration":"Cancelar registro","To be able to register you need to":"Para poder se registrar, é necessário fazer","login":"login","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"Se cancelar seu pré-registro, você não receberá notificação quando %s estiver disponível. Tem certeza?","Yes":"Sim","No":"Não","This app is not suitable for %s, but you can still find it in our catalog":"Este aplicativo não é adequado para %s, mas você ainda pode encontrá-lo em nosso catálogo","Download %s for %s":"Baixar %1$s para %2$s","Add to wishlist":"Add à lista de desejos","Add to recommended":"Adicionar a recomendados","Delete from wishlist":"Excl da lista de desejos","Delete from recommended":"Excluir de recomendados","To be able to vote you need to login":"Faça login para votar","Vote comment":"Votar no comentário","Wishlist":"Lista de desejos","Recommended apps":"Aplicativos Recomendados","Please, log in to add this app to your %s":"Faça login para adicionar este aplicativo a: %s","Install on other devices":"Instalar em outros dispositivos","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"Sua solicitação foi enviada com sucesso. Nossa equipe de marketing entrará em contato com você assim que possível","DMCA notification sent successfully":"Notificação de DMCA enviada com sucesso","We will get back to you soon":"Entraremos em contato em breve","Copied to clipboard":"Copiado na Área de Transferência","SHARE":"COMPARTILHE","Categories":"Categorias","Is this your app? Unlock detailed insights!":"Este aplicativo é seu? Desbloqueie insights detalhados!"}')},1770:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"Hopa! Se pare că a apărut o eroare","Please enter a valid password (provide correct format)":"Te rugăm să introduci o parolă validă (folosește formatul corect).","Please, rewrite your new password correctly":"Te rugăm să rescrii corect noua parolă.","Please, enter a valid password":"Te rugăm să introduci o parolă validă","This is not a valid username":"Acesta nu este un nume valid de utilizator.","Please, rewrite your new username correctly":"Te rugăm să rescrii corect noul nume de utilizator.","Please rate the app":"Te rugăm să evaluezi aplicația.","Like":"Apreciază","Reply":"Răspuns","comments":"comentarii","comment":"comentează","Please write a message":"Te rugăm să scrii un mesaj.","Notification":"Notificare","There has been an error. Please, check your data":"A apărut o eroare. Te rugăm să verifici datele.","Your request could not be completed":"Solicitarea ta nu a putut fi finalizată","Pre-registration":"Pre-înregistrare","Cancel registration":"Anulează înregistrarea","To be able to register you need to":"Pentru a te putea înregistra trebuie să te","login":"conectezi","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"Dacă anulezi preînregistrarea, nu vei fi notificat atunci când poți descărca %s. Sigur dorești acest lucru?","Yes":"Da","No":"Nu","This app is not suitable for %s, but you can still find it in our catalog":"Această aplicație nu este recomandată pentru %s, dar o poți găsi în continuare în catalogul nostru","Download %s for %s":"Descarcă %1$s pentru %2$s","Add to wishlist":"Adaugă în wishlist","Add to recommended":"Adaugă la recomandate","Delete from wishlist":"Șterge din wishlist","Delete from recommended":"Șterge din recomandate","To be able to vote you need to login":"Conectează-te pentru a vota","Vote comment":"Votează comentariul","Wishlist":"Lista de dorințe","Recommended apps":"Aplicații recomandate","Please, log in to add this app to your %s":"Te rugăm să te conectezi pentru a adăuga această aplicație la %s","Install on other devices":"Instalează pe alte dispozitive","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"Cererea ta a fost trimisă cu succes. Echipa noastră de marketing te va contacta în cel mai scurt timp posibil","DMCA notification sent successfully":"Notificare DMCA trimisă cu succes","We will get back to you soon":"Vom reveni în curând către tine","Copied to clipboard":"Copiat în Clipboard","SHARE":"ÎMPĂRTĂȘEȘTE","Categories":"Categorii","Is this your app? Unlock detailed insights!":"Aceasta este aplicația voastră? Deblochează informații detaliate!"}')},9123:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"Ой! Кажется произошла ошибка","Please enter a valid password (provide correct format)":"Пожалуйста, введите допустимый пароль (в правильном формате)","Please, rewrite your new password correctly":"Пожалуйста, перепишите свой новый пароль правильно","Please, enter a valid password":"Пожалуйста, введите правильный пароль","This is not a valid username":"Неверное имя пользователя","Please, rewrite your new username correctly":"Пожалуйста, укажите новое имя пользователя правильно","Please rate the app":"Пожалуйста, оцените приложение","Like":"Нравится","Reply":"Ответ","comments":"комментарии","comment":"Оставить отзыв","Please write a message":"Напишите сообщение","Notification":"Уведомление","There has been an error. Please, check your data":"Ошибка. Пожалуйста, проверьте ваши данные.","Your request could not be completed":"Не удалось выполнить ваш запрос","Pre-registration":"Предрегистрация","Cancel registration":"Отменить регистрацию","To be able to register you need to":"Чтобы зарегистрироваться, вам необходимо","login":"войти","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"Если вы отмените предварительную регистрацию, то не получите уведомление, когда %s станет доступно. Вы уверены?","Yes":"Да","No":"Нет","This app is not suitable for %s, but you can still find it in our catalog":"Это приложение не подходит для %s, но вы все равно можете найти его в нашем каталоге","Download %s for %s":"скачайте %1$s для %2$s","Add to wishlist":"В список желаний","Add to recommended":"Добавить в рекомендации","Delete from wishlist":"Убрать из списка желаний","Delete from recommended":"Убрать из рекомендаций","To be able to vote you need to login":"Войдите, чтобы проголосовать","Vote comment":"Проголосовать за комментарий","Wishlist":"Список желаний","Recommended apps":"Рекомендуемые приложения","Please, log in to add this app to your %s":"Войдите, чтобы добавить приложение в %s","Install on other devices":"Установка на другие устройства","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"Ваш запрос успешно отправлен. Наш отдел маркетинга свяжется с вами как можно скорее","DMCA notification sent successfully":"Уведомление DMCA успешно отправлено","We will get back to you soon":"Мы скоро с вами свяжемся","Copied to clipboard":"Скопировано в буфер обмена","SHARE":"ДЕЛИТЕСЬ","Categories":"Категории","Is this your app? Unlock detailed insights!":"Это ваше приложение? Откройте подробные сведения!"}')},7386:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"เอ๊ะ! ดูเหมือนว่าหน้านี้จะไม่มีแล้ว","Please enter a valid password (provide correct format)":"กรุณาใส่รหัสผ่านที่ถูกต้อง (ใส่รูปแบบที่ถูกต้อง)","Please, rewrite your new password correctly":"กรุณาใส่รหัสผ่านใหม่ของคุณให้ถูกต้อง","Please, enter a valid password":"โปรดใส่รหัสผ่านให้ถูกต้อง","This is not a valid username":"ชื่อผู้ใช้งานไม่ถูกต้อง","Please, rewrite your new username correctly":"กรุณาเขียนชื่อผู้ใช้ใหม่ให้ถูกต้อง","Please rate the app":"กรุณาให้คะแนนแอป","Like":"ไลค์","Reply":"ตอบ","comments":"คอมเมนต์","comment":"คอมเมนต์","Please write a message":"กรุณาใส่ข้อความ","Notification":"การแจ้งเตือน","There has been an error. Please, check your data":"เกิดข้อผิดพลาดขึ้น โปรดตรวจสอบข้อมูลของคุณ","Your request could not be completed":"ไม่สามารถดำเนินการตามคำขอของคุณได้","Pre-registration":"การลงทะเบียนล่วงหน้า","Cancel registration":"ยกเลิกการลงทะเบียน","To be able to register you need to":"เพื่อให้สามารถลงทะเบียนได้คุณต้อง","login":"ล็อกอิน","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"หากคุณยกเลิกการลงทะเบียนล่วงหน้า คุณจะไม่ได้รับการแจ้งเตือนเมื่อ %s พร้อมใช้งาน คุณแน่ใจไหม?","Yes":"ใช่","No":"ไม่ใช่","This app is not suitable for %s, but you can still find it in our catalog":"แอปนี้ไม่เหมาะสำหรับ %s แต่คุณสามารถเจอมันได้ในแค็ตตาล็อกของเรา","Download %s for %s":"ดาวน์โหลด %1$s สำหรับ %2$s","Add to wishlist":"เพิ่มไปรายการที่ต้องการ","Add to recommended":"เพิ่มไปรายการแนะนำ","Delete from wishlist":"ลบออกจากรายการที่ต้องการ","Delete from recommended":"ลบออกจากรายการแนะนำ","To be able to vote you need to login":"เข้าสู่ระบบเพื่อโหวต","Vote comment":"คอมเมนต์การโหวต","Wishlist":"รายการที่อยากได้","Recommended apps":"แอปที่แนะนำ","Please, log in to add this app to your %s":"กรุณาเข้าสู่ระบบเพื่อเพิ่มแอปนี้ลงใน%sของคุณ","Install on other devices":"ติดตั้งบนอุปกรณ์อื่น ๆ","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"คำขอของคุณถูกส่งเรียบร้อยแล้ว ทีมการตลาดของเราจะติดต่อกลับโดยเร็วที่สุด","DMCA notification sent successfully":"การแจ้งเตือน DMCA ถูกส่งเรียบร้อยแล้ว","We will get back to you soon":"เราจะติดต่อกลับเร็ว ๆ นี้","Copied to clipboard":"คัดลอกไปยังคลิปบอร์ด","SHARE":"แบ่งปัน","Categories":"หมวดหมู่","Is this your app? Unlock detailed insights!":"นี่คือแอปของคุณหรือเปล่า? ปลดล็อกข้อมูลเชิงลึกแบบละเอียด!"}')},6594:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"Oops! Bir hata var gibi görünüyor","Please enter a valid password (provide correct format)":"Lütfen geçerli bir şifre girin (doğru biçimi sağlayın)","Please, rewrite your new password correctly":"Lütfen yeni şifrenizi doğru bir şekilde tekrar girin","Please, enter a valid password":"Lütfen geçerli bir şifre giriniz","This is not a valid username":"Kullanıcı adı geçersiz","Please, rewrite your new username correctly":"Lütfen yeni kullanıcı adınızı doğru bir şekilde tekrar girin","Please rate the app":"Lütfen uygulamaya oy verin","Like":"Me gusta","Reply":"Beğen","comments":"yorumlar","comment":"yorum","Please write a message":"Lütfen mesajınızı yazın","Notification":"Bildiri","There has been an error. Please, check your data":"Bir hata oluştu. Lütfen bilgilerinizi kontrol edin","Your request could not be completed":"İsteğiniz tamamlanamadı","Pre-registration":"Ön kayıt","Cancel registration":"Kaydı iptal et","To be able to register you need to":"Kayıt olmak için","login":"giriş yapın","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"Ön kaydınızı iptal ederseniz, %s mevcut olduğunda size bildirim gönderilmez. Emin misiniz?","Yes":"Evet","No":"Hayır","This app is not suitable for %s, but you can still find it in our catalog":"Bu uygulama %s platformu için uygun değil ancak yine de kataloğumuzda bulabilirsiniz","Download %s for %s":"%2$s için %1$s uygulamasını indir","Add to wishlist":"İstek listesine ekle","Add to recommended":"Önerilenlere ekle","Delete from wishlist":"İstek listesinden sil","Delete from recommended":"Önerilenlerden sil","To be able to vote you need to login":"Oylamak için giriş yapın","Vote comment":"Yorumu oylayın","Wishlist":"İstek Listesi","Recommended apps":"Önerilen uygulamalar","Please, log in to add this app to your %s":"Lütfen bu uygulamayı %s listenize eklemek için giriş yapın","Install on other devices":"Diğer cihazlara yükle","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"Talebiniz başarıyla iletildi. Pazarlama ekibimiz en kısa sürede size ulaşacaktır","DMCA notification sent successfully":"DMCA bildirimi başarıyla gönderildi","We will get back to you soon":"En kısa sürede size ulaşacağız","Copied to clipboard":"Panoya Kopyalandı","SHARE":"PAYLAŞ","Categories":"Kategoriler","Is this your app? Unlock detailed insights!":"Bu uygulama size mi ait? Detaylı bilgilere ulaşın!"}')},5690:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"Có vẻ đã xảy ra lỗi","Please enter a valid password (provide correct format)":"Vui lòng nhập mật khẩu hợp lệ (cung cấp định dạng chính xác).","Please, rewrite your new password correctly":"Vui lòng viết lại chính xác mật khẩu mới của bạn.","Please, enter a valid password":"Vui lòng nhập mật khẩu hợp lệ","This is not a valid username":"Tên người dung không đúng.","Please, rewrite your new username correctly":"Vui lòng viết lại chính xác tên đăng nhập mới của bạn.","Please rate the app":"Vui lòng đánh giá ứng dụng.","Like":"Thích","Reply":"Trả lời","comments":"bình luận","comment":"bình luận","Please write a message":"Xin vui lòng viết một tin nhắn.","Notification":"Thông báo","There has been an error. Please, check your data":"Hiện đã có một lỗi. Xin vui lòng kiểm tra dữ liệu của bạn.","Your request could not be completed":"Yêu cầu của bạn không thể hoàn thành","Pre-registration":"Đăng ký trước","Cancel registration":"Hủy đăng ký","To be able to register you need to":"Để có thể đăng ký bạn cần phải","login":"đăng ký","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"Nếu bạn hủy đăng ký trước, bạn sẽ không được thông báo khi %s sẵn sàng. Bạn chắc chứ?","Yes":"Có","No":"Không","This app is not suitable for %s, but you can still find it in our catalog":"Ứng dụng này không phù hợp với %s, nhưng bạn vẫn có thể tìm thấy ứng dụng này trong danh mục của chúng tôi","Download %s for %s":"Tải xuống %1$s dành cho %2$s","Add to wishlist":"Thêm vào Mong Muốn","Add to recommended":"Thêm vào Đề Xuất","Delete from wishlist":"Xóa khỏi Mong Muốn","Delete from recommended":"Xóa khỏi Đề Xuất","To be able to vote you need to login":"Đăng nhập để bình chọn","Vote comment":"Bình chọn bình luận","Wishlist":"Danh sách mong muốn","Recommended apps":"Ứng dụng được đề xuất","Please, log in to add this app to your %s":"Vui lòng đăng nhập để thêm ứng dụng này vào %s","Install on other devices":"Cài đặt trên các thiết bị khác","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"Yêu cầu của bạn đã được gửi thành công. Đội ngũ tiếp thị của chúng tôi sẽ liên hệ lại với bạn trong thời gian sớm nhất","DMCA notification sent successfully":"Đã gửi thông báo DMCA thành công","We will get back to you soon":"Chúng tôi sẽ sớm liên lạc lại với bạn","Copied to clipboard":"Đã sao chép sang bảng tạm","SHARE":"CHIA SẺ","Categories":"Thể loại","Is this your app? Unlock detailed insights!":"Đây là ứng dụng của bạn phải không? Mở xem thông tin chi tiết!"}')},4524:function(e){"use strict";e.exports=JSON.parse('{"Oops! It looks like there was an error":"哎呀！看来出现了一个错误","Please enter a valid password (provide correct format)":"请输入有效密码（注意格式正确）","Please, rewrite your new password correctly":"请重新输入正确的新密码","Please, enter a valid password":"请输入有效密码","This is not a valid username":"此用户名无效","Please, rewrite your new username correctly":"请正确地重新输入您的新用户名","Please rate the app":"请给程序评分","Like":"赞","Reply":"回复","comments":"评价","comment":"评论","Please write a message":"请输入消息","Notification":"通知","There has been an error. Please, check your data":"出现错误，请检查您的数据","Your request could not be completed":"您的请求无法完成","Pre-registration":"预注册","Cancel registration":"取消注册","To be able to register you need to":"为了能够注册成功，您需要","login":"登录","If you cancel your pre-registration, you will not be notified when %s becomes available. Are you sure?":"如果您取消预注册，当 %s 可用时您将不会收到通知。您确定吗？","Yes":"是","No":"否","This app is not suitable for %s, but you can still find it in our catalog":"此应用程序不适用于 %s，但你仍然可以在我们的目录中找到它","Download %s for %s":"下载适用于 %2$s 的 %1$s","Add to wishlist":"添加到心愿清单","Add to recommended":"添加到推荐","Delete from wishlist":"从心愿清单中删除","Delete from recommended":"从推荐中删除","To be able to vote you need to login":"登录后投票","Vote comment":"给评论投票","Wishlist":"心愿清单","Recommended apps":"推荐应用","Please, log in to add this app to your %s":"请先登录再将此应用添加到您的 %s","Install on other devices":"在其他设备上安装","Your request has been successfully submitted. Our marketing team will get back to you as soon as possible":"您的请求已成功提交。我们的营销团队将尽快与您联系","DMCA notification sent successfully":"成功发送《数字千年版权法》通知","We will get back to you soon":"我们会尽快和您联系","Copied to clipboard":"已复制到剪贴板","SHARE":"分享","Categories":"类别","Is this your app? Unlock detailed insights!":"这是您的应用吗？点击解锁关于此应用的详细数据分析！"}')}},r={};function i(e){var t=r[e];if(void 0!==t)return t.exports;var n=r[e]={exports:{}};return o[e].call(n.exports,n,n.exports,i),n.exports}i.m=o,i.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return i.d(t,{a:t}),t},i.d=function(e,t){for(var n in t)i.o(t,n)&&!i.o(e,n)&&Object.defineProperty(e,n,{enumerable:!0,get:t[n]})},i.f={},i.e=function(e){return Promise.all(Object.keys(i.f).reduce(function(t,n){return i.f[n](e,t),t},[]))},i.u=function(e){return"chunks/"+{2009:"variants",2071:"comments",210:"virus-total",5521:"remote-install",5552:"profile-menu",6022:"search-form"}[e]+"."+{2009:"9b3ae0b568176f12",2071:"69a43576b8bf90b4",210:"ff9998874ce1c73d",5521:"0db0d21766745f0d",5552:"4cff9291715dfad2",6022:"05e35436b8ff6b28"}[e]+".js"},i.miniCssF=function(e){return e+".css"},i.g=function(){if("object"==typeof globalThis)return globalThis;try{return this||new Function("return this")()}catch(e){if("object"==typeof window)return window}}(),i.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},e={},t="uptodown.com:",i.l=function(n,o,r,a){if(e[n])e[n].push(o);else{var s,l;if(void 0!==r)for(var c=document.getElementsByTagName("script"),u=0;u<c.length;u++){var d=c[u];if(d.getAttribute("src")==n||d.getAttribute("data-webpack")==t+r){s=d;break}}s||(l=!0,(s=document.createElement("script")).charset="utf-8",s.timeout=120,i.nc&&s.setAttribute("nonce",i.nc),s.setAttribute("data-webpack",t+r),s.src=n),e[n]=[o];var p=function(t,o){s.onerror=s.onload=null,clearTimeout(m);var r=e[n];if(delete e[n],s.parentNode&&s.parentNode.removeChild(s),r&&r.forEach(function(e){return e(o)}),t)return t(o)},m=setTimeout(p.bind(null,void 0,{type:"timeout",target:s}),12e4);s.onerror=p.bind(null,s.onerror),s.onload=p.bind(null,s.onload),l&&document.head.appendChild(s)}},i.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n=[],i.O=function(e,t,o,r){if(!t){var a=1/0;for(u=0;u<n.length;u++){t=n[u][0],o=n[u][1],r=n[u][2];for(var s=!0,l=0;l<t.length;l++)(!1&r||a>=r)&&Object.keys(i.O).every(function(e){return i.O[e](t[l])})?t.splice(l--,1):(s=!1,r<a&&(a=r));if(s){n.splice(u--,1);var c=o();void 0!==c&&(e=c)}}return e}r=r||0;for(var u=n.length;u>0&&n[u-1][2]>r;u--)n[u]=n[u-1];n[u]=[t,o,r]},i.rv=function(){return"1.4.11"},function(){var e;i.g.importScripts&&(e=i.g.location+"");var t=i.g.document;if(!e&&t&&(t.currentScript&&"SCRIPT"===t.currentScript.tagName.toUpperCase()&&(e=t.currentScript.src),!e)){var n=t.getElementsByTagName("script");if(n.length)for(var o=n.length-1;o>-1&&(!e||!/^http(s?):/.test(e));)e=n[o--].src}if(!e)throw new Error("Automatic publicPath is not supported in this browser");e=e.replace(/^blob:/,"").replace(/#.*$/,"").replace(/\?.*$/,"").replace(/\/[^\/]+$/,"/"),i.p=e}(),function(){var e={5053:0};i.f.j=function(t,n){var o=i.o(e,t)?e[t]:void 0;if(0!==o)if(o)n.push(o[2]);else{var r=new Promise(function(n,r){o=e[t]=[n,r]});n.push(o[2]=r);var a=i.p+i.u(t),s=new Error;i.l(a,function(n){if(i.o(e,t)&&(0!==(o=e[t])&&(e[t]=void 0),o)){var r=n&&("load"===n.type?"missing":n.type),a=n&&n.target&&n.target.src;s.message="Loading chunk "+t+" failed.\n("+r+"
+[0m
+[0m$ [0mgrep -oE '"[^"]*dw\.[^"]*"|https?://[a-z0-9.-]*dw[^"]*|/android/download/[0-9]+|version_id|data-version' /tmp/opencode/download.js.txt | sort -u | head; echo "---fetch/xhr endpoints---"; grep -oE '(fetch|axios|XMLHttpRequest|\.post|\.get)\([^)]{0,90}' /tmp/opencode/download.js.txt | sort -u | head -20; echo "---dw subdomain refs---"; grep -oE '[a-z0-9.-]*\.uptodown\.com' /tmp/opencode/download.js.txt | sort -u | head -20
+"https://dw.uptodown.com/dwn/"
+data-version
+---fetch/xhr endpoints---
+.get("/ajax/app/".concat(e,"/check-pre-registered"
+.get("/ajax/app/".concat(e,"/check-pre-registered-country"
+.get("/ajax/app/".concat(t,"/pop-ups"
+.get("/app/".concat(e,"/version/"
+.get("/dev-on-board-information"
+.get("/mng/getDataUserSession"
+.get("/v2/app/"+e+"/languages"
+.get("/v2/file/"+e+"/permissions"
+.get(o
+.post("/ajax/accept-pegi"
+.post("/ajax/app/".concat(e,"/pre-register"
+.post("/ajax/app/".concat(e,"/pre-register/cancel"
+.post("/ajax/app/".concat(e.appID,"/file/"
+.post(e
+fetch("/ajax/1.0/user/social-sign-up",{method:"POST",body:n}
+---dw subdomain refs---
+.uptodown.com
+dw.uptodown.com
+[0m
+[0m$ [0mgrep -oE '.{0,60}dwn/.{0,80}' /tmp/opencode/download.js.txt | sort -u | head -10; echo "=== data-url decode ==="; grep -oE '.{0,100}data-url.{0,60}' /tmp/opencode/download.js.txt | sort -u | head -20
+=document.createElement("a")).href="https://dw.uptodown.com/dwn/"+r,i.download=r.split("/").pop(),be(),document.body.appendChild(i),i.click(),do
+ata-url");null!==e&&(location.href="https://dw.uptodown.com/dwn/"+e)});var w=document.getElementById("on-board-badge");null==w||w.addEventListen
+data-url-ext");if(null!=o&&(n.href="https://dw.uptodown.com/dwn/"+o,n.download=o.split("/").pop()),null!=r){var i;n.href=r,n.download=r.split("/
+=== data-url decode ===
+&(window.location.href=e)}),r()("#xapk_information").on("click",function(){var e=this.getAttribute("data-url");null!==e&&(window.location.href=e)}),r()("#author-link").
+),o=null===(e=document.querySelector("#detail-download-button"))||void 0===e?void 0:e.getAttribute("data-url"),r=null===(t=document.querySelector("#detail-download-butt
+/mac")||n.includes("/ios")?"":"/android";(0,l.UO)("".concat(n).concat(o,"/").concat(t.getAttribute("data-url")))}})})},1362:function(e,t,n){"use strict";n.d(t,{AJ:funct
+OK)(),(0,c.XZ)(),r()("#detail-download-button-xapk").on("click",function(){var e=this.getAttribute("data-url");null!==e&&(location.href=e)}),r()("#detail-download-butto
+ction(){var e,n=null===(e=document.querySelector("#".concat(t)))||void 0===e?void 0:e.getAttribute("data-url");if(null!=n){var o=document.createElement("a");o.href=n,o.
+ementById("old-versions-title");t&&e&&t.addEventListener("click",function(){var t=e.getAttribute("data-url");null!==t&&(window.location.href=t)})}var Oe=function(e){n
+ent.getElementById("older-versions");e&&e.addEventListener("click",function(){var t=e.getAttribute("data-url");null!==t&&(window.location.href=t)});var t=document.getEl
+n-know-native").on("click",function(){var e=this.getAttribute("data-url");null!==e&&(location.href="https://dw.uptodown.com/dwn/"+e
+on"))||void 0===t?void 0:t.getAttribute("data-url-ext");if(null!=o&&(n.href="https://dw.uptodown.com/dwn/"+o,
+teElement("a"),t=document.querySelector("#detail-download-button"),n=null==t?void 0:t.getAttribute("data-url-ext");if(null!=n){e.href=n,e.target="__blank",e.click();var
+udes("/mac")||n.includes("/ios")?"":"/android";Oe("".concat(n).concat(o,"/").concat(e.getAttribute("data-url")))}})},Me=function(){var e=document.querySelector(".detail
+[0m
+[0m$ [0mgrep -oE 'id="detail-download-button[^"]*"[^>]*|data-url-ext="[^"]{0,200}"' /tmp/opencode/utd_dl.html | head -5; echo "=== button context ==="; grep -oE '<a[^>]*detail-download[^>]*>' /tmp/opencode/utd_dl.html | head; grep -oE 'detail-download-button[^<]{0,300}' /tmp/opencode/utd_dl.html | head -3
+id="detail-download-button" class="button download xapk "
+=== button context ===
+detail-download-button" class="button download xapk "
+[0m
+[0m$ [0mgrep -oE '<a[^>]*id="detail-download-button"[^>]*>' /tmp/opencode/utd_dl.html | head -2; echo "===data-url attrs near button==="; grep -oE '.{0,20}id="detail-download-button".{0,400}' /tmp/opencode/utd_dl.html | head -2
+===data-url attrs near button===
+<button id="detail-download-button" class="button download xapk "
+[0m
+[0m$ [0mpython3 - <<'EOF'
+import re
+h=open('/tmp/opencode/utd_dl.html',encoding='utf-8',errors='ignore').read()
+i=h.find('detail-download-button')
+print(repr(h[i:i+700]))
+EOF
+'detail-download-button" class="button download xapk "\ndata-dwldng="Downloading…"\ndata-showSpinner="true"\ndata-url="TwlV3zZzBcysOQUTS6EJZJvfywDx6G_39VAEsqesv8HedTXK8LI19C4rMbSS47ftRjqQPrTjCfBRucNaBZOi9R1nUcGMyAAq2jYd8E_fBztekIfqmkZM6p6r7phHXeD3/NYWwEWXsl5tTDdxMthxEFRb3XaVqfRDTJyx16m_mCepdABDmV7BofrsESK1wy1ZptnIGP7ujOJY_p9SnWBXV-miwRcOv7a3tU_qExnJQUL7oPrdOzTffHRKPSBJLHsVe/lNl8UfQHrD03wu6EUs_Ys2IpW6BlKZxOGzgSkPOuuWJg0_nnWVMxwYfa2RTTSvuXXkSB2UA90LpsGJthIxnUtVhAucvKlNWxzJmHsw2SC1A=/" data-download-version="1197336657" title="download naver whale browser free"\nrel="nofollow" onclick="addEventAnalytics(\'downloadApp\', {\'event_category\': \'download-link-deeplink\', \'appID\': \'777828\'});">\n<strong>Downlo'
+[0m
+The uptodown Android channel is live with target version 3.9.14.9 and the download token is `TwlV3zZz...`. Let me test the `dw.uptodown.com/dwn/` endpoint (the JS resolves it to the CDN download).
+[0m$ [0msleep 1; curl -s -o /dev/null -w "HTTP %{http_code} type=%{content_type} len=%{size_download} redirect=%{url_effective}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -D /tmp/opencode/dwn_hdr.txt "https://dw.uptodown.com/dwn/TwlV3zZzBcysOQUTS6EJZJvfywDx6G_39VAEsqesv8HedTXK8LI19C4rMbSS47ftRjqQPrTjCfBRucNaBZOi9R1nUcGMyAAq2jYd8E_fBztekIfqmkZM6p6r7phHXeD3/NYWwEWXsl5tTDdxMthxEFRb3XaVqfRDTJyx16m_mCepdABDmV7BofrsESK1wy1ZptnIGP7ujOJY_p9SnWBXV-miwRcOv7a3tU_qExnJQUL7oPrdOzTffHRKPSBJLHsVe/lNl8UfQHrD03wu6EUs_Ys2IpW6BlKZxOGzgSkPOuuWJg0_nnWVMxwYfa2RTTSvuXXkSB2UA90LpsGJthIxnUtVhAucvKlNWxzJmHsw2SC1A=/"; head -30 /tmp/opencode/dwn_hdr.txt
+HTTP 302 type=text/html; charset=utf-8 len=1938 redirect=https://dw.uptodown.com/dwn/TwlV3zZzBcysOQUTS6EJZJvfywDx6G_39VAEsqesv8HedTXK8LI19C4rMbSS47ftRjqQPrTjCfBRucNaBZOi9R1nUcGMyAAq2jYd8E_fBztekIfqmkZM6p6r7phHXeD3/NYWwEWXsl5tTDdxMthxEFRb3XaVqfRDTJyx16m_mCepdABDmV7BofrsESK1wy1ZptnIGP7ujOJY_p9SnWBXV-miwRcOv7a3tU_qExnJQUL7oPrdOzTffHRKPSBJLHsVe/lNl8UfQHrD03wu6EUs_Ys2IpW6BlKZxOGzgSkPOuuWJg0_nnWVMxwYfa2RTTSvuXXkSB2UA90LpsGJthIxnUtVhAucvKlNWxzJmHsw2SC1A=/
+HTTP/2 302 
+content-type: text/html; charset=utf-8
+cache-control: no-cache, private
+date: Sat, 08 Aug 2026 18:55:48 GMT
+location: https://dw.uptodown.net/dwn/TwlV3zZzBcysOQUTS6EJZJvfywDx6G_39VAEsqesv8HedTXK8LI19C4rMbSS47ftRjqQPrTjCfBRucNaBZOi9R1nUcGMyAAq2jYd8E_fBztekIfqmkZM6p6r7phHXeD3/NYWwEWXsl5tTDdxMthxEFRb3XaVqfRDTJyx16m_mCepdABDmV7BofrsESK1wy1ZptnIGP7ujOJY_p9SnWBXV-miwRcOv7a3tU_qExnJQUL7oPrdOzTffHRKPSBJLHsVe/lNl8UfQHrD03wu6EUs_Ys2IpW6BlKZxOGzgSkPOuuWJg0_nnWVMxwYfa2RTTSvuXXkSB2UA90LpsGJthIxnUtVhAucvKlNWxzJmHsw2SC1A=/uptodown-com.naver.whale.apk
+set-cookie: uptodown_next=18098; path=/; httponly; samesite=lax
+x-robots-tag: noindex, follow
+strict-transport-security: max-age=16000000; includeSubDomains; preload
+referrer-policy: strict-origin-when-cross-origin
+x-frame-options: SAMEORIGIN
+[0m
+The download token resolves to a real APK file (`uptodown-com.naver.whale.apk`). Let me attempt the actual download via the CDN redirect chain.
+[0m$ [0mcurl -s -L -o /tmp/opencode/whale.apk -w "HTTP %{http_code} final=%{url_effective} len=%{size_download} type=%{content_type}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" --max-filesize 200000000 "https://dw.uptodown.com/dwn/TwlV3zZzBcysOQUTS6EJZJvfywDx6G_39VAEsqesv8HedTXK8LI19C4rMbSS47ftRjqQPrTjCfBRucNaBZOi9R1nUcGMyAAq2jYd8E_fBztekIfqmkZM6p6r7phHXeD3/NYWwEWXsl5tTDdxMthxEFRb3XaVqfRDTJyx16m_mCepdABDmV7BofrsESK1wy1ZptnIGP7ujOJY_p9SnWBXV-miwRcOv7a3tU_qExnJQUL7oPrdOzTffHRKPSBJLHsVe/lNl8UfQHrD03wu6EUs_Ys2IpW6BlKZxOGzgSkPOuuWJg0_nnWVMxwYfa2RTTSvuXXkSB2UA90LpsGJthIxnUtVhAucvKlNWxzJmHsw2SC1A=/"; echo "---"; file /tmp/opencode/whale.apk; sha256sum /tmp/opencode/whale.apk
+HTTP 200 final=https://dw.uptodown.net/dwn/TwlV3zZzBcysOQUTS6EJZJvfywDx6G_39VAEsqesv8HedTXK8LI19C4rMbSS47ftRjqQPrTjCfBRucNaBZOi9R1nUcGMyAAq2jYd8E_fBztekIfqmkZM6p6r7phHXeD3/NYWwEWXsl5tTDdxMthxEFRb3XaVqfRDTJyx16m_mCepdABDmV7BofrsESK1wy1ZptnIGP7ujOJY_p9SnWBXV-miwRcOv7a3tU_qExnJQUL7oPrdOzTffHRKPSBJLHsVe/lNl8UfQHrD03wu6EUs_Ys2IpW6BlKZxOGzgSkPOuuWJg0_nnWVMxwYfa2RTTSvuXXkSB2UA90LpsGJthIxnUtVhAucvKlNWxzJmHsw2SC1A=/uptodown-com.naver.whale.apk len=15275646 type=application/octet-stream
+---
+/tmp/opencode/whale.apk: Android package (APK), with gradle app-metadata.properties
+abde6f83ed936585bbf28a1ce750c6954c28fc07469fb33014ea049e39f747b4  /tmp/opencode/whale.apk
+[0m
+Binary acquisition UNBLOCKED for Android. Let me verify version and extract sync surface.
+[0m$ [0mcd /tmp/opencode && unzip -o -q whale.apk -d whale_apk 2>&1 | tail -2; ls whale_apk/ | head -40; echo "---version---"; cat whale_apk/apktool.yml 2>/dev/null | head -8; aapt dump badging whale.apk 2>/dev/null | head -3 || python3 -c "import zipfile;z=zipfile.ZipFile('whale.apk');print([n for n in z.namelist() if 'version' in n.lower() and n.endswith(('.json','.txt','.properties'))][:20])"
+AndroidManifest.xml
+DebugProbesKt.bin
+META-INF
+assets
+classes.dex
+classes2.dex
+classes3.dex
+classes4.dex
+client_analytics.proto
+firebase-analytics.properties
+firebase-encoders-proto.properties
+firebase-encoders.properties
+firebase-iid-interop.properties
+firebase-measurement-connector.properties
+googleid.properties
+kotlin
+lib
+messaging_event.proto
+messaging_event_extension.proto
+okhttp3
+org
+play-services-ads-identifier.properties
+play-services-auth-api-phone.properties
+play-services-auth-base.properties
+play-services-auth-blockstore.properties
+play-services-auth.properties
+play-services-base.properties
+play-services-basement.properties
+play-services-cloud-messaging.properties
+play-services-fido.properties
+play-services-identity-credentials.properties
+play-services-measurement-api.properties
+play-services-measurement-base.properties
+play-services-measurement-impl.properties
+play-services-measurement-sdk-api.properties
+play-services-measurement-sdk.properties
+play-services-measurement.properties
+play-services-stats.properties
+play-services-tasks.properties
+res
+---version---
+[0m
+[0m$ [0mcd /tmp/opencode && ls whale_apk/lib/ 2>/dev/null; echo "--- native libs ---"; ls -la whale_apk/lib/*/ 2>/dev/null | head -30; echo "--- assets top ---"; ls whale_apk/assets/ 2>/dev/null | head -30
+arm64-v8a
+armeabi-v7a
+x86
+x86_64
+--- native libs ---
+whale_apk/lib/arm64-v8a/:
+total 44
+drwxr-xr-x 2 runner runner  4096 Aug  8 18:56 .
+drwxr-xr-x 6 runner runner  4096 Aug  8 18:56 ..
+-rw-r--r-- 1 runner runner 10096 Jan  1  1981 libandroidx.graphics.path.so
+-rw-r--r-- 1 runner runner  7112 Jan  1  1981 libdatastore_shared_counter.so
+-rw-r--r-- 1 runner runner  4584 Jan  1  1981 libuptodown-native.so
+-rw-r--r-- 1 runner runner  4272 Jan  1  1981 libutd-services-native.so
+
+whale_apk/lib/armeabi-v7a/:
+total 32
+drwxr-xr-x 2 runner runner 4096 Aug  8 18:56 .
+drwxr-xr-x 6 runner runner 4096 Aug  8 18:56 ..
+-rw-r--r-- 1 runner runner 7252 Jan  1  1981 libandroidx.graphics.path.so
+-rw-r--r-- 1 runner runner 4416 Jan  1  1981 libdatastore_shared_counter.so
+-rw-r--r-- 1 runner runner 3324 Jan  1  1981 libuptodown-native.so
+-rw-r--r-- 1 runner runner 3112 Jan  1  1981 libutd-services-native.so
+
+whale_apk/lib/x86/:
+total 36
+drwxr-xr-x 2 runner runner 4096 Aug  8 18:56 .
+drwxr-xr-x 6 runner runner 4096 Aug  8 18:56 ..
+-rw-r--r-- 1 runner runner 9284 Jan  1  1981 libandroidx.graphics.path.so
+-rw-r--r-- 1 runner runner 5148 Jan  1  1981 libdatastore_shared_counter.so
+-rw-r--r-- 1 runner runner 3640 Jan  1  1981 libuptodown-native.so
+-rw-r--r-- 1 runner runner 3236 Jan  1  1981 libutd-services-native.so
+
+whale_apk/lib/x86_64/:
+total 44
+drwxr-xr-x 2 runner runner  4096 Aug  8 18:56 .
+--- assets top ---
+dexopt
+fonts
+[0m
+This looks like a split-APK base from uptodown, not the full Whale APK (only support libs present). Let me verify what we actually got.
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import zipfile
+z=zipfile.ZipFile('whale.apk')
+names=z.namelist()
+print("total entries:", len(names))
+for n in names:
+    ln=n.lower()
+    if any(k in ln for k in ['whale','naver','version','meta']) and z.getinfo(n).file_size>200:
+        print(n, z.getinfo(n).file_size)
+EOF
+echo "--- aapt version ---"; (aapt dump badging whale.apk 2>/dev/null || aapt2 dump badging whale.apk 2>/dev/null || echo "no aapt") | head -5
+total entries: 2073
+META-INF/androidx/annotation/annotation/LICENSE.txt 10175
+META-INF/androidx/collection/collection-ktx/LICENSE.txt 10175
+META-INF/androidx/collection/collection/LICENSE.txt 10175
+META-INF/androidx/constraintlayout/constraintlayout-core/LICENSE.txt 10175
+META-INF/androidx/lifecycle/lifecycle-common-java8/LICENSE.txt 10175
+META-INF/androidx/lifecycle/lifecycle-common/LICENSE.txt 10175
+META-INF/androidx/room/room-common/LICENSE.txt 10175
+META-INF/CERT.SF 186510
+META-INF/CERT.RSA 1415
+META-INF/MANIFEST.MF 186433
+--- aapt version ---
+no aapt
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import zipfile,re
+z=zipfile.ZipFile('whale.apk')
+# check AndroidManifest for package/version
+try:
+    b=z.read('AndroidManifest.xml')
+except Exception as e:
+    b=b''
+# binary XML, search strings
+s=b.decode('utf-8',errors='ignore')
+for pat in ['com.naver.whale','versionName','versionCode','package']:
+    idx=s.find(pat)
+    print(pat, '->', repr(s[idx:idx+120]) if idx>=0 else 'NOT FOUND')
+# check classes.dex size (whether real app code present)
+for n in z.namelist():
+    if n.endswith('.dex') or n.endswith('.apk') or 'whale' in n.lower():
+        print(n, z.getinfo(n).file_size)
+EOF
+com.naver.whale -> NOT FOUND
+versionName -> NOT FOUND
+versionCode -> NOT FOUND
+package -> NOT FOUND
+classes.dex 8855536
+classes2.dex 583544
+classes3.dex 7585104
+classes4.dex 7339780
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 8 classes.dex | grep -iE 'com\.naver\.whale|whale' | sort -u | head -20; echo "---"; strings -n 8 whale.apk | grep -iE 'com\.naver\.whale|versionName' | sort -u | head
+strings: 'classes.dex': No such file
+---
+cb_versionname
+[0m
+[0m$ [0mcd /tmp/opencode/whale_apk && for f in classes*.dex; do echo "== $f =="; strings -n 8 "$f" 2>/dev/null | grep -iE 'whale' | grep -ivE 'humpback|narwhal' | sort -u | head -8; done
+== classes.dex ==
+== classes2.dex ==
+== classes3.dex ==
+== classes4.dex ==
+[0m
+[0m$ [0mcd /tmp/opencode/whale_apk && ls -la classes*.dex; echo "---"; file classes.dex; echo "--- try grep first bytes ---"; head -c 200 classes.dex | strings | head
+-rw-r--r-- 1 runner runner 8855536 Jan  1  1981 classes.dex
+-rw-r--r-- 1 runner runner  583544 Jan  1  1981 classes2.dex
+-rw-r--r-- 1 runner runner 7585104 Jan  1  1981 classes3.dex
+-rw-r--r-- 1 runner runner 7339780 Jan  1  1981 classes4.dex
+---
+classes.dex: Dalvik dex file version 035
+--- try grep first bytes ---
+[0m
+[0m$ [0mcd /tmp/opencode/whale_apk && strings -n 6 classes.dex | wc -l; strings -n 6 classes.dex | head -40
+59171
+o	Z VJ
+{	{	vN
+X"3%C~
+k"k";	
+k"k"xM
+k"k"yM
+8#x&dw
+8#q&6~
+6$=%dw
+;$=%dw
+<$=%6~
+F$=%dw
+d$J&6~
+I%I%J	
+I%I%%J
+I%I%[M
+I%I%_M
+I%I%	U
+L%L%_P
+J&&%dw
+O&=%dw
+O&=%6~
+m&3%6~
+}	v!vx
+	!g3%N
+ !r9%u
+B!a	Iw
+C!v!vx
+t!v!vx
+/"B4!z
+0"v!Zy
+1"v!Dw
+6"v!sw
+6"$4 z
+A"v!vx
+H"v!lu
+H"[%nu
+H"[%ou
+J"v!pu
+J"X%pu
+[0m
+[0m$ [0mcd /tmp/opencode/whale_apk && strings -n 6 classes.dex | grep -oE 'L[a-z]+/[a-zA-Z/]+' | sort -u | head -40
+Laa/d
+Lab/c
+Lab/d
+Landroid/accessibilityservice/AccessibilityServiceInfo
+Landroid/accounts/Account
+Landroid/animation/Animator
+Landroid/animation/AnimatorListenerAdapter
+Landroid/animation/LayoutTransition
+Landroid/animation/ObjectAnimator
+Landroid/animation/TimeInterpolator
+Landroid/animation/ValueAnimator
+Landroid/annotation/SuppressLint
+Landroid/app/ActionBar
+Landroid/app/Activity
+Landroid/app/ActivityOptions
+Landroid/app/AppComponentFactory
+Landroid/app/Application
+Landroid/app/Dialog
+Landroid/app/ForegroundServiceStartNotAllowedException
+Landroid/app/KeyguardManager
+Landroid/app/LocaleManager
+Landroid/app/Notification
+Landroid/app/NotificationChannel
+Landroid/app/NotificationManager
+Landroid/app/PendingIntent
+Landroid/app/PictureInPictureParams
+Landroid/app/RemoteAction
+Landroid/app/SearchableInfo
+Landroid/app/Service
+Landroid/app/ServiceStartNotAllowedException
+Landroid/app/UiModeManager
+Landroid/app/job/JobInfo
+Landroid/app/job/JobServiceEngine
+Landroid/content/ActivityNotFoundException
+Landroid/content/BroadcastReceiver
+Landroid/content/ClipData
+Landroid/content/ClipDescription
+Landroid/content/ClipboardManager
+Landroid/content/ComponentName
+Landroid/content/ContentProviderClient
+[0m
+[0m$ [0mcd /tmp/opencode/whale_apk && strings -n 8 classes.dex | grep -oE 'Lcom/[a-zA-Z0-9/]+' | sort -u | head -40
+Lcom/google/android/gms/auth/api/signin/GoogleSignInAccount
+Lcom/google/android/gms/common/api/Scope
+Lcom/google/android/gms/internal/measurement/c1
+Lcom/google/android/gms/internal/measurement/g2
+Lcom/google/android/gms/internal/measurement/g5
+Lcom/google/android/gms/internal/measurement/h
+Lcom/google/android/gms/internal/measurement/j4
+Lcom/google/android/gms/internal/measurement/j7
+Lcom/google/android/gms/internal/measurement/k5
+Lcom/google/android/gms/internal/measurement/n5
+Lcom/google/android/gms/internal/measurement/q5
+Lcom/google/android/gms/internal/measurement/rd
+Lcom/google/android/gms/internal/measurement/w1
+Lcom/google/android/material/bottomappbar/a
+Lcom/google/android/material/button/MaterialButton
+Lcom/google/android/material/carousel/CarouselLayoutManager
+Lcom/google/android/material/datepicker/c
+Lcom/google/android/material/motion/MaterialBackOrchestrator
+Lcom/google/common/util/concurrent/ListenableFuture
+Lcom/google/firebase/FirebaseCommonRegistrar
+Lcom/google/firebase/messaging/FirebaseMessaging
+Lcom/google/firebase/messaging/FirebaseMessagingService
+Lcom/google/gson/internal/f
+Lcom/google/gson/internal/h
+Lcom/inmobi/cmp/ChoiceCmp
+Lcom/inmobi/cmp/ChoiceCmpCallback
+Lcom/inmobi/cmp/core/cmpapi/status/CmpStatus
+Lcom/inmobi/cmp/core/cmpapi/status/DisplayStatus
+Lcom/inmobi/cmp/core/model/Vector
+Lcom/inmobi/cmp/core/model/portalconfig/PrivacyEncodingMode
+Lcom/inmobi/cmp/data/model/ChoiceColor
+Lcom/inmobi/cmp/data/model/ChoiceStyle
+Lcom/inmobi/cmp/model/ChoiceError
+Lcom/inmobi/cmp/model/DisplayInfo
+Lcom/inmobi/cmp/model/PingReturn
+Lcom/inmobi/cmp/model/Regulations
+Lcom/inmobi/cmp/presentation/components/CmpActivity
+Lcom/uptodown/UptodownApp
+Lcom/uptodown/activities/AppDetailActivity
+Lcom/uptodown/activities/AppFilesActivity
+[0m
+This APK is the Uptodown wrapper app (`com.uptodown.*` classes), not the actual Whale binary. The real com.naver.whale APK is fetched separately. Let me check the actual package id and whether a direct (non-wrapped) download exists.
+[0m$ [0mcd /tmp/opencode/whale_apk && strings -n 8 classes.dex | grep -oE 'Lcom/uptodown/[a-zA-Z0-9/]+' | sort -u | head -20; echo "--- appId ---"; strings -n 8 classes*.dex | grep -oE 'com\.naver\.whale' | sort -u | head; echo "--- package id in manifest ---"; strings -n 6 AndroidManifest.xml 2>/dev/null | head -20
+Lcom/uptodown/UptodownApp
+Lcom/uptodown/activities/AppDetailActivity
+Lcom/uptodown/activities/AppFilesActivity
+Lcom/uptodown/activities/AppInstalledDetailsActivity
+Lcom/uptodown/activities/ContactUsActivity
+Lcom/uptodown/activities/LanguageSettingsActivity
+Lcom/uptodown/activities/ListsActivity
+Lcom/uptodown/activities/MainActivity
+Lcom/uptodown/activities/MoreInfo
+Lcom/uptodown/activities/MyApps
+Lcom/uptodown/activities/MyDownloads
+Lcom/uptodown/activities/MyStatsActivity
+Lcom/uptodown/activities/NotificationsRegistryActivity
+Lcom/uptodown/activities/OldVersionsActivity
+Lcom/uptodown/activities/OrganizationActivity
+Lcom/uptodown/activities/PasswordEditActivity
+Lcom/uptodown/activities/PasswordRecoveryActivity
+Lcom/uptodown/activities/PreregistrationActivity
+Lcom/uptodown/activities/PublicListActivity
+Lcom/uptodown/activities/PublicProfileActivity
+--- appId ---
+--- package id in manifest ---
+[0m
+[0m$ [0mpip install androguard -q 2>&1 | tail -1; cd /tmp/opencode && python3 - <<'EOF'
+from androguard.core.apk import APK
+try:
+    a=APK('whale.apk')
+    print("package:", a.get_package())
+    print("versionName:", a.get_androidversion_name())
+    print("versionCode:", a.get_androidversion_code())
+    print("appname:", a.get_app_name())
+    print("uses-sdk:", a.get_min_sdk_version())
+except Exception as e:
+    print("ERR", e)
+EOF
+...output truncated...
+
+Full output saved to: /home/runner/.local/share/opencode/tool-output/tool_fe2bc3ca0001FDv0w5CHVVQDbQ
+
+[32m2026-08-08 18:56:55.719[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'in-rID'=(0, 1145663081, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.720[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00332830' type='513' header_size='84' size='10024'>[0m
+[32m2026-08-08 18:56:55.720[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.720[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x332838, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.720[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'zh-rHK'=(0, 1263036538, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.721[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00334f58' type='513' header_size='84' size='11992'>[0m
+[32m2026-08-08 18:56:55.721[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.721[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x334f60, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.721[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'zh-rCN'=(0, 1313040506, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.723[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00337e30' type='513' header_size='84' size='7432'>[0m
+[32m2026-08-08 18:56:55.723[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.723[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x337e38, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.723[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'hi-rIN'=(0, 1313433960, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.724[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00339b38' type='513' header_size='84' size='8488'>[0m
+[32m2026-08-08 18:56:55.724[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.724[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x339b40, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.724[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'en-rIN'=(0, 1313435237, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.725[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x0033bc60' type='513' header_size='84' size='7432'>[0m
+[32m2026-08-08 18:56:55.725[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.725[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x33bc68, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.725[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'ja-rJP'=(0, 1347051882, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.726[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x0033d968' type='513' header_size='84' size='10024'>[0m
+[32m2026-08-08 18:56:55.726[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.726[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x33d970, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.726[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'pt-rBR'=(0, 1380086896, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.727[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00340090' type='513' header_size='84' size='7432'>[0m
+[32m2026-08-08 18:56:55.727[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.727[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x340098, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.727[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'fr-rFR'=(0, 1380348518, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.728[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00341d98' type='513' header_size='84' size='7432'>[0m
+[32m2026-08-08 18:56:55.728[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.728[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x341da0, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.728[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'ko-rKR'=(0, 1380675435, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.729[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00343aa0' type='513' header_size='84' size='7432'>[0m
+[32m2026-08-08 18:56:55.729[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.729[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x343aa8, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.730[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'tr-rTR'=(0, 1381266036, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.731[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x003457a8' type='513' header_size='84' size='10024'>[0m
+[32m2026-08-08 18:56:55.731[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.731[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x3457b0, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.731[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'es-rUS'=(0, 1398109029, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.733[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00347ed0' type='513' header_size='84' size='7432'>[0m
+[32m2026-08-08 18:56:55.733[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.734[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x347ed8, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.734[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'it-rIT'=(0, 1414100073, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.735[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00349bd8' type='513' header_size='84' size='10024'>[0m
+[32m2026-08-08 18:56:55.735[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.735[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x349be0, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.736[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'pt-rPT'=(0, 1414558832, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.737[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x0034c300' type='513' header_size='84' size='8488'>[0m
+[32m2026-08-08 18:56:55.737[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.737[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x34c308, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.737[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'en-rAU'=(0, 1430351461, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.738[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x0034e428' type='513' header_size='84' size='7432'>[0m
+[32m2026-08-08 18:56:55.738[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.738[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x34e430, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.738[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'ru-rRU'=(0, 1431467378, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.739[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00350130' type='513' header_size='84' size='10024'>[0m
+[32m2026-08-08 18:56:55.739[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.739[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x350138, id=0x14, flags=0x0, entryCount=1345, entriesStart=0x1558, mResId=0x7f140000, table:string)>[0m
+[32m2026-08-08 18:56:55.739[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'zh-rTW'=(0, 1465149562, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.741[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00352858' type='514' header_size='16' size='5840'>[0m
+[32m2026-08-08 18:56:55.741[0m | [33m[1mWARNING [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2945[0m - [33m[1mres1 must be zero![0m
+[32m2026-08-08 18:56:55.741[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00353f28' type='513' header_size='84' size='103564'>[0m
+[32m2026-08-08 18:56:55.741[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.741[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x353f30, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.741[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig ''=(0, 0, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.759[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x0036d3b4' type='513' header_size='84' size='5948'>[0m
+[32m2026-08-08 18:56:55.760[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.760[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x36d3bc, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.760[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'sw600dp'=(0, 0, 0, 0, 0, 0, 39321600, 0, 0)>[0m
+[32m2026-08-08 18:56:55.761[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x0036eaf0' type='513' header_size='84' size='6028'>[0m
+[32m2026-08-08 18:56:55.761[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.761[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x36eaf8, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.761[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'watch'=(0, 0, 0, 0, 0, 0, 1536, 0, 0)>[0m
+[32m2026-08-08 18:56:55.762[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x0037027c' type='513' header_size='84' size='6580'>[0m
+[32m2026-08-08 18:56:55.762[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.762[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x370284, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.762[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'night'=(0, 0, 0, 0, 0, 0, 8192, 0, 0)>[0m
+[32m2026-08-08 18:56:55.763[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00371c30' type='513' header_size='84' size='6004'>[0m
+[32m2026-08-08 18:56:55.763[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.763[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x371c38, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.763[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'large'=(0, 0, 0, 0, 0, 0, 3, 0, 0)>[0m
+[32m2026-08-08 18:56:55.763[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x003733a4' type='513' header_size='84' size='8356'>[0m
+[32m2026-08-08 18:56:55.764[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.764[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x3733ac, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.764[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'v24'=(0, 0, 0, 0, 0, 24, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.764[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00375448' type='513' header_size='84' size='5972'>[0m
+[32m2026-08-08 18:56:55.764[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.765[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x375450, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.765[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'v25'=(0, 0, 0, 0, 0, 25, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.765[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00376b9c' type='513' header_size='84' size='6376'>[0m
+[32m2026-08-08 18:56:55.765[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.765[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x376ba4, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.765[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'v26'=(0, 0, 0, 0, 0, 26, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.766[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00378484' type='513' header_size='84' size='6044'>[0m
+[32m2026-08-08 18:56:55.766[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.766[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x37848c, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.766[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'v27'=(0, 0, 0, 0, 0, 27, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.767[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00379c20' type='513' header_size='84' size='10144'>[0m
+[32m2026-08-08 18:56:55.767[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.767[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x379c28, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.767[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'v28'=(0, 0, 0, 0, 0, 28, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.768[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x0037c3c0' type='513' header_size='84' size='6108'>[0m
+[32m2026-08-08 18:56:55.768[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.768[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x37c3c8, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.768[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'v29'=(0, 0, 0, 0, 0, 29, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.768[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x0037db9c' type='513' header_size='84' size='8928'>[0m
+[32m2026-08-08 18:56:55.768[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.769[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x37dba4, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.769[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'v31'=(0, 0, 0, 0, 0, 31, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.770[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x0037fe7c' type='513' header_size='84' size='6076'>[0m
+[32m2026-08-08 18:56:55.770[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.770[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x37fe84, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.770[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'land'=(0, 0, 2, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.770[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00381638' type='513' header_size='84' size='5960'>[0m
+[32m2026-08-08 18:56:55.770[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.770[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x381640, id=0x15, flags=0x0, entryCount=1456, entriesStart=0x1714, mResId=0x7f150000, table:style)>[0m
+[32m2026-08-08 18:56:55.770[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig 'hdpi'=(0, 0, 15728640, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.771[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00382d80' type='514' header_size='16' size='88'>[0m
+[32m2026-08-08 18:56:55.771[0m | [33m[1mWARNING [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2945[0m - [33m[1mres1 must be zero![0m
+[32m2026-08-08 18:56:55.771[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00382dd8' type='513' header_size='84' size='444'>[0m
+[32m2026-08-08 18:56:55.771[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.771[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x382de0, id=0x17, flags=0x0, entryCount=18, entriesStart=0x9c, mResId=0x7f170000, table:transition)>[0m
+[32m2026-08-08 18:56:55.771[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig ''=(0, 0, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.771[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00382f94' type='514' header_size='16' size='64'>[0m
+[32m2026-08-08 18:56:55.771[0m | [33m[1mWARNING [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2945[0m - [33m[1mres1 must be zero![0m
+[32m2026-08-08 18:56:55.771[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1812[0m - [34m[1mFound a header: <ARSCHeader idx='0x00382fd4' type='513' header_size='84' size='324'>[0m
+[32m2026-08-08 18:56:55.771[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m3136[0m - [34m[1mSkipping padding bytes![0m
+[32m2026-08-08 18:56:55.771[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m2984[0m - [34m[1mParsed <ARSCResType(start=0x382fdc, id=0x18, flags=0x0, entryCount=12, entriesStart=0x84, mResId=0x7f180000, table:xml)>[0m
+[32m2026-08-08 18:56:55.771[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36m__init__[0m:[36m1840[0m - [34m[1mConfig: <ARSCResTableConfig ''=(0, 0, 0, 0, 0, 0, 0, 0, 0)>[0m
+[32m2026-08-08 18:56:55.791[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 65038.00399593472: 9[0m
+[32m2026-08-08 18:56:55.791[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 65038.00399593472: 10[0m
+[32m2026-08-08 18:56:55.791[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32051.19728172544: 10[0m
+[32m2026-08-08 18:56:55.791[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 0.488437427482368: 8[0m
+[32m2026-08-08 18:56:55.792[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32051.19728172544: 10[0m
+[32m2026-08-08 18:56:55.792[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 0.488437427482368: 8[0m
+[32m2026-08-08 18:56:55.792[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 0.488437427482368: 8[0m
+[32m2026-08-08 18:56:55.792[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4082892.0: 13[0m
+[32m2026-08-08 18:56:55.792[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4060610.0: 15[0m
+[32m2026-08-08 18:56:55.792[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.792[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 0.0: 6[0m
+[32m2026-08-08 18:56:55.792[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32563.197313182718: 10[0m
+[32m2026-08-08 18:56:55.792[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 8324865.0: 12[0m
+[32m2026-08-08 18:56:55.793[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 0.0: 6[0m
+[32m2026-08-08 18:56:55.793[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 8324865.0: 11[0m
+[32m2026-08-08 18:56:55.793[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 126.4285694316288: 14[0m
+[32m2026-08-08 18:56:55.793[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4167820.0: 6[0m
+[32m2026-08-08 18:56:55.793[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 125.7999988198912: 6[0m
+[32m2026-08-08 18:56:55.794[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 8324865.0: 11[0m
+[32m2026-08-08 18:56:55.794[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.794[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0547708041728: 9[0m
+[32m2026-08-08 18:56:55.794[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0547708041728: 6[0m
+[32m2026-08-08 18:56:55.795[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0547708041728: 15[0m
+[32m2026-08-08 18:56:55.795[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 65038.01962093568: 14[0m
+[32m2026-08-08 18:56:55.795[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.796[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.796[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.796[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 7[0m
+[32m2026-08-08 18:56:55.796[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.796[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.796[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.796[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 7[0m
+[32m2026-08-08 18:56:55.796[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.796[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.797[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4060610.0: 15[0m
+[32m2026-08-08 18:56:55.797[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.797[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.797[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.797[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.797[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.798[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4105175.0: 10[0m
+[32m2026-08-08 18:56:55.798[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.798[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.798[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.798[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.798[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4060610.0: 15[0m
+[32m2026-08-08 18:56:55.798[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4060610.0: 15[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.799[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 6[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 8324866.0: 13[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 8324866.0: 10[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 65038.01962093568: 11[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 65038.01962093568: 13[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 65038.01962093568: 14[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 65038.02743343616: 7[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4039639.0: 10[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4060610.0: 15[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32051.19728172544: 10[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4148428.0: 13[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4082892.0: 13[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4050124.0: 13[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4050124.0: 13[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4115660.0: 13[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4115660.0: 13[0m
+[32m2026-08-08 18:56:55.800[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4082892.0: 13[0m
+[32m2026-08-08 18:56:55.801[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4082892.0: 13[0m
+[32m2026-08-08 18:56:55.801[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32051.19728172544: 10[0m
+[32m2026-08-08 18:56:55.801[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4082892.0: 13[0m
+[32m2026-08-08 18:56:55.831[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 126.7999989075456: 6[0m
+[32m2026-08-08 18:56:55.831[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 126.7999989075456: 6[0m
+[32m2026-08-08 18:56:55.832[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 126.7999989075456: 6[0m
+[32m2026-08-08 18:56:55.832[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4105175.0: 10[0m
+[32m2026-08-08 18:56:55.832[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4082892.0: 13[0m
+[32m2026-08-08 18:56:55.832[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4072407.0: 10[0m
+[32m2026-08-08 18:56:55.832[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4082892.0: 13[0m
+[32m2026-08-08 18:56:55.832[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 13[0m
+[32m2026-08-08 18:56:55.832[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32133.11916175872: 12[0m
+[32m2026-08-08 18:56:55.832[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4060610.0: 15[0m
+[32m2026-08-08 18:56:55.832[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 32307.19729745408: 10[0m
+[32m2026-08-08 18:56:55.832[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 123.12000590919679: 9[0m
+[32m2026-08-08 18:56:55.833[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4126146.0: 15[0m
+[32m2026-08-08 18:56:55.833[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4126146.0: 15[0m
+[32m2026-08-08 18:56:55.833[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4072407.0: 10[0m
+[32m2026-08-08 18:56:55.833[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4126146.0: 15[0m
+[32m2026-08-08 18:56:55.833[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4093378.0: 15[0m
+[32m2026-08-08 18:56:55.833[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4093378.0: 15[0m
+[32m2026-08-08 18:56:55.833[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4039639.0: 10[0m
+[32m2026-08-08 18:56:55.833[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4093378.0: 15[0m
+[32m2026-08-08 18:56:55.834[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4148428.0: 13[0m
+[32m2026-08-08 18:56:55.834[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 7[0m
+[32m2026-08-08 18:56:55.834[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 254.0548013217536: 8[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 0.9924011500961792: 10[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 0.9924011500961792: 8[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 65038.00399593472: 7[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4072407.0: 10[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 0.4857812060201984: 11[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4115660.0: 13[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4050124.0: 13[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4093378.0: 15[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4115660.0: 13[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4115660.0: 13[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4093378.0: 15[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4060610.0: 15[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4082892.0: 13[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4082892.0: 13[0m
+[32m2026-08-08 18:56:55.835[0m | [34m[1mDEBUG   [0m | [36mandroguard.core.axml[0m:[36mget_resource_dimen[0m:[36m2078[0m - [34m[1mOut of range dimension unit index for 4060610.0: 15[0m
+appname: Uptodown App Store
+uses-sdk: 23
+[0m
+The uptodown "download" served the Uptodown wrapper app, not the real Whale binary. Let me check the XAPK/versions pages for a direct com.naver.whale artifact.
+[0m$ [0msleep 1; curl -s -o /tmp/opencode/utd_ver.html -w "HTTP %{http_code} len=%{size_download}\n" -A "Mozilla/5.0" "https://naver-whale-browser.en.uptodown.com/android/versions"; grep -oE '3\.9\.14\.9|data-version="[0-9]+"|/app/naver-whale-browser/version/[0-9]+' /tmp/opencode/utd_ver.html | sort -u | head -20
+HTTP 200 len=100455
+3.9.14.9
+[0m
+[0m$ [0mgrep -oE '.{0,40}3\.9\.14\.9.{0,120}' /tmp/opencode/utd_ver.html | head -5; echo "=== version id ==="; grep -oE 'data-id="[0-9]+"[^>]*>[^<]*3\.9\.14\.9|version/[0-9]{6,}' /tmp/opencode/utd_ver.html | head
+<div class="version">3.9.14.9</div>
+<span class="version">3.9.14.9</span>
+<span class="version">3.9.14.9</span>
+=== version id ===
+[0m
+[0m$ [0mpython3 - <<'EOF'
+import re
+h=open('/tmp/opencode/utd_ver.html',encoding='utf-8',errors='ignore').read()
+# find blocks containing 3.9.14.9 and extract nearby links/ids
+for m in re.finditer(r'.{0,200}3\.9\.14\.9.{0,200}', h):
+    s=m.group(0).replace('\n',' ')
+    print(repr(s[:260]))
+    print('---')
+EOF
+'<div class="version">3.9.14.9</div>'
+---
+'<span class="version">3.9.14.9</span>'
+---
+'<span class="version">3.9.14.9</span>'
+---
+[0m
+[0m$ [0mpython3 - <<'EOF'
+import re
+h=open('/tmp/opencode/utd_ver.html',encoding='utf-8',errors='ignore').read()
+# find the row/li enclosing 3.9.14.9
+idx=h.find('3.9.14.9')
+start=max(0,idx-600)
+print(repr(h[start:idx+200]))
+EOF
+'cset="https://img.utdstc.com/icon/06f/44c/06f44c57cc73419f34a5d7f1600151e8d0fa049697fbdc03f0b7b5961b31b659:100, https://img.utdstc.com/icon/06f/44c/06f44c57cc73419f34a5d7f1600151e8d0fa049697fbdc03f0b7b5961b31b659:200 2x "\nonerror="this.onerror=null;this.src=\'https://stc.utdstc.com/img/no-img.png\'; this.srcset=\'https://stc.utdstc.com/img/no-img.png\';this.classList.add(\'broken-img\');"\n>\n</div>\n<div class="info">\n<a href="https://naver-whale-browser.en.uptodown.com/android">\n<h1 id="detail-app-name" data-code="777828" data-file-id="1197336657">\nNaver Whale Browser </h1>\n</a>\n<div class="version">3.9.14.9</div>\n<div class="autor">\n<button id="author-link"\nonclick="addEventAnalytics(\'authorLink\', {\'event_category\': \'author\'});"\ndata-organization-slug="naver-corp"\n>\nNAVER Corp.</button>\n</div>\n<'
+[0m
+[0m$ [0mgrep -oE 'id="detail-download-button-xapk"[^>]*' /tmp/opencode/utd_dl.html | head -2; echo "==="; grep -oE 'data-url-ext="[^"]*"|data-extension="[^"]*"|xapk[^"]*' /tmp/opencode/utd_dl.html | sort -u | head; echo "=== detail-download-button-xapk context ==="; python3 - <<'EOF'
+h=open('/tmp/opencode/utd_dl.html',encoding='utf-8',errors='ignore').read()
+for bid in ['detail-download-button-xapk','detail-download-button-ext','detail-download-button']:
+    i=h.find(bid)
+    if i>=0:
+        print(bid, '->', repr(h[i-80:i+300]))
+        print('---')
+EOF
+===
+xapk
+xapk 
+xapk div {
+xapk div {color:#ccc;}
+xapk img + div {
+xapk img + div{color:white;}
+xapk img {
+xapk p img + img {
+xapk p img {
+xapk p img,
+=== detail-download-button-xapk context ===
+detail-download-button -> 'ad" class="button-group download">\n<div class="main-group-buttons">\n<button id="detail-download-button" class="button download xapk "\ndata-dwldng="Downloading…"\ndata-showSpinner="true"\ndata-url="TwlV3zZzBcysOQUTS6EJZJvfywDx6G_39VAEsqesv8HedTXK8LI19C4rMbSS47ftRjqQPrTjCfBRucNaBZOi9R1nUcGMyAAq2jYd8E_fBztekIfqmkZM6p6r7phHXeD3/NYWwEWXsl5tTDdxMthxEFRb3XaVqfRDTJyx16m_mCepdABDmV7BofrsE'
+---
+[0m
+The uptodown download delivered its wrapper app, not the real Whale APK. Let me check for the XAPK/split-APK download which contains the actual com.naver.whale binary.
+The uptodown wrapper (Uptodown App Store) is what got served, not the real Whale APK. Let me quickly confirm whether the wrapper embeds the real APK, and re-verify the other live channels.
+[0m$ [0mcd /tmp/opencode/whale_apk && ls -la assets/ fonts/ 2>/dev/null; echo "=== res dirs ==="; ls res/ 2>/dev/null | head; echo "=== check for embedded apk ==="; find . -name "*.apk" -o -name "*.xapk" 2>/dev/null | head; echo "=== strings for whale in wrapper ==="; strings -n 10 classes*.dex 2>/dev/null | grep -iE 'com\.naver\.whale|naver.*whale' | sort -u | head -5
+assets/:
+total 16
+drwxr-xr-x 4 runner runner 4096 Aug  8 18:56 .
+drwxr-xr-x 9 runner runner 4096 Aug  8 18:56 ..
+drwxr-xr-x 2 runner runner 4096 Aug  8 18:56 dexopt
+drwxr-xr-x 2 runner runner 4096 Aug  8 18:56 fonts
+=== res dirs ===
+-1.xml
+-5.xml
+-7.xml
+-B.png
+-B.xml
+-D.xml
+-K.xml
+-N.png
+-N1.png
+-W.xml
+=== check for embedded apk ===
+=== strings for whale in wrapper ===
+[0m
+[0m$ [0mgrep -oE 'button-xapk[^>]*|xapk[^>]*data-url[^>]*' /tmp/opencode/utd_dl.html | head; echo "=== any .xapk hrefs ==="; grep -oE 'href="[^"]*xapk[^"]*"' /tmp/opencode/utd_dl.html | head; echo "=== data-file-id refs ==="; grep -oE 'data-file-id="[0-9]+"|data-code="[0-9]+"' /tmp/opencode/utd_dl.html | sort -u | head
+=== any .xapk hrefs ===
+=== data-file-id refs ===
+data-code="777828"
+data-file-id="1197336657"
+[0m
+The uptodown channel served a wrapper app, not the real Whale binary. Let me check for the XAPK bundle download button that the JS references.
+The uptodown channel is live but serves its wrapper app, not the real com.naver.whale binary. Let me check the wrapper for the real APK fetch URL and confirm the current desktop version claim.
+[0m$ [0mcd /tmp/opencode/whale_apk && strings -n 12 classes*.dex 2>/dev/null | grep -oE 'https?://[a-zA-Z0-9./_-]*uptodown[a-zA-Z0-9./_-]*' | sort -u | head -20
+https://dw.uptodown.com/dwn/
+https://t.uptodown.app
+https://u.uptodown.app
+https://uptodown-android.uptodown.com/android
+https://www.uptodown.app
+https://www.uptodown.com
+https://www.uptodown.com/turbo
+[0m
+[0m$ [0mcd /tmp/opencode/whale_apk && strings -n 12 classes*.dex 2>/dev/null | grep -oE 'https?://[a-zA-Z0-9./_-]*whale[a-zA-Z0-9./_-]*' | sort -u | head; echo "=== whale refs in wrapper ==="; strings -n 10 classes*.dex 2>/dev/null | grep -iE 'naver.?whale|whale.*apk' | sort -u | head -10
+=== whale refs in wrapper ===
+[0m
+[0m$ [0mgrep -oE 'dw\.uptodown\.com/dwn/[^"]{0,60}|data-url="[^"]{0,60}"' /tmp/opencode/utd_ver.html | sort -u | head; echo "=== version rows with links ==="; grep -oE 'href="[^"]*version/[0-9]+[^"]*"' /tmp/opencode/utd_ver.html | sort -u | head
+data-url=""
+data-url="apps"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+=== version rows with links ===
+[0m
+The wrapper is generic (no embedded whale APK; fetches at runtime). Let me verify whether the versions page exposes direct per-version file tokens and confirm the desktop changelog version claim quickly.
+The uptodown Android channel is live again but serves a runtime-fetching wrapper, not the real Whale binary. Let me finalize delta checks on the desktop version and NVD.
+[0m$ [0msleep 1; curl -s -o /tmp/opencode/changelog.html -w "changelog HTTP %{http_code} len=%{size_download}\n" -A "Mozilla/5.0" "https://whale.naver.com/en/changelog/" 2>/dev/null; curl -s -o /tmp/opencode/changelog2.txt -w "changelog.whale.naver.com HTTP %{http_code} len=%{size_download}\n" "https://changelog.whale.naver.com/"; sleep 1; curl -s "https://nvd.nist.gov/rest/api/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00.000&resultsPerPage=5" -o /tmp/opencode/nvd.json -w "nvd HTTP %{http_code}\n"
+changelog HTTP 200 len=6335
+changelog.whale.naver.com HTTP 504 len=5518
+nvd HTTP 403
+[0m
+[0m$ [0mgrep -oE 'v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' /tmp/opencode/changelog.html | sort -u | head; echo "=== whale.naver.com/en/changelog version ==="; grep -oiE 'version[^<]{0,40}|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' /tmp/opencode/changelog.html | head -10
+=== whale.naver.com/en/changelog version ===
+version='1.1',s.queue=[],u=t.createElement(n),u
+[0m
+The uptodown wrapper contains the dwn endpoint logic. Let me check whether the wrapper exposes how the real APK is fetched (session-signed direct link).
+[0m$ [0mcd /tmp/opencode/whale_apk && strings -n 12 classes*.dex 2>/dev/null | grep -iE 'getToken|token|/dwn|download.*apk|\.apk' | sort -u | head -20; echo "=== t.uptodown.app / u.uptodown.app refs ==="; strings -n 10 classes*.dex 2>/dev/null | grep -E 't\.uptodown\.app|u\.uptodown\.app' | sort -u | head
+Landroidx/browser/trusted/Token;
+ Unexpected JSON token at offset 
+ createMockSessionTokenForTesting
+ currentExtractedTextRequestToken
+ tokenBinding=
+ tokenCreationEpochInSecs
+ tokenCreationTimestamp
+ tokenExpirationTimestamp
+!ProvideTextStyleFromToken-3J-VO9M
+!https://www.uptodown.com:443/dwn/
+"com.android.vending.derived.apk.id
+"getActivityStackToken is not valid
+"isMethodGetActivityStackTokenValid
+#/dwn/appID/native-external/increase
+#Error getting authentication token.
+#Landroidx/work/impl/StartStopToken;
+#Lcom/google/gson/reflect/TypeToken;
+#Lcom/google/gson/reflect/TypeToken<
+$ID token missing required field: sub
+$Landroidx/work/impl/StartStopTokens;
+=== t.uptodown.app / u.uptodown.app refs ===
+2https://t.uptodown.app:443/eapi/v2/tracker/device/
+3https://t.uptodown.app:443/eapi/v3/tracker/updates/
+6https://t.uptodown.app:443/eapi/v2/tracker/identifier/
+6https://u.uptodown.app:443/eapi/v2/tracker/upload-file
+9https://t.uptodown.app:443/eapi/v2/tracker/app-to-upload/
+Ehttps://t.uptodown.app:443/eapi/androidtracker/device-apps-installed/
+https://t.uptodown.app:443
+[0m
+[0m$ [0mcat >> /home/runner/work/whale-hunt/whale-hunt/probe-results.md <<'EOF'
+
+## 2026-08-08 18:57:00 UTC
+https://naver-whale-browser.en.uptodown.com/android -> 200 len=156332; versions include 3.9.14.9 (data-file-id=1197336657, data-code=777828)
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246; button data-url token present (JS-obfuscated)
+https://dw.uptodown.com/dwn/<token> -> 302 -> dw.uptodown.net/<token>/uptodown-com.naver.whale.apk -> 200 len=15275646 (SHA256 abde6f83ed936585bbf28a1ce750c6954c28fc07469fb33014ea049e39f747b4)
+  ARTIFACT IS UPTODOWN WRAPPER APP (package com.uptodown, appname "Uptodown App Store") NOT com.naver.whale — wrapper fetches real APK via session-signed token at runtime; no embedded whale APK
+https://whale.naver.com/en/changelog/ -> 200 len=6335 (JS-rendered, no version string)
+https://changelog.whale.naver.com/ -> 504 (gateway error this run)
+NVD api -> 403 (rate-limited this run)
+EOF
+echo saved
+saved
+[0m
+I have enough to run the 8 steps. Let me record the key probe result to the probe-results file, then emit the structured output.
+The uptodown channel is live again but serves a wrapper. Let me extract the wrapper's real-APK fetch logic from the APK I now hold — this determines if the genuine com.naver.whale binary is reachable.
+[0m$ [0mcd /tmp/opencode/whale_apk && strings -n 10 classes*.dex 2>/dev/null | grep -iE 'getReal|real.?apk|/dwn/|downloadApk|fetchApp|fileUrl|downloadUrl|native-external|session' | sort -u | head -25
+getRealID
+	sessionId
+ /native-external-update/increase
+ Could not get session for report
+ TRANSACTION_newSessionWithExtras
+ access$getGetThreadSessionMethod
+ createMockSessionTokenForTesting
+ for session 
+ googleSessionIdExtension=
+ of new fallback session 
+ of new session 
+ platformSpecificTextInputSession
+ requireTextClassificationSession
+!Session Event Type: SESSION_START
+!com.google.firebase.sessions.Time
+!endRearDisplayPresentationSession
+!https://www.uptodown.com:443/dwn/
+"AndroidTextInputSession.android.kt
+"Landroidx/compose/ui/SessionMutex;
+"Provided session must have binder.
+"SessionMutex(currentSessionHolder=
+"access$interceptedTextInputSession
+"getSessionId failed with exception
+"onSessionStarted$lambda$1$lambda$0
+"withSessionCancellingPrevious-impl
+[0m
+One more channel probe — apkpure.net was flagged as a remaining JS-resolved channel for the genuine Whale APK.
+[0m$ [0msleep 1; curl -s -o /tmp/opencode/apkpure.html -w "apkpure HTTP %{http_code} len=%{size_download}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36" "https://apkpure.com/naver-whale-browser/com.naver.whale"; grep -oE '3\.9\.14\.[0-9]+|com\.naver\.whale' /tmp/opencode/apkpure.html | sort -u | head
+apkpure HTTP 403 len=5788
+com.naver.whale
+[0m
+apkpure still 403. I have sufficient delta evidence. Here is my analysis.
+
+---
+
+STEP 1 — DELTA
+- [NEW] uptodown Android channel LIVE again: `naver-whale-browser.en.uptodown.com/android` → 200 (len=156332), `/android/download` → 200 (len=155246); version list includes **3.9.14.9** (file-id `1197336657`, app `777828`) — reverses prior "uptodown dead (404/410)" for the Android subdomain
+- [NEW] `dw.uptodown.com/dwn/<token>` → 302 → `dw.uptodown.net/<token>/uptodown-com.naver.whale.apk` → 200, 15.2MB, SHA256 `abde6f83...` — artifact is the **Uptodown wrapper app** (package `com.uptodown`, appname "Uptodown App Store", classes all `com/uptodown/*`), **NOT** `com.naver.whale`; no embedded whale APK; real Whale binary fetched at runtime via session-signed token (`https://www.uptodown.com:443/dwn/` + `native-external` endpoints)
+- [CHANGED] Desktop subdomain `whale-browser.en.uptodown.com` → still 404 (unchanged dead); apkpure.com → still 403; `changelog.whale.naver.com` → 504 (was JS-rendered empty; now gateway error); NVD API → 403 rate-limited this run (could not re-assert 0-CVE 2026)
+
+STEP 2 — PRIORITIZE
+- [PRIO] Whale desktop sync bootstrap-token envelope (v4.38.386.14), 6.55, atk=7 biz=8 tech=9 gate=2 cloud=3 fresh=8
+- [PRIO] Whale Android sync engine (com.naver.whale 3.9.14.9), 6.15, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=7
+- [PRIO] Whale sidebar/dual-tab boundary (v4.38.386.14), 6.40, atk=8 biz=8 tech=8 gate=2 cloud=3 fresh=10
+
+STEP 3 — HYPOTHESES
+[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
+class: AUTH
+asset: whalesync client engine + profile prefs (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`) + `/whalesync`
+confidence: 62
+reasoning: v4.38.386.14 binary confirmed Whale-only prefs keys + Whale-forked OSCrypt (`os_crypt_whale.cc`/`wbc_wrapper_apis.cc`, `xv10` magic); `/whalesync` authed by NEO_SES cookie; per-account bootstrap-token envelope deviates from upstream Chromium. KDF alg + iteration count still unextracted; all binary channels remain blocked (uptodown serves wrapper-only).
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence location (keyring/file/Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for `xv10` iteration constants; authorized login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords/cookies/autofill → full-account compromise (High)
+testability: AUTH_HELPED
+[HYP] Android sync key derivation/storage — com.naver.whale 3.9.14.9
+class: AUTH
+asset: com.naver.whale 3.9.14.9 APK sync engine + `/whalesync`
+confidence: 58
+reasoning: Android 3.9.14.9 pinned via non-Naver mirror metadata; desktop uses Whale-forked OSCrypt + per-account bootstrap tokens, Android variant of the same sync engine unverified; uptodown channel now confirmed live (200) but serves wrapper app only, so the genuine APK still needs the wrapper's runtime session-signed fetch.
+evidence_needed: whether Android sync reuses desktop bootstrap-token envelope or a separate AndroidKeystore-backed KDF; `/whalesync` request shape from mobile.
+verify_steps: AUTH_HELPED: obtain genuine 3.9.14.9 via wrapper runtime fetch or HUMAN deliver; jadx the dex for `whalesync`/`bootstrap_token` call sites; diff against desktop envelope.
+impact: local attacker with device access decrypts synced credentials (High)
+testability: AUTH_HELPED
+[HYP] Sidebar/dual-tab boundary regression — CVE-2025-69235 variant on latest
+class: OTHER
+asset: Latest desktop Whale `sidebarAction.show({url})` + dual-tab web panel
+confidence: 58
+reasoning: CVE-2025-69235 fixed <4.35.351.12; latest 4.38.386.14 is 3–6 minor bumps ahead with 0 CVEs since; sample `background.js` (live, HTTP 200) forwards any-origin `runtime.onMessage` to `sidebarAction.show`/`windows.create` without validation; sample manifest is invalid JSON → must test with a minimal valid MV2 extension.
+evidence_needed: crafted panel URL executing script / escaping iframe sandbox / reading opener cross-origin on latest build.
+verify_steps: AUTH_HELPED: install latest on Linux, load minimal valid MV2 extension, cross-origin content-script `sendMessage`, drive `sidebarAction.show({url: crafted.html})`, test opener readback + sandbox escape. Zero Naver-infra requests.
+impact: SOP bypass / script execution in privileged browser-UI context (High; Critical if renderer escalation)
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] Android sync key derivation (58): not dropped for confidence; merged rationale — uptodown wrapper-only means genuine APK unobtainable passively; verification requires the wrapper's runtime fetch (emulator/HUMAN). Survives as lower-ranked AUTH hypothesis.
+- [PARKED] Sidebar boundary (58): class OTHER not on rejected list, concrete steps exist; kept. No class dropped this run — all three pass the 40+ confidence and REJECTED-list gates.
+
+[FINAL] 1. Sync bootstrap-token envelope (62, AUTH, AUTH_HELPED) → top ranked
+[FINAL] 2. Sidebar/dual-tab boundary regression (58, OTHER, AUTH_HELPED)
+[FINAL] 3. Android sync key derivation (58, AUTH, AUTH_HELPED)
+
+STEP 5 — NEXT ACTION
+[NEXT] PROBE: fetch the uptodown versions-page per-version file token for file-id `1197336657` and attempt the direct `dw.uptodown.com/dwn/` variant with the versions-page `data-version` value — if the genuine com.naver.whale APK token exists (distinct from the wrapper token), one GET yields the real Android sync binary; else confirm wrapper-only and elevate to HUMAN deliver of the desktop `.deb`.
+
+STEP 6 — LEARNING
+- [LEARN] CONFIRMED uptodown Android channel live @ naver-whale-browser.en.uptodown.com: `/android` + `/android/download` both 200, version 3.9.14.9 listed (file-id 1197336657) — prior "uptodown dead" finding REVERSED for the Android subdomain; desktop subdomain `whale-browser.en.uptodown.com` remains 404
+- [LEARN] REJECTED genuine-APK path @ uptodown: `dw.uptodown.com/dwn/<token>` serves the Uptodown wrapper app (`com.uptodown`, SHA256 `abde6f83...`), NOT `com.naver.whale` — real Whale binary fetched at runtime via session-signed token; passive acquisition of the actual Android Whale binary remains blocked
+- [LEARN] REJECTED @ apkpure.com: still Cloudflare 403 (unchanged)
+- [LEARN] CONFIRMED @ NVD API: 403 rate-limited this run — transient; prior 0-CVE-2026 assertion stands but unverified this cycle
+
+STEP 7 — RISK SCORE
+[RISK] sync: 65 — custom `/whalesync` + per-account bootstrap tokens + Whale OSCrypt fork (`xv10`) confirmed in binary; KDF/key-storage and reset-auth unverified; Android channel now confirmed live-but-wrapper-only, so genuine mobile binary remains the blocker | browser: 82 — sidebar/dual-tab (6 CVEs 2025) still 3+ minor versions past last fix with zero 2026 CVEs; Linux absent from CVE-2025-69235 fix CPE; live sample source confirms ALL-origin `content_scripts` + unvalidated `sidebarAction.show()` message path — regression window unchanged | libs: 35 — socket.io.slim.js Whale-only confirmed but version-drift audit still blocked (no binary); no public lib manifest; passive lib-inventory degraded to speculative
