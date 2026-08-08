@@ -64,3 +64,6 @@
 - 2 lead(s) marked VALID at 2026-08-08 19:06:55 UTC
   - valid-bugs.md
   - | **VALID** | 0 | No lead demonstrates an actual vulnerability on v4.38.386.14 |
+
+- 1 lead(s) marked VALID at 2026-08-08 20:15:55 UTC
+  - | Q6 Not rejected? | YES — SOP bypass is a valid vulnerability class |
