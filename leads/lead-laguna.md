@@ -257,3 +257,4 @@ verify_steps: PASSIVE: objdump/strings on `whale_sync_util.cc`/`whale_sync_auth_
 impact: Local attacker/infostealer with profile access decrypts synced passwords, cookies, bookmarks → full-account compromise (High)
 testability: PASSIVE
 ## 2026-08-08 00:43:05 UTC [browser] (model laguna)
+## 2026-08-08 02:46:37 UTC [browser] (model laguna)
