@@ -16724,3 +16724,610 @@ testability: AUTH_HELPED
 - [RISK] sync: 75 — passphrase KDF + token storage are the whole surface (server holds ciphertext only) and remain unverified; uptodown channel now unblocks `.rodata` extraction; 3 minor bumps since last CVE-fix with zero disclosures
 - [RISK] browser: 60 — sidebar/dual-tab SOP/CSP class recurred 6× across 2025-26 CVEs (Whale-only feature); Linux fix never claimed; active feature surface with no public testing
 - [RISK] libs: 45 — only known Whale-only runtime lib is `socket.io.slim.js` (stale until binary re-acquired); installer component newly surfaced via CVE-2024-50583
+===== ANALYST bigpickle 2026-08-08 12:07:00 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code} %{url_effective}\n" -L --max-time 20 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" "https://whale-browser.en.uptodown.com/windows/download"
+410 https://whale-browser.en.uptodown.com/windows/download
+[0m
+[0m$ [0mcurl -s --max-time 20 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" "https://whale-browser.en.uptodown.com/windows" -o /tmp/opencode/uptodown_whale.html; wc -c /tmp/opencode/uptodown_whale.html
+114 /tmp/opencode/uptodown_whale.html
+[0m
+[0m$ [0mcat /tmp/opencode/uptodown_whale.html
+<html><body><h1>410 Gone</h1>
+The resource is no longer available and will not be available again.
+</body></html>
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}\n" --max-time 20 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "https://whale-browser.en.uptodown.com/windows"
+410
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "filehorse: %{http_code}\n" --max-time 20 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "https://www.filehorse.com/download-whale-browser/"
+filehorse: 200
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "softpedia: %{http_code}\n" --max-time 20 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "https://www.softpedia.com/get/Internet/Browsers/Whale-Browser.shtml"
+softpedia: 403
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "techspot: %{http_code}\n" --max-time 20 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "https://www.techspot.com/downloads/7013-naver-whale-browser.html"
+techspot: 301
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "majorgeeks: %{http_code}\n" --max-time 20 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "https://www.majorgeeks.com/files/details/naver_whale.html"
+majorgeeks: 200
+[0m
+[0m$ [0mcurl -s --max-time 25 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "https://www.filehorse.com/download-whale-browser/" -o /tmp/opencode/fh.html; wc -c /tmp/opencode/fh.html; grep -oiE "(version|v4\.[0-9]+\.[0-9]+\.[0-9]+|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)" /tmp/opencode/fh.html | sort -u | head -20
+164884 /tmp/opencode/fh.html
+1.129.418.475
+1.226.062.847
+1.246.08.38
+1.5.72.4
+1.5.75.9
+10.42.251.1003
+2.10.123.10
+2.10.123.35
+2.10.123.37
+2.10.124.26
+2.11.126.19
+2.11.126.22
+2.11.126.23
+2.494.654.666
+2.6.88.19
+2.6.88.7
+2.6.89.9
+2.6.90.13
+2.6.90.14
+2.6.90.16
+[0m
+[0m$ [0mcurl -s --max-time 25 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" -L "https://www.majorgeeks.com/files/details/naver_whale.html" -o /tmp/opencode/mg.html; wc -c /tmp/opencode/mg.html; grep -oiE "(v4\.[0-9]+\.[0-9]+\.[0-9]+|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)" /tmp/opencode/mg.html | sort -u | head -20
+33886 /tmp/opencode/mg.html
+[0m
+[0m$ [0mgrep -oiE "([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|Version[^<]{0,40})" /tmp/opencode/fh.html | grep -iE "4\.[0-9]" | sort -u | head; echo ---; grep -oiE "href=\"[^\"]*whale[^\"]*\"" /tmp/opencode/fh.html | sort -u | head -20
+2.10.124.26
+2.494.654.666
+2.9.114.30
+2.9.114.33
+3.14.133.23
+3.14.134.62
+3.18.154.1
+3.18.154.13
+3.18.154.5
+3.18.154.7
+---
+href="https://static.filehorse.com/screenshots/browsers-and-plugins/whale-browser-screenshot-01.png"
+href="https://static.filehorse.com/screenshots/browsers-and-plugins/whale-browser-screenshot-02.png"
+href="https://static.filehorse.com/screenshots/browsers-and-plugins/whale-browser-screenshot-03.png"
+href="https://static.filehorse.com/screenshots/browsers-and-plugins/whale-browser-screenshot-04.png"
+href="https://whale.naver.com/en/"
+href="https://www.filehorse.com/download-whale-browser/"
+href="https://www.filehorse.com/download-whale-browser/#changelog"
+href="https://www.filehorse.com/download-whale-browser/#review"
+href="https://www.filehorse.com/download-whale-browser/#screenshots"
+href="https://www.filehorse.com/download-whale-browser/download/"
+href="https://www.filehorse.com/es/download-whale-browser/"
+[0m
+[0m$ [0mgrep -oiE "(version[^<]{0,30}|v4\.[0-9.]+)" /tmp/opencode/mg.html | sort -u | head; echo ---; grep -oiE "href=\"[^\"]*\.(exe|deb|msi)[^\"]*\"" /tmp/opencode/mg.html | head
+version='2.0';
+---
+[0m
+[0m$ [0mcurl -s --max-time 25 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" -L "https://www.filehorse.com/download-whale-browser/download/" -o /tmp/opencode/fhd.html; wc -c /tmp/opencode/fhd.html; grep -oiE "([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)" /tmp/opencode/fhd.html | sort -u | head; echo ---LINK---; grep -oiE "href=\"[^\"]*whalesetup[^\"]*\"|href=\"[^\"]*\.exe[^\"]*\"" /tmp/opencode/fhd.html | sort -u | head
+66213 /tmp/opencode/fhd.html
+1.129.418.475
+1.246.08.38
+10.42.251.1003
+133.0.5932.70
+138.0.7204.5
+2.494.654.666
+2.992.47.205
+4.39.410.6
+4.9.0.3
+43.23.1007.94
+---LINK---
+href="https://static-whale.pstatic.net/downloads/installers/WhaleSetup.exe"
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "HEAD static-whale: %{http_code} size=%{size_download} redirect=%{redirect_url}\n" -I --max-time 25 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "https://static-whale.pstatic.net/downloads/installers/WhaleSetup.exe"
+HEAD static-whale: 200 size=0 redirect=
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "GET range: %{http_code} size=%{size_download}\n" --max-time 25 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" -H "Range: bytes=0-1024" "https://static-whale.pstatic.net/downloads/installers/WhaleSetup.exe"
+GET range: 206 size=1025
+[0m
+[0m$ [0mcurl -s -I --max-time 25 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "https://static-whale.pstatic.net/downloads/installers/WhaleSetup.exe"
+HTTP/2 200 
+date: Sat, 08 Aug 2026 12:02:47 GMT
+server: Apache
+access-control-allow-credentials: true
+access-control-allow-headers: Charset, Content-Type, X-Requested-With, Accept, userId
+access-control-allow-methods: GET, POST, OPTIONS, PUT, DELETE, HEAD, PATCH
+strict-transport-security: max-age=63072000;
+last-modified: Thu, 19 Jun 2025 06:23:27 GMT
+accept-ranges: bytes
+content-length: 2203312
+content-type: application/x-msdownload
+age: 0
+[0m
+[0m$ [0mfor u in \
+  "https://static-whale.pstatic.net/downloads/installers/WhaleSetup_4.38.386.14.exe" \
+  "https://static-whale.pstatic.net/downloads/installers/whale_4.38.386.14_amd64.deb" \
+  "https://static-whale.pstatic.net/downloads/installers/whale_amd64.deb" \
+  "https://static-whale.pstatic.net/downloads/installers/WhaleSetup.exe" \
+  ; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 -I -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "$u")
+  len=$(curl -s -o /dev/null -w "%{size_download}" --max-time 15 -I -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "$u")
+  echo "$code $len $u"
+done
+404 0 https://static-whale.pstatic.net/downloads/installers/WhaleSetup_4.38.386.14.exe
+404 0 https://static-whale.pstatic.net/downloads/installers/whale_4.38.386.14_amd64.deb
+404 0 https://static-whale.pstatic.net/downloads/installers/whale_amd64.deb
+200 0 https://static-whale.pstatic.net/downloads/installers/WhaleSetup.exe
+[0m
+[0m$ [0mcd /tmp/opencode && curl -s --max-time 60 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "https://static-whale.pstatic.net/downloads/installers/WhaleSetup.exe" -o WhaleSetup.exe && file WhaleSetup.exe && ls -la WhaleSetup.exe && sha256sum WhaleSetup.exe
+WhaleSetup.exe: PE32 executable (GUI) Intel 80386, for MS Windows, 5 sections
+-rw-r--r-- 1 runner runner 2203312 Aug  8 12:03 WhaleSetup.exe
+c523f6619714ce8c4a3ef0da88f3d389c74edbdb0a170a468247747fa142ad2c  WhaleSetup.exe
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 6 WhaleSetup.exe | grep -iE "(fileversion|productversion|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)" | sort -u | head -40
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"><dependency><dependentAssembly><assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="x86" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity></dependentAssembly></dependency><trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"><security><requestedPrivileges><requestedExecutionLevel level="requireAdministrator" uiAccess="false"></requestedExecutionLevel></requestedPrivileges></security></trustInfo><application xmlns="urn:schemas-microsoft-com:asm.v3"><windowsSettings><dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:application xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"></ms_compatibility:supportedOS></ms_compatibility:application></ms_compatibility:compatibility></assembly>
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 8 WhaleSetup.exe | grep -iE "http|\.exe|\.deb|\.msi|\.zip|download|installer|\.pak" | sort -u | head -40
+%http://s.symcb.com/universal-root.crl0
+'H,GHttp
++http://ts-aia.ws.symantec.com/tss-ca-g2.cer0<
++http://ts-crl.ws.symantec.com/tss-ca-g2.crl0(
+.http://crl.thawte.com/ThawteTimestampingCA.crl0
+/http://ts-aia.ws.symantec.com/sha256-tss-ca.cer0(
+/http://ts-crl.ws.symantec.com/sha256-tss-ca.crl0
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"><dependency><dependentAssembly><assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="x86" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity></dependentAssembly></dependency><trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"><security><requestedPrivileges><requestedExecutionLevel level="requireAdministrator" uiAccess="false"></requestedExecutionLevel></requestedPrivileges></security></trustInfo><application xmlns="urn:schemas-microsoft-com:asm.v3"><windowsSettings><dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:application xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"></ms_compatibility:supportedOS></ms_compatibility:application></ms_compatibility:compatibility></assembly>
+D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb
+http://ocsp.thawte.com0
+http://s.symcb.com/pca3-g5.crl0
+http://s.symcd.com06
+http://s.symcd.com0_
+http://sw.symcb.com/sw.crl0`
+http://sw.symcd.com0'
+http://sw1.symcb.com/sw.crt0
+http://ts-ocsp.ws.symantec.com07
+http://ts-ocsp.ws.symantec.com0;
+http://whale.naver.com0
+https://d.symcb.com/cps0%
+https://d.symcb.com/rpa0
+https://d.symcb.com/rpa0)
+https://d.symcb.com/rpa0.
+https://d.symcb.com/rpa0@
+[0m
+[0m$ [0mwhich objdump exiftool wrestool strings python3 2>/dev/null; echo ---; cd /tmp/opencode && strings -n 10 WhaleSetup.exe | grep -iE "pstatic|whale\.naver|\.whaleon|downloads|installers|\.pak$|catalog|manifest\.json|version\.json|setup" | sort -u | head -40
+/usr/bin/objdump
+/usr/bin/strings
+/usr/bin/python3
+---
+D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb
+http://whale.naver.com0
+[0m
+[0m$ [0mcd /tmp/opencode && strings -e l -n 5 WhaleSetup.exe | grep -iE "(file|product|company|legal|version)" | sort -u | head -20; echo ===; strings -e l -n 5 WhaleSetup.exe | grep -oE "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | sort -u | head
+CompanyName
+FileDescription
+FileVersion
+LegalCopyright
+OriginalFilename
+ProductName
+ProductVersion
+StringFileInfo
+VS_VERSION_INFO
+VarFileInfo
+api-ms-win-core-file-l1-2-2
+===
+1.2.0.5
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct,re
+data=open('WhaleSetup.exe','rb').read()
+# find UTF-16LE version value strings near known keys
+keys=[b'FileVersion',b'ProductVersion',b'FileDescription',b'CompanyName',b'ProductName',b'OriginalFilename',b'LegalCopyright',b'InternalName']
+for k in keys:
+    for m in re.finditer(k+'\x00',data):
+        start=m.end()
+        # read up to next double-null, utf-16le
+        s=data[start:start+200]
+        if b'\x00\x00' in s:
+            s=s[:s.index(b'\x00\x00')]
+        try:
+            val=s.decode('utf-16-le')
+        except:
+            continue
+        if val.strip():
+            print(k.decode(),'=',val)
+        break
+EOF
+Traceback (most recent call last):
+  File "<stdin>", line 6, in <module>
+TypeError: can't concat str to bytes
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import re
+data=open('WhaleSetup.exe','rb').read()
+keys=[b'FileVersion',b'ProductVersion',b'FileDescription',b'CompanyName',b'ProductName',b'OriginalFilename',b'LegalCopyright',b'InternalName']
+for k in keys:
+    pat=k+b'\x00'
+    m=re.search(re.escape(pat),data)
+    if not m:
+        print(k.decode(),'= NOT FOUND'); continue
+    s=data[m.end():m.end()+300]
+    if b'\x00\x00' in s:
+        s=s[:s.index(b'\x00\x00')]
+    try:
+        val=s.decode('utf-16-le')
+    except Exception as e:
+        val='<err %s>'%e
+    print(k.decode(),'=',repr(val))
+EOF
+FileVersion = NOT FOUND
+ProductVersion = NOT FOUND
+FileDescription = NOT FOUND
+CompanyName = NOT FOUND
+ProductName = NOT FOUND
+OriginalFilename = NOT FOUND
+LegalCopyright = NOT FOUND
+InternalName = NOT FOUND
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import re
+data=open('WhaleSetup.exe','rb').read()
+# utf16 pattern for 'FileVersion' and 'ProductVersion'
+for name in ['FileVersion','ProductVersion','FileDescription','ProductName']:
+    pat=(''.join(c+'\x00' for c in name)).encode()
+    for m in re.finditer(re.escape(pat),data):
+        seg=data[m.end():m.end()+400]
+        # decode utf16 until double-null
+        if b'\x00\x00' in seg: seg=seg[:seg.index(b'\x00\x00')]
+        print(name,'=>',repr(seg.decode('utf-16-le','replace'))[:120])
+        break
+EOF
+FileVersion => ''
+ProductVersion => ''
+FileDescription => ''
+ProductName => ''
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 6 WhaleSetup.exe | grep -iE "https?://|\.json|\.catalog|\.xml|\.zip|\.pak|update|release|latest|version" | sort -u | head -50
+%http://s.symcb.com/universal-root.crl0
++http://ts-aia.ws.symantec.com/tss-ca-g2.cer0<
++http://ts-crl.ws.symantec.com/tss-ca-g2.crl0(
+.http://crl.thawte.com/ThawteTimestampingCA.crl0
+/http://ts-aia.ws.symantec.com/sha256-tss-ca.cer0(
+/http://ts-crl.ws.symantec.com/sha256-tss-ca.crl0
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"><dependency><dependentAssembly><assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="x86" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity></dependentAssembly></dependency><trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"><security><requestedPrivileges><requestedExecutionLevel level="requireAdministrator" uiAccess="false"></requestedExecutionLevel></requestedPrivileges></security></trustInfo><application xmlns="urn:schemas-microsoft-com:asm.v3"><windowsSettings><dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:application xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"></ms_compatibility:supportedOS></ms_compatibility:application></ms_compatibility:compatibility></assembly>
+<assembly xmlns='urn:schemas-microsoft-com:asm.v1' manifestVersion='1.0'>
+ReleaseSRWLockExclusive
+http://ocsp.thawte.com0
+http://s.symcb.com/pca3-g5.crl0
+http://s.symcd.com06
+http://s.symcd.com0_
+http://sw.symcb.com/sw.crl0`
+http://sw.symcd.com0'
+http://sw1.symcb.com/sw.crt0
+http://ts-ocsp.ws.symantec.com07
+http://ts-ocsp.ws.symantec.com0;
+http://whale.naver.com0
+https://d.symcb.com/cps0%
+https://d.symcb.com/rpa0
+https://d.symcb.com/rpa0)
+https://d.symcb.com/rpa0.
+https://d.symcb.com/rpa0@
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct
+data=open('WhaleSetup.exe','rb').read()
+sig=struct.pack('<I',0xfeef04bd)
+i=data.find(sig)
+print('VS_FIXEDFILEINFO at',hex(i))
+if i!=-1:
+    vals=struct.unpack('<6H',data[i+16:i+28])
+    fv=vals[:4]; pv=vals[4:]
+    print('FileVersion = %d.%d.%d.%d'%fv)
+    print('ProductVersion = %d.%d.%d.%d'%pv)
+EOF
+VS_FIXEDFILEINFO at 0x149a8
+FileVersion = 2.1.5.0
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+TypeError: not enough arguments for format string
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct
+data=open('WhaleSetup.exe','rb').read()
+sig=struct.pack('<I',0xfeef04bd)
+i=data.find(sig)
+vals=struct.unpack('<7I',data[i+20:i+48])
+# fv ms/ls, pv ms/ls
+fv=[vals[0]>>16, vals[0]&0xffff, vals[1]>>16, vals[1]&0xffff]
+pv=[vals[2]>>16, vals[2]&0xffff, vals[3]>>16, vals[3]&0xffff]
+print('FileVersion = %d.%d.%d.%d'%tuple(fv))
+print('ProductVersion = %d.%d.%d.%d'%tuple(pv))
+EOF
+FileVersion = 0.5.0.63
+ProductVersion = 0.1.4.4
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct
+data=open('WhaleSetup.exe','rb').read()
+sig=struct.pack('<I',0xfeef04bd)
+i=data.find(sig)
+vals=struct.unpack('<6H',data[i+16:i+28])
+fv='%d.%d.%d.%d'%tuple(vals[:4])
+pv='%d.%d.%d.%d'%tuple(vals[4:])
+print('FileVersion   =',fv)
+print('ProductVersion=',pv)
+# also timestamps
+t=struct.unpack('<I',data[i+48:i+52])[0]
+import datetime
+print('timestamp =',datetime.datetime.utcfromtimestamp(t).isoformat() if t else 'none')
+EOF
+Traceback (most recent call last):
+  File "<stdin>", line 7, in <module>
+TypeError: not enough arguments for format string
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct
+data=open('WhaleSetup.exe','rb').read()
+sig=struct.pack('<I',0xfeef04bd)
+i=data.find(sig)
+vals=struct.unpack('<6H',data[i+16:i+28])
+print('vals',vals)
+fv='%d.%d.%d.%d'%vals[:4]
+pv='%d.%d.%d.%d'%vals[4:]
+print('FileVersion   =',fv)
+print('ProductVersion=',pv)
+EOF
+vals (2, 1, 5, 0, 63, 0)
+Traceback (most recent call last):
+  File "<stdin>", line 8, in <module>
+TypeError: not enough arguments for format string
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct
+data=open('WhaleSetup.exe','rb').read()
+sig=struct.pack('<I',0xfeef04bd)
+i=data.find(sig)
+def v(o): 
+    return struct.unpack('<HHHH',data[i+o:i+o+8])
+ms,ls=v(8); fm='%d.%d.%d.%d'%(ms[0],ms[1],ls[0],ls[1])
+pm,pl=v(16); pv='%d.%d.%d.%d'%(pm[0],pm[1],pl[0],pl[1])
+print('FileVersion   =',fm)
+print('ProductVersion=',pv)
+EOF
+Traceback (most recent call last):
+  File "<stdin>", line 7, in <module>
+ValueError: too many values to unpack (expected 2)
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import struct
+data=open('WhaleSetup.exe','rb').read()
+sig=struct.pack('<I',0xfeef04bd)
+i=data.find(sig)
+d=struct.unpack('<8H',data[i+8:i+24])
+# d = [fileVerMS_hi, fileVerMS_lo, fileVerLS_hi, fileVerLS_lo, prodMS_hi, prodMS_lo, prodLS_hi, prodLS_lo]
+print('FileVersion   = %d.%d.%d.%d'%tuple(d[0:4]))
+print('ProductVersion= %d.%d.%d.%d'%tuple(d[4:8]))
+EOF
+FileVersion   = 2.1.5.0
+ProductVersion= 2.1.5.0
+[0m
+[0m$ [0mfor u in \
+  "https://static-whale.pstatic.net/downloads/installers/linux/whale_amd64.deb" \
+  "https://static-whale.pstatic.net/downloads/linux/whale_amd64.deb" \
+  "https://static-whale.pstatic.net/downloads/whale_4.38.386.14_amd64.deb" \
+  "https://static-whale.pstatic.net/downloads/installers/whale_4.38.386.14_amd64.deb" \
+  "https://static-whale.pstatic.net/downloads/installers/WhaleSetup_offline.exe" \
+  "https://static-whale.pstatic.net/downloads/installers/WhaleSetup_x64.exe" \
+  "https://static-whale.pstatic.net/downloads/installers/WhaleSetup_2.1.5.0.exe" \
+  ; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 12 -I -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36" "$u")
+  echo "$code $u"
+done
+404 https://static-whale.pstatic.net/downloads/installers/linux/whale_amd64.deb
+404 https://static-whale.pstatic.net/downloads/linux/whale_amd64.deb
+404 https://static-whale.pstatic.net/downloads/whale_4.38.386.14_amd64.deb
+404 https://static-whale.pstatic.net/downloads/installers/whale_4.38.386.14_amd64.deb
+404 https://static-whale.pstatic.net/downloads/installers/WhaleSetup_offline.exe
+404 https://static-whale.pstatic.net/downloads/installers/WhaleSetup_x64.exe
+404 https://static-whale.pstatic.net/downloads/installers/WhaleSetup_2.1.5.0.exe
+[0m
+[0m$ [0mcd /tmp/opencode && objdump -p WhaleSetup.exe 2>/dev/null | grep -iE "DLL Name" | sort -u
+DLL Name: KERNEL32.dll
+	DLL Name: SHELL32.dll
+	DLL Name: USER32.dll
+[0m
+[0m$ [0mfor u in \
+  "https://static-whale.pstatic.net/downloads/installers/version.txt" \
+  "https://static-whale.pstatic.net/downloads/installers/version.json" \
+  "https://static-whale.pstatic.net/downloads/installers/latest.json" \
+  "https://static-whale.pstatic.net/downloads/installers/" \
+  "https://static-whale.pstatic.net/downloads/" \
+  ; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 12 -A "Mozilla/5.0" "$u")
+  echo "$code $u"
+done
+404 https://static-whale.pstatic.net/downloads/installers/version.txt
+404 https://static-whale.pstatic.net/downloads/installers/version.json
+404 https://static-whale.pstatic.net/downloads/installers/latest.json
+403 https://static-whale.pstatic.net/downloads/installers/
+403 https://static-whale.pstatic.net/downloads/
+[0m
+[0m$ [0mcurl -s --max-time 25 -A "Mozilla/5.0" "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2024-50583" -o /tmp/opencode/cve.json; python3 - <<'EOF'
+import json
+d=json.load(open('/tmp/opencode/cve.json'))
+c=d['vulnerabilities'][0]['cve']
+print('desc:', c['descriptions'][0]['value'][:300])
+print('cwes:', [x['cweId'] for w in c['weaknesses'] for x in w.get('description',[])])
+for m in c.get('metrics',{}).get('cvssMetricV31',[]):
+    print('cvss31:', m['cvssData']['baseScore'], m['cvssData']['baseSeverity'], m['cvssData']['vectorString'])
+for cfg in c.get('configurations',[]):
+    for node in cfg.get('nodes',[]):
+        for m in node.get('cpeMatch',[]):
+            print('cpe:', m.get('criteria'), '| vStart:', m.get('versionStartIncluding'), '| vEnd:', m.get('versionEndExcluding'))
+print('refs:', [r['url'] for r in c.get('references',[])][:5])
+EOF
+desc: Whale browser Installer before 3.1.0.0 allows an attacker to execute a malicious DLL in the user environment due to improper permission settings.
+Traceback (most recent call last):
+  File "<stdin>", line 5, in <module>
+KeyError: 'cweId'
+[0m
+[0m$ [0mpython3 - <<'EOF'
+import json
+d=json.load(open('/tmp/opencode/cve.json'))
+c=d['vulnerabilities'][0]['cve']
+for w in c.get('weaknesses',[]):
+    for x in w.get('description',[]):
+        print('cwe:', x['value'])
+for m in c.get('metrics',{}).get('cvssMetricV31',[]):
+    print('cvss31:', m['cvssData']['baseScore'], m['cvssData']['baseSeverity'])
+print('vector:', c.get('metrics',{}).get('cvssMetricV31',[{}])[0].get('cvssData',{}).get('vectorString'))
+for cfg in c.get('configurations',[]):
+    for node in cfg.get('nodes',[]):
+        for m in node.get('cpeMatch',[]):
+            print('cpe:', m.get('criteria'), '| vStart:', m.get('versionStartIncluding'), '| vEndEx:', m.get('versionEndExcluding'), '| vEndInc:', m.get('versionEndIncluding'))
+print('refs:', [r['url'] for r in c.get('references',[])][:6])
+EOF
+cwe: CWE-427
+cvss31: 6.3 MEDIUM
+vector: CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L
+refs: ['https://cve.naver.com/detail/cve-2024-50583.html']
+[0m
+[0m$ [0mpython3 - <<'EOF'
+import json
+d=json.load(open('/tmp/opencode/cve.json'))
+c=d['vulnerabilities'][0]['cve']
+print('published:', c.get('published'))
+print('lastModified:', c.get('lastModified'))
+EOF
+published: 2024-10-25T07:15:05.063
+lastModified: 2026-06-17T08:04:45.063
+[0m
+[0m$ [0mgrep -oiE ".{80}4\.39\.410\.6.{80}" /tmp/opencode/fhd.html | head -5; echo ===; grep -oiE "current version[^<]{0,60}|version 4\.[0-9]+" /tmp/opencode/fhd.html | sort -u | head
+le=1,maximum-scale=5"> <meta name="description" content="Download Whale Browser 4.39.410.6 for Windows PC. Get the Latest Version from FileHorse."> <script type="text/jav
+> <li><a href="https://www.filehorse.com/download-whale-browser/">Whale Browser 4.39.410.6</a></li> <li>Download Page</li> </ul> </nav> <div class="nav_report"> <svg xmln
+v class="dl-info clearfix"><div class="dl-left"><h3 class="green">Whale Browser 4.39.410.6</h3><div class="main_down_link clearfix"><a href="https://static-whale.pstatic.
+<button class="share-email" onclick="window.open('mailto:?subject=Whale Browser 4.39.410.6&body=https://www.filehorse.com/download-whale-browser/','_self')"><svg aria-hid
+on class="share-x" onclick="window.open('https://x.com/share?text=Whale+Browser+4.39.410.6&url=https://www.filehorse.com/download-whale-browser/&via=filehorse','_blank','
+===
+[0m
+[0m$ [0mcd /tmp/opencode && strings -e l -n 6 WhaleSetup.exe | grep -iE "http|\.exe|\.deb|setup|download|install|\.pak|\.7z|\.zip" | sort -u | head -30; echo ===WIDE===; strings -e b -n 6 WhaleSetup.exe | head -5
+Naver Whale Installer
+WhaleSetup
+WhaleSetup.exe
+\WhaleSetup.exe
+===WIDE===
+KERNEL32.DLL
+api-ms-win-core-fibers-l1-1-1
+api-ms-win-core-synch-l1-2-0
+kernel32
+api-ms-
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import re
+data=open('WhaleSetup.exe','rb').read()
+for pat in [b'pstatic', b'whale', b'naver', b'setup', b'.com', b'.net', b'.kr', b'http', b'CDN', b'cdn']:
+    ms=[m.start() for m in re.finditer(pat,data,re.I)]
+    print(pat, len(ms))
+# dump context of 'pstatic' hits
+for m in re.finditer(b'pstatic',data,re.I):
+    print(repr(data[m.start()-40:m.start()+60]))
+EOF
+b'pstatic' 0
+b'whale' 5
+b'naver' 9
+b'setup' 1
+b'.com' 102
+b'.net' 25
+b'.kr' 106
+b'http' 55
+b'CDN' 1
+b'cdn' 1
+[0m
+[0m$ [0mcd /tmp/opencode && python3 - <<'EOF'
+import re
+data=open('WhaleSetup.exe','rb').read()
+for m in re.finditer(b'whale',data,re.I):
+    print(repr(data[m.start()-40:m.start()+70]))
+EOF
+b'\x00\xd1R\x00\x00\x19\xe5\x00\x004\xe5\x00\x00RSDS\x86\xcf\x7f\x1b\x1dt\rE\x9c,o\x19E^I\xc3\x01\x00\x00\x00D:\\whale_windows_installer\\online_installer\\Product\\WhaleSetup.pdb\x00\x00\x00\x00\x00\x00\xdf'
+b'dows_installer\\online_installer\\Product\\WhaleSetup.pdb\x00\x00\x00\x00\x00\x00\xdf\x00\x00\x00\xdf\x00\x00\x00\x02\x00\x00\x00\xdd\x00\x00\x00GCTL\x00\x10\x00\x00\x00\xd5\x00\x00.text$mn\x00\x00\x00\x00\x00\xe5\x00\x00O\x00\x00\x00.t'
+b'604\xa0\x18\x80\x16\x00N\x00a\x00v\x00e\x00r\x00 \x00W\x00h\x00a\x00l\x00e\xa1\x18\x80\x16http://whale.naver.com0\r\x06\t*\x86H\x86\xf7\r\x01\x01\x01\x05\x00\x04\x82\x01\x00)cA\x95\xd8oQ\xb1\xab\x9e\x13\xcaH\xda\x17\xfb!\xc9\xdf\xf6\xccVS7\x97+i\xf3{\xa4\xb8\x0f\x8a\x1dN\xea'
+b'604\xa0\x18\x80\x16\x00N\x00a\x00v\x00e\x00r\x00 \x00W\x00h\x00a\x00l\x00e\xa1\x18\x80\x16http://whale.naver.com0\r\x06\t*\x86H\x86\xf7\r\x01\x01\x01\x05\x00\x04\x82\x01\x00\x96~\xa5\x93WG\x80(\xca\x1ays\xcf*\xac\xd8\xecwS\x1e\xecE\x9b\x82v\xaa\xb7\x8bQ\xd6\xa4\xa1y%+/'
+b'604\xa0\x18\x80\x16\x00N\x00a\x00v\x00e\x00r\x00 \x00W\x00h\x00a\x00l\x00e\xa1\x18\x80\x16http://whale.naver.com0\r\x06\t*\x86H\x86\xf7\r\x01\x01\x01\x05\x00\x04\x82\x01\x00\x0c\x95\x02\xe1\xdd3\xe7\x0f\x86]\x89\xb2g\x83\x077"3\x95\xc2/s\x9a\xb2u\xa9\x8b\xfdg\x87G\xf2\xb6!\x06\x01'
+[0m
+[0m$ [0mfor u in \
+  "https://static-whale.pstatic.net/downloads/installers/Whale.apk" \
+  "https://static-whale.pstatic.net/downloads/installers/whale_3.9.14.9.apk" \
+  "https://static-whale.pstatic.net/downloads/whale_3.9.14.9.apk" \
+  "https://static-whale.pstatic.net/downloads/installers/android/Whale.apk" \
+  "https://static-whale.pstatic.net/downloads/installers/WhaleSetup64.exe" \
+  "https://static-whale.pstatic.net/downloads/installers/WhaleSetup.exe?" \
+  ; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 12 -I -A "Mozilla/5.0" "$u")
+  echo "$code $u"
+done
+404 https://static-whale.pstatic.net/downloads/installers/Whale.apk
+404 https://static-whale.pstatic.net/downloads/installers/whale_3.9.14.9.apk
+404 https://static-whale.pstatic.net/downloads/whale_3.9.14.9.apk
+404 https://static-whale.pstatic.net/downloads/installers/android/Whale.apk
+404 https://static-whale.pstatic.net/downloads/installers/WhaleSetup64.exe
+200 https://static-whale.pstatic.net/downloads/installers/WhaleSetup.exe?
+[0m
+STEP 1 — DELTA
+- NEW @ static-whale.pstatic.net/downloads/installers/WhaleSetup.exe: official Naver CDN is REACHABLE in-sandbox (HTTP 200, `accept-ranges: bytes`, 206 on Range, Apache, no auth, CORS allow-*); supersedes cloudfront (DNS-blocked), APKMirror/apkpure (403), uptodown (410), softpedia (403) — first working binary-acquisition channel.
+- NEW @ WhaleSetup.exe: acquired stub, sha256 `c523f661...142ad2c` (2,203,312 B), PE32 online-installer, VS_FIXEDFILEINFO FileVersion=ProductVersion=**2.1.5.0**, manifest `requireAdministrator`, imports only KERNEL32/SHELL32/USER32, PDB `D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb`, last-modified 2025-06-19; version-agnostic stub (downloads full package at runtime; only embedded URL is signature publisher string `http://whale.naver.com`) — browser code (`os_crypt_whale`, sync, sidebar) NOT present in this file.
+- NEW @ CVE-2024-50583 (NVD, published 2024-10-25, lastModified 2026-06-17): "Whale browser Installer before 3.1.0.0 ... malicious DLL ... improper permission settings", CWE-427, CVSS 6.3; NVD publishes no CPE. Current official-channel installer 2.1.5.0 remains **below** the 3.1.0.0 fixed threshold.
+- NEW @ uptodown: `whale-browser.en.uptodown.com/windows` AND `/windows/download` both HTTP 410 — prior NEXT-action uptodown JS-token lead conclusively closed.
+- CHANGED @ FileHorse (independent mirror): labels current Windows Whale **4.39.410.6** and its download href points directly at the official CDN path — one minor above KB's v4.38.386.14 (Wikipedia infobox 2026-06-25); version-drift signal, unverified vs JS-rendered changelog.
+- NEW @ CDN enumeration: versioned/offline/linux/apk paths all 404 (`WhaleSetup_4.38.386.14.exe`, `WhaleSetup_offline.exe`, `WhaleSetup_x64.exe`, `WhaleSetup64.exe`, `whale_*_amd64.deb`, `whale_3.9.14.9.apk`, `version.txt/json`, `latest.json`); `/downloads/` + `/downloads/installers/` dir-listing 403. CDN exposes exactly one artifact.
+
+STEP 2 — PRIORITIZE
+- [PRIO] Whale browser binary (claimed latest v4.39.410.6 / v4.38.386.14): score 6.45 | attack 8 business 9 tech 7 gate 1 cloud 4 fresh 6 (0.25*8+0.25*9+0.15*7+0.15*1+0.10*4+0.10*6)
+- [PRIO] WhaleSetup.exe official installer (static-whale.pstatic.net, v2.1.5.0, reachable): score 5.95 | attack 7 business 7 tech 3 gate 6 cloud 3 fresh 8 (1.75+1.75+0.45+0.90+0.30+0.80)
+- [PRIO] static-whale.pstatic.net CDN channel (range-served, no auth): score 5.55 | attack 5 business 5 tech 3 gate 8 cloud 6 fresh 8 (1.25+1.25+0.45+1.20+0.60+0.80)
+
+STEP 3 — HYPOTHESES
+[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable key
+class: AUTH
+asset: Latest Whale binary (v4.38.386.14/v4.39.410.6) `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring
+confidence: 65
+reasoning: Whale-only prefs keys + `xv10` OSCrypt fork confirmed in prior binary runs; Help Center states passphrase never leaves device → server holds ciphertext only, so local KDF/key persistence is the whole attack surface. KDF params never extracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count for passphrase→key; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: acquire full binary via running WhaleSetup.exe 2.1.5.0 (online stub downloads package at runtime) or authorized Linux login; strings/.rodata/objdump for iteration constants; snapshot keyring + Preferences pre/post encrypted-sync enable.
+impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+[HYP] Installer DLL-execution class still below fixed threshold — CVE-2024-50583 regression window on official channel
+class: MISCONFIG
+asset: Official `WhaleSetup.exe` (static-whale.pstatic.net), online-installer FileVersion 2.1.5.0
+confidence: 50
+reasoning: NVD re-verified "Whale browser Installer before 3.1.0.0 allows attacker to execute malicious DLL due to improper permission settings" (CWE-427, CVSS 6.3); measured live CDN artifact is version 2.1.5.0 < 3.1.0.0 with no CPE enumeration to separate online vs offline binary. Installer is a Whale-only (non-Chromium) component — in scope.
+evidence_needed: whether 2.1.5.0 stub performs elevated install with writable/unsecured search path (DLL preload); whether the 3.1.0.0 fix applied to this same online-installer product line.
+verify_steps: AUTH_HELPED: authorized install of the CDN stub; Procmon/ldd-equivalent DLL-load capture during elevated run; check install-dir ACLs. Zero requests to Naver infra beyond the already-made GET.
+impact: local DLL planting → code execution in elevated installer context; Medium (High if LPE)
+testability: AUTH_HELPED
+[HYP] Sidebar/dual-tab panel SOP-CSP boundary — CVE-2025-69235 fix never claimed for Linux
+class: OTHER
+asset: Latest binary sidebar (`sidebarAction.show({url})`) + dual-tab web panel
+confidence: 45
+reasoning: CVE-2025-69235/69234 NVD CPEs list only Windows/macOS; Linux absent. Wiki (previously captured) documents arbitrary-URL sidebar loading + `use_navigation_bar:false` drag-navigation. Version drift (FileHorse 4.39.410.6) keeps ≥3 minor bumps past last fix with 0 CVEs.
+evidence_needed: crafted HTML in sidebar/dual-tab panel executing script or reading opener cross-origin on Linux; iframe sandbox escape; CSP bypass.
+verify_steps: AUTH_HELPED: install latest on Linux, drive `sidebarAction.show({url: crafted.html})` + dual-tab panel; test opener readback, sandbox escape, CSP bypass.
+impact: SOP bypass / script in privileged browser-UI context; Critical if renderer escalation
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] none dropped: all three ≥40 confidence, classes AUTH/MISCONFIG/OTHER not on REJECTED list, concrete verify_steps present.
+- Caveat applied: installer hypothesis carries the online-vs-offline ambiguity (NVD publishes no CPE); confidence held at 50 pending install-time DLL-load proof. Sidebar confidence trimmed 50→45 (CVE-2025-69235 already fixed; Linux claim rests on absent CPE).
+- [FINAL] 1. Sync KDF envelope (65, AUTH). 2. Installer DLL class 2.1.5.0<3.1.0.0 (50, AUTH). 3. Sidebar/dual-tab boundary (45, AUTH).
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: run the reachable official `WhaleSetup.exe` (sha256 `c523f661...`) — or deliver the full offline package it downloads at runtime — so the sync-KDF strings/.rodata scan and authorized Linux install become possible. Passive channel exhausted: CDN holds exactly one artifact (path enumeration complete, all 404/403); versioned .deb/APK paths do not exist; the only embedded URL in the stub is the signature publisher string `http://whale.naver.com` (out of scope to probe). A HUMAN install from the official CDN link simultaneously unblocks hypotheses 1–3.
+
+STEP 6 — LEARNING
+- ACCEPTED MISCONFIG @ WhaleSetup.exe official CDN: official channel reachable in-sandbox; live installer FileVersion 2.1.5.0 < CVE-2024-50583 fix threshold 3.1.0.0 — regression class open, pending install-time validation.
+- ACCEPTED OTHER @ static-whale.pstatic.net: `.pstatic.net` CDN resolves and serves ranges with no auth — first viable binary-acquisition channel in-sandbox (previous cloudfront/APKMirror/apkpure/uptodown/softpedia all dead).
+- REJECTED MISCONFIG @ CDN path enumeration: versioned installer/linux/apk paths all 404; single generic-path artifact only — no further passive acquisition value.
+- REJECTED OTHER @ uptodown: `/windows` and `/windows/download` both 410 Gone — JS-token download lead permanently closed.
+- CHANGED @ browser version: FileHorse claims latest Windows build 4.39.410.6 (KB had 4.38.386.14); third-party signal only, official changelog JS-rendered/unverifiable passively.
+
+STEP 7 — RISK SCORE
+[RISK] sync: 45 | custom OSCrypt/KDF + bootstrap-token envelope confirmed present in binary, but binary analysis still blocked → real surface, unverified keys. | browser: 55 | 3–6 minor bumps past last SOP/CSP fixes with 0 CVEs, Linux never claimed in CVE-2025-69235 fix → open regression window. | libs: 35 | socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.
