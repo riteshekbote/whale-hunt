@@ -7645,3 +7645,1058 @@ All 3 hypotheses pass the self-critique gate: confidence ≥ 40, class not on th
 **[RISK] browser: 78** — Sidebar + dual-tab environments have 6 confirmed CVEs in 2025 (SOP bypass CWE-346, iframe sandbox escape CWE-358, CSP bypass CWE-358). These are Whale-specific features not inherited from Chromium. Latest stable v4.38.386.14 is 3 minor version bumps ahead of last CVE-fix v4.35.351.12 (Dec 2025) with ZERO published CVEs in between — 6-month disclosure gap. Wiki docs confirm additional attack surface (sidebarAction.show() URL loading, drag-navigation exposure, DevTools-in-sidebar added v4.38.386.12). $4k SOP reward tier; high priority for new variant discovery.
 
 **[RISK] libs: 30** — Whale bundles Chromium (inherits all Chromium CVEs), but no Whale-only third-party library manifests or version lists are publicly available. The repo contains only translated documentation from 2019. Library-level version drift cannot be assessed without binary access. The Whale-only `socket.io.slim.js` push channel is confirmed bundled (content runtime-fetched), but its security posture cannot be assessed without binary extraction. Low visibility, moderate inherent risk.
+===== ANALYST laguna 2026-08-08 00:43:15 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+[0m$ [0mdate -u +"%Y-%m-%d %H:%M:%S UTC"
+2026-08-08 00:34:03 UTC
+[0m
+[0m# [0mTodos
+[•] STEP 1 - DELTA: Compare inventory against current surface
+[ ] STEP 2 - PRIORITIZE: Score top assets on 6 axes
+[ ] STEP 3 - HYPOTHESES: Generate max 1 hypothesis for top 3 assets
+[ ] STEP 4 - SELF-CRITIQUE: Filter hypotheses by rules
+[ ] STEP 5 - NEXT ACTION: Choose one concrete action
+[ ] STEP 6 - LEARNING: Emit REJECTED/ACCEPTED lines
+[ ] STEP 7 - RISK SCORE: Emit sync/browser/libs scores
+[0m
+[0m$ [0mcurl -sI "https://www.whale.naver.com/" 2>&1 | head -5
+(no output)
+[0m
+[0m$ [0mcurl -s "https://www.whale.naver.com/download" 2>&1 | head -100
+(no output)
+[0m
+[0m✗ [0mWebFetch https://www.whale.naver.com/ failed
+[91m[1mError: [0mTransport error (GET https://www.whale.naver.com/)
+[0m◈ [0mParallel Web Search "Whale browser download pstatic.net 2026"
+[0m
+[0m$ [0mcurl -sL "http://update.whale.naver.net/downloads/installers/WhaleSetup.exe" -o /tmp/opencode/whalesetup.exe 2>&1 && ls -la /tmp/opencode/whalesetup.exe && file /tmp/opencode/whalesetup.exe
+-rw-r--r-- 1 runner runner 11678736 Aug  8 00:35 /tmp/opencode/whalesetup.exe
+/tmp/opencode/whalesetup.exe: PE32 executable (GUI) Intel 80386, for MS Windows, 5 sections
+[0m
+[0m$ [0mwhich 7z 2>/dev/null || which 7za 2>/dev/null || (apt-get update -qq && apt-get install -y -qq p7zip-full 2>&1 | tail -3)
+/usr/bin/7z
+[0m
+[0m$ [0mmkdir -p /tmp/opencode/whale_extract && cd /tmp/opencode/whale_extract && 7z x -o./whale_inst /tmp/opencode/whalesetup.exe -y 2>&1 | tail -20
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31006
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31007
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31008
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31009
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31010
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31011
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/16931
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/16995
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/17100
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/17105
+ERROR: Data Error : .rsrc/1024/HTML/148
+ERROR: Data Error : .rsrc/1024/HTML/149
+ERROR: Data Error : .rsrc/1033/241/16138
+ERROR: Data Error : .rsrc/1033/241/16960
+
+Sub items Errors: 766
+
+Archives with Errors: 1
+
+Sub items Errors: 766
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 8 whalesetup.exe | grep -iE "passphrase|PBKDF2|scrypt|NEO_SES|nigori|bootstrap_token|sync\.encryption|whale_need_encryption|oscrypt|wallet|sync.*key|NEO_SES|encrypted_pre" | head -50
+(no output)
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 8 whalesetup.exe | grep -iE "whale.*sync|sync.*whale|sidebarAction|\.whalesync|api\.whale\.naver|dual.?tab|sidebar" | head -50
+(no output)
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 8 whalesetup.exe | grep -iE "http|https|whale|naver|download|install|update" | head -80
+D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb
+NAVER Co
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"><dependency><dependentAssembly><assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="x86" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity></dependentAssembly></dependency><trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"><security><requestedPrivileges><requestedExecutionLevel level="requireAdministrator" uiAccess="false"></requestedExecutionLevel></requestedPrivileges></security></trustInfo><application xmlns="urn:schemas-microsoft-com:asm.v3"><windowsSettings><dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:application xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"></ms_compatibility:supportedOS></ms_compatibility:application></ms_compatibility:compatibility></assembly>
+http://ocsp.digicert.com0A
+5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C
+2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0
+NAVER Corp.1
+NAVER Corp.0
+http://www.digicert.com/CPS0
+Mhttp://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S
+Mhttp://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0
+http://ocsp.digicert.com0\
+Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0	
+http://whale.naver.com0
+http://ocsp.digicert.com0]
+Qhttp://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crt0_
+Nhttp://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0 
+http://ocsp.digicert.com0A
+5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C
+2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 
+http://ocsp.digicert.com0C
+7http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0E
+4http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0
+http://ocsp.digicert.com0A
+5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C
+2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0
+NAVER Corp.1
+NAVER Corp.0
+http://www.digicert.com/CPS0
+Mhttp://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S
+Mhttp://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0
+http://ocsp.digicert.com0\
+Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0	
+http://whale.naver.com0
+http://ocsp.digicert.com0]
+Qhttp://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crt0_
+Nhttp://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0 
+http://ocsp.digicert.com0A
+5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C
+2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 
+http://ocsp.digicert.com0C
+7http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0E
+4http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 8 whalesetup.exe | grep -iE "download|install|\.exe|\.zip|\.7z|\.rar|update\.whale|psstatic|cdn|cloudfront|blob\.core" | head -50
+D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb
+h"cDn!ZF~
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 12 whalesetup.exe | grep -iE "whale|\.exe|download" | head -50
+D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb
+http://whale.naver.com0
+http://whale.naver.com0
+[0m
+[0m$ [0mcd /tmp/opencode && xxd whalesetup.exe | grep -iE "whale|naver|download|http|\.exe|\.zip|\.7z" -i | head -30
+00012a00: 0100 0000 443a 5c77 6861 6c65 5f77 696e  ....D:\whale_win
+00012a30: 5072 6f64 7563 745c 5768 616c 6553 6574  Product\WhaleSet
+00038630: f4d8 eb4e 6940 a80e 4876 7ab3 60c6 375a  ...Ni@..Hvz.`.7Z
+0003c6e0: 2282 c12c c131 0cb5 095c b910 377a fc07  "..,.1...\..7z..
+00051c50: 8ef0 f918 c798 375a c4b4 67ce 0a08 c710  ......7Z..g.....
+0007b100: 9437 5a8b 692a cdc8 83f4 f8f4 f869 3afb  .7Z.i*.......i:.
+000a3970: 5339 b3c9 2baa 30f8 80a5 0f8e 375a 5d27  S9..+.0.....7Z]'
+000a4ba0: 92a0 d7c1 9994 53eb 5678 9637 7a27 d945  ......S.Vx.7z'.E
+000c2b50: e401 210f 0011 e0b8 377a cfc5 aa7e dfde  ..!.....7z...~..
+000c5550: 0f79 3760 938f 042e 04c0 377a ef13 45af  .y7`......7z..E.
+000d4080: 7564 bb89 eb3f 1fc6 375a 1b9c c983 bbb4  ud...?..7Z......
+000db2a0: 346b 57d8 f940 6f96 fede f9ee 375a f5a4  4kW..@o.....7Z..
+000de000: 0f82 c983 8d8a ffff ff37 7a80 ba1d 7d86  .........7z...}.
+000eced0: 6170 ffff ffff 86f4 375a b88e 5280 053e  ap......7Z..R..>
+000f7bd0: ff77 9837 5a00 588a 47c0 bcf1 011e 5a0a  .w.7Z.X.G.....Z.
+00108dc0: 6d93 23d2 c0da be37 5a59 f0c5 139e 568f  m.#....7ZY....V.
+001142d0: 5644 bd54 f585 801d c2ff 375a c09d 1e92  VD.T......7Z....
+00131580: 17a4 4b06 ff37 5ad2 8ea1 28ab bd4c cab4  ..K..7Z...(..L..
+00136690: 1809 377a 0cc8 23db 7072 b9e2 765d 7206  ..7z..#.pr..v]r.
+00146410: caca 2e37 5aa6 5a10 2d77 67ae acaf 80e7  ...7Z.Z.-wg.....
+0014f5f0: 2eeb ff37 5ab0 471f b3b1 7b19 9839 f326  ...7Z.G...{..9.&
+001505d0: 0da1 e148 6644 70f0 c8a8 252f f837 5ac4  ...HfDp...%/.7Z.
+00150fb0: 8c89 375a c43b ccae 370c bee2 e188 d015  ..7Z.;..7.......
+00152750: c290 b4e0 8380 ffbf 968b 6078 a337 7a1a  ..........`x.7z.
+00162320: bfdd 8625 c085 5e7f f137 7a75 5878 6197  ...%..^..7zuXxa.
+001633b0: ff37 5ad0 24f8 a805 c142 0b04 38c0 134c  .7Z.$....B..8..L
+0016ef60: 80ff ff47 8f6e 6257 4f60 8137 7a35 1a0f  ...G.nbWO`.7z5..
+00172130: f121 ebff ffff 0b82 86c0 c437 5a90 6034  .!.........7Z.`4
+001742d0: 0540 ec90 e037 7aba daff ffff 60d2 024a  .@...7z.....`..J
+001752a0: 0687 506e 3c21 3fa0 ffff 377a bb86 806d  ..Pn<!?...7z...m
+[0m
+[0m$ [0mwhich binwalk 2>/dev/null || pip install binwalk 2>&1 | tail -5
+Created wheel for binwalk: filename=binwalk-2.1.0-py3-none-any.whl size=2744 sha256=4037f93971602ed38d1a3d768ddcc34e511d0f5256749bd4dcbcb25880c38e81
+  Stored in directory: /home/runner/.cache/pip/wheels/12/d1/1c/259d87ec09dcd832a3f1f5744b8dd36e052035a9d9f8e275cd
+Successfully built binwalk
+Installing collected packages: binwalk
+Successfully installed binwalk-2.1.0
+[0m
+[0m$ [0mcd /tmp/opencode && binwalk whalesetup.exe 2>&1 | head -40
+Traceback (most recent call last):
+  File "/home/runner/.local/bin/binwalk", line 25, in <module>
+    import binwalk
+  File "/home/runner/.local/lib/python3.12/site-packages/binwalk/__init__.py", line 3, in <module>
+    from binwalk.core.module import Modules, ModuleException
+ModuleNotFoundError: No module named 'binwalk.core'
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import re
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+# Find all URL-like patterns
+urls = re.findall(rb'https?://[a-zA-Z0-9./_-]+', data)
+for u in urls:
+    print(u.decode('ascii', errors='replace'))
+" | sort -u | head -50
+http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0E
+http://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0
+http://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crt0_
+http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C
+http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0
+http://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S
+http://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0
+http://crl3.digicert.com/DigiCertTrustedRootG4.crl0
+http://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0
+http://ocsp.digicert.com0
+http://ocsp.digicert.com0A
+http://ocsp.digicert.com0C
+http://schemas.microsoft.com/SMI/2005/WindowsSettings
+http://whale.naver.com0
+http://www.digicert.com/CPS0
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# 7z magic: 37 7A BC AF 27 1C
+import re
+magic = b'\x37\x7a\xbc\xaf\x27\x1c'
+offsets = [m.start() for m in re.finditer(re.escape(magic), data)]
+print(f'Found {len(offsets)} 7z magic bytes at offsets:')
+for off in offsets:
+    print(f'  0x{off:06x} ({off})')
+" 2>&1
+Found 0 7z magic bytes at offsets:
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# Look for any embedded URLs or paths with naver, whale, download
+# Check for base64 or encoded patterns
+import re
+
+# Look for base64-encoded naver/whale URLs
+b64_patterns = re.findall(rb'[a-zA-Z0-9+/]{20,}={0,2}', data)
+for p in b64_patterns:
+    try:
+        decoded = p.decode('base64') if True else None
+    except:
+        pass
+
+# Try to find any long string that looks like a URL with naver
+naver_offsets = [m.start() for m in re.finditer(rb'naver', data, re.IGNORECASE)]
+print(f'Found {len(naver_offsets)} occurrences of naver')
+for off in naver_offsets[:20]:
+    # Print surrounding context
+    start = max(0, off-50)
+    end = min(len(data), off+100)
+    context = data[start:end]
+    print(f'  offset 0x{off:06x}: {context}')
+" 2>&1
+Found 7 occurrences of naver
+  offset 0x9a1eed: b'<\x11*\xc1Sm>Ag\x14\x8e\xc9\xeem\xb6\xa0&r//1) X\xc6\xa7\x9f0\x91\xf8&\xbc\tr\x05\xcb*0Ds\xa2Zl\x18\xcbu\xff\xefi\xbdNAVER Co\xfc\x95\xd8j[b1\xcf\xf1ny\xcbw\xb4%\\\x9b\x02cU(\x88G\\j]\xd8\x9bi\xef\xb0\xe0\xc26sk\x0c\x87+\xc2j`\xc6mo8\xdc*\x17\n\xde0\x1e\x9eely,\xef]\x04[!\xb4\xbd! w\xd4D\xb0\x06\x0b~it\xffn~h70\x1d\x1a\xc2y\x13rL\x10\x03\x81'
+  offset 0xabc77a: b'\x03U\x04\x08\x13\x0bGyeonggi-do1\x140\x12\x06\x03U\x04\x07\x13\x0bSeongnam-si1\x140\x12\x06\x03U\x04\n\x13\x0bNAVER Corp.1\x140\x12\x06\x03U\x04\x03\x13\x0bNAVER Corp.0\x82\x02"0\r\x06\t*\x86H\x86\xf7\r\x01\x01\x01\x05\x00\x03\x82\x02\x0f\x000\x82\x02\n\x02\x82\x02\x01\x00\x9c\x9c\xde\x95\n\x7f\xb7\xa8\x0c\x80\xd15:\xc9\x0eE\xf9l\n\xc9\x84\xd5\x0b\xa9\x13\x9b\xdc\xd5\xe2\x07\xab[\xa5\x0f'
+  offset 0xabc790: b'\x03U\x04\x07\x13\x0bSeongnam-si1\x140\x12\x06\x03U\x04\n\x13\x0bNAVER Corp.1\x140\x12\x06\x03U\x04\x03\x13\x0bNAVER Corp.0\x82\x02"0\r\x06\t*\x86H\x86\xf7\r\x01\x01\x01\x05\x00\x03\x82\x02\x0f\x000\x82\x02\n\x02\x82\x02\x01\x00\x9c\x9c\xde\x95\n\x7f\xb7\xa8\x0c\x80\xd15:\xc9\x0eE\xf9l\n\xc9\x84\xd5\x0b\xa9\x13\x9b\xdc\xd5\xe2\x07\xab[\xa5\x0f=\xc4\x99w\xd6\x9d\xf0,j\x91\x1d0\xcf,f\x1f\xa5HP\xa1\x91q'
+  offset 0xabcf1e: b'\x02\x01\x0c1604\xa0\x18\x80\x16\x00N\x00a\x00v\x00e\x00r\x00 \x00W\x00h\x00a\x00l\x00e\xa1\x18\x80\x16http://whale.naver.com0\r\x06\t*\x86H\x86\xf7\r\x01\x01\x01\x05\x00\x04\x82\x02\x00\x02l\x8a^\xd4#\x9f\xec\x97\x9f\t5\x95d\xee\xe7\xbd\x1cx\xe8w\xae$\xf0&\xad\x0c\x1c\xfb\xb8\xc3\xf8\x979>k\x9d4p`\x94\xd5\x84\xdb\x9dT:\xa9\xbb\x84\x97\xe4\xac\x1c%\xac\x17\xbbT/\xf8k\x85Jb\xcf\xbf7XeV\x8b'
+  offset 0xb212d2: b'\x03U\x04\x08\x13\x0bGyeonggi-do1\x140\x12\x06\x03U\x04\x07\x13\x0bSeongnam-si1\x140\x12\x06\x03U\x04\n\x13\x0bNAVER Corp.1\x140\x12\x06\x03U\x04\x03\x13\x0bNAVER Corp.0\x82\x02"0\r\x06\t*\x86H\x86\xf7\r\x01\x01\x01\x05\x00\x03\x82\x02\x0f\x000\x82\x02\n\x02\x82\x02\x01\x00\x9c\x9c\xde\x95\n\x7f\xb7\xa8\x0c\x80\xd15:\xc9\x0eE\xf9l\n\xc9\x84\xd5\x0b\xa9\x13\x9b\xdc\xd5\xe2\x07\xab[\xa5\x0f'
+  offset 0xb212e8: b'\x03U\x04\x07\x13\x0bSeongnam-si1\x140\x12\x06\x03U\x04\n\x13\x0bNAVER Corp.1\x140\x12\x06\x03U\x04\x03\x13\x0bNAVER Corp.0\x82\x02"0\r\x06\t*\x86H\x86\xf7\r\x01\x01\x01\x05\x00\x03\x82\x02\x0f\x000\x82\x02\n\x02\x82\x02\x01\x00\x9c\x9c\xde\x95\n\x7f\xb7\xa8\x0c\x80\xd15:\xc9\x0eE\xf9l\n\xc9\x84\xd5\x0b\xa9\x13\x9b\xdc\xd5\xe2\x07\xab[\xa5\x0f=\xc4\x99w\xd6\x9d\xf0,j\x91\x1d0\xcf,f\x1f\xa5HP\xa1\x91q'
+  offset 0xb21a76: b'\x02\x01\x0c1604\xa0\x18\x80\x16\x00N\x00a\x00v\x00e\x00r\x00 \x00W\x00h\x00a\x00l\x00e\xa1\x18\x80\x16http://whale.naver.com0\r\x06\t*\x86H\x86\xf7\r\x01\x01\x01\x05\x00\x04\x82\x02\x00AuQ\x00L\xda\xe9L\t\x11\x11\x82=\xa5@\xf3\xd7N\xe0(X\x97\xb3\xeb\n\x12\x93\x0c/>X\xfb\x16\xd7o\xf0\x89\x87\xfe\xdb\xe4\xe2K\xdf\x81*\x9ef\xdclF-!\x05\x8fZk\xd1\xc6\r\xf8\x83\xd7W?\x16\x84p\xdcRH\xb9'
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# Look for potential download URLs - check for common patterns
+import re
+
+# Check for resource strings that might contain download URLs
+# Look for strings with .exe, .zip, .7z, download, installer
+patterns = [b'download', b'installer', b'.exe', b'.zip', b'WhaleSetup', b'update.whale', b'cdn', b'cloudfront']
+for pat in patterns:
+    offsets = [m.start() for m in re.finditer(pat, data, re.IGNORECASE)]
+    if offsets:
+        for off in offsets[:3]:
+            start = max(0, off-30)
+            end = min(len(data), off+50)
+            context = data[start:end]
+            printable = ''.join(chr(b) if 32 <= b < 127 else '.' for b in context)
+            print(f'{pat}: offset 0x{off:06x}: ...{printable}...')
+" 2>&1
+b'installer': offset 0x012a15: ...I.k....rG....D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb....
+b'installer': offset 0x012a26: ...hale_windows_installer\online_installer\Product\WhaleSetup.pdb.....................
+b'.exe': offset 0x013766: ...erClassExW..USER32.dll....ShellExecuteExW.SHELL32.dll.[.RaiseException..].GetLas...
+b'.exe': offset 0x8ac601: .........Xmb...%^...B.:<.!.y......EXE|....~..a...)....H!......Z....ZF..f..+...i..k....
+b'.exe': offset 0xabb67d: ...<requestedPrivileges><requestedExecutionLevel level="requireAdministrator" uiAcc...
+b'.zip': offset 0x065605: ...]..4..ti>......vG._JBS....pi_."zIp...\.-Z...1S..'. $$d.@..G..EGu^a.!`..)c.m8pV.....
+b'.zip': offset 0x4c3ec5: ...t.D}....B.....N.$l........j&&(#ZiPBT.\R.6....t.Z..N.... ^.....7......Q...a..#.gE...
+b'.zip': offset 0x6d5fa8: ....j..K.D..S..4....d\x..!.#E..X.[ZIP..K-.Ri4....!y.4N.*.zI.Q.....D..^....,.;.b.._k...
+b'WhaleSetup': offset 0x012a38: ...ller\online_installer\Product\WhaleSetup.pdb......................GCTL.........t...
+b'cdn': offset 0x03b53c: ...........,.>.L?@...";Bv..D2B>8.Cdn^..(=.9.+\2..-...8].-&....e0.m$3,....F.w.3l.......
+b'cdn': offset 0x120cbc: ...`..T...H............!..g.<....CDN..!...D":|.......j.............Z}.$ |..p.....K....
+b'cdn': offset 0x6e0a4a: ...%u........=.....8...@T.P4..;..cdN..4:..(.C..`d.._.....pz..^.... _..O.......O[......
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# Look at the context around 'Cdn' strings
+import re
+offsets = [m.start() for m in re.finditer(rb'Cdn', data)]
+for off in offsets:
+    start = max(0, off-100)
+    end = min(len(data), off+200)
+    context = data[start:end]
+    printable = ''.join(chr(b) if 32 <= b < 127 else '.' for b in context)
+    print(f'offset 0x{off:06x}: {printable}')
+    print()
+" 2>&1
+offset 0x03b53c: }.+=...p.K..K.....8H."t.rI4t0..m.....$T.P..P.0.-....:2xNR.m9.KS..Lll.5........,.>.L?@...";Bv..D2B>8.Cdn^..(=.9.+\2..-...8].-&....e0.m$3,....F.w.3l....E..*.P...*..........*....F..^.+_........S.}......J..........>.....4.....&....3s.K..t$P...C...t...U..4....Sjd.G...mJ.T..~3.'..........%.\3!....hT*...te
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+import re
+
+# Look for any URL-like patterns (http/https followed by domain-like patterns)
+# Also look for common Whale download URLs
+# Try to find 'whale' followed by any URL-like content
+whale_offsets = [m.start() for m in re.finditer(rb'whale', data, re.IGNORECASE)]
+print(f'Found {len(whale_offsets)} occurrences of whale')
+for off in whale_offsets[:20]:
+    start = max(0, off-20)
+    end = min(len(data), off+150)
+    context = data[start:end]
+    printable = ''.join(chr(b) if 32 <= b < 127 else '.' for b in context)
+    print(f'  0x{off:06x}: {printable}')
+" 2>&1
+Found 4 occurrences of whale
+  0x012a07: ....I.k....rG....D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb......................GCTL.........text$mn........O....text$x.....`....idata$5....`....
+  0x012a38: e_installer\Product\WhaleSetup.pdb......................GCTL.........text$mn........O....text$x.....`....idata$5....`........00cfg..d........CRT$XCA....h........CRT$XCAA.
+  0xabcf18: W.h.a.l.e....http://whale.naver.com0...*.H.............l.^.#.....5.d....x.w.$.&........9>k.4p`.....T:.......%...T/.k.Jb..7XeV....t4........9ex."I.U.'V.......\...&...mL...
+  0xb21a70: W.h.a.l.e....http://whale.naver.com0...*.H............AuQ.L..L....=.@..N.(X......./>X...o.......K..*.f.lF-!..Zk......W?..p.RH..{....3...-.'..UcR.S...NcC....v.......>.....
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import struct
+
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# PE header
+pe_offset = struct.unpack_from('<I', data, 0x3C)[0]
+print(f'PE header offset: 0x{pe_offset:04x}')
+
+# COFF header
+num_sections = struct.unpack_from('<H', data, pe_offset + 6)[0]
+print(f'Number of sections: {num_sections}')
+
+# Optional header
+optional_header_offset = pe_offset + 24
+magic = struct.unpack_from('<H', data, optional_header_offset)[0]
+print(f'Optional header magic: 0x{magic:04x} (PE32=0x10b, PE32+={0x20b})')
+
+# Section headers start after COFF header (20 bytes) + optional header
+section_header_offset = pe_offset + 24 + (224 if magic == 0x20b else 208)
+print(f'Section headers at: 0x{section_header_offset:06x}')
+
+for i in range(num_sections):
+    off = section_header_offset + (i * 40)
+    name = data[off:off+8].rstrip(b'\x00').decode('ascii', errors='replace')
+    vsize = struct.unpack_from('<I', data, off+8)[0]
+    vaddr = struct.unpack_from('<I', data, off+12)[0]
+    raw_size = struct.unpack_from('<I', data, off+16)[0]
+    raw_ptr = struct.unpack_from('<I', data, off+20)[0]
+    print(f'  Section {i}: {name:8s} vsize=0x{vsize:08x} vaddr=0x{vaddr:08x} raw_size=0x{raw_size:08x} raw_ptr=0x{raw_ptr:08x}')
+" 2>&1
+PE header offset: 0x0100
+Number of sections: 5
+Optional header magic: 0x010b (PE32=0x10b, PE32+=523)
+Section headers at: 0x0001e8
+  Section 0:          vsize=0x00000000 vaddr=0x00000000 raw_size=0x7865742e raw_ptr=0x00000074
+  Section 1:          vsize=0x00000000 vaddr=0x60000020 raw_size=0x6164722e raw_ptr=0x00006174
+  Section 2:          vsize=0x00000000 vaddr=0x40000040 raw_size=0x7461642e raw_ptr=0x00000061
+  Section 3:          vsize=0x00000000 vaddr=0xc0000040 raw_size=0x7273722e raw_ptr=0x00000063
+  Section 4:          vsize=0x00000000 vaddr=0x40000040 raw_size=0x6c65722e raw_ptr=0x0000636f
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import struct
+
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# PE header
+pe_offset = struct.unpack_from('<I', data, 0x3C)[0]
+print(f'PE header offset: 0x{pe_offset:06x}')
+
+# COFF header fields
+machine = struct.unpack_from('<H', data, pe_offset)[0]
+num_sections = struct.unpack_from('<H', data, pe_offset + 6)[0]
+print(f'Machine: 0x{machine:04x}, Sections: {num_sections}')
+
+# Optional header
+opt_off = pe_offset + 24
+magic = struct.unpack_from('<H', data, opt_off)[0]
+opt_size = 224 if magic == 0x20b else 208  # PE32+ vs PE32
+print(f'Optional header magic: 0x{magic:04x}, size: {opt_size}')
+
+# Section headers
+section_off = opt_off + opt_size
+print(f'Section headers at: 0x{section_off:06x}')
+
+for i in range(num_sections):
+    off = section_off + (i * 40)
+    name_raw = data[off:off+8]
+    name = name_raw.rstrip(b'\x00').decode('ascii', errors='replace')
+    vsize = struct.unpack_from('<I', data, off+8)[0]
+    vaddr = struct.unpack_from('<I', data, off+12)[0]
+    raw_size = struct.unpack_from('<I', data, off+16)[0]
+    raw_ptr = struct.unpack_from('<I', data, off+20)[0]
+    print(f'  [{i}] Name={name!r:12s} VSize=0x{vsize:08x} VAddr=0x{vaddr:08x} RawSize=0x{raw_size:08x} RawPtr=0x{raw_ptr:08x}')
+    print(f'      Raw name bytes: {name_raw.hex()}')
+" 2>&1
+PE header offset: 0x000100
+Machine: 0x4550, Sections: 5
+Optional header magic: 0x010b, size: 208
+Section headers at: 0x0001e8
+  [0] Name=''           VSize=0x00000000 VAddr=0x00000000 RawSize=0x7865742e RawPtr=0x00000074
+      Raw name bytes: 0000000000000000
+  [1] Name=''           VSize=0x00000000 VAddr=0x60000020 RawSize=0x6164722e RawPtr=0x00006174
+      Raw name bytes: 0000000000000000
+  [2] Name=''           VSize=0x00000000 VAddr=0x40000040 RawSize=0x7461642e RawPtr=0x00000061
+      Raw name bytes: 0000000000000000
+  [3] Name=''           VSize=0x00000000 VAddr=0xc0000040 RawSize=0x7273722e RawPtr=0x00000063
+      Raw name bytes: 0000000000000000
+  [4] Name=''           VSize=0x00000000 VAddr=0x40000040 RawSize=0x6c65722e RawPtr=0x0000636f
+      Raw name bytes: 0000000000000000
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import struct
+
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+pe_offset = struct.unpack_from('<I', data, 0x3C)[0]
+print(f'PE offset: 0x{pe_offset:06x}')
+print(f'PE signature: {data[pe_offset:pe_offset+4]}')
+
+# COFF header (20 bytes, starts at pe_offset + 4)
+machine = struct.unpack_from('<H', data, pe_offset + 4)[0]
+num_sections = struct.unpack_from('<H', data, pe_offset + 6)[0]
+size_opt = struct.unpack_from('<H', data, pe_offset + 20)[0]
+print(f'Machine=0x{machine:04x}, Sections={num_sections}, SizeOfOptionalHeader={size_opt}')
+
+# Optional header starts at pe_offset + 24
+opt_off = pe_offset + 24
+magic = struct.unpack_from('<H', data, opt_off)[0]
+print(f'Optional header magic: 0x{magic:04x}')
+
+# Section headers start at pe_offset + 24 + size_opt
+section_off = pe_offset + 24 + size_opt
+print(f'Section headers at: 0x{section_off:06x}')
+
+for i in range(num_sections):
+    off = section_off + (i * 40)
+    name = data[off:off+8].rstrip(b'\x00').decode('ascii', errors='replace')
+    vsize = struct.unpack_from('<I', data, off+8)[0]
+    vaddr = struct.unpack_from('<I', data, off+12)[0]
+    raw_size = struct.unpack_from('<I', data, off+16)[0]
+    raw_ptr = struct.unpack_from('<I', data, off+20)[0]
+    print(f'  [{i}] {name:12s} VSize=0x{vsize:08x} VAddr=0x{vaddr:08x} RawSize=0x{raw_size:08x} RawPtr=0x{raw_ptr:08x}')
+" 2>&1
+PE offset: 0x000100
+PE signature: b'PE\x00\x00'
+Machine=0x014c, Sections=5, SizeOfOptionalHeader=224
+Optional header magic: 0x010b
+Section headers at: 0x0001f8
+  [0] .text        VSize=0x0000d55f VAddr=0x00001000 RawSize=0x0000d600 RawPtr=0x00000400
+  [1] .rdata       VSize=0x0000620c VAddr=0x0000f000 RawSize=0x00006400 RawPtr=0x0000da00
+  [2] .data        VSize=0x0000154c VAddr=0x00016000 RawSize=0x00000a00 RawPtr=0x00013e00
+  [3] .rsrc        VSize=0x00b0aed8 VAddr=0x00018000 RawSize=0x00b0b000 RawPtr=0x00014800
+  [4] .reloc       VSize=0x00001034 VAddr=0x00b23000 RawSize=0x00001200 RawPtr=0x00b1f800
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# .rsrc section at RawPtr=0x14800, RawSize=0xb0b000
+rsrc_data = data[0x14800:0x14800+0xb0b000]
+with open('/tmp/opencode/rsrc_section.bin', 'wb') as f:
+    f.write(rsrc_data)
+print(f'Extracted .rsrc: {len(rsrc_data)} bytes')
+" 2>&1
+Extracted .rsrc: 11579392 bytes
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 8 rsrc_section.bin | grep -iE "passphrase|PBKDF2|scrypt|NEO_SES|nigori|bootstrap_token|sync\.encryption|whale_need_encryption|oscrypt|sync.*key|encrypted_pre|sync_util|sync_auth|whalesync" | head -50
+(no output)
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 8 rsrc_section.bin | grep -iE "sidebarAction|sidebar|\.whalesync|dual.?tab|socket|engine\.io|typedUrls|push.*channel|extension.*api|devtools" | head -50
+(no output)
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+with open('rsrc_section.bin', 'rb') as f:
+    data = f.read()
+
+# Check first few bytes
+print(f'First 64 bytes hex: {data[:64].hex()}')
+print(f'First 64 bytes ascii: {data[:64]}')
+
+# Check for known compressed formats
+if data[:2] == b'MZ':
+    print('Contains PE executable')
+elif data[:2] == b'PK':
+    print('Contains ZIP archive')
+elif data[:4] == b'\x78\x9c' or data[:4] == b'\x78\x01' or data[:4] == b'\x78\xda':
+    print('Contains zlib compressed data')
+elif data[:6] == b'\x37\x13\x00\x00\x04\x22':
+    print('Contains RAR archive')
+else:
+    print(f'Unknown format, first bytes: {data[:16].hex()}')
+" 2>&1
+First 64 bytes hex: 000000000000000000000000010005007003008040000080030000005800008006000000b80000800e000000d000008010000000e80000801800000000010080
+First 64 bytes ascii: b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x05\x00p\x03\x00\x80@\x00\x00\x80\x03\x00\x00\x00X\x00\x00\x80\x06\x00\x00\x00\xb8\x00\x00\x80\x0e\x00\x00\x00\xd0\x00\x00\x80\x10\x00\x00\x00\xe8\x00\x00\x80\x18\x00\x00\x00\x00\x01\x00\x80'
+Unknown format, first bytes: 00000000000000000000000001000500
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 15 whalesetup.exe | grep -iE "http|url|download|install|whale|naver" | head -30
+D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"><dependency><dependentAssembly><assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="x86" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity></dependentAssembly></dependency><trustInfo xmlns="urn:schemas-microsoft-com:asm.v3"><security><requestedPrivileges><requestedExecutionLevel level="requireAdministrator" uiAccess="false"></requestedExecutionLevel></requestedPrivileges></security></trustInfo><application xmlns="urn:schemas-microsoft-com:asm.v3"><windowsSettings><dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:application xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1"><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"></ms_compatibility:supportedOS><ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"></ms_compatibility:supportedOS></ms_compatibility:application></ms_compatibility:compatibility></assembly>
+http://ocsp.digicert.com0A
+5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C
+2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0
+http://www.digicert.com/CPS0
+Mhttp://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S
+Mhttp://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0
+http://ocsp.digicert.com0\
+Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0	
+http://whale.naver.com0
+http://ocsp.digicert.com0]
+Qhttp://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crt0_
+Nhttp://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0 
+http://ocsp.digicert.com0A
+5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C
+2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 
+http://ocsp.digicert.com0C
+7http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0E
+4http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0
+http://ocsp.digicert.com0A
+5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C
+2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0
+http://www.digicert.com/CPS0
+Mhttp://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S
+Mhttp://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0
+http://ocsp.digicert.com0\
+Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0	
+http://whale.naver.com0
+http://ocsp.digicert.com0]
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# Search for any URL-like patterns with naver in them
+import re
+
+# Look for encoded/base64 URLs
+# Try to find any pattern that contains 'whale' or 'naver' in a URL
+# Also look for potential download URLs
+patterns = [
+    rb'https?://[^\x00\n\r]{5,100}',
+    rb'www\.[^\x00\n\r]{5,100}\.com',
+    rb'download[^\x00\n\r]{5,100}',
+]
+
+for pat in patterns:
+    matches = re.findall(pat, data)
+    for m in matches:
+        decoded = m.decode('ascii', errors='replace')
+        print(decoded)
+" 2>&1 | sort -u | head -30
+http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0U 
+http://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S�Q�O�Mhttp://crl4.digicert.c
+http://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0 U 00g�0	`�H
+http://crl3.digicert.com/DigiCertTrustedRootG4.crl0U 00g�0g�0
+http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 U 00g�0	`�H��l0
+http://ocsp.digicert.com0A+0�5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0CU<0:08�6�
+http://ocsp.digicert.com0C+0�7http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0EU>0<0:�
+http://ocsp.digicert.com0\+0�Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA384
+http://ocsp.digicert.com0]+0�Qhttp://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA25
+http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware></windowsSettings></application><ms_c
+http://whale.naver.com0
+http://www.digicert.com/CPS0U��0U%0
+www.digicert.com
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 10 -e l whalesetup.exe | grep -iE "whale|naver|download|http|sync|passphrase|kdf|scrypt|pbkdf|bootstrap" | head -30
+api-ms-win-core-synch-l1-2-0
+api-ms-win-core-synch-l1-2-0
+\WhaleSetup.exe
+Naver Corporation
+Naver Whale Installer
+WhaleSetup.exe
+Naver Corporation.  All rights reserved.
+WhaleSetup.exe
+Naver Whale Installer
+Naver Corporation
+Naver Whale Installer
+WhaleSetup.exe
+Naver Corporation.  All rights reserved.
+WhaleSetup.exe
+Naver Whale Installer
+Naver Whal
+WhaleSetup
+WhaleSetup
+Naver Whal
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# Try to find the download URL by looking for it in different encodings
+import base64
+
+# Search for potential base64-encoded strings containing 'whale' or 'naver'
+# Look for base64 strings of length >= 20
+import re
+b64_matches = re.findall(rb'[A-Za-z0-9+/]{20,}={0,2}', data)
+for match in b64_matches:
+    try:
+        decoded = base64.b64decode(match)
+        # Check if decoded contains any relevant keywords
+        if any(kw in decoded.lower() for kw in [b'whale', b'naver', b'download', b'install', b'sync', b'passphrase']):
+            # Find a URL pattern in decoded
+            url_match = re.search(rb'https?://[^\x00\s]+', decoded)
+            if url_match:
+                print(f'B64 decoded URL: {url_match.group().decode()}')
+            else:
+                # Check for readable substring
+                readable = re.findall(rb'[a-zA-Z0-9./_-]{10,}', decoded)
+                for r in readable:
+                    if any(kw in r.lower() for kw in [b'whale', b'naver', b'download', b'install']):
+                        print(f'B64 match: {r.decode()}')
+    except:
+        pass
+print('Done searching base64')
+" 2>&1
+Done searching base64
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# .data section: RawPtr=0x13e00, RawSize=0xa00
+data_section = data[0x13e00:0x13e00+0xa00]
+printable = ''.join(chr(b) if 32 <= b < 127 else '.' for b in data_section)
+print('=== .data section strings ===')
+print(printable)
+" 2>&1
+=== .data section strings ===
+...DN.@......................................... .........................................................................................................................................................................                          ......................................................................................................................................................................................................abcdefghijklmnopqrstuvwxyz......ABCDEFGHIJKLMNOPQRSTUVWXYZ..............................................................................................................................................................................................................................................                          .............................................................................................................................................................................................................abcdefghijklmnopqrstuvwxyz......ABCDEFGHIJKLMNOPQRSTUVWXYZ.................................................................................................................................................`.y.!...............................@~.............. ...............................@............... ...............................A.....................[.........................@~......Q...Q.^. ._.j.2.........................1~........A.............................................@fA.............@fA.............@fA.............@fA.............@fA.....................HfA.........`.A...A. .@..........................eA.``A.C........fA.`sA.`sA.`sA.`sA.`sA.`sA.`sA.`sA.`sA..........fA.dsA.dsA.dsA.dsA.dsA.dsA.dsA.............................. ....................................................... .......................................................$..........................................................................u.................@......?AVbad_alloc@std@@...@......?AVexception@std@@...@......?AVbad_array_new_length@std@@....@......?AVtype_info@@...@......?AVlogic_error@std@@.....@......?AVlength_error@std@@....@......?AVbad_exception@std@@...@...@.o.@.............................................................................................................................................................................................................................................................................................................................................................................................................................
+[0m
+[0m$ [0mcd /tmp/opencode && 7z l whalesetup.exe 2>&1 | head -40
+7-Zip 23.01 (x64) : Copyright (c) 1999-2023 Igor Pavlov : 2023-06-20
+ 64-bit locale=C.UTF-8 Threads:4 OPEN_MAX:65536
+
+Scanning the drive for archives:
+1 file, 11678736 bytes (12 MiB)
+
+Listing archive: whalesetup.exe
+
+--
+Path = whalesetup.exe
+Type = PE
+Physical Size = 11678736
+CPU = x86
+Characteristics = Executable 32-bit
+Created = 2026-04-14 05:04:39
+Headers Size = 1024
+Checksum = 11708185
+Name = WhaleSetup.exe
+Image Size = 11685888
+Section Alignment = 4096
+File Alignment = 512
+Code Size = 54784
+Initialized Data Size = 11615232
+Uninitialized Data Size = 0
+Linker Version = 14.16
+OS Version = 6.0
+Image Version = 0.0
+Subsystem Version = 6.0
+Subsystem = Windows GUI
+DLL Characteristics = Relocated NX-Compatible TerminalServerAware
+Stack Reserve = 1048576
+Stack Commit = 4096
+Heap Reserve = 1048576
+Heap Commit = 4096
+Image Base = 4194304
+Comment = 
+{
+FileVersion: 3.2.0.0
+ProductVersion: 3.2.0.0
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+# Parse PE resource directory to find embedded resources
+import struct
+
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# .rsrc section: RawPtr=0x14800
+rsrc_raw = 0x14800
+rsrc_vaddr = 0x18000
+
+# Parse resource directory
+# The resource directory starts at the beginning of .rsrc section in raw file
+def parse_resource_directory(offset, depth=0):
+    if depth > 3:
+        return
+    num_entries = struct.unpack_from('<H', data, offset + 12)[0]
+    num_named = struct.unpack_from('<H', data, offset + 12 + 2)[0]
+    
+    for i in range(num_entries):
+        entry_off = offset + 16 + i * 8
+        name_rva = struct.unpack_from('<I', data, entry_off)[0]
+        data_rva = struct.unpack_from('<I', data, entry_off + 4)[0]
+        
+        is_dir = data_rva & 0x80000000
+        
+        if is_dir:
+            child_off = rsrc_raw + (data_rva & 0x7FFFFFFF) - rsrc_vaddr
+            parse_resource_directory(child_off, depth + 1)
+        else:
+            # Data entry
+            data_off = rsrc_raw + data_rva - rsrc_vaddr
+            # Read the data entry: RVA(4), Size(4), CodePage(4), Reserved(4)
+            data_rva_val, data_size, codepage, reserved = struct.unpack_from('<IIII', data, data_off)
+            data_file_off = rsrc_raw + data_rva_val - rsrc_vaddr
+            
+            # Get the resource name from the parent directory entry
+            if name_rva & 0x80000000:
+                # String name (not ID)
+                str_off = rsrc_raw + (name_rva & 0x7FFFFFFF) - rsrc_vaddr
+                name_len = struct.unpack_from('<H', data, str_off)[0]
+                name = data[str_off+2:str_off+2+name_len*2].decode('utf-16le', errors='replace')
+            else:
+                name = f'ID_{name_rva & 0xFFFF}'
+            
+            # Read string data
+            content = data[data_file_off:data_file_off+data_size]
+            if data_size <= 200:
+                try:
+                    readable = content.decode('utf-8', errors='replace')
+                    if any(c.isprintable() for c in readable[:50]):
+                        print(f'Resource: {name}, size={data_size}, offset=0x{data_file_off:08x}')
+                        print(f'  Content: {readable[:200]}')
+                        print()
+                except:
+                    pass
+
+parse_resource_directory(rsrc_raw)
+" 2>&1 | head -80
+Traceback (most recent call last):
+  File "<string>", line 58, in <module>
+  File "<string>", line 29, in parse_resource_directory
+  File "<string>", line 34, in parse_resource_directory
+struct.error: unpack_from requires a buffer of at least 808777789 bytes for unpacking 16 bytes at offset 808777773 (actual buffer size is 11678736)
+[0m
+[0m$ [0mcd /tmp/opencode && 7z l -slt whalesetup.exe 2>&1 | head -60
+7-Zip 23.01 (x64) : Copyright (c) 1999-2023 Igor Pavlov : 2023-06-20
+ 64-bit locale=C.UTF-8 Threads:4 OPEN_MAX:65536
+
+Scanning the drive for archives:
+1 file, 11678736 bytes (12 MiB)
+
+Listing archive: whalesetup.exe
+
+--
+Path = whalesetup.exe
+Type = PE
+Physical Size = 11678736
+CPU = x86
+Characteristics = Executable 32-bit
+Created = 2026-04-14 05:04:39
+Headers Size = 1024
+Checksum = 11708185
+Name = WhaleSetup.exe
+Image Size = 11685888
+Section Alignment = 4096
+File Alignment = 512
+Code Size = 54784
+Initialized Data Size = 11615232
+Uninitialized Data Size = 0
+Linker Version = 14.16
+OS Version = 6.0
+Image Version = 0.0
+Subsystem Version = 6.0
+Subsystem = Windows GUI
+DLL Characteristics = Relocated NX-Compatible TerminalServerAware
+Stack Reserve = 1048576
+Stack Commit = 4096
+Heap Reserve = 1048576
+Heap Commit = 4096
+Image Base = 4194304
+Comment = 
+{
+FileVersion: 3.2.0.0
+ProductVersion: 3.2.0.0
+CompanyName: Naver Corporation
+FileDescription: Naver Whale Installer
+InternalName: WhaleSetup.exe
+LegalCopyright: Naver Corporation.  All rights reserved.
+OriginalFilename: WhaleSetup.exe
+ProductName: Naver Whale Installer
+}
+----
+Path = .rsrc/1042/EXE/129
+Size = 11180560
+Packed Size = 11180560
+--
+Path = .rsrc/1042/EXE/129
+Type = PE
+Physical Size = 11180560
+CPU = x86
+Characteristics = Executable 32-bit
+Created = 2026-04-14 05:04:23
+Headers Size = 4096
+Checksum = 11243822
+[0m
+[0m$ [0mcd /tmp/opencode && strings -n 6 whalesetup.exe | grep -iE "WinHttp|WinInet|URLDownload|InternetOpen|HttpOpen|CreateURL|URL|download|\.exe|\.msi|setup" | sort -u | head -40
+(URL|OS
+D:\whale_windows_installer\online_installer\Product\WhaleSetup.pdb
+turL~X
+[0m
+[0m$ [0mcd /tmp/opencode && mkdir -p embedded && 7z x whalesetup.exe -orembedded -y 2>&1 | tail -20
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31006
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31007
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31008
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31009
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31010
+ERROR: Data Error : .rsrc/1033/GROUP_CURSOR/31011
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/16931
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/16995
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/17100
+ERROR: Data Error : .rsrc/1033/GROUP_ICON/17105
+ERROR: Data Error : .rsrc/1024/HTML/148
+ERROR: Data Error : .rsrc/1024/HTML/149
+ERROR: Data Error : .rsrc/1033/241/16138
+ERROR: Data Error : .rsrc/1033/241/16960
+
+Sub items Errors: 766
+
+Archives with Errors: 1
+
+Sub items Errors: 766
+[0m
+[0m$ [0mfind /tmp/opencode/embedded -type f -size +1M 2>/dev/null | head -10
+(no output)
+[0m
+[0m$ [0mfind /tmp/opencode/embedded -type f 2>/dev/null | head -20 && ls -la /tmp/opencode/embedded/ 2>/dev/null
+total 8
+drwxr-xr-x 2 runner runner 4096 Aug  8 00:41 .
+drwxr-xr-x 5 runner runner 4096 Aug  8 00:41 ..
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import struct
+
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# .rsrc section: RawPtr=0x14800, VAddr=0x18000
+rsrc_raw = 0x14800
+rsrc_vaddr = 0x18000
+
+def rva_to_raw(rva):
+    return rsrc_raw + rva - rsrc_vaddr
+
+# Parse resource directory at the beginning of .rsrc
+def parse_res_dir(offset, level=0):
+    magic = struct.unpack_from('<I', data, offset)[0]
+    if magic != 0x00000000:
+        print(f'  Bad magic at 0x{offset:06x}')
+        return
+    num_named = struct.unpack_from('<H', data, offset + 12)[0]
+    num_id = struct.unpack_from('<H', data, offset + 14)[0]
+    num_entries = num_named + num_id
+    
+    indent = '  ' * level
+    for i in range(num_entries):
+        entry_off = offset + 16 + i * 8
+        entry_name = struct.unpack_from('<I', data, entry_off)[0]
+        entry_data = struct.unpack_from('<I', data, entry_off + 4)[0]
+        
+        is_dir = entry_data & 0x80000000
+        
+        if is_dir:
+            child_off = rva_to_raw(entry_data & 0x7FFFFFFF)
+            print(f'{indent}DIR entry name=0x{entry_name:08x} -> offset 0x{child_off:08x}')
+            parse_res_dir(child_off, level + 1)
+        else:
+            # Data entry
+            data_entry_off = rva_to_raw(entry_data & 0x7FFFFFFF)
+            # Data entry: RVA(4), Size(4), CodePage(4), Reserved(4)
+            res_rva = struct.unpack_from('<I', data, data_entry_off)[0]
+            res_size = struct.unpack_from('<I', data, data_entry_off + 4)[0]
+            res_codepage = struct.unpack_from('<I', data, data_entry_off + 8)[0]
+            res_file_off = rva_to_raw(res_rva)
+            
+            # Determine resource type name
+            type_name = ''
+            if entry_name & 0x80000000:
+                type_name = 'STRING'
+            else:
+                # Standard resource types
+                type_map = {1:'CURSOR',2:'BITMAP',3:'ICON',4:'DIALOG',5:'MENU',6:'STRING',7:'FONTDIR',8:'FONT',9:'ACCELERATOR',10:'RCDATA',11:'MESSAGETABLE',12:'COMPONENT',13:'GROUP_CURSOR',14:'GROUP_ICON',15:'VERSION',16:'DLGINDIRECT',17:'DUMMY',18:'DUMMY',19:'MENU_FB07',20:'EXTENDED_DOS',21:'FONTDIR',22:'FONT',23:'ACCELERATOR',24:'MANIFEST'}
+                type_name = type_map.get(entry_name & 0xFFFF, f'TYPE_{entry_name & 0xFFFF}')
+            
+            # Check if it's an EXE (RT_RCDATA = 10)
+            print(f'{indent}DATA name=0x{entry_name:08x} ({type_name}) size={res_size} file_off=0x{res_file_off:08x}')
+            
+            if res_size > 100000 and res_size < 12000000:
+                # This could be the embedded EXE
+                content = data[res_file_off:res_file_off+res_size]
+                print(f'{indent}  First 16 bytes: {content[:16].hex()}')
+                if content[:2] == b'MZ':
+                    print(f'{indent}  *** FOUND EMBEDDED EXE! ***')
+                    # Extract it
+                    with open('/tmp/opencode/embedded_exe.bin', 'wb') as f:
+                        f.write(content)
+                    print(f'{indent}  Saved to embedded_exe.bin ({res_size} bytes)')
+
+def parse_lang_dir(offset, level=0):
+    # Language directory
+    num_named = struct.unpack_from('<H', data, offset + 12)[0]
+    num_id = struct.unpack_from('<H', data, offset + 14)[0]
+    num_entries = num_named + num_id
+    indent = '  ' * level
+    for i in range(num_entries):
+        entry_off = offset + 16 + i * 8
+        entry_name = struct.unpack_from('<I', data, entry_off)[0]
+        entry_data = struct.unpack_from('<I', data, entry_off + 4)[0]
+        is_dir = entry_data & 0x80000000
+        
+        if is_dir:
+            child_off = rva_to_raw(entry_data & 0x7FFFFFFF)
+            print(f'{indent}LANG DIR name=0x{entry_name:08x} -> offset 0x{child_off:08x}')
+        else:
+            data_entry_off = rva_to_raw(entry_data & 0x7FFFFFFF)
+            res_rva = struct.unpack_from('<I', data, data_entry_off)[0]
+            res_size = struct.unpack_from('<I', data, data_entry_off + 4)[0]
+            res_file_off = rva_to_raw(res_rva)
+            print(f'{indent}LANG DATA name=0x{entry_name:08x} size={res_size} file_off=0x{res_file_off:08x}')
+            if res_size > 100000:
+                content = data[res_file_off:res_file_off+res_size]
+                if content[:2] == b'MZ':
+                    print(f'{indent}  *** FOUND EMBEDDED EXE! ***')
+                    with open('/tmp/opencode/embedded_exe.bin', 'wb') as f:
+                        f.write(content)
+                    print(f'{indent}  Saved to embedded_exe.bin ({res_size} bytes)')
+
+# Parse top-level directory
+parse_res_dir(rsrc_raw)
+" 2>&1 | head -60
+DIR entry name=0x80000370 -> offset 0x-00037c0
+  Bad magic at 0x-037c0
+DIR entry name=0x00000003 -> offset 0x-00037a8
+  Bad magic at 0x-037a8
+DIR entry name=0x00000006 -> offset 0x-0003748
+  Bad magic at 0x-03748
+DIR entry name=0x0000000e -> offset 0x-0003730
+  Bad magic at 0x-03730
+DIR entry name=0x00000010 -> offset 0x-0003718
+  Bad magic at 0x-03718
+DIR entry name=0x00000018 -> offset 0x-0003700
+  Bad magic at 0x-03700
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import struct
+
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+# .rsrc section at RawPtr=0x14800
+rsrc_start = 0x14800
+rsrc_vaddr = 0x18000
+
+# Dump first 64 bytes of resource section
+print('Resource section header bytes:')
+for i in range(0, 64, 16):
+    hex_str = ' '.join(f'{data[rsrc_start+i+j]:02x}' for j in range(16))
+    ascii_str = ''.join(chr(data[rsrc_start+i+j]) if 32 <= data[rsrc_start+i+j] < 127 else '.' for j in range(16))
+    print(f'  0x{rsrc_start+i:08x}: {hex_str}  {ascii_str}')
+
+# Parse the resource directory
+sig = struct.unpack_from('<I', data, rsrc_start)[0]
+print(f'\\nResource dir signature: 0x{sig:08x}')
+major = struct.unpack_from('<H', data, rsrc_start+2)[0]
+minor = struct.unpack_from('<H', data, rsrc_start+4)[0]
+num_named = struct.unpack_from('<H', data, rsrc_start+12)[0]
+num_id = struct.unpack_from('<H', data, rsrc_start+14)[0]
+num_entries = num_named + num_id
+print(f'  Major={major}, Minor={minor}, Named={num_named}, ID entries={num_id}, Total={num_entries}')
+
+# Print entries
+for i in range(num_entries):
+    off = rsrc_start + 16 + i * 8
+    name = struct.unpack_from('<I', data, off)[0]
+    data_entry = struct.unpack_from('<I', data, off+4)[0]
+    is_dir = data_entry & 0x80000000
+    child_offset = data_entry & 0x7FFFFFFF
+    # The offset is relative to the resource section start
+    child_va = rsrc_vaddr + child_offset
+    child_raw = rsrc_start + child_offset
+    print(f'  Entry {i}: name=0x{name:08x} data=0x{data_entry:08x} is_dir={is_dir} child_offset={child_offset} child_raw=0x{child_raw:08x}')
+" 2>&1
+Resource section header bytes:
+  0x00014800: 00 00 00 00 00 00 00 00 00 00 00 00 01 00 05 00  ................
+  0x00014810: 70 03 00 80 40 00 00 80 03 00 00 00 58 00 00 80  p...@.......X...
+  0x00014820: 06 00 00 00 b8 00 00 80 0e 00 00 00 d0 00 00 80  ................
+  0x00014830: 10 00 00 00 e8 00 00 80 18 00 00 00 00 01 00 80  ................
+
+Resource dir signature: 0x00000000
+  Major=0, Minor=0, Named=1, ID entries=5, Total=6
+  Entry 0: name=0x80000370 data=0x80000040 is_dir=2147483648 child_offset=64 child_raw=0x00014840
+  Entry 1: name=0x00000003 data=0x80000058 is_dir=2147483648 child_offset=88 child_raw=0x00014858
+  Entry 2: name=0x00000006 data=0x800000b8 is_dir=2147483648 child_offset=184 child_raw=0x000148b8
+  Entry 3: name=0x0000000e data=0x800000d0 is_dir=2147483648 child_offset=208 child_raw=0x000148d0
+  Entry 4: name=0x00000010 data=0x800000e8 is_dir=2147483648 child_offset=232 child_raw=0x000148e8
+  Entry 5: name=0x00000018 data=0x80000100 is_dir=2147483648 child_offset=256 child_raw=0x00014900
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mcd /tmp/opcode && python3 -c "
+import struct
+
+with open('whalesetup.exe', 'rb') as f:
+    data = f.read()
+
+rsrc_start = 0x14800
+
+# Entry 0 is named - the name string is at offset 0x370 relative to resource start
+# Actually, 0x80000370 means the high bit is set (name instead of ID) and the offset is 0x370
+# Wait, the name field 0x80000370 - the high bit means it's a string name
+# So the string table offset is 0x370 = 880
+# But that's relative to the resource section start? No, it's an RVA.
+
+# Actually in resource directory entries:
+# If high bit of 'Name' field is set, it's a pointer to a string (offset from start of resource section)
+# The offset is 0x0370 = 880 bytes from resource start
+name_str_off = rsrc_start + 0x370
+str_len = struct.unpack_from('<H', data, name_str_off)[0]
+str_data = data[name_str_off+2:name_str_off+2+str_len*2]
+str_decoded = str_data.decode('utf-16le', errors='replace')
+print(f'Named entry string at 0x{name_str_off:06x}: len={str_len} value={str_decoded!r}')
+
+# Entry 0 data=0x80000040 -> child directory at offset 0x40 from resource start
+# This is the directory entry for the named resource type
+dir0_off = rsrc_start + 0x40
+print(f'\\nParsing named resource directory at 0x{dir0_off:06x}:')
+num_named = struct.unpack_from('<H', data, dir0_off + 12)[0]
+num_id = struct.unpack_from('<H', data, dir0_off + 14)[0]
+num_entries = num_named + num_id
+print(f'  Named={num_named}, ID={num_id}, Total={num_entries}')
+for i in range(num_entries):
+    off = dir0_off + 16 + i * 8
+    name = struct.unpack_from('<I', data, off)[0]
+    data_entry = struct.unpack_from('<I', data, off+4)[0]
+    is_dir = data_entry & 0x80000000
+    child_offset = data_entry & 0x7FFFFFFF
+    if name & 0x80000000:
+        n_off = rsrc_start + (name & 0x7FFFFFFF)
+        n_len = struct.unpack_from('<H', data, n_off)[0]
+        n_str = data[n_off+2:n_off+2+n_len*2].decode('utf-16le', errors='replace')
+        name_str = f'STRING({n_str})'
+    else:
+        name_str = f'ID({name & 0xFFFF})'
+    print(f'  Entry {i}: name={name_str} data=0x{data_entry:08x} is_dir={is_dir} child_offset=0x{child_offset:06x}')
+    if not is_dir:
+        data_entry_off = rsrc_start + child_offset
+        res_rva = struct.unpack_from('<I', data, data_entry_off)[0]
+        res_size = struct.unpack_from('<I', data, data_entry_off + 4)[0]
+        res_codepage = struct.unpack_from('<I', data, data_entry_off + 8)[0]
+        res_file_off = rsrc_start + res_rva - 0x18000
+        print(f'    -> RVA=0x{res_rva:08x} Size={res_size} FileOff=0x{res_file_off:08x} CodePage=0x{res_codepage:08x}')
+        if res_size > 100000:
+            content = data[res_file_off:res_file_off+res_size]
+            print(f'    -> First 16 bytes: {content[:16].hex()}')
+            if content[:2] == b'MZ':
+                print(f'    -> *** EMBEDDED EXE FOUND ***')
+                with open('/tmp/opencode/embedded_exe.bin', 'wb') as f:
+                    f.write(content)
+                print(f'    -> Saved ({res_size} bytes)')
+" 2>&1 failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.

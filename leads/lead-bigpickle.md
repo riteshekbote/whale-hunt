@@ -441,3 +441,90 @@ evidence_needed: whether a replayed/guessed inviteCode or weak password joins a 
 verify_steps: AUTH_HELPED: two authorized accounts join a study room; test inviteCode replay post-leave, empty password, cross-room message targeting; capture payloads file-local; zero requests beyond client's own session
 impact: cross-session message disclosure or channel injection; Medium
 testability: AUTH_HELPED
+## 2026-08-08 00:36:11 UTC [sync] (model bigpickle)
+[RISK] sync: 55 — whale.storage extension API exists and may sync via Whale account; passphrase KDF/key-storage design entirely client-side with no public code; Android sync encryption added 2025-04 (late); moderate-high exposure due to source-unavailable constraint
+[RISK] browser: 78 — sidebar + dual-tab environments have 6 confirmed CVEs in 2025 (SOP bypass CWE-346, iframe sandbox escape CWE-358, CSP bypass CWE-358); these are Whale-specific features not inherited from Chromium; latest stable v4.38.386.14 is 3 minor version bumps ahead of last CVE-fix v4.35.351.12 with ZERO published CVEs in 6-month gap; wiki docs confirm additional attack surface (show() URL loading, drag-navigation exposure); high priority for new variant discovery
+[RISK] libs: 30 — Whale bundles Chromium (inherits all Chromium CVEs), but no Whale-only third-party library manifests or version lists are publicly available; the repo contains only translated documentation from 2019; the extension API surface (whale.*) uses CWE-79-inherited patterns but library-level version drift cannot be assessed without binary access; low visibility, moderate inherent risk
+[HYP] Sync bootstrap-token storage / per-account migration — Whale-only prefs deviation
+class: AUTH
+asset: whalesync client engine (`https://api.whale.naver.com/whalesync`) + profile `Preferences` keys `sync.encryption_bootstrap_token{,_per_account,_per_account_migration_done}`, `sync.whale_need_encryption_key_forced_time`
+confidence: 62
+reasoning: v4.38.386.14 binary (sha256 `6dd7ebc4...`) confirms the Whale-only prefs keys, `/whalesync`+`/whalesync/reset`, and `Sync.NigoriStorage{En,De}cryptionResult`/`sync_pb.EncryptionKeys` custom nigori storage; `sync.whale_need_encryption_key_forced_time` is a Whale-only rekey gate with undocumented downgrade semantics
+evidence_needed: whether per-account bootstrap token is stored plaintext vs OSCrypt (`v10`/`v11` prefix) in `Preferences`, scrypt N/r/p constants reachable from `whale_sync_util`, whether `forced_time` weakens key freshness
+verify_steps: PASSIVE: objdump/strings around `WhaleSyncAuthManager`/`whale_sync_util` for the bootstrap-token envelope and `/whalesync/reset` request shape; diff prefs set vs upstream Chromium `sync.encryption_bootstrap_token` (upstream stores OSCrypt-encrypted in same file); zero network
+impact: local attacker/infostealer with profile access decrypts synced passwords, cookies, autofill → full-account compromise; High
+testability: PASSIVE
+[HYP] Multiplay login-page exclusion bypass — server-tweakable heuristic + token-bearing URL sync
+class: AUTH
+asset: Multiplay session (`https://multiplay.whale.naver.com/`, invite via `multiplayPrivate.getJoinUrl`, real-time tab/scroll sync via `multiplay_session_io`)
+confidence: 58
+reasoning: binary confirms exclusion list is server-fetched pref `whale.tweak.multiplay_login_pages` (ua_tweak.json), scroll sync injects DOM (`isWhaleMultiplayScroll`), join binds `sessionToken`+`multiplayId`; URLs sync verbatim (incl. query strings) while only listed login pages are filtered
+evidence_needed: on v4.38.386.14 whether joiner receives host's login-gated URLs or token-bearing query strings; whether unlisted login-like pages (OAuth consent/SSO) leak session params; invite-link reuse after host leaves
+verify_steps: AUTH_HELPED: two authorized accounts join via copied `getJoinUrl`; host opens login-gated page + token-in-query page; capture file-local joiner-observed tab URLs/scroll/DOM; test link replay post-revocation; zero requests beyond client's own session
+impact: cross-session disclosure of host's open-tab URLs incl. token-bearing query strings / session ids; Medium-High
+testability: AUTH_HELPED
+[HYP] `/whalesync/reset` trigger — auth binding / confirmation weakness
+class: BUSLOGIC
+asset: `https://api.whale.naver.com/whalesync/reset` (client trigger = server data wipe + all-device logout)
+confidence: 45
+reasoning: `/whalesync/reset` confirmed in v4.38.386.14 binary; whale auth uses `/oauth2/v1/nid/{login,refresh}` tokens — if reset needs only a bearer/refresh token without reauth confirm, token theft or a CSRFable client request wipes sync state
+evidence_needed: exact method, body, headers the client sends to `/whalesync/reset`; whether reauth/confirmation is required
+verify_steps: PASSIVE: objdump call-site analysis of `/whalesync/reset` in the WhalesyncRequest/`whale_sync_util` path to recover request shape; server probing out of scope
+impact: sync data destruction + all-device log-out on token theft; DoS on account
+testability: PASSIVE
+[NEXT] PROBE: objdump/strings disassembly of the `/whalesync/reset` + `sync.encryption_bootstrap_token_per_account` call sites in `/tmp/opencode/whale_x/extract/opt/naver/whale/whale` (sha256 `6dd7ebc4...`) to recover the reset request method/body/auth-header shape and the bootstrap-token envelope storage (plaintext vs OSCrypt `v10/v11`), plus enumerate remaining embedded extension API schemas (`multiplayPrivate`, sync-related) for invite/session token entropy — local static only, zero network
+[RISK] sync: 65 — custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 78 — sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; binary now available enables repro-first variant hunting | libs: 35 — paks now parseable for a bundled-lib inventory, and Whale-only `socket.io.slim.js` is confirmed bundled (content runtime-fetched); version-drift assessment still requires upstream comparison
+[HYP] whale_sync_push socket.io push channel — server-controlled URL + unsanitized push message
+class: XSS
+asset: whale_sync_push component extension + utilityPrivate bridge (https://chat.whale.mu/) — Whale-only
+confidence: 55
+reasoning: binary embeds utilityPrivate.getPushServerURL (URL runtime-returned) + onPushUpdated(request_id,{message}); push_server_url_fetcher_base.cc logs "GetPushServerURL succeeded/failed"; service_worker.js+socket.io.slim.js are runtime-fetched, not in resources.pak; CVE-2022-24072/CVE-2024-40618 prove built-in-extension processing is a live Whale injection vector
+evidence_needed: runtime push URL returned by getPushServerURL; whether socket.io message payload reaches chrome.tabs/history or extension internals unsanitized; whether URL-fetch endpoint is attacker-influenceable
+verify_steps: AUTH_HELPED: authorized login → capture getPushServerURL response + runtime-fetched service_worker.js (file-local); audit socket.io onmessage handlers for unsanitized remote data reaching privileged APIs; zero out-of-scope probing
+impact: remote push message mutating synced tabs/history or injection in extension context; Medium-High
+testability: AUTH_HELPED
+[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
+class: AUTH
+asset: api.whale.naver.com/whalesync client engine + profile prefs sync.encryption_bootstrap_token_per_account{,_migration_done}, sync.whale_need_encryption_key_forced_time
+confidence: 60
+reasoning: strings confirm Whale-only prefs keys + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, `''xv10` magic); /whalesync authed by NEO_SES cookie only; sync.cookies/sync.passwords in type list
+evidence_needed: per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to a stale key
+verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util call sites for the bootstrap-token envelope and /whalesync/reset request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network
+impact: local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise; High
+testability: PASSIVE
+[HYP] whaleonPrivate messaging channel — room/inviteCode/password authz
+class: AUTH
+asset: WhaleON messaging (whaleonPrivate.connectMessagingChannel{roomId,password,inviteCode,clientId}, pushMessage, onMessageReceived) — client static only
+confidence: 45
+reasoning: schema exposes inviteCode+password-bound room join and raw pushMessage{data,targets}+onMessageReceived{data}; real-time channel into browser; scope/entropy undocumented
+evidence_needed: whether a replayed/guessed inviteCode or weak password joins a room and reads other participants' messages; whether pushMessage targets are validated
+verify_steps: AUTH_HELPED: two authorized accounts join a study room; test inviteCode replay post-leave, empty password, cross-room message targeting; capture payloads file-local; zero requests beyond client's own session
+impact: cross-session message disclosure or channel injection; Medium
+testability: AUTH_HELPED
+[HYP] whale_sync_push push-channel XSS — runtime-fetched handler, unverifiable in-session
+class: XSS
+asset: whale_sync_push component extension + utilityPrivate.getPushServerURL (push domain runtime-returned) — Whale-only
+confidence: 48
+reasoning: XSS class at extension API is ACCEPTED (CVE-2022-24072 devtools, CVE-2024-40618 built-in-extension sanitization, both on advisory 2026-08-08); push handler + socket.io.slim.js service_worker were runtime-fetched (not in resources.pak) per prior binary strings; binary artifact now absent so every concrete detail is stale
+evidence_needed: re-acquired binary strings OR authorized-login capture of getPushServerURL response + runtime-fetched service_worker.js; whether socket.io message payload reaches chrome.tabs/history unsanitized
+verify_steps: AUTH_HELPED: authorized login → capture push URL + service_worker.js file-local; audit onmessage handlers for remote data reaching privileged APIs; zero out-of-scope probing
+impact: remote push message mutating synced tabs/history or injection in extension context; Medium-High
+testability: AUTH_HELPED
+[HYP] Sidebar/dual-tab SOP regression — new variant post-CVE-2025-69235/62584
+class: OTHER
+asset: sidebarAction.show() URL loading + dual-tab navigation (Whale-only window environments) on v4.38.386.14
+confidence: 55
+reasoning: 6 CVEs (CWE-346/358) fixed ≤ v4.35.351.12 (Dec 2025); latest v4.38.386.14 is 3 minor bumps ahead with 0 published CVEs re-confirmed 2026-08-08; environment classes remain shipped; no 2026 disclosure reduces regression signal, not likelihood
+evidence_needed: a trigger on 4.38.386.14 that reproduces SOP/csp bypass in sidebar or dual-tab; requires installed browser or binary — neither available in-session
+verify_steps: HUMAN_ONLY: install v4.38.386.14, craft sidebarAction.show()/dual-tab nav repro per CVE-2025-69235 PoC patterns; no concrete endpoint derivable passively
+impact: cross-origin read/write in privileged window env → full compromise; High
+testability: HUMAN_ONLY
+[HYP] Multiplay tab-URL sync disclosure — joiner receives token-bearing URLs
+class: AUTH
+asset: browser Multiplay sync feature (multiplayPrivate.getJoinUrl → real-time tab/scroll sync; server `multiplay.whale.naver.com` is OOS, client behavior is the sync bug) — synchronization in scope
+confidence: 55
+reasoning: prior binary strings showed tab/scroll sync injects DOM (`isWhaleMultiplayScroll`) and URLs sync verbatim incl. query strings while only a server-fetched login-page exclusion list (`whale.tweak.multiplay_login_pages`) is filtered; scope tension: server-side is *.whale.naver.com (OOS) but the disclosure is a client sync feature
+evidence_needed: whether joiner observes host's token-bearing query strings; whether unlisted OAuth/SSO consent pages leak session params; invite-link reuse post-revocation
+verify_steps: AUTH_HELPED: two authorized accounts join via copied getJoinUrl; host opens login-gated + token-in-query pages; capture joiner-observed tab URLs/scroll/DOM file-local; test link replay; zero requests beyond own session
+impact: cross-session disclosure of host open-tab URLs incl. token-bearing query strings / session ids; Medium-High
+testability: AUTH_HELPED
