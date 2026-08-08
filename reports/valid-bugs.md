@@ -91,3 +91,12 @@
 
 - 1 lead(s) marked VALID at 2026-08-08 22:20:25 UTC
   - - **Disclosure policy:** TBD (operator-provided channel not yet confirmed) — I'll note this in any VALID verdict until the channel is finalized.
+
+- 0 lead(s) triaged at 2026-08-08 22:51 UTC — **0 VALID / 0 INVALID / 0 HOLD**
+  - LEADS section empty; no new hypotheses since 22:13 UTC cycle
+  - Reposcan still scanning wrong target (gladiaio/ not whale/); 0 hits
+  - See `triage/run-2026-08-08-22-51.md` for status
+
+- 2 lead(s) marked VALID at 2026-08-08 22:53:34 UTC
+  - VALID bugs total: 0
+  - **VALID bugs total: 0** — disclosure channel TBD per scope.yml.
