@@ -1,1 +1,41 @@
-## 2026-08-08 09:54:55 UTC [browser] (model laguna)
+## 2026-08-08 10:34:19 UTC [browser] (model laguna)
+[PRIO] browser sidebar-action SOP bypass asset: `whale.sidebarAction.show({url})` API surface (v4.38.386.14) — score 78 (attack_surface 9, business 8, tech 7, gate_ease 8, cloud 0, fresh 9). Confidence 52 per existing lead.
+[PRIO] Whale sync KDF + OSCrypt master-key extraction from desktop binary v4.38.386.14 — score 68 (attack_surface 8, business 8, tech 7, gate_ease 7, cloud 6, fresh 8). Confidence 65.
+[PRIO] Whale-only prefs keys + xv10 magic + `/whalesync` confirmed via prior bigpickle/laguna runs — score 65 (attack_surface 7, business 8, tech 6, gate_ease 6, cloud 7, fresh 7). Confidence 62.
+[HYP] Sidebar context SOP bypass regression on v4.38.386.14 (CVE-2025-69235 new variant)
+class: OTHER
+asset: `whale.sidebarAction.show` in browser core v4.38.386.14
+confidence: 52
+reasoning: CVE-2025-69235 fixed in v4.35.351.12; v4.38.386.14 is +3 minors with 0 CVEs; DevTools-in-sidebar added v4.38.386.12; wiki docs confirm `show({url})` loads arbitrary URL.
+evidence_needed: Running browser v4.38.386.14 demonstrating cross-origin fetch from panel content script after `sidebarAction.show({url:'https://victim.com'})`
+verify_steps: HUMAN_ONLY — Install v4.38.386.14, load sidebar-sample extension, call `whale.sidebarAction.show({url:'https://httpbin.org/headers'})`, attempt cross-origin fetch from panel content script, compare vs fixed v4.35.351.12
+impact: Cross-origin data theft → credential/CSRF token exfiltration; Critical if renderer escape (CWE-346)
+testability: HUMAN_ONLY
+[HYP] Sync bootstrap-token KDF + OSCrypt master-key extraction from Whale binary v4.38.386.14
+class: AUTH
+asset: Whale ELF binary v4.38.386.14, `.rodata` xref `sync.encryption_bootstrap_token_per_account`
+confidence: 65
+reasoning: Prior runs confirmed prefs keys + xv10 magic + `/whalesync` + NEO_SES cookie present; KDF algorithm/iteration count + master-key storage path unextracted from stripped binary.
+evidence_needed: PBKDF2/scrypt iteration constants in `.rodata`; `Local State` os_crypt v10 key-blob + master key path
+verify_steps: HUMAN: Acquire `.deb` via unrestricted internet (cloudfront DNS dead in-sandbox) → dpkg-deb -x → strings + objdump targeting `.rodata` xref `sync.encryption_bootstrap_token_per_account` → grep PBKDF2/scrypt → inspect `Local State`
+impact: Local attacker decrypts synced passwords + bookmarks + PII from Whale profile (High, local access required)
+testability: HUMAN_ONLY (passive blocked: cloudfront DNS dead at resolver; all mirrors 403/410)
+[HYP] socket.io.slim.js push handler injection in resources.pak
+class: AUTH
+asset: Whale `resources.pak` bundled `socket.io.slim.js`
+confidence: 52
+reasoning: Confirmed Whale-only in resources.pak; `/whalesync` uses socket.io push + NEO_SES cookie; handler may forward untrusted payload to `whale.*` APIs without validation.
+evidence_needed: JS in pak showing `socket.on()` forwarding payload to `whale.*` without origin/message-source check
+verify_steps: HUMAN: Acquire `.deb` → extract pak → strings/grep for socket.io.slim + whale_sync_push → find socket.on → whale.* call chains; check message-source validation
+impact: Remote push message in sync/extension context → credential theft, PII exfiltration (Medium-High)
+testability: HUMAN_ONLY (binary acquisition blocked in-sandbox)
+[FINAL] (ranked, top first):
+[NEXT] HUMAN: Acquire Whale desktop `.deb` binary v4.38.386.14 via unrestricted internet — cloudfront CDN (`d1vdt4q2qgdbji.cloudfront.net`) confirmed DNS-blocked at sandbox resolver (cloudfront.net unresolved, google.com/github.com/nvd.nist.gov resolve fine). Once acquired: `dpkg-deb -x whale_*.deb /tmp/whale_x` → `strings /tmp/whale_x/usr/lib/whale/whale` with xref `sync.encryption_bootstrap_token_per_account` → `objdump -d` targeting PBKDF2/scrypt iteration constants → inspect `Local State` for os_crypt v10 key-blob. Zero requests to `*.naver.com` or `/whalesync`.
+[LEARN] CONFIRMED @ GitHub wiki: `whale.sidebarAction` page accessible via raw.githubusercontent.com/wiki/ — confirms `show({url})` loads arbitrary URL in sidebar panel, `use_navigation_bar` false exposes drag-navigation, server-side apps redirect via location.replace
+[LEARN] CONFIRMED @ GitHub sample extension (translate branch): `manifest.json` declares content_scripts matching ALL origins; background.js calls `sidebarAction.show()` without origin validation
+[LEARN] REJECTED passive binary acquisition @ cloudfront CDN: DNS resolution blocked at sandbox resolver level — confirmed general to all cloudfront domains; google.com/github.com/nvd.nist.gov resolve normally
+[LEARN] REJECTED @ APKMirror/APKCombo/apkpure/Uptodown: All paths 403/410 or legacy-only — not latest 3.9.14.9
+[LEARN] REJECTED @ naver web services (developers/lab/store.whale.naver.com): Excluded per scope.yml out_of_scope
+[RISK] sync: 65 — custom `/whalesync` push via socket.io + per-account bootstrap tokens + xv10 OSCrypt + rekey gate CONFIRMED in v4.38.386.14; KDF algorithm/iteration count/unextraction-blocked by DNS — local profile yields PII cascade
+[RISK] browser: 78 — 6 confirmed 2025 Whale-only CVEs (sidebar/dual-tab); v4.38.386.14 = 3 minors past last CVE-fix with 0 CVEs in 6-mo gap; DevTools-in-sidebar + wiki/docs confirm full API surface — HUMAN_ONLY testability blocks passive validation
+[RISK] libs: 35 — bundles Chromium (inherits upstream CVEs); Whale-only socket.io.slim.js confirmed in resources.pak; no public lib manifest; version-drift blind without binary extraction; APKMirror legacy-only

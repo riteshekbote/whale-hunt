@@ -751,3 +751,32 @@ verify_steps: AUTH_HELPED: install latest desktop Whale, load crafted HTML in si
 impact: sandbox escape / SOP bypass from webpage → arbitrary script or cross-origin data theft in browser UI; Critical if it escalates to renderer
 testability: AUTH_HELPED
 ## 2026-08-08 09:56:36 UTC [sync] (model bigpickle)
+## 2026-08-08 10:34:23 UTC [sync] (model bigpickle)
+[HYP] Sidebar SOP/CSP boundary — CVE-2025-69235 fix not claimed for Linux
+class: OTHER
+asset: Latest desktop Whale (>=4.35.351.12, now 4.38.386.14) Linux sidebar + dual-tab web panels
+confidence: 50
+reasoning: NVD CPE for CVE-2025-69235 lists only Windows/MacOS as affected platforms — Linux never in the fix claim. Wiki confirms `sidebarAction.show({url})` loads arbitrary URL; sample extension = MV2, content_scripts `http://*/*`+`https://*/*`, no extension CSP. v4.38.386.14 is 3 bumps past last fix, 0 CVEs.
+evidence_needed: sidebar/dual-tab panel in Linux build rendering cross-origin content with script execution or parent-context readback; iframe-sandbox escape.
+verify_steps: AUTH_HELPED: install v4.38.386.14 on Linux, drive `sidebarAction.show({url: crafted.html})` + dual-tab web panel, test SOP readback of opener, iframe `sandbox` escape, CSP bypass. Zero requests to Naver infra.
+impact: SOP bypass / script execution in privileged browser-UI context; Critical if it escalates to renderer
+testability: AUTH_HELPED
+[HYP] Sync passphrase KDF + bootstrap-token envelope
+class: AUTH
+asset: v4.38.386.14 `os_crypt_whale.cc` / `whale_sync_util.cc`; Local State + keyring (desktop), Keystore (Android 3.9.14.9)
+confidence: 65
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + xv10-magic OSCrypt fork confirmed in binary via prior runs; Help Center (live) confirms passphrase never leaves device → server holds only ciphertext, so local KDF/key storage is the whole attack surface. KDF params unextractable — all in-sandbox binary channels closed.
+evidence_needed: PBKDF2/scrypt alg + iteration count for passphrase→key; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: BLOCKED in-sandbox. AUTH_HELPED: authorized Linux login, snapshot keyring + Preferences/Login Data pre/post encrypted-sync enable; enumerate KDF by instrumenting os_crypt path. HUMAN: deliver official `.deb` → PASSIVE objdump/`.rodata` scan for iteration constants.
+impact: weak KDF or device-recoverable key → local attacker/infostealer decrypts synced passwords + bookmarks; High
+testability: AUTH_HELPED
+[HYP] Sync refresh-token storage deviation in forked OAuth components
+class: AUTH
+asset: whale binary `whale_sync_auth_manager.cc` / `whale_refresh_token_revoker.cc`; `.whaleon.us` token scope
+confidence: 45
+reasoning: Whale forks stock OAuth (access_token_fetcher_immediate_refresh_token, revoker) — custom token lifecycle is the deviation; such forks historically persist tokens outside Chromium token_service (plaintext prefs/cookies). Public surface has zero sync docs → binary-only. No static access possible in-sandbox.
+evidence_needed: whether whale refresh/access tokens persist outside token_service, their scope + file perms.
+verify_steps: AUTH_HELPED: authorized login, inspect Preferences/Cookies for `whale.*`/`.whaleon.us` token keys + perms; diff vs Chromium token_service layout.
+impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
+testability: AUTH_HELPED
+[NEXT] HUMAN: (a) deliver official Whale `.deb` v4.38.386.14 (cloudfront `d1vdt4q2qgdbji.cloudfront.net` DNS-blocked in-sandbox; APKMirror 403; softpedia Cloudflare) for passive `.rodata`/objdump extraction of PBKDF2/scrypt iteration constants + derived-key persistence; (b) install latest on Linux and drive `sidebarAction.show({url})` + dual-tab panels with crafted HTML to test the SOP/CSP boundary the CVE-2025-69235 fix never claimed for Linux.

@@ -473,3 +473,25 @@
 - LEARN: CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability dis
 - LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
 - LEARN: ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`, `_migration_done`, `whale_need_enc
+
+## RANKED HYPOTHESES 2026-08-08 10:35:54 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [52] `whale.sidebarAction.show`: Sidebar context SOP bypass regression on v4.38.386.14 (CVE-2025-69235 new variant) (from reports/hypotheses-laguna.txt)
+- [50] Latest: Sidebar SOP/CSP boundary — CVE-2025-69235 fix not claimed for Linux (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/aut
+- NEXT(hypotheses-bigpickle.txt): HUMAN: (a) deliver official Whale `.deb` v4.38.386.14 (cloudfront `d1vdt4q2qgdbji.cloudfront.net` DNS-blocked in-sandbox; APKMirror 403; softpedia Cloudflare) f
+- NEXT(hypotheses-laguna.txt): HUMAN: Acquire Whale desktop `.deb` binary v4.38.386.14 via unrestricted internet — cloudfront CDN (`d1vdt4q2qgdbji.cloudfront.net`) confirmed DNS-blocked at sa
+- LEARN: REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+- LEARN: ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- LEARN: ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- LEARN: ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- LEARN: REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests ava
+- LEARN: REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- LEARN: CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability dis
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`, `_migration_done`, `whale_need_enc
+- LEARN: CONFIRMED @ GitHub wiki: `whale.sidebarAction` page accessible via raw.githubusercontent.com/wiki/ — confirms `show({url})` loads arbitrary URL in sidebar panel
+- LEARN: CONFIRMED @ GitHub sample extension (translate branch): `manifest.json` declares content_scripts matching ALL origins; background.js calls `sidebarAction.show()
+- LEARN: REJECTED passive binary acquisition @ cloudfront CDN: DNS resolution blocked at sandbox resolver level — confirmed general to all cloudfront domains; google.com
+- LEARN: REJECTED @ APKMirror/APKCombo/apkpure/Uptodown: All paths 403/410 or legacy-only — not latest 3.9.14.9
+- LEARN: REJECTED @ naver web services (developers/lab/store.whale.naver.com): Excluded per scope.yml out_of_scope
