@@ -596,3 +596,28 @@
 - LEARN: CONFIRMED @ NVD (keywordSearch=naver+whale, pubStartDate=2026-01-01): 0 CVEs returned — no 2026 Whale vulnerability disclosures, confirming 8-month disclosure g
 - LEARN: CONFIRMED @ raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json: HTTP 200 — `content_scripts` matching `http://*
 - LEARN: REJECTED @ binary acquisition channels (APKMirror/APKCombo/apkpure/Uptodown/cloudfront CDN): All blocked in-sandbox — cloudfront DNS `No answer` (general to `*.
+
+## RANKED HYPOTHESES 2026-08-08 13:16:20 UTC
+- [65] Latest: Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable key (from reports/hypotheses-bigpickle.txt)
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/aut
+- NEXT(hypotheses-bigpickle.txt): HUMAN: run the reachable official `WhaleSetup.exe` (sha256 `c523f661...`) — or deliver the full offline package it downloads at runtime — so the sync-KDF string
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale `WhaleSetup.exe` v4.38.386.14 OR `WhaleSetup.deb` v4.38.386.14 via unrestricted internet — all passive download channels confirmed
+- LEARN: REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+- LEARN: ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- LEARN: ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- LEARN: ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- LEARN: REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests ava
+- LEARN: REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- LEARN: CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability dis
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=`7b06e6e9...`, `_migration_done`, `whale_need_enc
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` w
+- LEARN: CONFIRMED sample extension manifest @ raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json: still HTTP 200 — `con
+- LEARN: REJECTED @ uptodown download channel: `whale-browser.en.uptodown.com` now returns HTTP 404 (was 410 Gone per last run; entire Whale app page removed) — passive 
+- LEARN: CONFIRMED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net` still resolves `No answer` (127.0.0.53) — desktop `.deb` path confirmed dead
+- LEARN: CONFIRMED @ APKMirror: Cloudflare 403 returns on all paths — Android + desktop binary acquisition blocked
+- LEARN: REJECTED @ GitHub wiki `sidebarAction` docs: raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md still 404 — wiki documentation remai
+- LEARN: CONFIRMED @ GitHub repo activity: latest commit still `e5ee01f8` (2019-09-23T08:03:12Z); `pushed_at` 2019-09-23, `updated_at` 2025-10-22 — static analysis path 
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 (keywordSearch returns only CVE-2018-9859 + CVE-2020-9754, both pre-2021) — disclosure gap confirmed for v4.35.3
+- LEARN: CONFIRMED @ sample extension manifest (translate branch): HTTP 200 — `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins) still live; attack su
