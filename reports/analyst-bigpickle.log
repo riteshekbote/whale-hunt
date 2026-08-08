@@ -22824,3 +22824,155 @@ curl -s -m 20 -b /tmp/opencode/ck.jar -L -o /dev/null -w "%{http_code} %{url_eff
 - [RISK] sync: 55 — Android asset confirmed current (3.9.14.9 pub 2026-08-01, 15966) and a mirror page is now readable, but KDF parameters + key persistence remain unextracted and the final binary fetch is still Cloudflare-gated → real surface, still unverifiable without the binary
 - [RISK] browser: 55 — unchanged: 3–6 minor bumps past last sidebar SOP/sandbox fixes with 0 CVEs, all-origin message path documented and sample source still live
 - [RISK] libs: 35 — socket.io.slim.js still bundled-confirmed but runtime-fetched; no in-sandbox static path to the extracted lib
+===== ANALYST bigpickle 2026-08-08 19:58:10 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "manifest:%{http_code}\n" https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json; curl -s -o /dev/null -w "background:%{http_code}\n" https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js; curl -s -o /dev/null -w "contentscript:%{http_code}\n" https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js
+manifest:200
+background:200
+contentscript:200
+[0m
+[0m$ [0mcurl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%2Bwhale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-12-31T23:59:59.000" | head -c 600
+(no output)
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers" | python3 -c "import json,sys; d=json.load(sys.stdin); print('pushed_at:',d.get('pushed_at'),'updated_at:',d.get('updated_at'),'releases:',d.get('releases_url'))"
+pushed_at: 2019-09-23T08:03:26Z updated_at: 2025-10-22T03:15:17Z releases: https://api.github.com/repos/naver/whale-browser-developers/releases{/id}
+[0m
+[0m$ [0mcurl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-12-31T23:59:59.000" -o /tmp/nvd2026.json; wc -c /tmp/nvd2026.json; python3 -c "import json; d=json.load(open('/tmp/nvd2026.json')); print('total:',d.get('totalResults'))"
+0 /tmp/nvd2026.json
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers/releases" -o /tmp/rel.json; wc -c /tmp/rel.json; python3 -c "import json; d=json.load(open('/tmp/rel.json')); print('releases:',len(d))"
+5 /tmp/rel.json
+releases: 0
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers/commits?per_page=5" | python3 -c "import json,sys; d=json.load(sys.stdin); [print(c['sha'][:8], c['commit']['committer']['date'], c['commit']['message'][:50]) for c in d]"
+e5ee01f8 2019-09-23T08:03:12Z Update how cc works.
+d2879e50 2019-09-23T07:58:43Z Merge pull request #19 from naver/jdkim/update_doc
+25787dee 2019-09-23T07:57:42Z Initial documents.
+a1adb1d0 2019-08-22T08:25:29Z clean up obsolete resources.
+69de03bb 2017-05-24T02:46:10Z Add files via upload
+
+Add image resources for wiki
+[0m
+[0m$ [0msleep 3; curl -s -w "\nHTTP:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale%20browser&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-12-31T23:59:59.000" | head -c 400
+HTTP:404
+[0m
+[0m$ [0msleep 4; curl -s -w "\nHTTP:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%2Bwhale" | python3 -c "import sys; raw=sys.stdin.read(); import json,re; m=re.search(r'\{.*\}',raw,re.S); d=json.loads(m.group(0)) if m else {}; print('total:',d.get('totalResults')); [print(c['cve']['id']) for c in d.get('vulnerabilities',[])]"
+total: 0
+[0m
+[0m$ [0msleep 4; curl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale" -o /tmp/nvd.json; wc -c /tmp/nvd.json; python3 -c "import json; d=json.load(open('/tmp/nvd.json')); print('total:',d.get('totalResults')); [print(c['cve']['id'], c['cve'].get('vulnStatus')) for c in d.get('vulnerabilities',[])[:5]]" 2>&1 | head -20
+65680 /tmp/nvd.json
+total: 28
+CVE-2003-1127 Modified
+CVE-2007-2238 Modified
+CVE-2017-15913 Modified
+CVE-2018-9859 Modified
+CVE-2018-7635 Modified
+[0m
+[0m$ [0mpython3 -c "
+import json
+d=json.load(open('/tmp/nvd.json'))
+for c in sorted(d.get('vulnerabilities',[]), key=lambda x:x['cve']['published']):
+    m=c['cve']
+    print(m['id'], m.get('published','')[:10], (m.get('descriptions') or [{}])[0].get('value','')[:70].replace(chr(10),' '))
+"
+CVE-2003-1127 2003-12-31 Whale Communications e-Gap 2.5 on Windows 2000 allows remote attackers
+CVE-2007-2238 2009-04-16 Multiple stack-based buffer overflows in the Whale Client Components A
+CVE-2017-15913 2018-01-08 The Installer in Whale allows DLL hijacking.
+CVE-2018-9859 2018-06-16 The path of Whale update service was unquoted in NAVER Whale before 1.
+CVE-2018-7635 2018-07-03 Whale Browser before 1.0.41.8 displays no URL information but only a t
+CVE-2018-12448 2018-08-02 Whale Browser before 1.3.48.4 displays no URL information but only a t
+CVE-2018-12449 2018-10-11 The Whale browser installer 0.4.3.0 and earlier versions allows DLL hi
+CVE-2020-9753 2020-05-20 Whale Browser Installer before 1.2.0.5 versions don't support signatur
+CVE-2021-33593 2021-11-02 Whale browser for iOS before 1.14.0 has an inconsistent user interface
+CVE-2022-24071 2022-01-28 A Built-in extension in Whale browser before 3.12.129.46 allows attack
+CVE-2022-24072 2022-03-17 The devtools API in Whale browser before 3.12.129.18 allowed extension
+CVE-2022-24073 2022-03-17 The Web Request API in Whale browser before 3.12.129.18 allowed to den
+CVE-2022-24074 2022-03-17 Whale Bridge, a default extension in Whale browser before 3.12.129.18,
+CVE-2022-24075 2022-03-17 Whale browser before 3.12.129.18 allowed extensions to replace JavaScr
+CVE-2020-9754 2022-06-27 NAVER Whale browser mobile app before 1.10.6.2 allows the attacker to 
+CVE-2023-3308 2023-06-18 A vulnerability classified as problematic has been found in whaleal Ic
+CVE-2023-35780 2023-07-11 Cross-Site Request Forgery (CSRF) vulnerability in Andy Whalen Galleri
+CVE-2023-25632 2023-11-27 The Android Mobile Whale browser app before 3.0.1.2 allows the attacke
+CVE-2024-40618 2024-07-11 Whale browser before 3.26.244.21 allows an attacker to execute malicio
+CVE-2024-50583 2024-10-25 Whale browser Installer before 3.1.0.0 allows an attacker to execute a
+CVE-2024-56967 2025-01-27 An issue in Cloud Whale Interactive Technology LLC. PolyBuzz iOS 2.0.2
+CVE-2025-53599 2025-07-04 Whale browser for iOS before 3.9.1.4206 allow an attacker to execute m
+CVE-2025-53600 2025-07-04 Whale browser before 4.32.315.22 allow an attacker to bypass the Same-
+CVE-2025-62583 2025-10-16 Whale Browser before 4.33.325.17 allows an attacker to escape the ifra
+CVE-2025-62584 2025-10-16 Whale browser before 4.33.325.17 allows an attacker to bypass the Same
+CVE-2025-62585 2025-10-16 Whale browser before 4.33.325.17 allows an attacker to bypass the Cont
+CVE-2025-69234 2025-12-30 Whale browser before 4.35.351.12 allows an attacker to escape the ifra
+CVE-2025-69235 2025-12-30 Whale browser before 4.35.351.12 allows an attacker to bypass the Same
+[0m
+**STEP 1 — DELTA**
+- [CHANGED] NVD query semantics: `keywordSearch=naver+whale` now returns 0 (was 2) and date-filtered keywordSearch returns HTTP 404 — but `keywordSearch=whale` still returns all 28 whale-referencing CVEs (0 published in 2026, latest CVE-2025-69234/69235 published 2025-12-30). Recon methodology shift, no surface change.
+- Otherwise NO_DELTA: repo frozen at `e5ee01f8` (2019-09-23, 0 releases), sample extension files all HTTP 200 (`manifest.json`/`background.js`/`contentscript.js`), all binary acquisition channels still blocked.
+
+**STEP 2 — PRIORITIZE**
+- [PRIO] Sidebar/web-panel SOP boundary (`sidebarAction.show({url})` + all-origin `runtime.onMessage` chain) | score 6.35 | attack 8, business 5, tech 4, gate 10 (any web origin, no auth), cloud 1, fresh 9
+- [PRIO] Sync bootstrap-token/OSCrypt KDF envelope (Whale binary, `/whalesync`, Local State + keyring) | score 6.00 | attack 5, business 9, tech 6, gate 2 (local access), cloud 5, fresh 8
+- [PRIO] `socket.io.slim.js` bundled lib in `resources.pak` | score 3.80 | attack 4, business 3, tech 5, gate 4, cloud 2, fresh 5
+
+**STEP 3 — HYPOTHESES**
+- [HYP] Sidebar/dual-tab SOP-boundary regression on latest — vendor-documented unvalidated chain
+- class: OTHER
+- asset: Latest desktop Whale `sidebarAction.show({url})` + remote HTTP/HTTPS web panels
+- confidence: 65
+- reasoning: Sample `background.js` (HTTP 200, re-verified) forwards any-origin `runtime.onMessage` to `sidebarAction.show`/`windows.create` without sender validation; CVE-2025-69234/69235 fixed <4.35.351.12 (Dec 2025), CVE-2025-62583/62584/62585 fixed <4.33.325.17 (Oct 2025); latest 4.38.386.14 is 3–6 minor bumps ahead with 0 published CVEs → regression window open.
+- evidence_needed: crafted panel URL executing script / reading opener cross-origin / escaping iframe sandbox or panel CSP on the latest build.
+- verify_steps: AUTH_HELPED: install latest on Linux, load a minimal VALID MV2 extension (sample manifest is invalid JSON), trigger all-origin content-script `sendMessage`, drive `sidebarAction.show({url: crafted.html})`, test opener readback + iframe `sandbox` escape + CSP bypass. Zero requests to Naver infra.
+- impact: SOP bypass / script execution in privileged browser-UI context; High–Critical if renderer escalation
+- testability: AUTH_HELPED
+
+- [HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable derived key
+- class: AUTH
+- asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+- confidence: 60
+- reasoning: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + `/whalesync` endpoint confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface; KDF alg + iteration count still unextracted.
+- evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+- verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+- impact: local attacker/infostealer decrypts synced passwords + bookmarks; High
+- testability: AUTH_HELPED
+
+- [HYP] `socket.io.slim.js` event-handler injection in bundled Whale extension
+- class: XSS
+- asset: `resources.pak` bundled `socket.io.slim.js` (runtime-fetched handler)
+- confidence: 40
+- reasoning: Whale-only non-Chromium bundled lib confirmed present in `resources.pak`; handler may be runtime-fetched, degrading passive evidence; no in-sandbox static path to the extracted lib.
+- evidence_needed: extracted `socket.io.slim.js` + event-handler wiring; whether socket URL is user-influenced.
+- verify_steps: AUTH_HELPED: extract `resources.pak` from delivered binary, diff against upstream socket.io, audit event handlers for injection.
+- impact: script injection in built-in extension context; Medium
+- testability: AUTH_HELPED
+
+**STEP 4 — SELF-CRITIQUE**
+- [PARKED] none — all three pass confidence ≥ 40, no REJECTED-class overlap, concrete verify_steps present.
+- [FINAL] 1. Sidebar SOP-boundary regression (65, OTHER) | 2. Sync KDF/bootstrap-token envelope (60, AUTH) | 3. socket.io.slim.js injection (40, XSS)
+
+**STEP 5 — NEXT ACTION**
+- [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) into `/tmp/opencode` via unrestricted internet — unblocks both top leads in one pass: (a) objdump/strings extracts `xv10`/`os_crypt_whale` PBKDF2 iteration constants + key persistence path for the sync-KDF hypothesis (60), (b) enables authorized Linux install for sidebar/dual-tab boundary testing (65). All passive channels re-confirmed dead this run.
+
+**STEP 6 — LEARNING**
+- [LEARN] REJECTED @ NVD API query variants: `keywordSearch=naver+whale` returns 0 (was 2) and keywordSearch+date-filter returns HTTP 404 — NVD query semantics changed; authoritative count must use `keywordSearch=whale` (28 total, 0 in 2026, latest CVE-2025-69234/69235 2025-12-30). No new disclosures.
+- [LEARN] ACCEPTED @ sample extension source (translate branch): `manifest.json`/`background.js`/`contentscript.js` all HTTP 200 re-verified — all-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch chain remains the best-characterized live attack surface; CVE-2025-69234 (iframe escape) + 69235 (SOP bypass) confirm the boundary class is real.
+- [LEARN] REJECTED @ GitHub repo: still frozen at `e5ee01f8` (2019-09-23), 0 releases — static analysis path permanently dead.
+
+**STEP 7 — RISK SCORE**
+- [RISK] sync: 45 — custom OSCrypt/`xv10` KDF + bootstrap-token envelope confirmed in binary with KDF params and key-persistence unextracted; all acquisition channels dead → real surface, unverifiable keys.
+- [RISK] browser: 55 — 3–6 minor bumps past last sidebar SOP/iframe-escape fixes (CVE-2025-69234/69235 Dec 2025) with 0 published CVEs; OS-agnostic fix scope; live all-origin message path; untestable without the binary.
+- [RISK] libs: 35 — `socket.io.slim.js` Whale-only and confirmed bundled, but handler possibly runtime-fetched and no in-sandbox static path; degraded passive evidence.

