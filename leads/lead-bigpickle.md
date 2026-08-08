@@ -692,3 +692,4 @@ verify_steps: PASSIVE: strings around whale auth manager + token-service prefs, 
 impact: stolen refresh token → sync account takeover (synced data + saved passwords); High
 testability: AUTH_HELPED
 [NEXT] PROBE: continue PASSIVE static analysis of the official binary — (1) scan `locales/en-US.pak` + `resources.pak` for the sync/passphrase UI strings (may document KDF/iteration); (2) objdump the `.rodata` region xref'ing `sync.encryption_bootstrap_token_per_account` to extract the OSCrypt-v10 key-wrap/KDF constants (PBKDF2 iterations / scrypt N,r,p); (3) verify SHA256 of the acquired deb against CDN `Last-Modified` metadata. Zero requests to Naver sync infra.
+## 2026-08-08 06:40:33 UTC [sync] (model bigpickle)
