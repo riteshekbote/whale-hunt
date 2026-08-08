@@ -619,3 +619,4 @@ evidence_needed: crafted HTML that escapes iframe sandbox or bypasses SOP/CSP in
 verify_steps: AUTH_HELPED: install latest desktop Whale, open crafted HTML in sidebar and dual-tab web panels, test sandbox escape / cross-origin read / CSP bypass; repro-first on latest build; no server interaction.
 impact: sandbox escape / SOP bypass from a webpage → arbitrary script execution or cross-origin data theft in browser UI; Critical if escalates to renderer code execution
 testability: AUTH_HELPED
+## 2026-08-08 03:58:17 UTC [sync] (model bigpickle)
