@@ -106,3 +106,15 @@
   - | Q6 | YES | Valid class |
   - | Q6 | YES | Valid class |
   - **VALID count: 0** — no reportable vulnerability this cycle. Disclosure channel per scope.yml is TBD (operator-provided; not yet confirmed).
+
+- 14 lead(s) triaged at 2026-08-08 23:48 UTC — **0 VALID / 6 INVALID / 8 HOLD**
+  - Full 7Q analysis per lead; uniform killer is Q4 (no passive proof) + Q7 (no evidence)
+  - 5 models de-duplicated to 14 distinct lead categories (longcat produced no hypotheses)
+  - 6 INVALID: Lead 01/03/11 (dupes documented CVE classes), Lead 02 (dupes CVE-2022-24072/2024-40618), Lead 05 (no specific vuln, best-practice), Lead 08 (out of scope, Naver web service)
+  - 8 HOLD: all require binary artifact absent from sandbox or HUMAN_ONLY/AUTH_HELPED verification
+  - Reposcan still scanning wrong target (gladiaio/ not whale/); 0 hits
+  - See `triage/run-2026-08-08-23-48.md` for full analysis
+
+- 2 lead(s) marked VALID at 2026-08-08 23:56:53 UTC
+  - valid-bugs.md
+  - | **VALID** | 0 | — |
