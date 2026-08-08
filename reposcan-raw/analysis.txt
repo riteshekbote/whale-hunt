@@ -1,43 +1,14 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base you provided is entirely about Whale browser (naver/whale-browser-developers), but the task asks to triage **gladiaio/** GitHub org repos and **@gladiaio/sdk** npm package. These are completely different targets.
+There's a significant mismatch here. The knowledge base and inventory you provided are **entirely about Naver Whale browser** (naver/whale-browser-developers repo, Whale CVEs, sidebar SOP bypasses, sync KDF, binary acquisition paths for WhaleSetup.exe, etc.), but the task asks me to triage **gladiaio/ GitHub org repos and @gladiaio/sdk npm package**.
 
-Let me explore the actual workspace to find the gladiaio scan results.
-[0m✱ [0mGlob "**/*"[90m 100 matches[0m
-[0m→ [0mRead README.md
-[0m→ [0mRead scope.yml
-[0m✱ [0mGrep "gladiaio"[90m 100 matches[0m
-This workspace is **Naver Whale Browser** vulnerability research (`whale-hunt`), not Gladia. The `scan-prompt.txt` has a known template bug referencing `gladiaio/` — the actual target is `naver/whale-browser-developers` (documentation-only repo).
+These are completely different targets:
+- **Knowledge base**: Naver Whale browser vulnerability research
+- **Task**: Gladia SDK (speech-to-text API) static scan triage
 
-**Pipeline status:** The reposcan has been misdirected to `gladiaio/` org since ~17:57 UTC, returning 0 hits every cycle (confirmed in multiple triage runs).
+I cannot triage Gladia repos using Whale browser intelligence. I need either:
+1. The actual Gladia scan results/hits to triage, or
+2. A Gladia-specific knowledge base
 
----
-
-### Actual Whale Browser triage (from knowledge base + workspace):
-
-| Category | Status | Evidence |
-|----------|--------|----------|
-| **Static analysis** | DEAD | Only repo is `naver/whale-browser-developers` — documentation-only, last code commit 2019-09-23 |
-| **Binary acquisition** | BLOCKED | All channels dead in-sandbox: CloudFront DNS `No answer`, APKMirror 403, Uptodown 404 (page removed), pstatic 404 |
-| **Sidebar SOP bypass** | ACTIVE SURFACE | Sample extension (`translate` branch) confirms: `content_scripts` match ALL origins + `background.js` dispatches `sidebarAction.show`/`show2` without origin validation — CVE-2025-69235 regression window open (v4.35.352–v4.38.386.14, 8 months, 0 CVEs) |
-| **Dual-tab CSP bypass** | ACTIVE SURFACE | CVE-2025-62585 fixed v4.33.325.17; ~8 months undisclosed changes since |
-| **Sync KDF / OSCrypt** | STALE | Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `xv10` magic, `os_crypt_whale.cc`) confirmed in v4.38.386.14 binary via prior runs — KDF constants unextracted (binary re-acquisition required) |
-| **bundled socket.io.slim.js** | STALE | Confirmed in `resources.pak` via prior runs — handler may be runtime-fetched |
-
----
-
-### Verdict
-
-| Candidate | REPORT_CANDIDATE | Reason |
-|-----------|------------------|--------|
-| Sidebar SOP bypass regression (CVE-2025-69235 variant) | **YES** | Live attack surface confirmed via sample extension source; 8-month disclosure gap; latest v4.38.386.14 untested |
-| Dual-tab CSP bypass regression (CVE-2025-62585 variant) | **YES** | 8 months undisclosed changes; no CVE since fix |
-| Sync KDF / master-key extraction | **NO** | Requires binary re-acquisition (HUMAN_ONLY — all passive channels blocked) |
-| Bundled socket.io.slim.js audit | **NO** | Stale evidence; handler runtime-fetched; binary re-acquisition needed |
-| DLL search-order (installer) | **NO** | Confidence 50 < 60 threshold; all binary channels dead |
-
----
-
-### Critical pipeline issue
-**Reposcan is scanning wrong org (`gladiaio/` instead of `naver/whale-browser-developers`)** since ~17:57 UTC. Fix the org filter in `.github/workflows/reposcan.yml` to target `naver` org with `whale` name filter. No new static-analysis leads generated during regression.
+Could you provide the Gladia scan output (the "hits" mentioned in your instructions) or clarify which target you want me to triage?
