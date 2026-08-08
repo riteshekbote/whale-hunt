@@ -48,3 +48,6 @@
   - Full 7Q analysis per lead; uniform killer is Q4 (no passive proof) + Q7 (no evidence)
   - All binary-acquisition channels blocked; most leads require HUMAN_ONLY interactive testing
   - See `triage/run-2026-08-08-14-38.md` for full analysis
+
+- 1 lead(s) marked VALID at 2026-08-08 15:52:59 UTC
+  - | **VALID** | **0** | — |
