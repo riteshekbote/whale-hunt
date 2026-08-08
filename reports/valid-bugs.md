@@ -31,3 +31,11 @@
 
 - 1 lead(s) marked VALID at 2026-08-08 10:02:28 UTC
   - | **VALID** | 0 | No lead passes all 7 gates |
+
+- 11 lead(s) triaged at 2026-08-08 13:00 UTC — **0 VALID / 0 HOLD / 11 INVALID**
+  - All leads fail Q4 (no passive GET/HEAD proof) and Q7 (no evidence of actual vulnerability)
+  - See `triage/run-2026-08-08-13-00.md` for full 7Q analysis per lead
+
+- 2 lead(s) marked VALID at 2026-08-08 13:16:49 UTC
+  - valid-bugs.md
+  - | **VALID** | 0 | No lead passes all 7 gates |
