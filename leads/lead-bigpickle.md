@@ -976,3 +976,31 @@ impact: SOP bypass / sandbox escape in browser-UI context; High if renderer esca
 testability: AUTH_HELPED
 [NEXT] HUMAN: Deliver the official Whale desktop binary (v4.38.386.14, `.deb` or `WhaleSetup.exe`) via unrestricted internet — unblocks in one pass: (a) objdump/strings extracts `xv10`/`os_crypt_whale` PBKDF2 iteration constants for the sync-KDF hypothesis (60), (b) enables the authorized Linux install for sidebar/dual-tab boundary testing (45). All passive channels re-confirmed dead this run (NVD date-filtered search 404, sample 2017-era invalid manifest, repo frozen).
 [RISK] sync: 45 — custom OSCrypt/KDF + bootstrap-token envelope confirmed present in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 — 3–6 minor bumps past last sidebar SOP/sandbox fixes with 0 published CVEs and an OS-agnostic fix scope; source-documented all-origin message path remains the best-characterized surface, untestable without the binary. | libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.
+## 2026-08-08 17:40:27 UTC [sync] (model bigpickle)
+[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable derived key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+confidence: 60
+reasoning: Whale-only prefs keys + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface. KDF alg/iteration count still unextracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords + bookmarks; High
+testability: AUTH_HELPED
+[HYP] Sidebar/dual-tab boundary regression on latest — 3–6 minor bumps, 0 CVEs since fix
+class: OTHER
+asset: Latest desktop Whale `sidebarAction.show({url})` + dual-tab web panel
+confidence: 50
+reasoning: CVE-2025-69235 (CWE-346) fixed <v4.35.351.12; latest v4.38.386.14 is 3–6 minor bumps ahead, 0 CVEs since; sample `background.js` (live, HTTP 200) forwards any-origin `runtime.onMessage` to `sidebarAction.show`/`windows.create` without validation; manifest.json invalid so sample itself uninstallable → must test with minimal valid extension.
+evidence_needed: crafted panel URL executing script / escaping sandbox on latest desktop.
+verify_steps: AUTH_HELPED: install latest, load minimal valid MV2 extension, cross-origin content-script sendMessage, drive `sidebarAction.show({url: crafted.html})`, test opener readback + iframe sandbox escape.
+impact: SOP bypass / sandbox escape in browser-UI context; High
+testability: AUTH_HELPED
+[HYP] `socket.io.slim.js` event-handler injection in bundled Whale extension
+class: XSS
+asset: `resources.pak` bundled `socket.io.slim.js` (runtime-fetched handler)
+confidence: 40
+reasoning: Whale-only non-Chromium bundled lib confirmed present in `resources.pak`; handler may be runtime-fetched, degrading passive evidence; no in-sandbox static path to the extracted lib.
+evidence_needed: extracted `socket.io.slim.js` + its event-handler wiring; whether socket URL is user-influenced.
+verify_steps: AUTH_HELPED: extract `resources.pak` from delivered binary, diff against upstream socket.io, audit event handlers for injection.
+impact: script injection in built-in extension context; Medium
+testability: AUTH_HELPED

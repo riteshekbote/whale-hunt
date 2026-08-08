@@ -154,3 +154,9 @@
 - 2026-08-08 CONFIRMED @ NVD CVE-2025-69235: "Whale browser before 4.35.351.12 allows an attacker to bypass the Same-Origin Policy in a sidebar environment" — CPE `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*` (wildcard platforms, no explicit Linux CPE fix variant)
 - 2026-08-08 CONFIRMED @ NVD CVE-2025-62585: "Whale browser before 4.33.325.17 allows an attacker to bypass the Content Security Policy via a specific scheme in a dual-tab environment" — fixed v4.33.325.17
 - 2026-08-08 CONFIRMED @ GitHub repo: `naver/whale-browser-developers` documentation-only — `pushed_at` 2019-09-23, `updated_at` 2025-10-22, 0 releases, 1 repo in Naver org — static analysis path permanently dead
+- 2026-08-08 REJECTED class @ installer: DLL search-order regression — conf 50 < 60; all passive channels dead; DLL-load needs live elevated Windows install.
+- 2026-08-08 CONFIRMED @ sample extension manifest/background.js (translate branch): both HTTP 200 (re-asserted 17:39:59 UTC) — `content_scripts` match ALL origins + unvalidated `sidebarAction.show`/`show2` dispatch confirmed live.
+- 2026-08-08 CONFIRMED @ NVD: 0 Whale CVEs in 2026 (2 total, both pre-2021) — disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-08 REJECTED @ GitHub repo: documentation-only (last commit 2019-09-23, 0 releases, 1 repo) — static path permanently dead; binary acquisition is only vector.
+- 2026-08-08 REJECTED @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net`+`*.cloudfront.net` still `No answer` (127.0.0.53) — `.deb` path permanently dead in-sandbox.
+- 2026-08-08 REJECTED @ GitHub wiki `sidebarAction` docs: still HTTP 404 — SOP evidence rests solely on live sample extension source.

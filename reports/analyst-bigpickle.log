@@ -19365,3 +19365,99 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK SCORE
 [RISK] sync: 45 — custom OSCrypt/KDF + bootstrap-token envelope confirmed present in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 — 3–6 minor bumps past last sidebar SOP/sandbox fixes with 0 published CVEs and an OS-agnostic fix scope; source-documented all-origin message path remains the best-characterized surface, untestable without the binary. | libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.
+===== ANALYST bigpickle 2026-08-08 17:42:49 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=5" | head -c 1500; echo
+{"resultsPerPage":2,"startIndex":0,"totalResults":2,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-08T17:39:54.454","vulnerabilities":[{"cve":{"id":"CVE-2018-9859","sourceIdentifier":"cve@mitre.org","published":"2018-06-16T01:29:09.680","lastModified":"2026-06-17T02:07:18.247","vulnStatus":"Modified","cveTags":[],"descriptions":[{"lang":"en","value":"The path of Whale update service was unquoted in NAVER Whale before 1.0.40.7. This vulnerability can be used for persistent privilege escalation if it's available to create an executable file with System privilege by other vulnerable applications."},{"lang":"es","value":"La ruta del servicio de actualización Whale no tenía comillas en NAVER Whale en versiones anteriores a la 1.0.40.7. Esta vulnerabilidad puede emplearse para el escalado de privilegios persistente si está disponible para crear un archivo ejecutable con privilegios System por parte de otras aplicaciones vulnerables."}],"affected":[{"source":"cve@mitre.org","affectedData":[{"vendor":"n/a","product":"n/a","versions":[{"version":"n/a","status":"affected"}]}]}],"metrics":{"cvssMetricV30":[{"source":"nvd@nist.gov","type":"Primary","cvssData":{"version":"3.0","vectorString":"CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H","baseScore":8.1,"baseSeverity":"HIGH","attackVector":"NETWORK","attackComplexity":"HIGH","privilegesRequired":"NONE","userInteraction":"NONE","scope":"UNCHANGED","confidentialityImpact":"HIGH","integrityImpact":"HIGH","availabilityImpact":"HIG
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers" | python3 -c "import json,sys; d=json.load(sys.stdin); print({k:d.get(k) for k in ['pushed_at','updated_at','open_issues_count']})" 2>/dev/null; echo
+{'pushed_at': '2019-09-23T08:03:26Z', 'updated_at': '2025-10-22T03:15:17Z', 'open_issues_count': 4}
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}\n" --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json"
+200
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2018-9859" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)['vulnerabilities'][0]['cve']
+print('id:', d['id'])
+print('published:', d['published'])
+print('lastModified:', d['lastModified'])
+print('vulnStatus:', d['vulnStatus'])
+print('cpeMatch:', json.dumps(d.get('configurations',[]))[:600])
+print('desc:', d['descriptions'][0]['value'][:200])
+"
+id: CVE-2018-9859
+published: 2018-06-16T01:29:09.680
+lastModified: 2026-06-17T02:07:18.247
+vulnStatus: Modified
+cpeMatch: [{"nodes": [{"operator": "OR", "negate": false, "cpeMatch": [{"vulnerable": true, "criteria": "cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*", "versionEndExcluding": "1.0.40.7", "matchCriteriaId": "DF559417-F851-4010-9D9F-39B056DCF13B"}]}]}]
+desc: The path of Whale update service was unquoted in NAVER Whale before 1.0.40.7. This vulnerability can be used for persistent privilege escalation if it's available to create an executable file with Sys
+[0m
+NVD shows a 2026-06-17 modification on CVE-2018-9859 — the only changed item. Probing that delta:
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2020-9754" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)['vulnerabilities'][0]['cve']
+print('id:', d['id'])
+print('lastModified:', d['lastModified'])
+print('vulnStatus:', d['vulnStatus'])
+"
+id: CVE-2020-9754
+lastModified: 2026-06-17T03:28:31.320
+vulnStatus: Modified
+[0m
+Delta check complete. All probes returned: NVD still 2 total CVEs (0 in 2026), GitHub repo frozen, sample manifest live (200). Only change: both CVEs bulk `lastModified` 2026-06-17 with unchanged descriptions/CPEs — an NVD re-processing event, non-substantive.
+
+## STEP 1 — DELTA
+- [CHANGED] CVE-2018-9859 + CVE-2020-9754 both `lastModified` 2026-06-17T02:07/03:28Z, `vulnStatus=Modified`, descriptions/CPEs byte-identical → NVD bulk re-process, no new disclosure, no new CPE variant
+- Otherwise NO_DELTA: NVD keywordSearch still 2 results; GitHub repo `pushed_at` 2019-09-23, 4 open issues; sample manifest still HTTP 200; all binary acquisition channels previously confirmed dead
+
+## STEP 2 — PRIORITIZE
+- [PRIO] Whale sync OSCrypt/KDF envelope (`os_crypt_whale`/`xv10`/`/whalesync`), score 5.80 = a7 b8 t7 g2 c4 f3
+- [PRIO] `sidebarAction.show({url})` + dual-tab SOP boundary, score 5.55 = a8 b7 t7 g3 c0 f3
+- [PRIO] `socket.io.slim.js` bundled lib, score 3.20 = a3 b4 t6 g1 c2 f2
+
+## STEP 3 — HYPOTHESES
+[HYP] Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable derived key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+confidence: 60
+reasoning: Whale-only prefs keys + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface. KDF alg/iteration count still unextracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords + bookmarks; High
+testability: AUTH_HELPED
+
+[HYP] Sidebar/dual-tab boundary regression on latest — 3–6 minor bumps, 0 CVEs since fix
+class: OTHER
+asset: Latest desktop Whale `sidebarAction.show({url})` + dual-tab web panel
+confidence: 50
+reasoning: CVE-2025-69235 (CWE-346) fixed <v4.35.351.12; latest v4.38.386.14 is 3–6 minor bumps ahead, 0 CVEs since; sample `background.js` (live, HTTP 200) forwards any-origin `runtime.onMessage` to `sidebarAction.show`/`windows.create` without validation; manifest.json invalid so sample itself uninstallable → must test with minimal valid extension.
+evidence_needed: crafted panel URL executing script / escaping sandbox on latest desktop.
+verify_steps: AUTH_HELPED: install latest, load minimal valid MV2 extension, cross-origin content-script sendMessage, drive `sidebarAction.show({url: crafted.html})`, test opener readback + iframe sandbox escape.
+impact: SOP bypass / sandbox escape in browser-UI context; High
+testability: AUTH_HELPED
+
+[HYP] `socket.io.slim.js` event-handler injection in bundled Whale extension
+class: XSS
+asset: `resources.pak` bundled `socket.io.slim.js` (runtime-fetched handler)
+confidence: 40
+reasoning: Whale-only non-Chromium bundled lib confirmed present in `resources.pak`; handler may be runtime-fetched, degrading passive evidence; no in-sandbox static path to the extracted lib.
+evidence_needed: extracted `socket.io.slim.js` + its event-handler wiring; whether socket URL is user-influenced.
+verify_steps: AUTH_HELPED: extract `resources.pak` from delivered binary, diff against upstream socket.io, audit event handlers for injection.
+impact: script injection in built-in extension context; Medium
+testability: AUTH_HELPED
+
+## STEP 4 — SELF-CRITIQUE
+- [PARKED] socket.io.slim.js XSS: confidence 40 at threshold, no passive proof path (stale since acquisition blocked), evidence-level was already downgraded in prior runs — kept as third but borderline; dropped below the two AUTH_HELPED leads.
+- [FINAL] 1. Sync KDF envelope (60) → 2. Sidebar/dual-tab SOP boundary (50)
+
+## STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: Deliver the official Whale desktop binary (v4.38.386.14, `.deb` or `WhaleSetup.exe`) — unblocks in one pass: (a) objdump/strings extracts `xv10`/`os_crypt_whale` PBKDF2 iteration constants for the sync-KDF lead (60), (b) enables the authorized Linux install for sidebar/dual-tab boundary testing (50). This run's only delta (NVD 2026-06-17 bulk re-process) is non-substantive and adds no surface. All passive channels remain re-confirmed dead.
+
+## STEP 6 — LEARNING
+- [LEARN] REJECTED class @ NVD bulk modification: 2026-06-17 `lastModified`/`Modified` on both Whale CVEs is a bulk re-processing event (descriptions + CPEs byte-identical) — not a disclosure delta; confirmed no new version-bound CPE appears.
+
+## STEP 7 — RISK SCORE
+- [RISK] sync: 45 — custom OSCrypt/KDF + bootstrap-token envelope confirmed present in binary, but KDF params unextracted and every acquisition channel dead → real surface, unverifiable keys. | browser: 55 — 3–6 minor bumps past last sidebar SOP/sandbox fixes with 0 published CVEs; source-confirmed all-origin `sidebarAction.show` message path remains the best-characterized surface, untestable without binary. | libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.

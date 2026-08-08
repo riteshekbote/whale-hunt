@@ -755,3 +755,53 @@
 - LEARN: CONFIRMED @ NVD CVE-2025-69235: "Whale browser before 4.35.351.12 allows an attacker to bypass the Same-Origin Policy in a sidebar environment" — CPE `cpe:2.3:a
 - LEARN: CONFIRMED @ NVD CVE-2025-62585: "Whale browser before 4.33.325.17 allows an attacker to bypass the Content Security Policy via a specific scheme in a dual-tab e
 - LEARN: CONFIRMED @ GitHub repo: `naver/whale-browser-developers` documentation-only — `pushed_at` 2019-09-23, `updated_at` 2025-10-22, 0 releases, 1 repo in Naver org 
+
+## RANKED HYPOTHESES 2026-08-08 17:42:49 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Sidebar/dual-tab boundary regression — CVE-2025-69235 fix may have new variant (from reports/hypotheses-laguna.txt)
+- [60] Whale: Sync passphrase KDF + bootstrap-token envelope — weak/device-recoverable derived key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): PROBE: objdump/strings on `os_crypt_whale` + `whale_sync_util` call sites for the bootstrap-token envelope and `/whalesync/reset` request shape (method/body/aut
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale binary — run the live online WhaleSetup.exe v4.38.386.14 OR WhaleSetup.deb v4.38.386.14 via unrestricted internet. All passive dow
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` w
+- LEARN: ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins)
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
+- LEARN: CONFIRMED @ GitHub search API: 1 whale-named repo total (`naver/whale-browser-developers`); documentation-only; `pushed_at` 2019-09-23 — seed assumption of addi
+- LEARN: REJECTED class @ installer: DLL search-order regression (confidence 50, below 60 threshold, no passive proof path, all binary acquisition channels dead)
+- LEARN: REJECTED installer DLL search-order regression @ WhaleSetup.exe: Confidence 50, below 60 self-imposed threshold; binary blocked on all passive channels (cloudfr
+- LEARN: REJECTED @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` resolve `No answer` (127.0.0.53) — desktop `.deb` path confirmed dead; resolver-
+- LEARN: REJECTED @ `static-whale.pstatic.net/WhaleSetup.exe`: HTTP 404 (server: Apache) — Naver pstatic CDN installer artifact confirmed dead; Naver pstatic infra exclu
+- LEARN: REJECTED @ uptodown: `whale-browser.en.uptodown.com` HTTP 404 (entire Whale app page removed; was 410 Gone) — passive WhaleSetup.exe acquisition permanently dea
+- LEARN: REJECTED @ GitHub wiki `sidebarAction` docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` HTTP 404 — wiki documentation rema
+- LEARN: CONFIRMED @ sample extension manifest (translate branch): HTTP 200 — `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins) confirmed live
+- LEARN: CONFIRMED @ sample extension background.js (translate branch): HTTP 200 — `whale.runtime.onMessage.addListener` dispatches `sidebarAction.show`/`hide`/`show2`/`
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — keywordSearch returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure g
+- LEARN: CONFIRMED @ NVD CVE-2025-69235: "Whale browser before 4.35.351.12 allows an attacker to bypass the Same-Origin Policy in a sidebar environment" — CPE `cpe:2.3:a
+- LEARN: CONFIRMED @ NVD CVE-2025-62585: "Whale browser before 4.33.325.17 allows an attacker to bypass the Content Security Policy via a specific scheme in a dual-tab e
+- LEARN: CONFIRMED @ GitHub repo: `naver/whale-browser-developers` documentation-only — `pushed_at` 2019-09-23, `updated_at` 2025-10-22, 0 releases, 1 repo in Naver org 
+- LEARN: REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+- LEARN: ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- LEARN: ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- LEARN: ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- LEARN: REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests ava
+- LEARN: REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- LEARN: REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope
+- LEARN: ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- LEARN: ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- LEARN: ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- LEARN: REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests ava
+- LEARN: REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apk.support/apkpure: Cloudflare 403 on curl egress in this sandbox — PASSIVE binary-download path is dead here;
+- LEARN: ACCEPTED Android sync asset @ com.naver.whale 3.9.14.9: version + SHA256 pinned via non-Naver mirror metadata (APKMirror/Uptodown) — in-scope sync surface confi
+- LEARN: CONFIRMED desktop latest @ changelog.whale.naver.com: page is fully JS-rendered (empty text fetch) — no server-side version assertion available passively; v4.38
+- LEARN: REJECTED @ naver/whale-browser-developers: Repo remains documentation-only (last code commit 2019-09-23; 2025-10-22 metadata-only) — static analysis path is dea
+- LEARN: ACCEPTED @ binary static analysis: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_ti
+- LEARN: REJECTED passive binary acquisition @ APKMirror/APKCombo/apkpure: Cloudflare 403 on curl egress — confirmed dead in-sandbox; only uptodown session-token or JS-r
+- LEARN: ACCEPTED @ socket.io.slim.js bundled: Confirmed Whale-only in `resources.pak` (prior bigpickle/laguna recon strings) — a non-Chromium runtime-bundled lib worth 
+- LEARN: REJECTED class @ installer: DLL search-order regression — conf 50 < 60; all passive channels dead; DLL-load needs live elevated Windows install.
+- LEARN: CONFIRMED @ sample extension manifest/background.js (translate branch): both HTTP 200 (re-asserted 17:39:59 UTC) — `content_scripts` match ALL origins + unvalid
+- LEARN: CONFIRMED @ NVD: 0 Whale CVEs in 2026 (2 total, both pre-2021) — disclosure gap static for v4.35.352–v4.38.386.14.
+- LEARN: REJECTED @ GitHub repo: documentation-only (last commit 2019-09-23, 0 releases, 1 repo) — static path permanently dead; binary acquisition is only vector.
+- LEARN: REJECTED @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net`+`*.cloudfront.net` still `No answer` (127.0.0.53) — `.deb` path permanently dead in-sandbox.
+- LEARN: REJECTED @ GitHub wiki `sidebarAction` docs: still HTTP 404 — SOP evidence rests solely on live sample extension source.
