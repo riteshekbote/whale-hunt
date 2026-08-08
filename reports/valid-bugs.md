@@ -77,3 +77,6 @@
 
 - 1 lead(s) marked VALID at 2026-08-08 21:22:07 UTC
   - VALID:    0
+
+- 1 lead(s) marked VALID at 2026-08-08 21:51:20 UTC
+  - **Disclosure policy:** TBD (operator-provided channel not yet confirmed) — I'll note this in any VALID verdict until the channel is finalized.
