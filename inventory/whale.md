@@ -490,3 +490,12 @@
 - CHANGED NVD primary `nvd.nist.gov/rest` Cloudflare-blocked; `services.nvd.nist.gov/rest` not responding in-sandbox — CVE verification path degraded
 - CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification
 - CHANGED All binary acquisition channels 100% blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 both Windows + Android, pstatic 404)
+
+## 2026-08-09 23:06:26 UTC
+- CHANGED NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` now returns HTTP 200 (was not responding in prior inventory) — confirms 0 Whale CVEs in 2026 (totalResults=2, both pre-2021), 8-month d
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification (persistent)
+- CHANGED All binary acquisition channels 100% blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 both Windows + Android, pstatic 404) — persistent
+- CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch + zero origin validation confirmed live (persist
+- CHANGED Wikipedia version assertion impossible — EN/KO pages both 404 (persistent)
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered to HTTP 200 @23:04 UTC (was 404/not-responding through 21:27–22:39 cycles) — returns totalResults=2 (CVE-2018-9859, CVE-2020-9754, both pre-202
+- CHANGED Uptodown Android page `naver-whale-browser.en.uptodown.com/android` still HTTP 404 — no new 200 window since 18:10 UTC; APK acquisition remains dead.
