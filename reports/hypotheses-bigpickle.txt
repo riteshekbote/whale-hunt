@@ -1,1 +1,17 @@
-## 2026-08-09 19:05:27 UTC [sync] (model bigpickle)
+## 2026-08-09 19:46:31 UTC [sync] (model bigpickle)
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc` / `whale_sync_util.cc`; Local State + keyring; /whalesync
+confidence: 62
+reasoning: Whale-only prefs (per-account bootstrap token, `_migration_done`, `whale_need_encryption_key_forced_time`) + xv10 OSCrypt fork + /whalesync + NEO_SES confirmed in prior binary runs; KDF alg/iteration count + master-key locality unextracted; binary dir absent (re-verified 19:45).
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State).
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore)
+confidence: 52
+reasoning: sync encryption only since 3.8.6.2 (2025-04) → likely custom mobile impl distinct from Chromium fork; version pin 3.9.14.9 last captured @ 18:10 (uptodown 200) but page now 410 @ 19:45 — channel dead again, APK sha256 unpinned.
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
+verify_steps: AUTH_HELPED: HUMAN re-checks uptodown Android page (flip-flop pattern); on next 200 window, completes JS/token dw flow in real browser → delivers APK to `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords/cookies/autofill on Android → cross-device sync account compromise; High
+testability: AUTH_HELPED

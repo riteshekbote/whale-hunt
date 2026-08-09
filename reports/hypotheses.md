@@ -1468,3 +1468,17 @@
 - LEARN: REJECTED class @ socket.io.slim.js event-handler injection: Confidence 38 < 40 threshold, handler runtime-fetched, no passive proof path — already rejected in p
 - LEARN: ACCEPTED class @ sample extension source (translate branch): all 5 files (manifest.json, background.js, contentscript.js, index.html, index.js) HTTP 200 — ALL-o
 - LEARN: CONFIRMED @ NVD API (services.nvd.nist.gov): 0 Whale CVEs published in 2026 — keywordSearch naver+whale returns exactly 2 total (CVE-2018-9859, CVE-2020-9754), 
+
+## RANKED HYPOTHESES 2026-08-09 19:48:25 UTC
+- [70] translate: Sidebar SOP bypass via unvalidated origin in sidebarAction message handler (from reports/hypotheses-laguna.txt)
+- [70] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb`) to `/tmp/opencode/whale_binary/` via unrestricted internet. Once delivered run: (1) `strings 
+- LEARN: REJECTED @ Uptodown Android acquisition channel: `naver-whale-browser.en.uptodown.com/android` flipped to HTTP 404 — passive APK download path permanently dead;
+- LEARN: REJECTED @ Wikipedia version assertion: EN/KO pages both 404 — passively verifiable version confirmation impossible; v4.38.386.14 claim from pre-August baseline
+- LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12; CPE lists only Windows/macOS, Linux fix statu
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms
+- LEARN: REJECTED @ Wikipedia version assertion: en.wikipedia.org/wiki/NAVER_Whale and ko.wikipedia.org/wiki/NAVER_Whale both HTTP 404 — passively verifiable version con
+- LEARN: CONFIRMED @ NVD API (services.nvd.nist.gov): 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 total (CVE-2018-9859, CVE-2020-9754)
+- LEARN: REJECTED @ binary acquisition channels: cloudfront DNS No-answer (general to *.cloudfront.net at resolver 127.0.0.53) + APKMirror 403 + Uptodown 404 (Windows pa
+- LEARN: ACCEPTED @ sample extension source (translate branch): all 5 files (manifest.json, js/background.js, js/contentschema.js, index.html, js/index.js) HTTP 200 — AL
