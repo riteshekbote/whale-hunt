@@ -126,3 +126,9 @@
 - 2 lead(s) marked VALID at 2026-08-09 02:55:26 UTC
   - | Q6 Not rejected? | **YES** — SOP bypass is a valid vuln class |
   - | **VALID** | **0** | — |
+
+- 0 lead(s) triaged at 2026-08-09 04:10 UTC — **0 VALID / 0 HOLD / 0 INVALID**
+  - LEADS section empty; no new hypotheses or security probe results
+  - Reposcan pipeline still scanning wrong target (gladiaio/ not whale/); 0 hits
+  - All prior hypotheses remain INVALID (Q4/Q7 killers)
+  - See `triage/run-2026-08-09-04-10.md` for status
