@@ -132,3 +132,6 @@
   - Reposcan pipeline still scanning wrong target (gladiaio/ not whale/); 0 hits
   - All prior hypotheses remain INVALID (Q4/Q7 killers)
   - See `triage/run-2026-08-09-04-10.md` for status
+
+- 1 lead(s) marked VALID at 2026-08-09 09:32:58 UTC
+  - | **VALID** | 0 | — |
