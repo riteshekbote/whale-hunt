@@ -367,3 +367,7 @@
 - NEW Background.js static analysis confirms ZERO origin validation in `whale.runtime.onMessage.addListener` — accepts `sender` param but never inspects `sender.origin`/`sender.url`, only string-equality on
 - CHANGED NVD primary endpoint `nvd.nist.gov/rest` now Cloudflare-blocked in-sandbox; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable — route future CVE checks via services host
 - CHANGED Wikipedia infobox confirms latest stable desktop v4.38.386.14 (June 25 2026) — 3 minor-version bumps past last CVE fix v4.35.351.12 (Dec 2025), 0 CVEs in between
+
+## 2026-08-09 10:52:02 UTC
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` reported as created in prior scans (09:31:18, 08:47:46, 07:58:09, 07:01:36, 03:58:25 UTC) but now missing — `ls` returns "No such file or direct
+- CHANGED NVD primary endpoint `nvd.nist.gov/rest` confirmed Cloudflare-blocked in-sandbox; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable (persistent since 07:01:36 UTC)
