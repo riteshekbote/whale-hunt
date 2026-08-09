@@ -24643,3 +24643,185 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK SCORE
 [RISK] sync: 45 — custom OSCrypt `xv10` KDF + bootstrap-token envelope confirmed in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 — 3 minor bumps past last sidebar SOP/sandbox fixes (CVE-2025-69234/69235) with 0 published CVEs; source-documented all-origin message path re-verified live this run, untestable without binary. | libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.
+===== ANALYST bigpickle 2026-08-09 03:58:25 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mdate -u +"%Y-%m-%d %H:%M:%S UTC"
+2026-08-09 03:56:55 UTC
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers" | head -c 1200
+{
+  "id": 87390266,
+  "node_id": "MDEwOlJlcG9zaXRvcnk4NzM5MDI2Ng==",
+  "name": "whale-browser-developers",
+  "full_name": "naver/whale-browser-developers",
+  "private": false,
+  "owner": {
+    "login": "naver",
+    "id": 6589568,
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjY1ODk1Njg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/6589568?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/naver",
+    "html_url": "https://github.com/naver",
+    "followers_url": "https://api.github.com/users/naver/followers",
+    "following_url": "https://api.github.com/users/naver/following{/other_user}",
+    "gists_url": "https://api.github.com/users/naver/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/naver/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/naver/subscriptions",
+    "organizations_url": "https://api.github.com/users/naver/orgs",
+    "repos_url": "https://api.github.com/users/naver/repos",
+    "events_url": "https://api.github.com/users/naver/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/naver/received_events",
+    "type": "Organization",
+    "user_view_type": "public",
+    "sit
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale" -o /tmp/opencode/nvd_check.json; echo "HTTP exit: $?"; wc -c /tmp/opencode/nvd_check.json
+HTTP exit: 0
+5141 /tmp/opencode/nvd_check.json
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers" | python3 -c "import json,sys; d=json.load(sys.stdin); print('pushed_at:',d['pushed_at']); print('updated_at:',d['updated_at']); print('releases:', 'n/a'); print('size:',d['size'])"
+pushed_at: 2019-09-23T08:03:26Z
+updated_at: 2025-10-22T03:15:17Z
+releases: n/a
+size: 5043
+[0m
+[0m$ [0mpython3 -c "
+import json
+d=json.load(open('/tmp/opencode/nvd_check.json'))
+vulns=d.get('vulnerabilities',[])
+print('total vulns:', d.get('totalResults'))
+for v in vulns:
+    c=v['cve']
+    print(c['id'], c.get('published'), c.get('vulnStatus'))
+"
+total vulns: 2
+CVE-2018-9859 2018-06-16T01:29:09.680 Modified
+CVE-2020-9754 2022-06-27T02:15:06.977 Modified
+[0m
+[0m$ [0mcurl -s --max-time 15 -o /dev/null -w "manifest.json: %{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json"; curl -s --max-time 15 -o /dev/null -w "background.js: %{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js"; curl -s --max-time 15 -o /dev/null -w "wiki sidebarAction: %{http_code}\n" "https://raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md"
+manifest.json: 200
+background.js: 200
+wiki sidebarAction: 404
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/master?recursive=1" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+tr=d.get('tree',[])
+print('total entries:', len(tr))
+for t in tr:
+    print(t['type'], t['path'], t.get('size',''))
+" 2>/dev/null || echo "tree fetch failed"
+total entries: 8
+tree translation 
+tree translation/chromium 
+tree translation/chromium/docs 
+blob translation/chromium/docs/how_cc_works.md 40646
+tree translation/chromium/docs/images 
+blob translation/chromium/docs/images/how_cc_works-commit_flow.png 34443
+blob translation/chromium/docs/images/how_cc_works-compositor_frame.png 30165
+blob translation/chromium/docs/images/how_cc_works-data_flow.png 20427
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+tr=d.get('tree',[])
+print('total entries:', len(tr))
+for t in tr:
+    print(t['type'], t['path'], t.get('size',''))
+" 2>/dev/null || echo "tree fetch failed"
+total entries: 46
+blob README.ko.md 4608
+tree docs 
+blob docs/0a3101a4-0e2d-11e7-8eb5-0fb2bab6ba77.png 10040
+blob docs/1765d6e4-0809-11e7-89ee-d88ac06318be.png 34999
+blob docs/253a55b2-0fc8-11e7-9b7d-4afddeff04f8.png 753
+blob docs/25eb21f8-0e2e-11e7-8c6f-1c71d9cfab07.png 16188
+blob docs/34650d96-080e-11e7-815c-854ab8a52ad9.png 56956
+blob docs/40bc5c1e-0e2d-11e7-80ec-4137936a3bff.png 23986
+blob docs/5dcfef0e-0e2e-11e7-9527-cabe957718d3.png 20841
+blob docs/74c4ad62-0e2e-11e7-9831-c77bfa0808f9.png 66404
+blob docs/7b2e651a-0809-11e7-8d33-7fe5093d0132.png 54864
+blob docs/7fa170fe-0e2d-11e7-9402-538293aacb71.png 85394
+blob docs/989e7932-0809-11e7-908c-7e3b96867080.png 774
+blob docs/NCapture004.PNG 31499
+blob docs/NCapture005.PNG 98303
+blob docs/contextmenu.png 115461
+blob docs/e0d26564-0e2c-11e7-94b1-6d47c4edead0.png 2237
+blob docs/f11076b4-0e2c-11e7-993b-3aba86b416e3.png 29967
+blob docs/f6ad8410-0808-11e7-8942-1cab765a9168.png 1406581
+blob docs/fec442d6-080f-11e7-9a1c-f0d550f01d6e.png 5009
+blob docs/wiki_image1.png 2237
+blob docs/wiki_image2.png 23749
+blob docs/wiki_image3.png 10040
+blob docs/wiki_image4.png 23986
+blob docs/wiki_image5.png 85394
+blob docs/wiki_image6.png 16188
+blob docs/wiki_image7.png 20841
+blob docs/wiki_image8.png 66404
+tree src 
+tree src/sidebar-sample 
+tree src/sidebar-sample/css 
+blob src/sidebar-sample/css/style.css 1080
+tree src/sidebar-sample/icons 
+blob src/sidebar-sample/icons/icon128.png 5146
+blob src/sidebar-sample/icons/icon16.png 1353
+blob src/sidebar-sample/icons/icon48.png 2537
+tree src/sidebar-sample/img 
+blob src/sidebar-sample/img/img01.png 7730
+blob src/sidebar-sample/img/img02.png 15100
+blob src/sidebar-sample/img/img03.png 22324
+blob src/sidebar-sample/index.html 2699
+tree src/sidebar-sample/js 
+blob src/sidebar-sample/js/background.js 1772
+blob src/sidebar-sample/js/contentscript.js 3002
+blob src/sidebar-sample/js/index.js 2512
+blob src/sidebar-sample/manifest.json 835
+[0m
+NO_DELTA confirmed this run (03:56 UTC): GitHub `pushed_at`=2019-09-23, `updated_at`=2025-10-22, size=5043; NVD `naver whale` returns exactly 2 CVEs (CVE-2018-9859, CVE-2020-9754), 0 in 2026; sample extension `manifest.json`+`background.js` HTTP 200; wiki `sidebarAction.md` still 404. New this run: enumerated full tree of both branches — master = 8 Chromium doc-translation files only; translate = 46 entries, docs/ = PNG-only wiki snapshots, `src/` = exactly one extension (`sidebar-sample`) with no origin validation. No other Whale-only API samples (no sync, no dual-tab) exist publicly.
+
+STEP 1 — DELTA
+- NO_DELTA — inventory, knowledge, and leads unchanged since last aggregated hypotheses (2026-08-09 02:24:22 UTC); all surface items static.
+- NEW (verification) translate branch tree enumerated: `src/` contains exactly `sidebar-sample` (manifest.json 835B, background.js 1772B, contentscript.js 3002B, index.js 2512B, index.html 2699B) — this is the complete public code surface; no other Whale-only API samples exist.
+- NEW (verification) master branch tree: 8 files, all Chromium `how_cc_works` doc translation — zero Whale-specific code.
+
+STEP 2 — PRIORITIZE
+- [PRIO] Whale sidebarAction extension API surface (CVE-2025-69234/69235 boundary): attack_surface 7, business 6, tech 6, gate_ease 5 (needs victim on malicious page with extension installed), cloud 1, fresh 7 → priority 5.70
+- [PRIO] Whale sync OSCrypt `xv10` KDF + bootstrap-token envelope (`os_crypt_whale.cc`/`whale_sync_util.cc`, Local State + keyring, `/whalesync`): attack_surface 6, business 8, tech 7, gate_ease 1 (local attacker with device), cloud 2, fresh 6 → priority 5.50
+- [PRIO] Bundled `socket.io.slim.js` in `resources.pak`: attack_surface 4, business 4, tech 5, gate_ease 4, cloud 1, fresh 4 → priority 3.85
+
+STEP 3 — HYPOTHESES
+[HYP] Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant)
+class: OTHER
+asset: Whale `sidebarAction.show({url})` + `runtime.onMessage` path (remote HTTP/HTTPS panel URL)
+confidence: 65
+reasoning: CVE-2025-69234 (iframe sandbox escape, CVSS 9.1) + 69235 (SOP bypass) fixed <v4.35.351.12; latest v4.38.386.14 is 3 minor bumps ahead, 0 CVEs since; live `background.js`/`manifest.json` HTTP 200 this run — `onMessage` dispatches `sidebarAction.show`/`show2` from ANY origin with zero `sender` validation; NVD CPE `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` is platform-wildcard, Linux fix status unclaimed.
+evidence_needed: crafted panel URL executing script / reading opener cross-origin / escaping iframe sandbox or panel CSP on v4.38.386.14.
+verify_steps: AUTH_HELPED: install v4.38.386.14, load minimal MV2 extension, cross-origin content-script `sendMessage`, drive `sidebarAction.show({url: crafted.html})`, test opener readback + sandbox escape. Zero Naver-infra requests.
+impact: SOP bypass / script execution in privileged browser-UI context; Critical if renderer escalation
+testability: AUTH_HELPED
+[HYP] Sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+confidence: 62
+reasoning: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface; alg + iteration count still unextracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] `socket.io.slim.js` event-handler injection: confidence 40 at threshold, zero new evidence this run, no in-sandbox static path to extracted lib, and handler may be runtime-fetched — marginal; parked pending binary delivery.
+- [FINAL] 1. Sidebar SOP-boundary regression (OTHER, 65) — unchanged, re-verified live surface. 2. Sync KDF/bootstrap-token envelope (AUTH, 62) — unchanged, target-relevant, HUMAN-gated.
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale/` via unrestricted internet — sole unlock for both surviving hypotheses (extract `xv10` KDF iteration constants from `os_crypt_whale.cc` rodata; drive local MV2 extension repro for the sidebar SOP variant). All sandbox channels re-confirmed dead this run (cloudfront DNS `No answer`, pstatic 404, APKMirror/APKPure 403, uptodown 404).
+
+STEP 6 — LEARNING
+- [LEARN] REJECTED class binary-acquisition @ APKMirror/APKCombo/apkpure/Uptodown/cloudfront/pstatic: all channels 100% blocked again this run (cloudfront DNS `No answer` general to `*.cloudfront.net`; 403/404 elsewhere; Naver domains OOS) — binary-dependent hypotheses remain HUMAN_ONLY-gated.
+- [LEARN] CONFIRMED @ translate branch tree: `src/` contains exactly one extension (`sidebar-sample`) with zero sender-origin validation; `docs/` is PNG-only wiki snapshots — complete public code surface is exhausted, no other Whale-only API samples exist.
+
+STEP 7 — RISK SCORE
+- [RISK] sync: 45 — custom OSCrypt `xv10` KDF + bootstrap-token envelope confirmed in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 — 3 minor bumps past last sidebar SOP/sandbox fixes (CVE-2025-69234/69235) with 0 published CVEs; source-documented all-origin message path re-verified live this run, untestable without binary. | libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.

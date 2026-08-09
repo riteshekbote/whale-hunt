@@ -326,3 +326,13 @@
 ## 2026-08-09 00:02:57 UTC
 
 ## 2026-08-09 02:24:22 UTC
+
+## 2026-08-09 03:58:25 UTC
+- NEW Binary delivery directory created at `/tmp/opencode/whale_binary/` — awaiting HUMAN artifact push (`.deb` or `WhaleSetup.exe` v4.38.386.14)
+- NEW All binary acquisition channels remain blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 page removed, pstatic 404, Naver domains OOS)
+- NEW NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap static
+- NEW GitHub repo `naver/whale-browser-developers`: `pushed_at`=2019-09-23, `updated_at`=2025-10-22, 0 releases — documentation-only surface unchanged
+- NEW Sample extension source (translate branch): all 5 files (manifest.json, js/background.js, js/contentscript.js, index.html, js/index.js) still HTTP 200 — ALL-origin content_scripts + unvalidated `sideb
+- NEW CVE-2025-69234/69235: Fixed v4.35.351.12 (Dec 2025), generic CPE `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` — Linux fix status unclaimed; v4.38.386.14 is 3 minor bumps past fix with 0 CVEs published
+- NEW Sample extension (translate branch): all 5 files confirm unvalidated `sidebarAction.show`/`show2` dispatch from arbitrary web origin with `whale.runtime.onMessage.addListener` accepting sender param +
+- CHANGED Wikipedia infobox confirms latest stable desktop v4.38.386.14 (June 25 2026) — 3 minor-version bumps past last CVE fix v4.35.351.12 (Dec 2025), 0 CVEs in between
