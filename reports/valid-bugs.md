@@ -145,3 +145,14 @@
 
 - 1 lead(s) marked VALID at 2026-08-09 13:28:34 UTC
   - VALID : 0
+
+- 16 lead(s) triaged at 2026-08-09 14:22 UTC — **0 VALID / 6 INVALID / 10 HOLD**
+  - Full 7Q analysis per lead; uniform killer is Q4 (no passive proof) + Q7 (no evidence)
+  - 4 active models de-duplicated to 16 distinct lead categories (longcat produced no hypotheses)
+  - 6 INVALID: Lead 01/03/11 (dupes documented CVE classes), Lead 02 (dupes CVE-2022-24072/2024-40618), Lead 05 (no specific vuln, best-practice), Lead 08 (out of scope Naver web service, no_doom)
+  - 10 HOLD: all require binary artifact absent from sandbox or HUMAN_ONLY/AUTH_HELPED verification
+  - Reposcan pipeline still REGRESSED (scanning gladiaio/ not whale/); 0 hits
+  - See `triage/run-2026-08-09-14-22.md` for full analysis
+
+- 1 lead(s) marked VALID at 2026-08-09 14:33:16 UTC
+  - VALID finding is the Naver Whale security channel referenced in scope.yml —
