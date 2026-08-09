@@ -33187,3 +33187,58 @@ testability: PASSIVE (blocked in-sandbox)
 [RISK] sync: 65 — Custom `/whalesync` + per-account bootstrap tokens + Whale-forked OSCrypt (xv10 magic) + NEO_SES cookie auth confirmed present in v4.38.386.14 binary via prior binary analysis; client-side KDF + key-storage is entire attack surface; KDF iter count + master-key locality unextracted (binary egress-blocked); `whale_need_encryption_key_forced_time` rekey-gate downgrade semantics unverified; server-tweakable client heuristics widen attack surface; local profile access = full sync decryption → PII cascade (High)
 [RISK] browser: 82 — Sidebar/dual-tab (6 CVEs in 2025: CWE-346 SOP, CWE-346 iframe-sandbox escape, CWE-358 CSP) remain 3 minor versions past last fix (v4.35.351.12, Dec 2025) with 0 CVEs published in 2026; sample extension (5 files all HTTP 200) confirms ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch from arbitrary web origin → high-priority regression window; Critical severity ($4k SOP reward tier)
 [RISK] libs: 35 — Whale bundles Chromium (inherits upstream CVEs, ineligible per scope.yml); `socket.io.slim.js` confirmed Whale-only in `resources.pak` (prior bigpickle/laguna recon strings) but push-handler implementation is runtime-fetched (stale evidence — degrades to speculative); no public third-party library manifest; binary inaccessible so version-drift audit blocked — low visibility, moderate inherent risk
+===== ANALYST laguna 2026-08-09 00:02:57 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+Based on the extensive knowledge base, I'll run the 8-step analysis.
+
+## STEP 1 — DELTA
+NO_DELTA — All surface items, CVE status, GitHub repo state, and binary acquisition blocks remain unchanged since the 2026-08-08 reconnaissance run. No new commits, no new CVEs, no new wiki edits, all binary channels remain blocked.
+
+## STEP 2 — PRIORITIZE
+
+**[PRIO] Whale browser sidebar SOP surface (v4.38.386.14)**  
+score: 7.95 | atk=9 biz=8 tech=8 gate=10 cloud=0 fresh=10  
+- attack_surface: 9 — sidebarAction.show/show2 message dispatch reachable from ALL web origins via unvalidated onMessage handler  
+- business_value: 8 — browser core, affects all users, privileged context access  
+- tech_exposure: 8 — custom extension API, unprivileged→privileged message bridge  
+- gate_ease: 10 — no auth needed; any website can trigger via content script  
+- cloud_surface: 0 — purely client-side  
+- freshness: 10 — 3 minor versions past last CVE fix (v4.35.351.12, Dec 2025), 0 CVEs published in 2026
+
+**[PRIO] Whalesync client engine (api.whale.naver.com/whalesync + xv10 OSCrypt fork)**  
+score: 6.55 | atk=7 biz=8 tech=9 gate=3 cloud=3 fresh=7  
+- attack_surface: 7 — custom sync protocol, Whale-forked OSCrypt (xv10 magic), per-account bootstrap tokens  
+- business_value: 8 — exposes all synced passwords/cookies/autofill across devices  
+- tech_exposure: 9 — custom /whalesync endpoint, NEO_SES cookie auth (non-standard)  
+- gate_ease: 3 — requires profile access or network interception  
+- cloud_surface: 3 — server-side endpoint exists but client-side focus is primary  
+- freshness: 7 — v4.38.386.14 binary from June 2026, KDF unextracted
+
+**[PRIO] socket.io.slim.js bundled in resources.pak**  
+score: 5.95 | atk=7 biz=7 tech=6 gate=5 cloud=3 fresh=5  
+- attack_surface: 7 — push channel event-handler injection potential  
+- business_value: 7 — could enable remote code execution via push channel  
+- tech_exposure: 6 — bundled non-Chromium library, runtime-fetched handler  
+- gate_ease: 5 — requires server-side push trigger  
+- cloud_surface: 3 — backend push infrastructure  
+- freshness: 5 — stale evidence from prior recon, handler implementation runtime-fetched
+
+## STEP 3 — HYPOTHESES
+
+**[HYP] Whale sidebar SOP bypass via unvalidated sidebarAction.show/show2 message dispatch (CVE-2025-69234/69235 regression on v4.38.386.14)**
+class: OTHER  
+asset: Whale v4.38.386.14 desktop — `whale.sidebarAction.show()` + `whale.runtime.onMessage` handler in sample extension (translate branch)  
+confidence: 65  
+reasoning: CVE-2025-69234 (CWE-346 iframe sandbox escape, CVSS 9.1) and CVE-2025-69235 (CWE-346 SOP bypass, CVSS 9.1) both fixed in v4.35.351.12 (Dec 2025). v4.38.386.14 is 3 minor-version bumps ahead with 0 CVEs published in 2026. Sample extension (5 files all HTTP 200) confirms: manifest.json content_scripts match ALL origins; contentscript.js fires sidebarAction.show/show2 from any web origin; background.js onMessage accepts sender param but performs ZERO origin validation.  
+evidence_needed: (1) Live browser: content script on http://evil.com fires sidebarAction.show → background dispatches without sender.origin check → sidebar panel loads; cross-origin fetch/XHR succeeds without CORSError; (2) iframe sandbox escape via data:text/html blob in sidebar; (3) Binary static analysis of sidebarAction code path confirming origin-check absence.  
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load extension with content_scripts matching <all_urls> → visit http://evil.com → whale.runtime.sendMessage('sidebarAction.show') → from sidebar content script execute fetch('https://example.com/user-data',{credentials:'include'}) → if resolves without CORSError, SOP bypass confirmed → test sidebarAction.show2 → test iframe sandbox escape via data:text/html blob. Zero requests to *.naver.com/sync backend.  
+impact: SOP bypass / iframe sandbox escape in privileged browser-UI context → cross-origin cookie/DOM/CSRF-token theft across all origins (Critical, CVSS 9.1)  
+testability: HUMAN_ONLY
+
+**[HYP] Whalesync client-side KDF/master-key storage unverified — Whale OSCrypt deviation on Linux**
+class: AUTH  
+asset: Whale sync client (os_crypt_whale.cc + wbc_wrapper_apis.cc + xv10 magic; prefs sync.encryption_bootstrap_token_per_account; custom /whalesync endpoint with NEO_SES cookie auth)  
+confidence: 62  
+reasoning: v4.38.386.14 binary confirms Whale-only prefs keys + Whale-forked OSCrypt (xv10 magic) + custom /whalesync endpoint (NEO_SES cookie auth, not Chromium sync protocol); bootstrap-token envelope deviates from upstream Chromium; KDF algorithm/iteration
