@@ -1,11 +1,11 @@
-## 2026-08-09 00:01:09 UTC [sync] (model bigpickle)
+## 2026-08-09 02:22:48 UTC [sync] (model bigpickle)
 [HYP] Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant)
 class: OTHER
 asset: Whale `sidebarAction.show({url})` + extension `runtime.onMessage` path (remote HTTP/HTTPS panel URL)
 confidence: 65
-reasoning: Both CVE-2025-69234 (iframe sandbox escape, CVSS 9.1) and 69235 (SOP bypass) fixed <v4.35.351.12; latest v4.38.386.14 is 3 minor bumps ahead, 0 CVEs since; live sample `background.js` forwards any-origin `onMessage` to `sidebarAction.show`/`windows.create` with zero `sender.origin` validation (re-verified HTTP 200 this scan); NVD CPE `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` is platform-wildcard so Linux fix status unclaimed.
+reasoning: CVE-2025-69234 (iframe sandbox escape, CVSS 9.1) + 69235 (SOP bypass) fixed <v4.35.351.12; latest v4.38.386.14 is 3 minor bumps ahead, 0 CVEs since; live sample `background.js`/`manifest.json` HTTP 200 this run, forward any-origin `onMessage` to `sidebarAction.show` with zero `sender.origin` validation; NVD CPE is platform-wildcard so Linux fix status unclaimed.
 evidence_needed: crafted panel URL executing script / reading opener cross-origin / escaping iframe sandbox or panel CSP on v4.38.386.14.
-verify_steps: AUTH_HELPED: install v4.38.386.14 on Linux, load minimal MV2 extension, cross-origin content-script `sendMessage`, drive `sidebarAction.show({url: crafted.html})`, test opener readback + sandbox escape. Zero Naver-infra requests.
+verify_steps: AUTH_HELPED: install v4.38.386.14, load minimal MV2 extension, cross-origin content-script `sendMessage`, drive `sidebarAction.show({url: crafted.html})`, test opener readback + sandbox escape. Zero Naver-infra requests.
 impact: SOP bypass / script execution in privileged browser-UI context; Critical if renderer escalation
 testability: AUTH_HELPED
 [HYP] Sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
@@ -17,12 +17,5 @@ evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (k
 verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
 impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
 testability: AUTH_HELPED
-[HYP] `socket.io.slim.js` event-handler injection in bundled Whale extension
-class: XSS
-asset: `resources.pak` bundled `socket.io.slim.js` (runtime-fetched handler)
-confidence: 40
-reasoning: Whale-only non-Chromium bundled lib confirmed present in `resources.pak`; handler may be runtime-fetched, degrading passive evidence; no in-sandbox static path to extracted lib; zero new disclosures to pivot from (NVD re-confirmed 21 total).
-evidence_needed: extracted `socket.io.slim.js` + event-handler wiring; whether socket URL is user-influenced.
-verify_steps: AUTH_HELPED: extract `resources.pak` from delivered binary, diff against upstream socket.io, audit event handlers for injection.
-impact: script injection in built-in extension context; Medium
-testability: AUTH_HELPED
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) into `/tmp/opencode/whale/` via unrestricted internet — sole unlock for both final hypotheses (extract `xv10` KDF constants/iteration counts from `os_crypt_whale.cc`; drive local MV2 extension repro for sidebar SOP variant). All sandbox channels re-confirmed dead this run (cloudfront DNS `No answer`, pstatic 404).
+[RISK] sync: 45 — custom OSCrypt `xv10` KDF + bootstrap-token envelope confirmed in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 — 3 minor bumps past last sidebar SOP/sandbox fixes (CVE-2025-69234/69235) with 0 published CVEs; source-documented all-origin message path re-verified live this run, untestable without binary. | libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.

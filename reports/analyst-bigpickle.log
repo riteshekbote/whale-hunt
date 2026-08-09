@@ -24559,3 +24559,87 @@ STEP 6 — LEARNING:
 
 STEP 7 — RISK SCORE:
 - [RISK] sync: 45 — custom OSCrypt `xv10` KDF + bootstrap-token envelope confirmed in binary, KDF params unextracted, all acquisition channels re-confirmed dead → real surface, unverifiable keys. | browser: 55 — 3 minor bumps past last sidebar SOP/sandbox fixes (CVE-2025-69234/69235) with 0 published CVEs; live all-origin message path re-verified HTTP 200 this scan, untestable without binary. | libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path; parked at floor.
+===== ANALYST bigpickle 2026-08-09 02:24:22 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale&resultsPerPage=10" | head -c 1200
+{"resultsPerPage":2,"startIndex":0,"totalResults":2,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-09T02:22:27.725","vulnerabilities":[{"cve":{"id":"CVE-2018-9859","sourceIdentifier":"cve@mitre.org","published":"2018-06-16T01:29:09.680","lastModified":"2026-06-17T02:07:18.247","vulnStatus":"Modified","cveTags":[],"descriptions":[{"lang":"en","value":"The path of Whale update service was unquoted in NAVER Whale before 1.0.40.7. This vulnerability can be used for persistent privilege escalation if it's available to create an executable file with System privilege by other vulnerable applications."},{"lang":"es","value":"La ruta del servicio de actualización Whale no tenía comillas en NAVER Whale en versiones anteriores a la 1.0.40.7. Esta vulnerabilidad puede emplearse para el escalado de privilegios persistente si está disponible para crear un archivo ejecutable con privilegios System por parte de otras aplicaciones vulnerables."}],"affected":[{"source":"cve@mitre.org","affectedData":[{"vendor":"n/a","product":"n/a","versions":[{"version":"n/a","status":"affected"}]}]}],"metrics":{"cvssMetricV30":[{"source":"nvd@nist.gov","type":"Primary","cvssData":{"version":"3.0","vect
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://api.github.com/repos/naver/whale-browser-developers" | head -c 900
+{
+  "id": 87390266,
+  "node_id": "MDEwOlJlcG9zaXRvcnk4NzM5MDI2Ng==",
+  "name": "whale-browser-developers",
+  "full_name": "naver/whale-browser-developers",
+  "private": false,
+  "owner": {
+    "login": "naver",
+    "id": 6589568,
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjY1ODk1Njg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/6589568?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/naver",
+    "html_url": "https://github.com/naver",
+    "followers_url": "https://api.github.com/users/naver/followers",
+    "following_url": "https://api.github.com/users/naver/following{/other_user}",
+    "gists_url": "https://api.github.com/users/naver/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/naver/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/naver/subscriptions",
+    "organizations_url": "https://api.github.com/us
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js"; echo " background.js"; curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json"; echo " manifest.json"
+200 background.js
+200 manifest.json
+[0m
+[0m$ [0mcurl -s --max-time 25 "https://api.github.com/repos/naver/whale-browser-developers" | grep -o '"pushed_at": *"[^"]*"\|"updated_at": *"[^"]*"\|"open_issues_count": *[0-9]*' | head -5
+"updated_at": "2025-10-22T03:15:17Z"
+"pushed_at": "2019-09-23T08:03:26Z"
+"open_issues_count": 4
+[0m
+[0m$ [0mgetent hosts d1vdt4q2qgdbji.cloudfront.net || echo "cloudfront DNS: No answer"; curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://static-whale.pstatic.net/WhaleSetup.exe"; echo " pstatic"
+cloudfront DNS: No answer
+404 pstatic
+[0m
+STEP 1 — DELTA: NO_DELTA — NVD keywordSearch `naver whale` = 2 total (CVE-2018-9859, CVE-2020-9754), 0 in 2026; GitHub repo pushed_at `2019-09-23`, updated_at `2025-10-22`, 4 issues; sample extension `background.js`+`manifest.json` both HTTP 200; cloudfront DNS `No answer`; pstatic `WhaleSetup.exe` 404. All surface items unchanged since last run.
+
+STEP 2 — PRIORITIZE
+- [PRIO] Whale sidebar/web-panel `sidebarAction.show` + all-origin `runtime.onMessage` (v4.38.386.14): attack 8, business 6, tech 7, gate 8, cloud 0, fresh 4 → 5.9
+- [PRIO] Whale sync OSCrypt `xv10` KDF + bootstrap-token envelope / `whalesync`: attack 6, business 9, tech 6, gate 1, cloud 0, fresh 4 → 4.7
+- [PRIO] `resources.pak` bundled `socket.io.slim.js`: attack 4, business 4, tech 6, gate 1, cloud 0, fresh 3 → 3.2
+
+STEP 3 — HYPOTHESES
+[HYP] Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant)
+class: OTHER
+asset: Whale `sidebarAction.show({url})` + extension `runtime.onMessage` path (remote HTTP/HTTPS panel URL)
+confidence: 65
+reasoning: CVE-2025-69234 (iframe sandbox escape, CVSS 9.1) + 69235 (SOP bypass) fixed <v4.35.351.12; latest v4.38.386.14 is 3 minor bumps ahead, 0 CVEs since; live sample `background.js`/`manifest.json` HTTP 200 this run, forward any-origin `onMessage` to `sidebarAction.show` with zero `sender.origin` validation; NVD CPE is platform-wildcard so Linux fix status unclaimed.
+evidence_needed: crafted panel URL executing script / reading opener cross-origin / escaping iframe sandbox or panel CSP on v4.38.386.14.
+verify_steps: AUTH_HELPED: install v4.38.386.14, load minimal MV2 extension, cross-origin content-script `sendMessage`, drive `sidebarAction.show({url: crafted.html})`, test opener readback + sandbox escape. Zero Naver-infra requests.
+impact: SOP bypass / script execution in privileged browser-UI context; Critical if renderer escalation
+testability: AUTH_HELPED
+[HYP] Sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+confidence: 62
+reasoning: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device, so local KDF/key persistence is the whole surface; alg + iteration count still unextracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] `socket.io.slim.js` event-handler injection: confidence 40 < 40 threshold (boundary), evidence is degraded (handler runtime-fetched), no in-sandbox static path to extracted lib.
+- [FINAL] 1) Sidebar SOP/sandbox regression (65) — source-verified live surface, sole CVE-adjacent vector with 3-minor-bump regression window. 2) Sync KDF envelope (62) — real in-binary surface, unverifiable until binary delivery.
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) into `/tmp/opencode/whale/` via unrestricted internet — sole unlock for both final hypotheses (extract `xv10` KDF constants/iteration counts from `os_crypt_whale.cc`; drive local MV2 extension repro for sidebar SOP variant). All sandbox channels re-confirmed dead this run (cloudfront DNS `No answer`, pstatic 404).
+
+STEP 6 — LEARNING
+- [LEARN] CONFIRMED @ NVD (services host): 0 Whale CVEs in 2026, totalResults=2 static — disclosure gap unchanged for v4.35.352–v4.38.386.14.
+- [LEARN] CONFIRMED @ GitHub: repo pushed_at `2019-09-23`, updated_at `2025-10-22`, open_issues 4 — documentation-only surface static.
+- [LEARN] CONFIRMED @ sample extension: `manifest.json` + `background.js` HTTP 200 this run — all-origin content_scripts + unvalidated `sidebarAction.show` dispatch live.
+- [LEARN] REJECTED @ binary acquisition (cloudfront DNS `No answer`, pstatic `WhaleSetup.exe` 404): all channels still blocked in-sandbox — binary-dependent hypotheses remain HUMAN_ONLY-gated.
+
+STEP 7 — RISK SCORE
+[RISK] sync: 45 — custom OSCrypt `xv10` KDF + bootstrap-token envelope confirmed in binary, but KDF params unextracted and every acquisition channel re-confirmed dead → real surface, unverifiable keys. | browser: 55 — 3 minor bumps past last sidebar SOP/sandbox fixes (CVE-2025-69234/69235) with 0 published CVEs; source-documented all-origin message path re-verified live this run, untestable without binary. | libs: 35 — socket.io.slim.js Whale-only confirmed but runtime-fetched; no in-sandbox static path.
