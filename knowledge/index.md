@@ -257,3 +257,4 @@
 - 2026-08-09 CONFIRMED @ NVD API (services.nvd.nist.gov, re-verified 12:19:27 UTC): 0 Whale CVEs published in 2026 — `naver+whale` keywordSearch returns exactly 2 total (CVE-2018-9859, CVE-2020-9754), both pre-2021; disclosure gap static for v4.35.352–v4.38.386.14
 - 2026-08-09 CONFIRMED @ sample extension source (translate branch, re-verified 12:19 UTC): all 5 files (manifest.json, js/background.js, js/contentscript.js, index.html, js/index.js) still HTTP 200 — ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch from arbitrary web origin confirmed live and unchanged
 - 2026-08-09 CONFIRMED @ binary delivery directory `/tmp/opencode/whale_binary/`: MISSING — reported as created in prior scans but `ls` returns "No such file or directory" at 12:15 UTC; remains unsatisfied, blocking binary static analysis path
+- 2026-08-09 REJECTED class @ lead: 0 (no leads supplied)
