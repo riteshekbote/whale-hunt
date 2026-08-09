@@ -4749,3 +4749,31 @@ testability: PASSIVE (blocked in-sandbox)
 [FINAL] #3 — Android sync encryption KDF/master-key (confidence 55)
 [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet. All passive download paths remain dead (cloudfront DNS `No answer` at 127.0.0.53, APKMirror Cloudflare 403
 ## 2026-08-09 05:12:04 UTC [browser] (model laguna)
+## 2026-08-09 05:58:01 UTC [browser] (model laguna)
+[HYP] Sidebar/web-panel SOP boundary regression — unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux)
+class: OTHER
+asset: Whale v4.38.386.14 — `whale.sidebarAction.show()` + `whale.runtime.onMessage` handler (sample extension, translate branch)
+confidence: 65
+reasoning: CVE-2025-69234 (CWE-346 iframe sandbox escape, CVSS 9.1) + CVE-2025-69235 (CWE-346 SOP bypass, CVSS 9.1) both fixed v4.35.351.12 (Dec 2025). v4.38.386.14 is 3 minor-version bumps ahead, 0 CVEs published 2026. Sample extension (5 files HTTP 200): manifest.json content_scripts match ALL origins; contentscript.js fires sidebarAction.show/show2 from any web origin; background.js `onMessage.addListener((message, sender, sendResponse) => {...})` accepts sender but performs ZERO origin validation.
+evidence_needed: (1) Live browser: content script on http://evil.com fires sidebarAction.show → background dispatches without sender.origin check → sidebar panel loads → cross-origin fetch succeeds without CORSError; (2) iframe sandbox escape via data:text/html blob in sidebar; (3) Binary static analysis confirming origin-check absence in v4.38.386.14 sidebarAction path.
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load unpacked extension with content_scripts matching `<all_urls>` → visit http://evil.com → `whale.runtime.sendMessage('sidebarAction.show')` → from sidebar content script run `fetch('https://example.com/user-data',{credentials:'include'})` → if resolves without CORSError, SOP bypass confirmed → test `sidebarAction.show2` + iframe sandbox escape via data:text/html blob. Zero requests to *.naver.com/sync.
+impact: SOP bypass / iframe sandbox escape in privileged browser-UI context → cross-origin cookie/DOM/CSRF-token theft across all origins (Critical, CVSS 9.1, $4k SOP reward tier)
+testability: HUMAN_ONLY
+[HYP] Sync bootstrap-token KDF/OSCrypt deviation — Whale-forked crypto on Linux
+class: AUTH
+asset: Whale v4.38.386.14 sync client (`os_crypt_whale.cc` + `wbc_wrapper_apis.cc` + xv10 magic + `/whalesync` endpoint + NEO_SES cookie + `sync.encryption_bootstrap_token_per_account` prefs)
+confidence: 62
+reasoning: v4.38.386.14 binary confirms Whale-only prefs keys + Whale-forked OSCrypt (xv10 magic) + custom `/whalesync` endpoint (NEO_SES cookie auth, not Chromium sync protocol) via prior binary analysis. KDF algorithm/iteration count/salt derivation/master-key storage path unextracted — all binary acquisition channels blocked in-sandbox (cloudfront DNS No-answer, APKMirror 403, Uptodown 404).
+evidence_needed: PBKDF2/scrypt algorithm + iteration count; salt source; master-key storage location on Linux; bootstrap-token envelope format vs upstream Chromium.
+verify_steps: PASSIVE (blocked): `strings libwhale.so | grep -iE 'pbkdf|scrypt|iter|xv10|os_crypt_whale'` + .rodata xref of `sync.encryption_bootstrap_token_per_account`. HUMAN: deliver Whale .deb v4.38.386.14 to sandbox → extract + run strings/objdump. Zero Naver sync infra requests.
+impact: Weak KDF or device-recoverable key → local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise across devices (High)
+testability: PASSIVE (blocked) / HUMAN_ONLY
+[HYP] Android sync encryption KDF/master-key unverified — com.naver.whale 3.9.14.9
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (Android Keystore/EncryptedSharedPreferences)
+confidence: 55
+reasoning: Android sync asset confirmed v3.9.14.9; shares sync encryption architecture with desktop Whale-forked os_crypt_whale (xv10 magic); KDF constants/salt/master-key storage path/bootstrap-token envelope unextracted — binary acquisition blocked in-sandbox.
+evidence_needed: PBKDF2/scrypt iteration count + salt source; master-key storage path; bootstrap-token envelope vs desktop.
+verify_steps: PASSIVE (blocked): objdump/strings on extracted libwhale_sync.so + os_crypt_whale JNI bridge. HUMAN: deliver com.naver.whale 3.9.14.9 APK → decompile dex → grep PBKDF2/scrypt/EncryptedSharedPreferences/bootstrap_token. Zero Naver infractions.
+impact: Weak KDF or predictable master-key storage → local attacker derives sync encryption key → decrypts all synced passwords/cookies/autofill across devices (High)
+testability: PASSIVE (blocked in-sandbox)

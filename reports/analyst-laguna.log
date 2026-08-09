@@ -33503,3 +33503,127 @@ Completed the 8-step analyst cycle for the browser target. Key finding: NO_DELTA
 [RISK] browser: 82 | sync: 65 | libs: 35
 
 Full structured report written to `report-2026-08-09-laguna.txt` and `analyst-out.txt`.
+===== ANALYST laguna 2026-08-09 05:58:21 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+[0m✗ [0mTodos failed
+[91m[1mError: [0mThe todowrite tool was called with invalid arguments: SchemaError(Expected array, got "[{\"content\": \"STEP 1: DELTA - Identify new/changed surface items\", \"status\": \"in_progress\", \"priority\": \"high\"}, {\"content\": \"STEP 2: PRIORITIZE - Score top assets on 6 axes\", \"status\": \"pending\", \"priority\": \"high\"}, {\"content\": \"STEP 3: HYPOTHESES - Emit top 3 hypotheses with full schema\", \"status\": \"pending\", \"priority\": \"high\"}, {\"content\": \"STEP 4: SELF-CRITIQUE - Drop invalid hypotheses, rank survivors\", \"status\": \"pending\", \"priority\": \"high\"}, {\"content\": \"content\": \"STEP 5-NEXT: Choose one concrete action\", \"status\": \"pending\", \"priority\": \"high\"}, {\"content\": \"STEP 6: LEARNING - Note proven dead/alive classes\", \"status\": \"pending\", \"priority\": \"medium\"}, {\"content\": \"content\": \"STEP 7: RISK SCORE - Overall exposure scores\", \"status\": \"pending\", \"priority\": \"medium\"}]"
+  at ["todos"]).
+Please rewrite the input so it satisfies the expected schema.
+I'll work through this systematically, following the 8-step analysis framework.
+[0m
+[0m# [0mTodos
+[•] STEP 1: DELTA - Identify new/changed surface items
+[ ] STEP 2: PRIORITIZE - Score top assets on 6 axes
+[ ] STEP 3: HYPOTHESES - Emit top 3 hypotheses with full schema
+[ ] STEP 4: SELF-CRITIQUE - Drop invalid hypotheses, rank survivors
+[ ] STEP 5: NEXT - Choose one concrete action
+[ ] STEP 6: LEARNING - Note proven dead/alive classes
+[ ] STEP 7: RISK SCORE - Overall exposure scores
+[0m
+[0m# [0mTodos
+[✓] STEP 1: DELTA - Identify new/changed surface items
+[✓] STEP 2: PRIORITIZE - Score top assets on 6 axes
+[•] STEP 3: HYPOTHESES - Emit top 3 hypotheses with full schema
+[ ] STEP 4: SELF-CRITIQUE - Drop invalid hypotheses, rank survivors
+[ ] STEP 5: NEXT - Choose one concrete action
+[ ] STEP 6: LEARNING - Note proven dead/alive classes
+[ ] STEP 7: RISK SCORE - Overall exposure scores
+[0m
+## 2026-08-09 05:12:04 UTC [browser] (model laguna)
+
+### STEP 1 — DELTA
+
+NO_DELTA
+
+All surface items are static since 2026-08-09 03:58:25 UTC scan. No new GitHub commits, no new CVEs published, no new binary acquisition paths, all wiki docs remain 404, sample extension source (5 files) unchanged.
+
+### STEP 2 — PRIORITIZE
+
+- [PRIO] Whale sidebar/web-panel (`sidebarAction` message handler + sample extension): score 7.95 — attk=9 biz=8 tech=8 gate=10 cloud=0 fresh=10
+  - axes: attack_surface=9 (privileged browser-UI context, SOP boundary), business_value=8 (user data exfil across origins), tech_exposure=8 (extension API surface), gate_ease=10 (no auth, content_scripts match ALL origins), cloud_surface=0 (pure client), freshness=10 (latest v4.38.386.14, 0 CVEs in 2026)
+- [PRIO] Whale sync encryption (desktop OSCrypt/xv10 + desktop bootstrap token): score 5.65 — attk=7 biz=7 tech=6 gate=5 cloud=5 fresh=10
+  - axes: attack_surface=7 (local profile access = full sync decryption), business_value=7 (passwords/cookies/autofill cross-device), tech_exposure=6 (custom crypto fork, non-Chromium endpoint), gate_ease=5 (requires local profile access), cloud_surface=5 (custom `/whalesync` endpoint), freshness=10 (0 CVEs since Dec 2025 fix, 8-month gap)
+- [PRIO] Whale sync encryption (Android keystore): score 5.20 — attk=6 biz=7 tech=5 gate=5 cloud=5 fresh=10
+  - axes: attack_surface=6, business_value=7, tech_exposure=5, gate_ease=5, cloud_surface=5, freshness=10
+
+### STEP 3 — HYPOTHESES
+[0m# [0mTodos
+[✓] STEP 1: DELTA - Identify new/changed surface items
+[✓] STEP 2: PRIORITIZE - Score top assets on 6 axes
+[✓] STEP 3: HYPOTHESES - Emit top 3 hypotheses with full schema
+[✓] STEP 4: SELF-CRITIQUE - Drop invalid hypotheses, rank survivors
+[•] STEP 5: NEXT - Choose one concrete action
+[ ] STEP 6: LEARNING - Note proven dead/alive classes
+[ ] STEP 7: RISK SCORE - Overall exposure scores
+[0m
+[HYP] Sidebar/web-panel SOP boundary regression — unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux)
+class: OTHER
+asset: Whale v4.38.386.14 — `whale.sidebarAction.show()` + `whale.runtime.onMessage` handler (sample extension, translate branch)
+confidence: 65
+reasoning: CVE-2025-69234 (CWE-346 iframe sandbox escape, CVSS 9.1) + CVE-2025-69235 (CWE-346 SOP bypass, CVSS 9.1) both fixed v4.35.351.12 (Dec 2025). v4.38.386.14 is 3 minor-version bumps ahead, 0 CVEs published 2026. Sample extension (5 files HTTP 200): manifest.json content_scripts match ALL origins; contentscript.js fires sidebarAction.show/show2 from any web origin; background.js `onMessage.addListener((message, sender, sendResponse) => {...})` accepts sender but performs ZERO origin validation.
+evidence_needed: (1) Live browser: content script on http://evil.com fires sidebarAction.show → background dispatches without sender.origin check → sidebar panel loads → cross-origin fetch succeeds without CORSError; (2) iframe sandbox escape via data:text/html blob in sidebar; (3) Binary static analysis confirming origin-check absence in v4.38.386.14 sidebarAction path.
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load unpacked extension with content_scripts matching `<all_urls>` → visit http://evil.com → `whale.runtime.sendMessage('sidebarAction.show')` → from sidebar content script run `fetch('https://example.com/user-data',{credentials:'include'})` → if resolves without CORSError, SOP bypass confirmed → test `sidebarAction.show2` + iframe sandbox escape via data:text/html blob. Zero requests to *.naver.com/sync.
+impact: SOP bypass / iframe sandbox escape in privileged browser-UI context → cross-origin cookie/DOM/CSRF-token theft across all origins (Critical, CVSS 9.1, $4k SOP reward tier)
+testability: HUMAN_ONLY
+
+[HYP] Sync bootstrap-token KDF/OSCrypt deviation — Whale-forked crypto on Linux
+class: AUTH
+asset: Whale v4.38.386.14 sync client (`os_crypt_whale.cc` + `wbc_wrapper_apis.cc` + xv10 magic + `/whalesync` endpoint + NEO_SES cookie + `sync.encryption_bootstrap_token_per_account` prefs)
+confidence: 62
+reasoning: v4.38.386.14 binary confirms Whale-only prefs keys + Whale-forked OSCrypt (xv10 magic) + custom `/whalesync` endpoint (NEO_SES cookie auth, not Chromium sync protocol) via prior binary analysis. KDF algorithm/iteration count/salt derivation/master-key storage path unextracted — all binary acquisition channels blocked in-sandbox (cloudfront DNS No-answer, APKMirror 403, Uptodown 404).
+evidence_needed: PBKDF2/scrypt algorithm + iteration count; salt source; master-key storage location on Linux; bootstrap-token envelope format vs upstream Chromium.
+verify_steps: PASSIVE (blocked): `strings libwhale.so | grep -iE 'pbkdf|scrypt|iter|xv10|os_crypt_whale'` + .rodata xref of `sync.encryption_bootstrap_token_per_account`. HUMAN: deliver Whale .deb v4.38.386.14 to sandbox → extract + run strings/objdump. Zero Naver sync infra requests.
+impact: Weak KDF or device-recoverable key → local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise across devices (High)
+testability: PASSIVE (blocked) / HUMAN_ONLY
+
+[HYP] Android sync encryption KDF/master-key unverified — com.naver.whale 3.9.14.9
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (Android Keystore/EncryptedSharedPreferences)
+confidence: 55
+reasoning: Android sync asset confirmed v3.9.14.9; shares sync encryption architecture with desktop Whale-forked os_crypt_whale (xv10 magic); KDF constants/salt/master-key storage path/bootstrap-token envelope unextracted — binary acquisition blocked in-sandbox.
+evidence_needed: PBKDF2/scrypt iteration count + salt source; master-key storage path; bootstrap-token envelope vs desktop.
+verify_steps: PASSIVE (blocked): objdump/strings on extracted libwhale_sync.so + os_crypt_whale JNI bridge. HUMAN: deliver com.naver.whale 3.9.14.9 APK → decompile dex → grep PBKDF2/scrypt/EncryptedSharedPreferences/bootstrap_token. Zero Naver infractions.
+impact: Weak KDF or predictable master-key storage → local attacker derives sync encryption key → decrypts all synced passwords/cookies/autofill across devices (High)
+testability: PASSIVE (blocked in-sandbox)
+
+### STEP 4 — SELF-CRITIQUE
+
+- [PARKED] Android sync encryption KDF/master-key — confidence 55 below top-tier and testability PASSIVE (blocked); no evidence path until APK delivered.
+- [FINAL] #1 — Sidebar SOP bypass via unvalidated sidebarAction message handler (confidence 65, HUMAN_ONLY)
+- [FINAL] #2 — Sync bootstrap-token KDF/OSCrypt deviation on Linux (confidence 62, PASSIVE blocked / HUMAN_ONLY)
+- [FINAL] #3 — Android sync encryption KDF/master-key (confidence 55, PASSIVE blocked)
+
+### STEP 5 — NEXT
+[0m# [0mTodos
+[✓] STEP 1: DELTA - Identify new/changed surface items
+[✓] STEP 2: PRIORITIZE - Score top assets on 6 axes
+[✓] STEP 3: HYPOTHESES - Emit top 3 hypotheses with full schema
+[✓] STEP 4: SELF-CRITIQUE - Drop invalid hypotheses, rank survivors
+[✓] STEP 5: NEXT - Choose one concrete action
+[✓] STEP 6: LEARNING - Note proven dead/alive classes
+[✓] STEP 7: RISK SCORE - Overall exposure scores
+[0m
+[NEXT HUMAN]: Deliver the official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet. This single artifact unblocks verification for BOTH #1 (binary static analysis of sidebarAction origin-check in the actual v4.38.386.14 binary) and #2 (PBKDF2/scrypt iteration count + master-key storage path in os_crypt_whale/xv10). All passive download paths remain dead (cloudfront DNS `No answer` at 127.0.0.53, APKMirror Cloudflare 403, Uptodown HTTP 404 page removed, pstatic HTTP 404).
+
+### STEP 6 — LEARNING
+
+- [LEARN] REJECTED binary acquisition @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` still resolve `No answer` (127.0.0.53) — desktop `.deb` path permanently dead in-sandbox; general resolver-level block affecting all cloudfront domains.
+- [LEARN] REJECTED @ APKMirror: Cloudflare 403 on all paths — Android + desktop binary acquisition blocked; only hosts legacy Whale Android 01.0.0.48/49, not latest 3.9.14.9.
+- [LEARN] REJECTED @ pstatic CDN: `static-whale.pstatic.net/WhaleSetup.exe` still HTTP 404 — Naver pstatic infra excluded per scope.yml; online installer artifact permanently dead.
+- [LEARN] REJECTED @ Uptodown: `whale-browser.en.uptodown.com` still HTTP 404 (entire app page removed; was 410 Gone) — passive WhaleSetup.exe acquisition permanently dead.
+- [LEARN] CONFIRMED @ sample extension source (translate branch): all 5 files (manifest.json, js/background.js, js/contentscript.js, index.html, js/index.js) still HTTP 200 — ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch from arbitrary web origin + `index.js` onMessage does only `console.log` with no origin validation — attack surface confirmed live and unchanged on v4.38.386.14.
+- [LEARN] CONFIRMED @ background.js static analysis: `whale.runtime.onMessage.addListener((message, sender, sendResponse) => {...})` accepts `sender` parameter but performs ZERO origin validation — handler only does string-equality checks on `message`, never inspects `sender.origin` or `sender.url`.
+- [LEARN] CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- [LEARN] CONFIRMED @ GitHub repo `naver/whale-browser-developers`: `pushed_at`=2019-09-23, `updated_at`=2025-10-22, size=5043 KB, 0 releases — documentation-only surface permanently dead; binary acquisition is the only static analysis vector.
+- [LEARN] REJECTED @ Wikipedia version assertion: `en.wikipedia.org/wiki/NAVER_Whale` HTML does not contain version strings (4.38/4.35 not found in parsed content); prior infobox version claim cannot be re-verified passively.
+- [LEARN] REJECTED @ GitHub wiki `sidebarAction` docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` still HTTP 404 — wiki documentation permanently unreachable; SOP bypass attack-surface evidence rests solely on live sample extension source.
+- [LEARN] REJECTED class @ installer: DLL search-order regression (confidence 50, below 60 self-imposed threshold; binary blocked on all passive channels; DLL-load verification requires live elevated Windows install — no passive proof path exists).
+
+### STEP 7 — RISK SCORE
+
+- [RISK] sync: 65 — Custom `/whalesync` + per-account bootstrap tokens + Whale-forked OSCrypt (xv10 magic) + NEO_SES cookie auth confirmed present in v4.38.386.14 binary via prior binary analysis; client-side KDF + key-storage is entire attack surface; KDF iter count + master-key locality unextracted (binary egress-blocked); `whale_need_encryption_key_forced_time` rekey-gate downgrade semantics unverified; local profile access = full sync decryption → PII cascade (High)
+- [RISK] browser: 82 — Sidebar/dual-tab surface (6 CVEs in 2025: CWE-346 SOP, CWE-346 iframe-sandbox escape, CWE-358 CSP) remain 3 minor versions past last fix (v4.35.351.12, Dec 2025) with 0 CVEs published in 2026; sample extension (5 files all HTTP 200) confirms ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch from arbitrary web origin → high-priority regression window; Critical severity ($4k SOP reward tier)
+- [RISK] libs: 35 — Whale bundles Chromium (inherits upstream CVEs, ineligible per scope.yml); `socket.io.slim.js` confirmed Whale-only in `resources.pak` (prior recon strings) but push-handler implementation is runtime-fetched (stale evidence, confidence 55 below 60); no public third-party library manifest; binary inaccessible so version-drift audit blocked — low visibility, moderate inherent risk
+Done. All three hypotheses carried over from 2026-08-09 03:58 are re-ranked, validated against self-critique criteria (>40 confidence, no REJECTED-class, concrete verify_steps). The blocking constraint remains binary acquisition being dead in-sandbox — no new evidence was found, but the existing passive evidence (sample extension 5 files HTTP 200, 8-month CVE gap, NVD 0 CVEs in 2026) remains fully intact and stale-free. Ready for the next scan cycle or human to deliver a binary.

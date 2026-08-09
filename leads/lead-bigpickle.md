@@ -1661,3 +1661,4 @@ verify_steps: AUTH_HELPED: extract `resources.pak` from delivered binary, diff a
 impact: script injection in built-in extension context; Medium
 testability: AUTH_HELPED
 [NEXT] HUMAN: Push official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) into `/tmp/opencode/whale_binary/` via unrestricted internet — the check this run confirms the directory does not exist and all sandbox channels remain dead (cloudfront DNS `No answer`, APKMirror 403, uptodown 404, pstatic 404, Naver domains OOS). It is the sole unlock for both FINAL hypotheses. Secondary: fix reposcan target back to `naver/` org (currently scanning `gladiaio/`).
+## 2026-08-09 05:58:13 UTC [sync] (model bigpickle)
