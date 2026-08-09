@@ -191,3 +191,6 @@
   - | **VALID** | 0 | — |
   - - **Verdict: HOLD** — passes Q1-Q3, Q6. Blocker is evidential: APK unreachable in-sandbox (Uptodown download endpoint returns 400 errorCode -51, resolver JS 410). Could elevate to VALID with binary de
   - | **VALID** | 0 | — |
+
+- 1 lead(s) marked VALID at 2026-08-09 20:20:07 UTC
+  - | **VALID** | 0 | — |
