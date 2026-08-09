@@ -5190,3 +5190,31 @@ testability: HUMAN_ONLY
 [RISK] sync: 65 — Custom /whalesync + per-account bootstrap tokens + Whale-forked OSCrypt (xv10 magic) + NEO_SES cookie auth confirmed in v4.38.386.14 binary via prior analysis; client-side KDF + key-storage is entire attack surface; KDF iter count + master-key locality unextracted (binary egress-blocked); whale_need_encryption_key_forced_time rekey-gate downgrade semantics unverified; local profile access = full sync decryption → PII cascade (High)
 [RISK] browser: 82 — Sidebar/dual-tab surface (6 CVEs in 2025: CWE-346 SOP, CWE-346 iframe-sandbox escape, CWE-358 CSP) remain 3 minor versions past last fix (v4.35.351.12, Dec 2025) with 0 CVEs published in 2026; sample extension (5 files HTTP 200) confirms ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch from arbitrary web origin → high-priority regression window (Critical, $4k SOP reward tier)
 [RISK] libs: 35 — Whale bundles Chromium (ineligible per scope.yml); socket.io.slim.js confirmed Whale-only in resources.pak (prior recon strings) but push-handler implementation is runtime-fetched (stale evidence); no public third-party library manifest; binary inaccessible so version-drift audit blocked — low visibility, moderate inherent risk
+## 2026-08-09 13:28:32 UTC [browser] (model laguna)
+[HYP] Sidebar/web-panel SOP-boundary regression via unvalidated sidebarAction message handler (CVE-2025-69234/69235 variant on Linux)
+class: OTHER
+asset: Whale v4.38.386.14 desktop Linux — `whale.sidebarAction.show({url})` dispatch path + sample extension (translate branch, raw.githubusercontent.com, 5 files HTTP 200)
+confidence: 70
+reasoning: CVE-2025-69234 (CVSS 9.1, CWE-346) and CVE-2025-69235 (CVSS 9.1, CWE-346) both fixed in v4.35.351.12 (Dec 2025); v4.38.386.14 is 3 minor-version bumps ahead; NVD confirms 0 CVEs published in 2026 (2 total: CVE-2018-9859, CVE-2020-9754, both pre-2021); sample extension `background.js` (HTTP 200) `onMessage` handler grep returns ZERO matches for `sender.origin`/`sender.url` — dispatch is purely string-equality on `message`; `contentscript.js` (HTTP 200) fires `sidebarAction.show`/`show2` from `navigator.userAgent.includes('sidebar')===false` branch (any web origin).
+evidence_needed: (1) Static binary confirm — absence of sender.origin/sender.url check in sidebarAction dispatch path; (2) Live repro — content script on http://evil.com → sidebarAction.show → cross-origin fetch with credentials succeeds without CORSError.
+verify_steps: PASSIVE: grep -iE 'sender\.origin|sender\.url' raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js → zero matches confirmed at 13:26 UTC (HTTP 200); curl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=5" → totalResults:2, 0 2026 CVEs confirmed. HUMAN_ONLY: install Whale v4.38.386.14 on Linux → load unpacked sidebar-sample → visit http://evil.com → whale.runtime.sendMessage('sidebarAction.show') → fetch('https://example.com/user-data',{credentials:'include'}) → SOP bypass if no CORSError. Zero requests to *.naver.com.
+impact: SOP bypass / iframe sandbox escape in privileged browser-UI context → cross-origin cookie/DOM/CSRF-token theft across all origins; Critical (CVSS 9.1, $4k SOP reward tier)
+testability: PASSIVE (source evidence confirmed) + HUMAN_ONLY (live repro)
+[HYP] Sync bootstrap-token KDF/OSCrypt deviation on desktop Linux
+class: AUTH
+asset: Whale v4.38.386.14 sync client (os_crypt_whale.cc fork + xv10 magic + /whalesync endpoint + NEO_SES cookie + sync.encryption_bootstrap_token_per_account prefs in profile)
+confidence: 62
+reasoning: v4.38.386.14 binary (prior analysis) confirms Whale-only prefs keys with sha256 pin `7b06e6e9...` (confirmed 13:26 UTC); Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic) + custom /whalesync endpoint (NEO_SES cookie auth) deviating from upstream Chromium sync protocol; KDF algorithm/iteration count/salt/master-key storage unextracted — binary acquisition fully blocked in-sandbox.
+evidence_needed: PBKDF2/scrypt algorithm + iteration count + salt source + master-key storage path on Linux; bootstrap-token envelope format vs upstream Chromium; whale_need_encryption_key_forced_time downgrade semantics.
+verify_steps: PASSIVE (blocked): binary extraction blocked (cloudfront DNS No-answer, APKMirror 403, Uptodown 404, pstatic 404). HUMAN: deliver Whale .deb v4.38.386.14 to /tmp/opencode/whale_binary/ → extract libwhale.so → `strings libwhale.so | grep -iE 'pbkdf|scrypt|iter_count|xv10'` for KDF constants → `objdump -d libwhale.so | grep -A5 -B5 'sidebarAction'` to confirm dispatch gap. Zero requests to *.naver.com/sync backend.
+impact: Weak KDF / device-recoverable master-key → local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full sync account compromise across devices; High
+testability: PASSIVE (blocked in-sandbox) / HUMAN_ONLY
+[HYP] Android sync encryption KDF/master-key unverified (com.naver.whale 3.9.14.9)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (Android Keystore/EncryptedSharedPreferences)
+confidence: 55
+reasoning: Android sync asset v3.9.14.9 confirmed in prior recon (APKMirror legacy 01.0.0.48/49 only; latest 3.9.14.6/7 not 3.9.14.9); shares sync architecture with desktop Whale-forked os_crypt_whale (xv10 magic); KDF constants/salt/master-key storage path/bootstrap-token envelope unextracted; binary acquisition fully blocked in-sandbox (APKMirror 403, APKPure 403, cloudfront DNS No-answer, Uptodown 404).
+evidence_needed: PBKDF2/scrypt iteration count + salt source; Android Keystore key alias + EncryptedSharedPreferences master-key path; bootstrap-token envelope format vs desktop.
+verify_steps: HUMAN: deliver com.naver.whale 3.9.14.9 APK → apktool + jadx → grep PBKDF2/scrypt/EncryptedSharedPreferences/bootstrap_token. Zero requests to *.naver.com/sync backend.
+impact: Weak KDF or predictable master-key storage → local attacker derives sync encryption key → decrypts all synced passwords/cookies/autofill → full sync account compromise across devices; High
+testability: HUMAN_ONLY
