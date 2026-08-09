@@ -414,3 +414,15 @@
 - CHANGED Wikipedia infobox version assertion cannot be passively re-verified — HTML parse shows no version strings (4.38/4.35/4.33 not found)
 - CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch + zero origin validation in `onMessage` confirme
 - CHANGED All binary acquisition channels remain 100% blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 page removed, pstatic 404)
+
+## 2026-08-09 15:55:14 UTC
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` still missing (reported created in prior scans but `ls` returns "No such file or directory")
+- CHANGED NVD primary endpoint `nvd.nist.gov/rest` confirmed Cloudflare-blocked; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable and returns 0 Whale CVEs in 2026
+- CHANGED Wikipedia infobox version assertion cannot be passively re-verified — HTML parse shows no version strings (4.38/4.35/4.33 not found)
+- CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch + zero origin validation in `onMessage` confirme
+- CHANGED All binary acquisition channels remain 100% blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 page removed, pstatic 404)
+- NEW uptodown ANDROID page `naver-whale-browser.en.uptodown.com/android` returns HTTP 200 (155,246 B) and live-pins latest com.naver.whale **3.9.14.9** (page title + version history 3.9.14.5/6/7/9) — contr
+- NEW uptodown download resolver JS `stc.utdstc.com/1786093238827/download.js` returns **HTTP 410 Gone** — client-side token generator for the dw flow is dead
+- NEW `dw.uptodown.com/dwn/1197336657` (with session cookie from the 200 page) → HTTP 400 JSON `{"success":0,"errorCode":-51,"errorMsg":"Bad request"}` — passive token-free APK fetch confirmed blocked; Andr
+- CHANGED NVD re-verify @ 15:52:35 UTC via services.nvd.nist.gov: totalResults=2 (CVE-2018-9859, CVE-2020-9754), both pre-2021 — 0 CVEs in 2026, disclosure gap static for v4.35.352–v4.38.386.14 (unchanged)
+- CHANGED `/tmp/opencode/whale_binary/` still missing (workspace re-provisioned 15:52 UTC) — binary delivery path unsatisfied, blocking all binary-dependent verification

@@ -288,3 +288,6 @@
 - 2026-08-09 CONFIRMED @ /tmp/opencode/whale_binary/: still missing — binary delivery path unsatisfied, blocking all binary-dependent hypotheses (re-verified 17:20 UTC)
 - 2026-08-09 REJECTED @ cloudfront CDN: d1vdt4q2qgdbji.cloudfront.net + *.cloudfront.net still resolve No-answer (127.0.0.53) — desktop .deb path permanently dead in-sandbox
 - 2026-08-09 ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (Dec 2025); CPE lists only Windows/macOS, Linux fix status unclaimed → v4.38.386.14 regression window remains open on Linux
+- 2026-08-09 ACCEPTED acquisition channel @ uptodown Android page: `naver-whale-browser.en.uptodown.com/android` HTTP 200, live, pins com.naver.whale 3.9.14.9 — prior "Uptodown dead" knowledge covers only the Windows page; Android page is a live HUMAN-gated channel
+- 2026-08-09 REJECTED passive APK download @ uptodown: `dw.uptodown.com/dwn/<id>` → HTTP 400 errorCode -51 even with session cookie, and resolver JS `stc.utdstc.com/*/download.js` → HTTP 410 — token is client-side-only; no curl-able passive path exists
+- 2026-08-09 REJECTED class @ socket.io.slim.js event-handler injection: already REJECTED in 2026-08-09 triage (conf 38 < 40, runtime-fetched handler) — not re-emitted
