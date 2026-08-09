@@ -210,6 +210,13 @@
 - 2026-08-08 REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown, pstatic): All 100% blocked in-sandbox — cloudfront DNS No-answer (general to `*.cloudfront.net` at resolver 127.0.0.53), Cloudflare 403 on apk.* mirrors, HTTP 404 on uptodown app page (page removed), HTTP 404 on static-whale.pstatic.net/WhaleSetup.exe; binary extraction + HUMAN browser install require unrestricted internet access.
 - 2026-08-08 CONFIRMED @ GitHub wiki: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` still HTTP 404 — wiki documentation permanently unreachable; SOP bypass attack-surface evidence rests solely on live sample extension source (all 5 files HTTP 200).
 - 2026-08-08 REJECTED @ Wikipedia version assertion: `en.wikipedia.org/wiki/NAVER_Whale` HTML does not contain version strings (4.38/4.35 not found in parsed content); prior Wikipedia infobox version claim cannot be re-verified passively in this scan.
+- 2026-08-09 REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptodown 404 page removed; apkpure.com 403; Naver domains excluded) — binary acquisition requires HUMAN with unrestricted internet access
+- 2026-08-09 REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- 2026-08-09 REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` wiki documentation previously cited as "CONFIRMED accessible" is no longer reachable; wiki API also 404s
+- 2026-08-09 ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins); `background.js` (HTTP 200) confirms `onMessage` handler dispatches `sidebarAction.show`/`hide`/`show2`/`hideAll` from ANY sender without origin validation
+- 2026-08-09 CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap confirmed for v4.35.352–v4.38.386.14
+- 2026-08-09 ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (same as CVE-2025-69235), shares identical generic CPE `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` — Linux fix status unclaimed, same regression window as CVE-2025-69235
+- 2026-08-09 REJECTED @ installer: DLL search-order regression (confidence 50, below 60 threshold, no passive proof path, all binary acquisition channels dead)
 === INVENTORY gladia ===
 # Inventory: whale
 
