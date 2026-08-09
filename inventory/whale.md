@@ -466,3 +466,11 @@
 - CHANGED Wikipedia version assertion impossible — EN/KO pages both 404
 
 ## 2026-08-09 20:17:47 UTC
+
+## 2026-08-09 20:57:00 UTC
+- CHANGED Uptodown Android page `naver-whale-browser.en.uptodown.com/android` flipped from HTTP 200 (18:10 UTC) to HTTP 404 — only live Android acquisition channel now dead
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` still missing (reported created in prior scans but `ls` returns "No such file or directory")
+- CHANGED All binary acquisition channels 100% blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 both Windows + Android, pstatic 404)
+- CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin `content_scripts` + unvalidated `sidebarAction.show`/`show2` dispatch + zero origin validation confirmed live
+- CHANGED NVD: 0 Whale CVEs in 2026 (2 total, both pre-2021) — 8-month disclosure gap static for v4.35.352–v4.38.386.14
+- CHANGED Wikipedia version assertion impossible — EN/KO pages both HTTP 404
