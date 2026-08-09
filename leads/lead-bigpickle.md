@@ -1632,3 +1632,32 @@ evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (k
 verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
 impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
 testability: AUTH_HELPED
+## 2026-08-09 05:08:58 UTC [sync] (model bigpickle)
+[HYP] Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant)
+class: OTHER
+asset: Whale `sidebarAction.show({url})` + `runtime.onMessage` path (remote HTTP/HTTPS panel URL)
+confidence: 65
+reasoning: CVE-2025-69234 (iframe sandbox escape, CVSS 9.1) + 69235 (SOP bypass) fixed <v4.35.351.12; latest v4.38.386.14 is 3 minor bumps ahead, 0 CVEs since. Sample `background.js`/`manifest.json` re-verified HTTP 200 this run — `onMessage` dispatches `sidebarAction.show`/`show2` from ANY origin, zero `sender` validation; NVD CPE platform-wildcard, Linux fix status unclaimed.
+evidence_needed: crafted panel URL executing script / reading opener cross-origin / escaping iframe sandbox or panel CSP on v4.38.386.14.
+verify_steps: AUTH_HELPED: install v4.38.386.14, load minimal MV2 extension, cross-origin content-script `sendMessage`, drive `sidebarAction.show({url: crafted.html})`, test opener readback + sandbox escape. Zero Naver-infra requests.
+impact: SOP bypass / script execution in privileged browser-UI context; Critical if renderer escalation
+testability: AUTH_HELPED
+[HYP] Sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+confidence: 62
+reasoning: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256=7b06e6e9..., `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface; alg + iteration count still unextracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+[HYP] `socket.io.slim.js` event-handler injection in bundled Whale extension
+class: XSS
+asset: `resources.pak` bundled `socket.io.slim.js` (runtime-fetched handler)
+confidence: 40
+reasoning: Whale-only non-Chromium bundled lib confirmed present in `resources.pak`; evidence marked stale until re-acquisition; handler may be runtime-fetched, degrading passive value.
+evidence_needed: extracted `socket.io.slim.js` + event-handler wiring; whether socket URL is user-influenced.
+verify_steps: AUTH_HELPED: extract `resources.pak` from delivered binary, diff against upstream socket.io, audit event handlers for injection.
+impact: script injection in built-in extension context; Medium
+testability: AUTH_HELPED
+[NEXT] HUMAN: Push official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) into `/tmp/opencode/whale_binary/` via unrestricted internet — the check this run confirms the directory does not exist and all sandbox channels remain dead (cloudfront DNS `No answer`, APKMirror 403, uptodown 404, pstatic 404, Naver domains OOS). It is the sole unlock for both FINAL hypotheses. Secondary: fix reposcan target back to `naver/` org (currently scanning `gladiaio/`).
