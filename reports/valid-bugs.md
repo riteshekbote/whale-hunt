@@ -156,3 +156,6 @@
 
 - 1 lead(s) marked VALID at 2026-08-09 14:33:16 UTC
   - VALID finding is the Naver Whale security channel referenced in scope.yml —
+
+- 1 lead(s) marked VALID at 2026-08-09 16:22:47 UTC
+  - **Verdict: HOLD** — passes Q1–Q3, Q5–Q6; fails Q4 but has a concrete AUTH_HELPED path (two authorized accounts). Could be elevated to VALID if a human tester can run the interactive test. Not reportab
