@@ -1,18 +1,86 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base you provided is entirely about **Naver Whale Browser** (`naver/whale-browser-developers`), not **gladiaio**. There's zero mention of `gladiaio`, `@gladiaio/sdk`, or any Gladia-related repos/packages in the RAG data.
+The knowledge base you provided is for **Whale browser (Naver)**, but you're asking me to triage **gladiaio/** GitHub org and `@gladiaio/sdk` npm package. These are completely different targets.
 
-The inventory at the end explicitly states:
-```
-=== INVENTORY gladia ===
-# Inventory: whale
-```
+Let me check what's actually in the workspace to understand what we're scanning.
+[0m$ [0mls -la
+total 716
+drwxr-xr-x 11 runner runner   4096 Aug  9 05:58 .
+drwxr-xr-x  3 runner runner   4096 Aug  9 05:58 ..
+drwxr-xr-x  7 runner runner   4096 Aug  9 05:58 .git
+drwxr-xr-x  3 runner runner   4096 Aug  9 05:58 .github
+-rw-r--r--  1 runner runner   1057 Aug  9 05:58 README.md
+-rw-r--r--  1 runner runner      0 Aug  9 05:58 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug  9 05:58 inventory
+drwxr-xr-x  2 runner runner   4096 Aug  9 05:58 knowledge
+drwxr-xr-x  2 runner runner   4096 Aug  9 05:58 leads
+-rw-r--r--  1 runner runner   1219 Aug  9 05:58 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug  9 05:58 reports
+-rw-r--r--  1 runner runner 597907 Aug  9 05:58 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug  9 05:58 reposcan-raw
+-rw-r--r--  1 runner runner  55105 Aug  9 05:58 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug  9 05:58 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug  9 05:58 scripts
+-rw-r--r--  1 runner runner     34 Aug  9 05:58 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug  9 05:58 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug  9 05:58 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug  9 05:58 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug  9 05:58 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Aug  9 05:58 triage
+[0m
+[0m→ [0mRead scope.yml
+[0m→ [0mRead scan-prompt.txt
+[0m
+[0m$ [0mls -la reposcan-raw/
+total 84
+drwxr-xr-x  3 runner runner  4096 Aug  9 05:58 .
+drwxr-xr-x 11 runner runner  4096 Aug  9 05:58 ..
+-rw-r--r--  1 runner runner  1730 Aug  9 05:59 analysis.txt
+-rw-r--r--  1 runner runner    40 Aug  9 05:58 grep-delta.txt
+-rw-r--r--  1 runner runner    50 Aug  9 05:58 grep-hits.prev.txt
+-rw-r--r--  1 runner runner    50 Aug  9 05:58 grep-hits.txt
+drwxr-xr-x  2 runner runner  4096 Aug  9 05:58 naver
+-rw-r--r--  1 runner runner 53876 Aug  9 05:58 rag.txt
+[0m
+[0m$ [0mls -la inventory/
+total 52
+drwxr-xr-x  2 runner runner  4096 Aug  9 05:58 .
+drwxr-xr-x 11 runner runner  4096 Aug  9 05:58 ..
+-rw-r--r--  1 runner runner 43094 Aug  9 05:58 whale.md
+[0m
+[0m→ [0mRead reposcan-raw/grep-hits.txt
+[0m→ [0mRead reposcan-raw/grep-delta.txt
+**This workspace is for Whale Browser (Naver), not Gladia.** The `scan-prompt.txt` has a template error mentioning "gladiaio" but the `scope.yml`, knowledge base, inventory, and all scan data target **Naver Whale Browser**.
 
-This appears to be a label/copy-paste error — the content is 100% Whale browser recon.
+---
 
-**To proceed, I need:**
-1. The actual gladiaio GitHub org scan results, OR
-2. Confirmation you want me to triage the Whale browser data instead (but the program scope says "gladiaio/ GitHub org - SDK repos are MEDIUM priority")
+### Scan Results Summary
+- **Target**: `naver/whale-browser-developers` (only whale-named repo in Naver org)
+- **Repo type**: Documentation-only (last code commit 2019-09-23)
+- **Scan coverage**: 0 code/config files scanned, 0 hits
+- **Grep results**: No secrets, no endpoints, no interesting patterns found
 
-Which dataset should I triage?
+---
+
+### Triage Verdict
+
+| Category | Findings | Verdict |
+|----------|----------|---------|
+| **REAL_SECRET** | None | — |
+| **TEST_OR_EXAMPLE** | None | — |
+| **ENDPOINT_LEAK** | None | — |
+| **INTERESTING** | None | — |
+
+**REPORT_CANDIDATE: no** — No actionable findings in this scan.
+
+---
+
+### Context from Knowledge Base (unchanged)
+- **Static analysis path**: Dead — repo is documentation-only, no browser source/sync code/lib manifests
+- **Binary acquisition**: All channels blocked in-sandbox (CloudFront DNS `No answer`, APKMirror 403, Uptodown 404, pstatic 404)
+- **Live attack surface**: Sample extension on `translate` branch (`manifest.json`, `background.js`, `contentscript.js`) — ALL-origin `content_scripts` + unvalidated `sidebarAction.show`/`show2` dispatch — confirmed live (HTTP 200)
+- **Disclosure gap**: 0 Whale CVEs in 2026 (8 months since v4.35.351.12 fix); latest claimed v4.38.386.14
+- **All prior leads**: REJECTED (binary-dependent, HUMAN_ONLY, or confidence < 60)
+
+The only in-scope surface with passive evidence is the **sample extension SOP bypass** (CVE-2025-69235 regression window), but it requires binary install + reproduction on latest Whale to validate — not achievable via static scan alone.
