@@ -4941,3 +4941,44 @@ testability: PASSIVE (blocked in-sandbox)
 [RISK] sync: 65 — Custom `/whalesync` + per-account bootstrap tokens + Whale-forked OSCrypt (xv10 magic) + NEO_SES cookie auth confirmed present in v4.38.386.14 binary via prior binary analysis; client-side KDF + key-storage is entire attack surface; KDF iter count + master-key locality unextracted (binary egress-blocked); `whale_need_encryption_key_forced_time` rekey-gate downgrade semantics unverified; local profile access = full sync decryption → PII cascade (High)
 [RISK] browser: 82 — Sidebar/dual-tab surface (6 CVEs in 2025: CWE-346 SOP, CWE-346 iframe-sandbox escape, CWE-358 CSP) remain 3 minor versions past last fix (v4.35.351.12, Dec 2025) with 0 CVEs published in 2026; sample extension (5 files all HTTP 200) confirms ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch from arbitrary web origin → high-priority regression window; Critical severity ($4k SOP reward tier)
 [RISK] libs: 35 — Whale bundles Chromium (inherits upstream CVEs, ineligible per scope.yml); `socket.io.slim.js` confirmed Whale-only in `resources.pak` (prior recon strings) but push-handler implementation is runtime-fetched (stale evidence); no public third-party library manifest; binary inaccessible so version-drift audit blocked — low visibility, moderate inherent risk
+## 2026-08-09 07:57:29 UTC [browser] (model laguna)
+[PRIO] Whale sidebarAction message handler — score 74: attack_surface=9, business_value=8, tech_exposure=7, gate_ease=9, cloud_surface=3, freshness=9
+[PRIO] Whale desktop sync KDF/OSCrypt — score 62: attack_surface=6, business_value=9, tech_exposure=8, gate_ease=5, cloud_surface=5, freshness=5
+[PRIO] Whale Android sync KDF — score 58: attack_surface=5, business_value=9, tech_exposure=7, gate_ease=5, cloud_surface=4, freshness=4
+[HYP] Sidebar/web-panel SOP boundary regression — unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux)
+class: OTHER
+asset: Whale v4.38.386.14 — `whale.sidebarAction.show()` + `whale.runtime.onMessage` handler (sample extension, translate branch)
+confidence: 65
+reasoning: CVE-2025-69234 (CWE-346, CVSS 9.1) + CVE-2025-69235 (CWE-346, CVSS 9.1) both fixed v4.35.351.12 (Dec 2025). v4.38.386.14 is 3 minor-version bumps ahead, 0 CVEs published 2026 (NVD keywordSearch returns only CVE-2018-9859 + CVE-2020-9754), creating a regression window. Sample extension (5 files HTTP 200): manifest.json content_scripts match ALL origins; contentscript.js fires sidebarAction.show/show2 from any web origin; background.js `onMessage.addListener((message, sender, sendResponse) => {...})` accepts `sender` but performs ZERO origin validation.
+evidence_needed: (1) Live browser: content script on http://evil.com fires sidebarAction.show → background dispatches without sender.origin check → sidebar panel loads → cross-origin fetch succeeds without CORSError; (2) iframe sandbox escape via data:text/html blob in sidebar; (3) static analysis confirming origin-check absence in v4.38.386.14 binary.
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load unpacked extension with content_scripts matching `<all_urls>` → visit http://evil.com → `whale.runtime.sendMessage('sidebarAction.show')` → from sidebar content script run `fetch('https://example.com/user-data',{credentials:'include'})` → if resolves without CORSError, SOP bypass confirmed → test `sidebarAction.show2` + iframe sandbox escape via data:text/html blob. Zero requests to *.naver.com/sync.
+impact: SOP bypass / iframe sandbox escape in privileged browser-UI context → cross-origin cookie/DOM/CSRF-token theft across all origins (Critical, CVSS 9.1, $4k SOP reward tier)
+testability: HUMAN_ONLY
+[HYP] Sync bootstrap-token KDF/OSCrypt deviation — Whale-forked crypto on Linux
+class: AUTH
+asset: Whale v4.38.386.14 sync client (`os_crypt_whale.cc` + `wbc_wrapper_apis.cc` + xv10 magic + `/whalesync` endpoint + NEO_SES cookie + `sync.encryption_bootstrap_token_per_account` prefs)
+confidence: 62
+reasoning: v4.38.386.14 binary confirms Whale-only prefs keys + Whale-forked OSCrypt (xv10 magic) + custom `/whalesync` endpoint (NEO_SES cookie auth, not Chromium sync protocol) via prior binary analysis. KDF algorithm/iteration count/salt derivation/master-key storage path unextracted — all binary acquisition channels blocked in-sandbox.
+evidence_needed: PBKDF2/scrypt algorithm + iteration count; salt source; master-key storage location on Linux; bootstrap-token envelope format vs upstream Chromium.
+verify_steps: PASSIVE (blocked): `strings libwhale.so | grep -iE 'pbkdf|scrypt|iter|xv10|os_crypt_whale'` + `.rodata` xref of `sync.encryption_bootstrap_token_per_account`. HUMAN: deliver Whale .deb v4.38.386.14 to `/tmp/openc` → extract + run strings/objdump. Zero Naver sync infra requests.
+impact: Weak KDF or device-recoverable key → local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise across devices (High)
+testability: PASSIVE (blocked in-sandbox) / HUMAN_ONLY
+[HYP] Android sync encryption KDF/master-key unverified — com.naver.whale 3.9.14.9
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (Android Keystore/EncryptedSharedPreferences)
+confidence: 55
+reasoning: Android sync asset confirmed v3.9.14.9; shares sync encryption architecture with desktop Whale-forked os_crypt_whale (xv10 magic); KDF constants/salt/master-key storage path/bootstrap-token envelope unextracted — binary acquisition blocked in-sandbox.
+evidence_needed: PBKDF2/scrypt iteration count + salt source; master-key storage path; bootstrap-token envelope format vs desktop.
+verify_steps: PASSIVE (blocked): objdump/strings on `libwhale_sync.so` + os_crypt_whale JNI bridge. HUMAN: deliver com.naver.whale 3.9.14.9 APK → decompile dex → grep PBKDF2/scrypt/EncryptedSharedPreferences/bootstrap_token. Zero Naver infractions.
+impact: Weak KDF or predictable master-key storage → local attacker derives sync encryption key → decrypts all synced passwords/cookies/autofill across devices (High)
+testability: PASSIVE (blocked in-sandbox) / HUMAN_ONLY
+[FINAL] #1 — Sidebar SOP bypass via unvalidated sidebarAction message handler (confidence 65)
+[FINAL] #2 — Sync bootstrap-token KDF/OSCrypt deviation (confidence 62)
+[FINAL] #3 — Android sync encryption KDF/master-key (confidence 55)
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet. Once delivered, run `strings` + `objdump` on `libwhale.so` for KDF constants (PBKDF2/scrypt iter counts) and confirm sidebarAction origin-check absence in binary. Zero requests to *.naver.com/sync backend.
+[LEARN] REJECTED binary acquisition @ cloudfront CDN: DNS `No answer` for `*.cloudfront.net` (resolver 127.0.0.53) — desktop `.deb` path permanently dead in-sandbox — binary acquisition + HUMAN browser install require unrestricted internet access.
+[LEARN] CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — disclosure gap static for v4.35.352–v4.38.386.14 (8 months past last CVE fix v4.35.351.12, Dec 2025).
+[LEARN] CONFIRMED @ sample extension source (translate branch): all 5 files (manifest.json, background.js, contentscript.js, index.html, index.js) HTTP 200 — ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch + `onMessage` does only string-equality on message, never inspects sender.origin/sender.url — attack surface live and unchanged.
+[RISK] sync: 65 — Custom `/whalesync` + per-account bootstrap tokens + Whale-forked OSCrypt (xv10 magic) + NEO_SES cookie auth confirmed present in v4.38.386.14 binary via prior analysis; client-side KDF + key-storage is entire attack surface; KDF iter count + master-key locality unextracted (binary egress-blocked); client-side KDF weakness → full sync decryption (High)
+[RISK] browser: 82 — Sidebar/dual-tab surface (6 CVEs in 2025: CWE-346 SOP, CWE-346 iframe-sandbox escape, CWE-358 CSP) remain 3 minor versions past last fix (v4.35.351.12, Dec 2025) with 0 CVEs published in 2026; sample extension (5 files HTTP 200) confirms ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch from arbitrary web origin → high-priority regression window (Critical, $4k SOP tier)
+[RISK] libs: 35 — Whale bundles Chromium (ineligible per scope); `socket.io.slim.js` confirmed Whale-only in `resources.pak` but push-handler runtime-fetched (stale evidence); no public library manifest; binary inaccessible so version-drift audit blocked (Low)
