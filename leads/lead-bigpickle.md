@@ -2019,3 +2019,35 @@ impact: script injection in built-in extension context; Medium
 testability: AUTH_HELPED
 [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet (dir confirmed still missing 13:26 UTC); then run objdump/strings on os_crypt/xv10 for KDF iteration constants AND execute the sidebar-sample cross-origin `sendMessage('sidebarAction.show2')` → `show({url: crafted.html})` opener-readback + sandbox-escape test. Zero Naver-infra requests.
 [RISK] sync: 62 — 8-month disclosure gap since CVE-2025-69235 fix (Dec 2025); custom xv10 OSCrypt fork + bootstrap-token envelope is wholly un-verified (alg/iterations/master-key location unknown); highest-value target in scope, entirely behind blocked binary acquisition
+## 2026-08-09 14:08:37 UTC [sync] (model bigpickle)
+[HYP] Sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary os_crypt_whale.cc / whale_sync_util.cc; Local State + keyring; /whalesync
+confidence: 62
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + /whalesync confirmed in prior binary runs; Help Center states passphrase never leaves device; alg + iteration count still unextracted; delivery dir absent.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+[HYP] Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant)
+class: OTHER
+asset: Whale `sidebarAction.show({url})` + `whale.runtime.onMessage` path (remote HTTP/HTTPS panel URL)
+confidence: 65
+reasoning: 5/5 sample files HTTP 200 this run (14:07 UTC) — onMessage dispatches show/show2/hide/hideAll from ANY sender with zero sender.origin/sender.url inspection; show2 calls whale.windows.create() unvalidated; NVD CPE platform-wildcard, Linux fix status unclaimed; v4.38.386.14 is 3 minor bumps past fix v4.35.351.12 with 0 CVEs since.
+evidence_needed: crafted panel URL executing script / reading opener cross-origin / escaping iframe sandbox or panel CSP on v4.38.386.14.
+verify_steps: AUTH_HELPED: install v4.38.386.14, load sidebar-sample MV2 extension, cross-origin content-script sendMessage('sidebarAction.show2'), drive show({url: crafted.html}), test opener readback + sandbox escape. Zero Naver-infra requests.
+impact: SOP bypass / script execution in privileged browser-UI context; Critical if renderer escalation
+testability: AUTH_HELPED
+[HYP] socket.io.slim.js event-handler injection in bundled Whale extension
+class: XSS
+asset: resources.pak bundled socket.io.slim.js (runtime-fetched handler)
+confidence: 40
+reasoning: Whale-only non-Chromium bundled lib confirmed in resources.pak by prior runs; handler may be runtime-fetched degrading passive value; no re-acquisition possible in-sandbox; nothing new this run.
+evidence_needed: extracted socket.io.slim.js + event-handler wiring; whether socket URL is user-influenced.
+verify_steps: AUTH_HELPED: extract resources.pak from delivered binary, diff against upstream socket.io, audit event handlers for injection.
+impact: script injection in built-in extension context; Medium
+testability: AUTH_HELPED
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` (dir confirmed missing 14:07 UTC, sandbox empty) via unrestricted internet; then run objdump/strings on os_crypt/xv10 for KDF iteration constants AND execute the sidebar-sample cross-origin `sendMessage('sidebarAction.show2')` → `show({url: crafted.html})` opener-readback + sandbox-escape test. Zero Naver-infra requests.
+[RISK] sync: 62 — 8-month disclosure gap since CVE-2025-69235 fix (Dec 2025); custom `xv10` OSCrypt fork + bootstrap-token envelope wholly un-verified (alg/iterations/master-key location unknown); highest-value in-scope target, entirely behind blocked binary acquisition
+[RISK] browser: 55 — sidebar SOP-boundary regression window open (CVE-2025-69234/69235, CVSS 9.1) with unvalidated onMessage handler confirmed live in sample source, but exploitability on v4.38.386.14 cannot be confirmed without the binary; 0 CVEs since fix keeps expectation moderate
+[RISK] libs: 40 — socket.io.slim.js is the only Whale-only non-Chromium bundled lib confirmed, but event-handler is possibly runtime-fetched and the resources.pak is unreachable in-sandbox; surface real but low confidence and unverifiable
