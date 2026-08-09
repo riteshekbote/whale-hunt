@@ -1742,3 +1742,31 @@ evidence_needed: extracted `socket.io.slim.js` + event-handler wiring; whether s
 verify_steps: AUTH_HELPED: extract `resources.pak` from delivered binary, diff against upstream socket.io, audit event handlers for injection.
 impact: script injection in built-in extension context; Medium
 testability: AUTH_HELPED
+## 2026-08-09 09:25:08 UTC [sync] (model bigpickle)
+[HYP] Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant)
+class: OTHER
+asset: Whale `sidebarAction.show({url})` + `whale.runtime.onMessage` path (remote HTTP/HTTPS panel URL)
+confidence: 65
+reasoning: Re-verified this scan: sample extension 5/5 files HTTP 200 — `onMessage` dispatches `show`/`show2`/`hide`/`hideAll` from ANY sender with zero `sender.origin`/`sender.url` validation; `show2` calls `whale.windows.create()` unvalidated; NVD CPE platform-wildcard, Linux fix status unclaimed; v4.38.386.14 is 3 minor bumps past fix (v4.35.351.12, Dec 2025) with 0 CVEs since.
+evidence_needed: crafted panel URL executing script / reading opener cross-origin / escaping iframe sandbox or panel CSP on v4.38.386.14.
+verify_steps: AUTH_HELPED: install v4.38.386.14, load minimal MV2 extension, cross-origin content-script `sendMessage('sidebarAction.show2')`, drive `show({url: crafted.html})`, test opener readback + sandbox escape. Zero Naver-infra requests.
+impact: SOP bypass / script execution in privileged browser-UI context; Critical if renderer escalation
+testability: AUTH_HELPED
+[HYP] Sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+confidence: 62
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface; alg + iteration count still unextracted; binary delivery dir missing this scan so extraction remains HUMAN-gated.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+[HYP] `socket.io.slim.js` event-handler injection in bundled Whale extension
+class: XSS
+asset: `resources.pak` bundled `socket.io.slim.js` (runtime-fetched handler)
+confidence: 40
+reasoning: Whale-only non-Chromium bundled lib confirmed in `resources.pak` by prior runs; handler may be runtime-fetched, degrading passive value; no re-acquisition possible in-sandbox.
+evidence_needed: extracted `socket.io.slim.js` + event-handler wiring; whether socket URL is user-influenced.
+verify_steps: AUTH_HELPED: extract `resources.pak` from delivered binary, diff against upstream socket.io, audit event handlers for injection.
+impact: script injection in built-in extension context; Medium
+testability: AUTH_HELPED

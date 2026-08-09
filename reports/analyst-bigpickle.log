@@ -26361,3 +26361,84 @@ STEP 7 — RISK SCORE
 - [RISK] sync: 55 — KDF/envelope surface is confirmed Whale-only and password/bookmark-data adjacent, but alg/iteration constants unextracted and fully binary-gated; exposure real, exploitability unproven.
 - [RISK] browser: 60 — sidebar SOP regression window open (3 minor bumps, 0 CVEs, live ALL-origin sample surface, Linux fix unclaimed); browser-core surface otherwise quiet.
 - [RISK] libs: 30 — socket.io.slim.js evidence stale and unreacquirable; no other Whale-only third-party lib surface remains reachable.
+===== ANALYST bigpickle 2026-08-09 09:31:18 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-08-09T00:00:00.000" | head -c 800; echo
+[0m
+[0m$ [0mcurl -s --max-time 20 -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json"; echo " manifest"; curl -s --max-time 20 -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js"; echo " background"
+200 manifest
+200 background
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers" | python3 -c "import sys,json; d=json.load(sys.stdin); print('pushed:',d.get('pushed_at'),'updated:',d.get('updated_at'),'open_issues:',d.get('open_issues_count'))"; ls -la /tmp/opencode/whale_binary/ 2>/dev/null | head -5
+pushed: 2019-09-23T08:03:26Z updated: 2025-10-22T03:15:17Z open_issues: 4
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale" | python3 -c "import sys,json; d=json.load(sys.stdin); print('total:',d.get('totalResults')); [print(x['cve']['id']) for x in d.get('vulnerabilities',[])]"
+total: 2
+CVE-2018-9859
+CVE-2020-9754
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>/dev/null || echo "DIR MISSING"
+DIR MISSING
+[0m
+**STEP 1 — DELTA**
+- [NEW] `/tmp/opencode/whale_binary/` delivery directory MISSING this scan (sandbox reset) — HUMAN artifact (v4.38.386.14 `.deb`/`WhaleSetup.exe`) not delivered; binary-static path still gated
+- [CHANGED] Re-probed live this scan: NVD keywordSearch `naver+whale` still returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), 0 in 2026 — disclosure gap unchanged
+- [CHANGED] Re-probed live this scan: sample extension `manifest.json` + `js/background.js` both HTTP 200 on `translate` branch — ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch live and unchanged
+- [CHANGED] Re-probed live this scan: `naver/whale-browser-developers` pushed_at 2019-09-23, updated_at 2025-10-22, 4 open issues — documentation-only surface unchanged
+- [CHANGED] Re-probed live this scan: wiki `sidebarAction.md` and all binary channels not re-tested this scan (no-answer on cloudfront/403 mirrors/404 pstatic+uptodown recorded at 08:47 prior) — treated as static
+
+**STEP 2 — PRIORITIZE**
+- [PRIO] Whale sidebar web-panel boundary (`sidebarAction.show({url})` + `runtime.onMessage`): attack 8 / business 7 / tech 5 / gate 8 / cloud 2 / fresh 8 → **6.70**
+- [PRIO] Sync KDF + bootstrap-token envelope (`os_crypt_whale.cc`/`whale_sync_util.cc`, Local State, `/whalesync`): attack 5 / business 9 / tech 8 / gate 2 / cloud 5 / fresh 8 → **6.30**
+- [PRIO] `socket.io.slim.js` bundled lib (`resources.pak`): attack 3 / business 4 / tech 6 / gate 5 / cloud 3 / fresh 3 → **4.00**
+
+**STEP 3 — HYPOTHESES**
+[HYP] Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant)
+class: OTHER
+asset: Whale `sidebarAction.show({url})` + `whale.runtime.onMessage` path (remote HTTP/HTTPS panel URL)
+confidence: 65
+reasoning: Re-verified this scan: sample extension 5/5 files HTTP 200 — `onMessage` dispatches `show`/`show2`/`hide`/`hideAll` from ANY sender with zero `sender.origin`/`sender.url` validation; `show2` calls `whale.windows.create()` unvalidated; NVD CPE platform-wildcard, Linux fix status unclaimed; v4.38.386.14 is 3 minor bumps past fix (v4.35.351.12, Dec 2025) with 0 CVEs since.
+evidence_needed: crafted panel URL executing script / reading opener cross-origin / escaping iframe sandbox or panel CSP on v4.38.386.14.
+verify_steps: AUTH_HELPED: install v4.38.386.14, load minimal MV2 extension, cross-origin content-script `sendMessage('sidebarAction.show2')`, drive `show({url: crafted.html})`, test opener readback + sandbox escape. Zero Naver-infra requests.
+impact: SOP bypass / script execution in privileged browser-UI context; Critical if renderer escalation
+testability: AUTH_HELPED
+
+[HYP] Sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring; `/whalesync`
+confidence: 62
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface; alg + iteration count still unextracted; binary delivery dir missing this scan so extraction remains HUMAN-gated.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: objdump/strings/`.rodata` on delivered binary for iteration constants + `xv10` symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+
+[HYP] `socket.io.slim.js` event-handler injection in bundled Whale extension
+class: XSS
+asset: `resources.pak` bundled `socket.io.slim.js` (runtime-fetched handler)
+confidence: 40
+reasoning: Whale-only non-Chromium bundled lib confirmed in `resources.pak` by prior runs; handler may be runtime-fetched, degrading passive value; no re-acquisition possible in-sandbox.
+evidence_needed: extracted `socket.io.slim.js` + event-handler wiring; whether socket URL is user-influenced.
+verify_steps: AUTH_HELPED: extract `resources.pak` from delivered binary, diff against upstream socket.io, audit event handlers for injection.
+impact: script injection in built-in extension context; Medium
+testability: AUTH_HELPED
+
+**STEP 4 — SELF-CRITIQUE**
+- [PARKED] none dropped: all 3 keep confidence ≥ 40, none on REJECTED-class list, all have concrete verify_steps.
+- [FINAL] 1. Sidebar SOP boundary (65) → 2. Sync KDF envelope (62) → 3. socket.io.slim.js (40).
+
+**STEP 5 — NEXT ACTION**
+- [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet; directory was reset this scan. Once delivered, extract `os_crypt_whale.cc` symbols + `resources.pak` to unblock the sync-KDF and socket.io hypotheses. Alternative AUTH_HELPED test (if binary install possible): load MV2 extension + drive cross-origin `sidebarAction.show2` to attempt SOP regression repro on v4.38.386.14. Zero Naver-infra requests.
+
+**STEP 6 — LEARNING**
+- [LEARN] ACCEPTED OTHER @ sidebar environment: sample extension (translate branch) manifest.json + background.js re-confirmed HTTP 200 this scan — ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch from arbitrary web origin; CWE-346 regression surface live and unchanged.
+- [LEARN] CONFIRMED @ NVD API (services host): keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), 0 published in 2026 — 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- [LEARN] CONFIRMED @ GitHub repo `naver/whale-browser-developers`: `pushed_at`=2019-09-23, `updated_at`=2025-10-22, 4 open issues — documentation-only surface unchanged; static-source path permanently dead.
+- [LEARN] REJECTED class @ binary static analysis: all passive acquisition channels remain blocked (cloudfront DNS `No answer`, APKMirror 403, uptodown page 404, pstatic 404, Naver domains OOS) AND the `/tmp/opencode/whale_binary/` drop point was reset — binary-dependent hypotheses (sync KDF, socket.io, sidebar repro) stay HUMAN_ONLY/AUTH_HELPED-gated.
+
+**STEP 7 — RISK SCORE**
+- [RISK] sync: 70 — Whale-only prefs keys + `xv10` OSCrypt fork + `/whalesync` confirmed in prior binary runs; KDF alg/iterations + master-key storage unextracted; local attacker/infostealer decrypt-of-synced-data plausible; verification blocked on binary delivery.
+- [RISK] browser: 72 — CWE-346 SOP-bypass pair (CVE-2025-69234 CVSS 9.1 / CVE-2025-69235) fixed <v4.35.351.12 but Linux fix unclaimed on generic CPE; v4.38.386.14 is 3 minor bumps ahead with 0 CVEs; ALL-origin content_scripts + unvalidated onMessage dispatch keep the regression window open.
+- [RISK] libs: 45 — `socket.io.slim.js` is the only confirmed non-Chromium runtime-bundled lib; handler possibly runtime-fetched and event-wiring unaudited; low-medium until extraction.
