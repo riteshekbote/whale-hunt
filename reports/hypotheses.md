@@ -1263,3 +1263,23 @@
 ## RANKED HYPOTHESES 2026-08-09 11:30:22 UTC
 - [65] Whale: Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant) (from reports/hypotheses-bigpickle.txt)
 - [65] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+
+## RANKED HYPOTHESES 2026-08-09 11:52:29 UTC
+- [65] Whale: Sidebar/web-panel SOP-boundary regression via unvalidated sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-laguna.txt)
+- [65] Whale: Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant) (from reports/hypotheses-bigpickle.txt)
+- [65] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet; then install 
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet. Once delivere
+- LEARN: REJECTED binary acquisition @ all channels (cloudfront CDN, APKMirror, APKPure, Uptodown, pstatic): All 100% blocked in-sandbox — cloudfront DNS No-answer (gene
+- LEARN: REJECTED GitHub wiki sidebarAction docs @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: permanently unreachable (HTTP 404); SO
+- LEARN: ACCEPTED sample extension source @ translate branch: all 5 files (manifest.json, background.js, contentscript.js, index.html, index.js) HTTP 200 — ALL-origin co
+- LEARN: ACCEPTED CVE-2025-69234 @ NVD: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (same as CVE-2025-69235), shares identical
+- LEARN: CONFIRMED background.js static analysis @ translate branch: `whale.runtime.onMessage.addListener` accepts `sender` param but performs ZERO origin validation — h
+- LEARN: CONFIRMED NVD @ services.nvd.nist.gov: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754),
+- LEARN: REJECTED @ Wikipedia version assertion: Wikipedia page (`en.wikipedia.org/wiki/NAVER_Whale`) contains ZERO version strings matching 4.38/4.35/4.33 — prior "conf
+- LEARN: CONFIRMED @ naver/whale-browser-developers (GitHub API): pushed_at=2019-09-23, updated_at=2025-10-22, size=5043 KB, 0 releases, 4 branches unchanged — documenta
+- LEARN: CONFIRMED @ NVD API (services.nvd.nist.gov): 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-
+- LEARN: CONFIRMED @ sample extension (translate branch, raw.githubusercontent.com): all 5 files (manifest.json, js/background.js, js/contentscript.js, index.html, js/in
+- LEARN: REJECTED @ binary acquisition channels (cloudfront CDN, APKMirror, APKPure, Uptodown, pstatic): All 100% blocked in-sandbox — cloudfront DNS No-answer (general 
+- LEARN: REJECTED @ GitHub wiki `sidebarAction` docs: raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md HTTP 404 (confirmed again) — wiki do
