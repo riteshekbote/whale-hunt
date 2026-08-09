@@ -474,3 +474,5 @@
 - CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin `content_scripts` + unvalidated `sidebarAction.show`/`show2` dispatch + zero origin validation confirmed live
 - CHANGED NVD: 0 Whale CVEs in 2026 (2 total, both pre-2021) — 8-month disclosure gap static for v4.35.352–v4.38.386.14
 - CHANGED Wikipedia version assertion impossible — EN/KO pages both HTTP 404
+
+## 2026-08-09 21:27:32 UTC

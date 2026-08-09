@@ -40826,3 +40826,443 @@ testability: AUTH_HELPED
 ## STEP 7 — RISK SCORE
 
 [RISK] sync: 65 — Whale-forked OSCrypt (xv10) + custom `/whalesync` endpoint (NEO_SES cookie auth) + Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) confirmed present in v4.38.386.14 binary via prior runs, but KDF constants/iteration count/salt/master-key storage remain unextracted; 8-month disclosure gap since last fix (v4.35.351.12, Dec 2025); regression window open on Linux | browser: 82 — Sidebar SOP bypass attack surface (CVE-2025-69234/69235 Linux CPE unclaimed) + sample extension confirms ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch from any web origin with zero `sender.origin`/`sender.url` validation; 0 CVEs published in 2026 for 3 minor versions past last fix (v4.38.386.14, 6-month disclosure gap); high-priority regression window unchanged | libs: 30 — `socket.io.slim.js` confirmed Whale-only in `resources.pak` but confidence 38 < 40 threshold (handler runtime-fetched degrading passive evidence); no confirmed Whale-only third-party library vulnerability; lib surface limited to static resources.pak content, binary inaccessible
+===== ANALYST laguna 2026-08-09 21:27:32 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+[0m$ [0mcurl -sI -m 10 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>&1 | head -5
+HTTP/2 200 
+cache-control: max-age=300
+content-security-policy: default-src 'none'; style-src 'unsafe-inline'; sandbox
+content-type: text/plain; charset=utf-8
+etag: "9b12e33f7c5a11d6210e6b5014848f50592ed9507df36a30ff1e7434efc81eae"
+[0m
+[0m$ [0mcurl -sI -m 10 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00:000+00:00" 2>&1 | head -5
+HTTP/2 404 
+date: Sun, 09 Aug 2026 21:24:59 GMT
+content-length: 0
+message: Invalid ISO 8601 date/time format, see documentation.
+x-frame-options: SAMEORIGIN
+[0m
+Let me start by verifying the current state of the key passive assets with actual read-only probes.
+[0m$ [0mcurl -sI -m 10 "https://naver-whale-browser.en.uptodown.com/android" 2>&1 | head -5; echo "---psstatic---"; curl -sI -m 10 "https://static-whale.pstatic.net/WhaleSetup.exe" 2>&1 | head -3
+HTTP/2 404 
+content-type: text/html
+x-edge-control-remove: true
+accept-ranges: bytes
+age: 0
+---psstatic---
+HTTP/2 404 
+date: Sun, 09 Aug 2026 21:25:02 GMT
+server: Apache
+[0m
+[0m$ [0mcurl -s -m 15 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); print('totalResults:',d.get('totalResults')); print('CVEs:',[v['cve']['id'] for v in d.get('vulnerabilities',[])])" 2>&1 | head -10
+totalResults: 2
+CVEs: ['CVE-2018-9859', 'CVE-2020-9754']
+[0m
+[0m$ [0mcurl -s -m 10 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); print('content_scripts matches:',[m.get('matches') for m in d.get('content_scripts',[])]); print('permissions:',d.get('permissions'))" 2>&1
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 7 column 31 (char 206)
+[0m
+[0m→ [0mRead reports/hypotheses-laguna.txt
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---repo---"; curl -s -m 15 "https://api.github.com/repos/naver/whale-browser-developers" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); print('pushed_at:',d.get('pushed_at')); print('updated_at:',d.get('updated_at')); print('releases:',d.get('releases')); print('size:',d.get('size'))" 2>&1
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---repo---
+pushed_at: 2019-09-23T08:03:26Z
+updated_at: 2025-10-22T03:15:17Z
+releases: None
+size: 5043
+[0m
+[0m$ [0mcurl -s -m 10 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>&1 | head -40
+{
+  "manifest_version": 2,
+  "name": "Whale Sidebar Extension",
+  "description": "Helloworld sample test for Whale browser sidebar extension",
+  "version": "1.0",
+  "icons": {
+    "16": "icons/icon16.png", /* used in context menu icon */
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png" 
+  },
+  "sidebar_action": {
+    "default_icon": {
+      "16": "icons/icon16.png" /* used in sidebar menu icon */
+    },
+    "default_page": "index.html",
+    "default_title": "Whale Sidebar Extension"
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "js/contentscript.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "permissions": [
+    "tabs"
+  ]
+}
+[0m
+[0m$ [0mcurl -s -m 10 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" 2>&1 | grep -iE 'sender.origin|sender.url|origin|validate' | head -10; echo "exit=$?"
+exit=0
+[0m
+[0m→ [0mRead reports/hypotheses-bigpickle.txt
+[0m
+[0m$ [0mcurl -s -m 10 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" 2>&1
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message === 'sidebarAction.show') {
+    whale.sidebarAction.show({
+      reload : false
+    }, () => {
+
+    });
+  } else if (message === 'sidebarAction.hide') {
+    whale.sidebarAction.hide(() => {
+    });
+  } else if (message === 'sidebarAction.show2') {
+    whale.windows.create((windowInfo) => {
+      whale.sidebarAction.show(windowInfo.id, () => {
+
+      });
+    });
+  } else if (message === 'sidebarAction.hideAll') {
+    whale.windows.getAll((windowList) => {
+      for(let i = 0, len = windowList.length ; i < len ; i++) {
+        whale.sidebarAction.hide(windowList[i].id, () => {
+        });
+      }
+    });
+  }
+});
+[0m
+[0m$ [0mcurl -s -m 10 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js" 2>&1
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+if (navigator.userAgent.includes('sidebar') === false) {
+  let a = document.createElement('button');
+  a.innerHTML = 'Show sidebar';
+  a.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:0;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid red;
+    color: red;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(a);
+  a.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show');
+  }, false);
+
+  let c = document.createElement('button');
+  c.innerHTML = 'Show sidebar in new window';
+  c.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:40px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid green;
+    color: green;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(c);
+  c.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show2');
+  }, false);
+
+  let b = document.createElement('button');
+  b.innerHTML = 'Hide sidebar';
+  b.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:80px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid blue;
+    color: blue;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(b);
+  b.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hide');
+  }, false);
+
+  let d = document.createElement('button');
+  d.innerHTML = 'Hide all sidebars';
+  d.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:120px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid black;
+    color: black;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(d);
+  d.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hideAll');
+  }, false);
+}
+[0m
+[0m$ [0mcurl -s -m 10 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/index.html" 2>&1; echo "===index.js==="; curl -s -m 10 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/index.js" 2>&1
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta charset="UTF-8">
+  <title>Whale Sidebar Extension</title>
+  <link href="css/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Whale Sidebar Extension Test</div>
+
+    <div class="section">
+      <div class="title">sidebarAction.show() /<br> sidebarAction.hide()</div>
+      <div class="description">
+        If you want to open or hide sidebar from some action from the web content,
+        you can call show() and hide() method using content scripts and background scripts.
+        Refer to contentscript.js and backgorund.js.
+        Test buttons are injected to all website to test this feature.
+      </div>
+      <div class="image">
+        <img src="img/img01.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">sidebarAction.getTitle() /<br> sidebarAction.setTitle()</div>
+      <div class="description">
+        You can update or retrieve the tooltip text using setTitle() and getTitle() method,
+        Refer to index.js. Test buttons are available below:
+      </div>
+      <div class="buttons">
+        <button id="setTitle1">Set title to 'ABC'</button>
+        <button id="setTitle2">Reset title</button>
+      </div>
+      <div class="image">
+        <img src="img/img02.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">
+        sidebarAction.setBadgeText() /<br>
+        sidebarAction.getBadgeText()
+      </div>
+      <div class="description">
+        You can update or retrieve the badge text or badge background color using
+        setBadgeText(), getBadgeText(), setBadgeBackgroundColor(), getBadgeBackgroundColor() method.
+        Refer to index.js. Test buttons are available below:
+      </div>
+      <div class="buttons">
+        <button id="setBadgeText1">Update badge text and color</button>
+        <button id="setBadgeText2">Reset badge</button>
+      </div>
+      <div class="image">
+        <img src="img/img03.png" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="title">
+        sidebarAction.onClicked
+      </div>
+      <div class="description">
+        sidebarAction.onClicked.addListener() is used to listen to the extension icon click events.
+        The result callback passes the window id and boolean flag whether the sidebar is opened or closed.
+        Refer to index.js. Event log:
+      </div>
+      <div id="clicklog" class="log">
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/index.js" type="text/javascript"></script>
+</body>
+</html>
+===index.js===
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+(function () {
+  'use strict';
+
+  whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log(message);
+  });
+
+  /* sidebarAction.getTitle() / sidebarAction.setTitle() */
+  let defaultTitle;
+  whale.sidebarAction.getTitle((result) => {
+    defaultTitle = result;
+  });
+  document.getElementById('setTitle1').addEventListener('click', () => {
+    whale.sidebarAction.setTitle({
+      title: 'ABC'
+    });
+  }, false);
+  document.getElementById('setTitle2').addEventListener('click', () => {
+    whale.sidebarAction.setTitle({
+      title: defaultTitle
+    });
+  }, false);
+
+  /* sidebarAction.getBadgeText() / sidebarAction.setBadgeText() */
+  let badgeCnt = 0;
+  document.getElementById('setBadgeText1').addEventListener('click', () => {
+    badgeCnt ++;
+    whale.sidebarAction.setBadgeText({
+      text: badgeCnt + ''
+    });
+
+    whale.sidebarAction.setBadgeBackgroundColor({
+      color: '#'+Math.floor(Math.random()*16777215).toString(16)
+    });
+  }, false);
+  document.getElementById('setBadgeText2').addEventListener('click', () => {
+    badgeCnt = 0;
+    whale.sidebarAction.setBadgeText({
+      text: ''
+    });
+  }, false);
+
+  /* whale.sidebarAction.onClicked.addListener() */
+  whale.sidebarAction.onClicked.addListener((result) => {
+    document.getElementById('clicklog').innerHTML += 'windowId:' + result.windowId + ', ' + (result.opened ? 'sidebar OPENED' : 'sidebar CLOSED') + '<br/>';
+  });
+})();
+[0m
+All probes confirm the stable state. Now running the 8-step analyst protocol:
+
+**STEP 1 — DELTA**
+- NO_DELTA (all surface items in same state as last cycle): GitHub repo still documentation-only (pushed 2019-09-23, 0 releases, size 5043); NVD still 0 CVEs in 2026 (totalResults=2, both pre-2021); binary acquisition still 100% blocked (`/tmp/opencode/whale_binary/` missing; cloudfront DNS No-answer, APKMirror 403, Uptodown 404 both Windows+Android, pstatic 404); sample extension source still all 5 files HTTP 200 — `contentscript.js` fires from `navigator.userAgent.includes('sidebar')===false` branch (any web page), `background.js` accepts `sender` param but NEVER inspects `sender.origin`/`sender.url` (grep-verified: 0 matches); `index.html` text "Test buttons are injected to all website to test this feature" confirms design intent.
+
+**STEP 2 — PRIORITIZE** (no new surface; scoring top existing asset that survived REJECTED filtering)
+```
+[PRIO] Whale sync engine (os_crypt_whale.cc xv10 + prefs sync.encryption_bootstrap_token_per_account) client-side
+  attack_surface: 5 | business_value: 8 | tech_exposure: 4 | gate_ease: 3 | cloud_surface: 2 | freshness: 8
+  score = 0.25*5 + 0.25*8 + 0.15*4 + 0.15*3 + 0.10*2 + 0.10*8 = 5.55
+```
+Rationale: sync = cross-device password/cookie/autofill decryption (High impact); Whale-only OSCrypt fork + per-account token envelope deviates from upstream Chromium on Linux; KDF constants/iteration count + master-key locality unextracted (8-month disclosure gap since v4.35.351.12 fix).
+
+**STEP 3 — HYPOTHESES** (top 3 by confidence; only 1 survives REJECTED filter)
+```
+[HYP] Desktop sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary os_crypt_whale.cc / whale_sync_util.cc + Local State + Linux keyring (client-side, zero network /whalesync interaction)
+confidence: 62
+reasoning: Whale-only prefs (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) + xv10 OSCrypt fork + NEO_SES cookie confirmed present in v4.38.386.14 via prior binary runs; per-account bootstrap_token envelope deviates from upstream Chromium KDF; binary dir absent (100% acquisition channels dead).
+evidence_needed: PBKDF2/scrypt algorithm + iteration count; derived master-key persistence location (Linux keyring vs PlaintextLocal State vs file); whether whale_need_encryption_key_forced_time downgrades to stale key.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols + sync_encryption_bootstrap_token/os_crypt call sites; `nm -D libwhale.so | grep -iE 'sync_encryption_bootstrap_token|os_crypt|whale_need_encryption_key_forced_time'` (must yield 0 for sender.origin/sender.url grep). Authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full cross-device sync account compromise; High.
+testability: AUTH_HELPED
+```
+
+**STEP 4 — SELF-CRITIQUE**
+```
+[PARKED] Sidebar SOP bypass via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux): confidence 70 exceeds threshold and has concrete HUMAN_ONLY verify_steps, but class matches REJECTED list entry — `sidebar/dual-tab/web-panel SOP-CSP bypass` was REJECTED 2026-08-09 ("duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms API surface present but does NOT demonstrate exploitability in current binary — class rejected as already-patched surface"). Sample extension source (5 files HTTP 200) confirms the attack surface EXISTS but proves nothing about current binary's actual isolation behavior — no passive GET/HEAD can demonstrate cross-origin access in the compiled browser.
+[PARKED] Bundled socket.io.slim.js event-handler injection: confidence 38 < 40 threshold; handler runtime-fetched degrading passive evidence; class on REJECTED list ("Confidence 38 < 40 threshold, handler runtime-fetched, no passive proof path — class rejected; parked this cycle"); no passive proof path without binary acquisition (all channels dead).
+[PARKED] Android sync encryption KDF / master-key storage (com.naver.whale 3.9.14.9): confidence 50, class AUTH but APK acquisition channel 404/410 across all Uptodown windows (19:48–20:53 UTC) — no binary to static-analyze; sha256 unpinned → unverifiable.
+[FINAL] 1. Sync bootstrap-token envelope storage — Whale OSCrypt-v10 deviation on Linux (confidence 62, class AUTH, testability AUTH_HELPED) — ONLY surviving hypothesis; requires binary delivery + authorized login snapshot.
+```
+
+**STEP 5 — NEXT ACTION**
+```
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb) to /tmp/opencode/whale_binary/ via unrestricted internet. Once delivered run:
+  (1) strings libwhale.so | grep -iE 'pbkdf2|scrypt|iterations|sync_encryption_bootstrap_token|os_crypt|whale_need_encryption_key' — extract KDF constants + call sites
+  (2) nm -D libwhale.so | grep -iE 'sync_encryption_bootstrap_token|os_crypt|whale_need_encryption_key_forced_time' — symbol verification
+  (3) objdump -s -j .rodata on Preferences/libwhale.so for xv10 magic + bootstrap_token envelope format
+  (4) On authorized Linux login: snapshot keyring + Preferences BEFORE/after encrypted-sync enable to map master-key locality. Zero requests to any Naver infra.
+```
+
+**STEP 6 — LEARNING**
+```
+[LEARN] CONFIRMED @ GitHub repo naver/whale-browser-developers: pushed_at=2019-09-23T08:03:26Z, updated_at=2025-10-22T03:15:17Z, 0 releases, size=5043 KB — documentation-only surface permanently dead; no browser binary source, sync flow code, or library manifests available for static analysis (static analysis path permanently dead).
+[LEARN] CONFIRMED @ NVD API (services.nvd.nist.gov): 0 Whale CVEs published in 2026 — keywordSearch naver+whale returns totalResults=2 (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+[LEARN] CONFIRMED @ sample extension source (translate branch): all 5 files HTTP 200 — manifest content_scripts match ALL origins (http://*/* + https://*/*); background.js onMessage accepts sender param but performs ZERO origin validation (grep: 0 matches for sender.origin/sender.url); index.js onMessage does only console.log; index.html text confirms "Test buttons are injected to all website" design intent — API surface live, exploitability in current binary unproven.
+[LEARN] REJECTED @ binary acquisition channels: cloudfront DNS No-answer (general to *.cloudfront.net at resolver 127.0.0.53), APKMirror 403, Uptodown 404 (Windows + Android), static-whale.pstatic.net/WhaleSetup.exe 404, /tmp/opencode/whale_binary/ missing — ALL 100% blocked; binary static analysis + interactive browser install require HUMAN with unrestricted internet.
+[LEARN] REJECTED @ Wikipedia version assertion: EN/KO pages (en.wikipedia.org/wiki/NAVER_Whale, ko.wikipedia.org/wiki/NAVER_Whale) both HTTP 404 — passively verifiable version confirmation impossible; v4.38.386.14 claim from pre-August baseline cannot be re-asserted.
+[LEARN] REJECTED @ GitHub wiki sidebarAction docs: raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md HTTP 404 + wiki API 404 + has_pages false — wiki documentation permanently unreachable; SOP bypass attack-surface evidence rests solely on live sample extension source (5 files HTTP 200).
+```
+
+**STEP 7 — RISK SCORE**
+```
+[RISK] sync: 65 | Whale-forked OSCrypt (xv10) + custom /whalesync endpoint (NEO_SES cookie auth) + Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) confirmed present in v4.38.386.14 binary via prior runs, but KDF constants/iteration count/salt/master-key storage remain unextracted; 8-month disclosure gap since last fix (v4.35.351.12, Dec 2025); regression window open on Linux | browser: 82 — Sidebar SOP bypass attack surface (CVE-2025-69234/69235 Linux CPE unclaimed) + sample extension confirms ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch from any web origin with zero sender.origin/sender.url validation; 0 CVEs published in 2026 for 3 minor versions past last fix (v4.38.386.14, 6-month disclosure gap); high-priority regression window unchanged | libs: 30 — socket.io.slim.js confirmed Whale-only in resources.pak but confidence 38 < 40 threshold (handler runtime-fetched degrading passive evidence); no confirmed Whale-only third-party library vulnerability; lib surface limited to static resources.pak content, binary inaccessible
+```
+
+---
+
+## Summary
+
+**Passive surface fully exhausted — NO_DELTA confirmed.** Every probe this cycle returns the same result as last cycle:
+
+| Surface | Status | Impact |
+|---|---|---|
+| `naver/whale-browser-developers` GitHub repo | Permanently dead (pushed 2019-09-23, 0 releases) | Static analysis path dead |
+| NVD CVEs | 0 in 2026 (2 total, both pre-2021) | Disclosure gap = 8ms since last fix |
+| Binary acquisition | 100% blocked (cloudfront DNS, APKMirror 403, Uptodown 404, pstatic 404) | No static analysis possible |
+| Sample extension (translate) | 5/5 files HTTP 200 live | API surface only, not exploitability |
+| `/tmp/opencode/whale_binary/` | Missing | Binary delivery path unsatisfied |
+
+**Only surviving hypothesis (confidence 62):** Whale OSCrypt-v10 fork + per-account `sync.encryption_bootstrap_token` envelope deviates from upstream Chromium on Linux — KDF constants/iteration count + master-key locality unextracted. **This requires HUMAN delivery of the binary** to `/tmp/opencode/whale_binary/` plus an authorized Linux login snapshot.
+
+**Everything else is PARKED:** the sidebar SOP bypass (conf 70) matches the REJECTED class because the sample extension source proves API existence but not actual exploitability in the current compiled binary; `socket.io.slim.js` (conf 38) is below the 40 threshold and runtime-fetched (no passive proof path).

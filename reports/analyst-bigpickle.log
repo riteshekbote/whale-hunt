@@ -30925,3 +30925,108 @@ STEP 7 — RISK SCORE:
 - [RISK] sync: 60 — sync KDF/bootstrap-token class (conf 62) is the strongest open surface: xv10 OSCrypt fork + Whale-only prefs + 8-month gap; but binary absent and all acquisition channels dead (uptodown Android 404, Windows 404, cloudfront DNS dead, pstatic 404) — moderate-high, fully HUMAN-gated
 - [RISK] browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED (duplicate of fixed CVEs); 0 CVEs in 2026; no binary to confirm regression on Linux — Medium
 - [RISK] libs: 30 — socket.io.slim.js class rejected/stale (conf 38 < 40); no public library manifest; binary inaccessible — Low visibility
+===== ANALYST bigpickle 2026-08-09 21:27:32 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; ls -la /tmp/opencode/ 2>&1 | head -20
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:24 .
+drwxrwxrwt 15 root   root   12288 Aug  9 21:24 ..
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "uptodown_android: %{http_code}\n" --max-time 15 "https://naver-whale-browser.en.uptodown.com/android" 2>&1
+uptodown_android: 404
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "manifest: %{http_code}\n" --max-time 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>&1
+manifest: 200
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=10" 2>&1 | head -c 600
+{"resultsPerPage":2,"startIndex":0,"totalResults":2,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-09T21:24:23.414","vulnerabilities":[{"cve":{"id":"CVE-2018-9859","sourceIdentifier":"cve@mitre.org","published":"2018-06-16T01:29:09.680","lastModified":"2026-06-17T02:07:18.247","vulnStatus":"Modified","cveTags":[],"descriptions":[{"lang":"en","value":"The path of Whale update service was unquoted in NAVER Whale before 1.0.40.7. This vulnerability can be used for persistent privilege escalation if it's available to create an executable file with System privilege by other vulnerable appl
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "uptodown_win: %{http_code}\n" --max-time 15 "https://whale-browser.en.uptodown.com/windows" 2>&1; curl -s -o /dev/null -w "resolver_js: %{http_code}\n" --max-time 15 "https://stc.utdstc.com/1786093238827/download.js" 2>&1; curl -s -o /dev/null -w "cloudfront_deb: %{http_code}\n" --max-time 10 "https://d1vdt4q2qgdbji.cloudfront.net/" 2>&1
+uptodown_win: 404
+resolver_js: 200
+cloudfront_deb: 000
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=10" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); [print(x['cve']['id'], x['cve'].get('published')) for x in d['vulnerabilities']]"
+CVE-2018-9859 2018-06-16T01:29:09.680
+CVE-2020-9754 2022-06-27T02:15:06.977
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://stc.utdstc.com/1786093238827/download.js" 2>&1 | head -c 1500
+!function(){var e,t,n,o={4239:function(e,t,n){var o={"./ar.json":"9374","./de.json":"7762","./en.json":"9712","./es.json":"658","./fr.json":"4884","./hi.json":"3190","./id.json":"1792","./it.json":"6610","./ja.json":"1063","./ko.json":"5054","./pt.json":"293","./ro.json":"1770","./ru.json":"9123","./th.json":"7386","./tr.json":"6594","./vi.json":"5690","./zh.json":"4524"};function r(e){var t=i(e);return n(t)}function i(e){if(!n.o(o,e)){var t=new Error("Cannot find module '"+e+"'");throw t.code="MODULE_NOT_FOUND",t}return o[e]}r.keys=function(){return Object.keys(o)},r.resolve=i,e.exports=r,r.id=4239},1123:function(e,t,n){"use strict";n.r(t);var o=n(5553),r=n.n(o),i=n(954);window.adlazy={load_listener:function(){window.addEventListener("scroll",function(){adlazy.scroll_listener()})},scroll_listener:function(){r()(".lazy_ad").each(function(){var e=r()(this)[0];e&&(0,i.jE)(e)&&!r()(this).hasClass("refreshed")&&"undefined"!=typeof bottomSlot&&(googletag.pubads().refresh([bottomSlot]),r()(this).addClass("refreshed"))}),r()(".lazy_card").each(function(){var e=r()(this)[0];e&&(0,i.jE)(e)&&!r()(this).hasClass("refreshed")&&"undefined"!=typeof cardSlot&&(googletag.pubads().refresh([cardSlot]),r()(this).addClass("refreshed"))}),r()(".lazy_ad_2").each(function(){var e=r()(this)[0];e&&(0,i.jE)(e)&&!r()(this).hasClass("refreshed")&&"undefined"!=typeof bottom_Slot_2&&(googletag.pubads().refresh([bottom_Slot_2]),r()(this).addClass("refreshed"))}),r()(".lazy_bottom").each(function(){var e=r(
+[0m
+CHANGED detected: uptodown resolver JS `stc.utdstc.com/1786093238827/download.js` flipped 410→200. Investigating the token generator content.
+[0m$ [0mcurl -s --max-time 30 "https://stc.utdstc.com/1786093238827/download.js" -o /tmp/opencode/utd_download.js 2>&1; wc -c /tmp/opencode/utd_download.js; grep -o "dw.uptodown.com[^\"']*" /tmp/opencode/utd_download.js | head -5; grep -o "token[^\"',;]*" /tmp/opencode/utd_download.js | head -10
+111158 /tmp/opencode/utd_download.js
+dw.uptodown.com/dwn/
+dw.uptodown.com/dwn/
+dw.uptodown.com/dwn/
+token:e})}
+token:t
+token)]
+[0m
+Resolver JS is live (webpack bundle). Checking whether the client-side download token generator is functional.
+[0m$ [0mgrep -o "function[^}]*token[^}]*}" /tmp/opencode/utd_download.js | head -3; grep -o "e\.token[^;]*;[^}]*}" /tmp/opencode/utd_download.js | head -5; grep -o "[a-zA-Z0-9_]*=[0-9a-f]\{32\}" /tmp/opencode/utd_download.js | head -3; grep -oE "\{[0-9a-f]{32}\}" /tmp/opencode/utd_download.js | head -3
+function(){var e;if(null===l){var t=document.getElementById("download-turnstile-widget"),n=null==t?void 0:t.dataset.sitekey;null!==t&&void 0!==n&&""!==n&&void 0!==(null===(e=window.turnstile)||void 0===e?void 0:e.render(t,{sitekey:n,execution:"execute",appearance:"interaction-only",action:"download",language:document.documentElement.lang||"auto",retry:"never",callback:function(e){return p({status:"solved",token:e}
+function(e,t){return p(function(){var n;return m(this,function(o){switch(o.label){case 0:return o.trys.push([0,2,,3]),[4,s.Z.post("/ajax/app/".concat(e.appID,"/file/").concat(e.fileID,"/download-url"),{token:t,onlyXapk:e.onlyXapk}
+function(e){we||(we=!0,function(e){return p(function(){var t,n;return m(this,function(o){switch(o.label){case 0:return[4,(0,c.Z)()];case 1:return"solved"!==(t=o.sent()).status?("failed"===t.status&&Ae(),[2]):[4,ye(e,t.token)];case 2:return(n=o.sent()).ok?(r=n.downloadURL,(i=document.createElement("a")).href="https://dw.uptodown.com/dwn/"+r,i.download=r.split("/").pop(),be(),document.body.appendChild(i),i.click(),document.body.removeChild(i),[2]):(Ae(),[2])}
+[0m
+[0m$ [0mcurl -s --max-time 15 "https://dw.uptodown.com/dwn/1197336657" 2>&1 | head -c 200; echo; curl -s --max-time 15 -X POST -H "Content-Type: application/json" -d '{"token":"","onlyXapk":false}' "https://en.uptodown.com/ajax/app/0/file/0/download-url" 2>&1 | head -c 200
+<html><body><h1>404 Not Found</h1>
+The resource could not be found.
+</body></html>
+
+<html><body><h1>404 Not Found</h1>
+The resource could not be found.
+</body></html>
+[0m
+STEP 1 — DELTA
+- [CHANGED] uptodown download resolver JS `stc.utdstc.com/1786093238827/download.js`: HTTP 410→200 (111KB webpack bundle) — download flow is Turnstile-CAPTCHA-gated (sitekey from page DOM `#download-turnstile-widget`, solved token → POST `/ajax/app/{appID}/file/{fileID}/download-url` → `dw.uptodown.com/dwn/{downloadURL}`); token is NOT client-computable
+- [CHANGED] uptodown Android page `naver-whale-browser.en.uptodown.com/android`: HTTP 410→404 this cycle (flip-flop 200@18:10 → 404 → 410 → 404) — no 200 window this scan
+- [CHANGED] `dw.uptodown.com/dwn/1197336657`: HTTP 400 errorCode -51 → 404 (fileID now stale) — tokenless dwn path dead at current ID
+- [CHANGED] `/tmp/opencode/whale_binary/`: still missing (re-verified 21:24 UTC) — all binary-dependent verification stays HUMAN-gated
+- Unchanged: NVD 0 CVEs in 2026 (2 total, both pre-2021); sample extension manifest HTTP 200; cloudfront DNS dead
+
+STEP 2 — PRIORITIZE
+- [PRIO] Whale desktop sync binary (os_crypt_whale/xv10, /whalesync, Local State+keyring): score 5.95 — attack 8, business 9, tech 7, gate 1, cloud 2, fresh 3
+- [PRIO] com.naver.whale 3.9.14.9 sync engine (APK): score 5.55 — attack 7, business 8, tech 6, gate 2, cloud 2, fresh 4
+- [PRIO] uptodown dw channel (acquisition infra): score 4.30 — attack 3, business 5, tech 6, gate 2, cloud 3, fresh 8
+- [PRIO] sidebar sample extension surface (browser class): score 5.25 — attack 6, business 6, tech 4, gate 9, cloud 1, fresh 2 — **class REJECTED, hypothesis suppressed**
+
+STEP 3 — HYPOTHESES
+- [HYP] Desktop sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+  class: AUTH
+  asset: Whale binary `os_crypt_whale.cc`/`whale_sync_util.cc`; Local State + keyring (client-side, zero /whalesync interaction)
+  confidence: 62
+  reasoning: Whale-only prefs (per-account bootstrap token, `_migration_done`, `whale_need_encryption_key_forced_time`) + xv10 OSCrypt fork + /whalesync + NEO_SES confirmed in prior binary runs; KDF alg/iteration count + master-key locality unextracted; binary dir absent (21:24).
+  evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State).
+  verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+  impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+  testability: AUTH_HELPED
+- [HYP] Android sync encryption KDF / master-key storage (custom mobile impl)
+  class: AUTH
+  asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore)
+  confidence: 50
+  reasoning: sync encryption only since 3.8.6.2 (2025-04) → likely custom impl distinct from Chromium fork; uptodown download flow now Turnstile-gated (resolver JS 200) so page-200 window alone is insufficient; APK sha256 unpinned.
+  evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
+  verify_steps: AUTH_HELPED: HUMAN catches a 200 window of `naver-whale-browser.en.uptodown.com/android`, solves the one-click Turnstile (`action:"download"`, appearance interaction-only), captures `downloadURL` from `/ajax/app/{appID}/file/{fileID}/download-url`, delivers APK to `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+  impact: local attacker decrypts synced passwords/cookies/autofill on Android → cross-device sync compromise; High
+  testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] Sidebar/dual-tab SOP-CSP bypass variant on Linux: class on REJECTED list (duplicates CVE-2025-69234/69235/53600/62583-62585; sample extension shows API surface, not exploitability) — dropped, not re-emitted.
+- [FINAL] 1. Desktop sync KDF/bootstrap-token (62, AUTH_HELPED); 2. Android sync KDF/master-key (50, AUTH_HELPED).
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: On the next uptodown Android 200 window (flip-flop ongoing: 200@18:10 → 404/410/404), page `naver-whale-browser.en.uptodown.com/android`: solve the single-click Cloudflare Turnstile (`#download-turnstile-widget`, action=download), capture the `downloadURL` returned by POST `/ajax/app/{appID}/file/{fileID}/download-url`, and deliver the official com.naver.whale 3.9.14.9 APK to `/tmp/opencode/whale_binary/`, recording sha256 (hash only). The 200-on-resolver-JS + flip-flop page pattern makes a 200 window likely this cycle.
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED uptodown download flow @ stc.utdstc.com/*/download.js: resolver JS back at 200, but token is Turnstile-CAPTCHA-solved, NOT client-computable → channel permanently HUMAN-gated even on page-200 windows; passive curl dead regardless
+- [LEARN] REJECTED uptodown dwn passive fetch @ dw.uptodown.com/dwn/1197336657: now 404 (fileID stale; was 400 errorCode -51) — no tokenless passive path exists at any dwn ID
+- [LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: still rejected (duplicates fixed CVEs, no novel variant) — not re-emitted
+
+STEP 7 — RISK SCORE
+- [RISK] sync: 60 — conf-62 sync KDF/bootstrap-token class is the strongest open surface (xv10 OSCrypt fork + Whale-only prefs + 8-month disclosure gap), but 100% HUMAN-gated: binary absent, all channels dead-in-sandbox (uptodown now Turnstile-gated even on 200 windows)
+- [RISK] browser: 35 — sidebar SOP class rejected as duplicate; sample extension live but not exploitable-demonstrating; 0 CVEs in 2026
+- [RISK] libs: 30 — socket.io.slim.js class rejected/stale (conf 38 < 40); no public library manifest; binary inaccessible

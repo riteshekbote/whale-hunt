@@ -2362,3 +2362,4 @@ evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key per
 verify_steps: AUTH_HELPED: HUMAN monitors uptodown Android page for next 200 window; on 200, completes JS/token dw flow in real browser → delivers APK to `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
 impact: local attacker decrypts synced passwords/cookies/autofill on Android → cross-device sync account compromise; High
 testability: AUTH_HELPED
+## 2026-08-09 21:25:19 UTC [sync] (model bigpickle)
