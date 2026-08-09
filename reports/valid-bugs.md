@@ -198,3 +198,17 @@
 - 2 lead(s) marked VALID at 2026-08-09 20:57:37 UTC
   - | **VALID** | 0 | — |
   - **VALID bugs count: 0** — nothing to report at this time.
+
+- 12 lead(s) marked VALID at 2026-08-09 21:54:53 UTC
+  - valid-bugs.md
+  - | Q6 Not rejected? | YES | SOP bypass is a valid vuln class |
+  - | Q6 | YES | Valid vuln class |
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Valid class |
+  - **Verdict: HOLD** — strongest sync-surface lead (Whale-specific OSCrypt fork confirmed). Blocker is purely evidential: binary required. Elevates to VALID upon binary delivery + static extraction.
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Valid class |
+  - **Verdict: HOLD** — APK acquisition blocked. Elevates to VALID with binary delivery.
+  - | Q6 | YES | Valid class |
+  - | **VALID** | **0** | — |
