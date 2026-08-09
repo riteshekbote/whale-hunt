@@ -340,3 +340,10 @@
 ## 2026-08-09 05:12:13 UTC
 
 ## 2026-08-09 05:58:21 UTC
+
+## 2026-08-09 07:01:36 UTC
+- NEW Background.js static analysis confirms ZERO origin validation in `whale.runtime.onMessage.addListener` — accepts `sender` param but never inspects `sender.origin`/`sender.url`, only string-equality on
+- NEW Wikipedia infobox version assertion cannot be passively re-verified — HTML parse shows no version strings (4.38/4.35 not found)
+- CHANGED NVD primary endpoint `nvd.nist.gov/rest` now Cloudflare-blocked in-sandbox; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable and returns identical results — route future CVE checks via ser
+- NEW Sample extension (translate branch): all 5 files confirm unvalidated `sidebarAction.show`/`show2` dispatch from arbitrary web origin with `whale.runtime.onMessage.addListener` accepting sender param +
+- CHANGED Wikipedia infobox confirms latest stable desktop v4.38.386.14 (June 25 2026) — 3 minor-version bumps past last CVE fix v4.35.351.12 (Dec 2025), 0 CVEs in between
