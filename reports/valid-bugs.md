@@ -226,3 +226,14 @@
   - | Q6 | YES | Valid class |
   - **Verdict: HOLD** — APK acquisition blocked. **Elevates to VALID with binary delivery.**
   - | **VALID** | **0** | — |
+
+- 9 lead(s) marked VALID at 2026-08-09 23:54:19 UTC
+  - | Q6 Not rejected? | **YES** | SOP bypass is a valid vuln class |
+  - | Q6 | **YES** | Valid class |
+  - | Q6 | **YES** | Valid vuln class |
+  - | Q6 | **YES** | Valid class |
+  - | Q6 | **YES** | Valid class |
+  - | Q6 | **YES** | Valid class |
+  - | Q6 | **YES** | Valid class |
+  - | Q6 | **YES** | Valid class |
+  - | **VALID** | **0** | — |
