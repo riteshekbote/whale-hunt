@@ -1259,3 +1259,7 @@
 - LEARN: REJECTED @ cloudfront CDN: d1vdt4q2qgdbji.cloudfront.net → HTTP 000 (DNS No-answer at 127.0.0.53) — desktop .deb path permanently dead in-sandbox
 - LEARN: REJECTED @ Uptodown: whale-browser.en.uptodown.com/windows/download → HTTP 404 — WhaleSetup.exe acquisition permanently dead
 - LEARN: REJECTED @ Wikipedia version assertion: en.wikipedia.org/wiki/NAVER_Whale contains ZERO version strings matching 4.38/4.35/4.33 — passively verifiable version c
+
+## RANKED HYPOTHESES 2026-08-09 11:30:22 UTC
+- [65] Whale: Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant) (from reports/hypotheses-bigpickle.txt)
+- [65] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)

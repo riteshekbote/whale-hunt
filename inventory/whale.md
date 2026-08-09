@@ -371,3 +371,7 @@
 ## 2026-08-09 10:52:02 UTC
 - CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` reported as created in prior scans (09:31:18, 08:47:46, 07:58:09, 07:01:36, 03:58:25 UTC) but now missing — `ls` returns "No such file or direct
 - CHANGED NVD primary endpoint `nvd.nist.gov/rest` confirmed Cloudflare-blocked in-sandbox; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable (persistent since 07:01:36 UTC)
+
+## 2026-08-09 11:30:22 UTC
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` reported as created in prior scans (09:31:18, 08:47:46, 07:58:09, 07:01:36, 03:58:25 UTC) but now missing — `ls` returns "No such file or direct
+- CHANGED NVD primary endpoint `nvd.nist.gov/rest` confirmed Cloudflare-blocked in-sandbox; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable (persistent since 07:01:36 UTC)
