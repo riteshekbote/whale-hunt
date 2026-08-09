@@ -28198,3 +28198,197 @@ testability: AUTH_HELPED
 [RISK] sync: 62 — 8-month disclosure gap since CVE-2025-69235 fix (Dec 2025); custom `xv10` OSCrypt fork + bootstrap-token envelope wholly un-verified (alg/iterations/master-key location unknown); highest-value in-scope target, entirely behind blocked binary acquisition
 [RISK] browser: 55 — sidebar SOP-boundary regression window open (CVE-2025-69234/69235, CVSS 9.1) with unvalidated onMessage handler confirmed live in sample source, but exploitability on v4.38.386.14 cannot be confirmed without the binary; 0 CVEs since fix keeps expectation moderate
 [RISK] libs: 40 — socket.io.slim.js is the only Whale-only non-Chromium bundled lib confirmed, but event-handler is possibly runtime-fetched and the resources.pak is unreachable in-sandbox; surface real but low confidence and unverifiable
+===== ANALYST bigpickle 2026-08-09 14:54:14 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; ls /tmp/opencode/ 2>&1
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "manifest.json: %{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json"; curl -s -o /dev/null -w "background.js: %{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js"; curl -s -o /dev/null -w "contentscript.js: %{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js"
+manifest.json: 200
+background.js: 200
+contentscript.js: 200
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers" | python3 -c "import sys,json; d=json.load(sys.stdin); print('pushed_at:', d.get('pushed_at'), '| updated_at:', d.get('updated_at'), '| releases:', d.get('has_downloads'), '| default_branch:', d.get('default_branch'))" 2>&1; echo "---branches---"; curl -s "https://api.github.com/repos/naver/whale-browser-developers/branches" | python3 -c "import sys,json; [print(b['name']) for b in json.load(sys.stdin)]" 2>&1
+pushed_at: 2019-09-23T08:03:26Z | updated_at: 2025-10-22T03:15:17Z | releases: False | default_branch: master
+---branches---
+jdkim/update_documents
+master
+translate
+v2
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers/git/trees/v2?recursive=1" | python3 -c "import sys,json; d=json.load(sys.stdin); [print(t['path']) for t in d.get('tree',[]) if t['type']=='blob']" 2>&1; echo "---jdkim---"; curl -s "https://api.github.com/repos/naver/whale-browser-developers/git/trees/jdkim/update_documents?recursive=1" | python3 -c "import sys,json; d=json.load(sys.stdin); [print(t['path']) for t in d.get('tree',[]) if t['type']=='blob']" 2>&1
+README.md
+img.png
+---jdkim---
+translation/chromium/docs/how_cc_works.md
+translation/chromium/docs/images/LUCI-Build.png
+translation/chromium/docs/images/LUCI-Builder.png
+translation/chromium/docs/images/LUCI-Builders-View.png
+translation/chromium/docs/images/LUCI-CodeReview-Tag.png
+translation/chromium/docs/images/LUCI-Console-View.png
+translation/chromium/docs/images/LUCI-Feedback-Icon.png
+translation/chromium/docs/images/LUCI-Home-Hierarchy.png
+translation/chromium/docs/images/LUCI-Home.png
+translation/chromium/docs/images/LUCI-Project-Builders.png
+translation/chromium/docs/images/LUCI-Project-Diagram.png
+translation/chromium/docs/images/LUCI-Project.png
+translation/chromium/docs/images/LUCI-Search.png
+translation/chromium/docs/images/LUCI-Site-Project.png
+translation/chromium/docs/images/code_coverage_choose_tryjobs.png
+translation/chromium/docs/images/code_coverage_dashboard_component_view.png
+translation/chromium/docs/images/code_coverage_dashboard_directory_view.png
+translation/chromium/docs/images/code_coverage_dashboard_file_view.png
+translation/chromium/docs/images/code_coverage_dashboard_main_view.png
+translation/chromium/docs/images/code_coverage_infra_diagram.png
+translation/chromium/docs/images/code_coverage_linux_coverage_rel.png
+translation/chromium/docs/images/code_coverage_uncovered_lines.png
+translation/chromium/docs/images/code_coverage_workflow.png
+translation/chromium/docs/images/how_cc_works-commit_flow.png
+translation/chromium/docs/images/how_cc_works-compositor_frame.png
+translation/chromium/docs/images/how_cc_works-data_flow.png
+translation/chromium/docs/images/mojo_binding_and_dispatch.png
+translation/chromium/docs/images/mojo_message.png
+translation/chromium/docs/images/mojo_pipe.png
+translation/chromium/docs/images/mojo_stack.png
+translation/chromium/docs/images/mojo_sync_call_deadlock.png
+translation/chromium/docs/images/mojo_sync_call_flow.png
+translation/chromium/docs/images/ozone_caca.jpg
+translation/chromium/docs/images/parsing_test_results_build_results_1.png
+translation/chromium/docs/images/parsing_test_results_polygerrit.png
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers/git/trees/master?recursive=1" | python3 -c "import sys,json; d=json.load(sys.stdin); [print(t['path']) for t in d.get('tree',[]) if t['type']=='blob']" 2>&1; echo "---NVD---"; curl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-12-31T23:59:59.999" | python3 -c "import sys,json; d=json.load(sys.stdin); print('totalResults 2026:', d.get('totalResults'))" 2>&1
+translation/chromium/docs/how_cc_works.md
+translation/chromium/docs/images/how_cc_works-commit_flow.png
+translation/chromium/docs/images/how_cc_works-compositor_frame.png
+translation/chromium/docs/images/how_cc_works-data_flow.png
+---NVD---
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0msleep 1; curl -s -o /dev/null -w "nvd http: %{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale"; sleep 1; curl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-08-09T23:59:59.999" | head -c 400
+nvd http: 200
+[0m
+[0m$ [0msleep 2; curl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-08-09T23:59:59.999" -o /tmp/opencode/nvd.json -w "http: %{http_code} size: %{size_download}\n"; python3 -c "import json; d=json.load(open('/tmp/opencode/nvd.json')); print('totalResults 2026:', d.get('totalResults'))" 2>&1
+http: 404 size: 0
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0msleep 2; curl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale" -o /tmp/opencode/nvd2.json -w "kw-only http: %{http_code} size: %{size_download}\n"; python3 -c "import json; d=json.load(open('/tmp/opencode/nvd2.json')); print('totalResults:', d.get('totalResults'))" 2>&1; sleep 2; curl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-08-09T23:59:59.999" -o /tmp/opencode/nvd3.json -w "date-only http: %{http_code} size: %{size_download}\n"; python3 -c "import json; d=json.load(open('/tmp/opencode/nvd3.json')); print('totalResults date-only:', d.get('totalResults'))" 2>&1
+kw-only http: 200 size: 5141
+totalResults: 2
+date-only http: 404 size: 0
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mpython3 -c "
+import json
+d=json.load(open('/tmp/opencode/nvd2.json'))
+for v in d.get('vulnerabilities',[]):
+    c=v['cve']
+    pub=c.get('published')
+    print(c['id'], '| published:', pub)
+    for desc in c.get('descriptions',[]):
+        if desc['lang']=='en': print('  ', desc['value'][:120]); break
+"
+CVE-2018-9859 | published: 2018-06-16T01:29:09.680
+   The path of Whale update service was unquoted in NAVER Whale before 1.0.40.7. This vulnerability can be used for persist
+CVE-2020-9754 | published: 2022-06-27T02:15:06.977
+   NAVER Whale browser mobile app before 1.10.6.2 allows the attacker to bypass its browser unlock function via incognito m
+[0m
+**STEP 1 — DELTA**
+- [NEW] GitHub branch inventory: `v2` = README.md + img.png only; `jdkim/update_documents` = translated Chromium docs (how_cc_works.md, LUCI/Mojo/Ozone images); `master` = 4 translated doc files — ALL 4 branches now confirmed documentation-only, closing the "code in non-translate branches" hypothesis
+- [CHANGED] NVD API: `pubStartDate/pubEndDate` query now returns HTTP 404 (was 200 in prior scans); `keywordSearch=naver whale` still returns totalResults=2 (both pre-2021) — date-range filtering is dead, keyword-only is the reliable path
+- [CHANGED] Binary delivery dir `/tmp/opencode/whale_binary/` still MISSING (persistent since ~03:58 UTC); sample extension 3/3 files re-verified HTTP 200 (manifest/background.js/contentscript.js)
+- NO_DELTA on: GitHub repo activity (pushed 2019-09-23), NVD 2026 CVE count (0), sample extension content
+
+**STEP 2 — PRIORITIZE**
+- [PRIO] Sync crypto envelope (os_crypt_whale `xv10`/bootstrap-token/KDF): score 6.10 — attack 6, business 9, tech 8, gate 3, cloud 2, fresh 5
+- [PRIO] Sidebar `sidebarAction.show`/onMessage SOP-boundary (live sample source): score 4.95 — attack 7, business 5, tech 4, gate 7, cloud 0, fresh 3
+- [PRIO] Bundled socket.io.slim.js in resources.pak: score 3.50 — attack 4, business 4, tech 6, gate 2, cloud 0, fresh 3
+
+**STEP 3 — HYPOTHESES**
+[HYP] Sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary os_crypt_whale.cc / whale_sync_util.cc; Local State + keyring; /whalesync
+confidence: 62
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + /whalesync confirmed in prior binary runs; Help Center states passphrase never leaves device → local KDF/key persistence is the whole surface; alg + iteration count still unextracted; delivery dir still absent.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); brute-force resistance.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshotting keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks; High
+testability: AUTH_HELPED
+
+[HYP] Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant)
+class: OTHER
+asset: Whale `sidebarAction.show({url})` + `whale.runtime.onMessage` path (remote HTTP/HTTPS panel URL)
+confidence: 65
+reasoning: sample extension 3/3 files HTTP 200 this run — onMessage dispatches show/show2/hide/hideAll from ANY sender with zero sender.origin/sender.url inspection; show2 calls whale.windows.create() unvalidated; NVD CPE platform-wildcard, Linux fix status unclaimed; v4.38.386.14 is 3 minor bumps past fix v4.35.351.12 with 0 CVEs since.
+evidence_needed: crafted panel URL executing script / reading opener cross-origin / escaping iframe sandbox or panel CSP on v4.38.386.14.
+verify_steps: AUTH_HELPED: install v4.38.386.14, load sidebar-sample MV2 extension, cross-origin content-script sendMessage('sidebarAction.show2'), drive show({url: crafted.html}), test opener readback + sandbox escape. Zero Naver-infra requests.
+impact: SOP bypass / script execution in privileged browser-UI context; Critical if renderer escalation
+testability: AUTH_HELPED
+
+[HYP] socket.io.slim.js event-handler injection in bundled Whale extension
+class: XSS
+asset: resources.pak bundled socket.io.slim.js (runtime-fetched handler)
+confidence: 40
+reasoning: Whale-only non-Chromium bundled lib confirmed in resources.pak by prior runs; handler may be runtime-fetched degrading passive value; no re-acquisition possible in-sandbox; nothing new this run.
+evidence_needed: extracted socket.io.slim.js + event-handler wiring; whether socket URL is user-influenced.
+verify_steps: AUTH_HELPED: extract resources.pak from delivered binary, diff against upstream socket.io, audit event handlers for injection.
+impact: script injection in built-in extension context; Medium
+testability: AUTH_HELPED
+
+**STEP 4 — SELF-CRITIQUE**
+- [PARKED] none — all three ≥40 with concrete verify_steps; none on REJECTED class list (the dedup "REJECTED sidebar class" refers to the duplicate-of-published-CVE angle; the Linux-regression-variant angle with unclaimed CPE fix status remains live, so kept)
+- [FINAL] 1) Sidebar SOP-boundary regression (65) — highest, but is the duplicate-angle risk; kept for the Linux-variant gap. 2) Sync KDF envelope (62) — highest in-scope data value, zero competition from duplicates. 3) socket.io.slim.js (40) — borderline, marginal, no new evidence; retained only at threshold.
+
+**STEP 5 — NEXT ACTION**
+- [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet (dir re-confirmed missing 14:2x UTC). On delivery: (1) objdump/strings `.rodata` on os_crypt/xv10 for KDF iteration constants + bootstrap-token envelope; (2) run sidebar-sample cross-origin `sendMessage('sidebarAction.show2')` → `show({url: crafted.html})` opener-readback + sandbox-escape test. Zero Naver-infra requests.
+
+**STEP 6 — LEARNING**
+- [LEARN] REJECTED class @ naver/whale-browser-developers other branches (v2/jdkim/master): all four branches now individually enumerated and confirmed documentation-only — no code surface exists anywhere in the org's only whale-named repo
+- [LEARN] CHANGED @ NVD API: `pubStartDate/pubEndDate` combined with keywordSearch now returns HTTP 404 — date-window queries dead; keyword-only query remains valid and confirms totalResults=2 (CVE-2018-9859, CVE-2020-9754, both pre-2021)
+- [LEARN] CONFIRMED @ NVD keyword query: 0 Whale CVEs in 2026 — 8-month disclosure gap static for v4.35.352–v4.38.386.14
+
+**STEP 7 — RISK SCORE**
+- [RISK] sync: 62 — custom `xv10` OSCrypt fork + bootstrap-token envelope wholly un-verified (alg/iterations/master-key location unknown); highest-value in-scope target, entirely behind blocked binary acquisition
+- [RISK] browser: 55 — sidebar SOP-boundary regression window open (CVE-2025-69234/69235, CVSS 9.1) with unvalidated onMessage handler confirmed live in sample source, but exploitability on v4.38.386.14 unconfirmable without the binary; 0 CVEs since fix keeps expectation moderate
+- [RISK] libs: 40 — socket.io.slim.js is the only Whale-only non-Chromium bundled lib confirmed, but event-handler possibly runtime-fetched and resources.pak unreachable in-sandbox

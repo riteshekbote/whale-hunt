@@ -405,3 +405,5 @@
 - CHANGED Wikipedia infobox version assertion cannot be passively re-verified — HTML parse shows no version strings (4.38/4.35/4.33 not found)
 - CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch + zero origin validation in `onMessage` confirme
 - CHANGED All binary acquisition channels remain 100% blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 page removed, pstatic 404)
+
+## 2026-08-09 14:54:14 UTC

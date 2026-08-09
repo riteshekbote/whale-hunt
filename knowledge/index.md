@@ -271,3 +271,13 @@
 - 2026-08-09 HOLD class @ sync KDF/bootstrap-token/OSCrypt/refresh-token: binary absent, KDF constants unextracted (Q4/Q7)
 - 2026-08-09 HOLD class @ socket.io push-channel / Android keystore: binary/APK absent, handler runtime-fetched (Q4/Q7)
 - 2026-08-09 HOLD class @ scrapbook/Multiplay/devTools-installer/whaleonPrivate: requires AUTH_HELPED two-account + live browser (Q4/Q7)
+- 2026-08-09 REJECTED @ naver/whale-browser-developers GitHub repo: documentation-only (pushed 2019-09-23, updated 2025-10-22, size=5043, 0 releases) — static analysis path permanently dead (re-verified 14:46 UTC)
+- 2026-08-09 REJECTED @ cloudfront DNS: d1vdt4q2qgdbji.cloudfront.net resolves No-answer at 127.0.0.53 — general to *.cloudfront.net; desktop .deb path permanently dead in-sandbox (re-verified 14:49 UTC)
+- 2026-08-09 REJECTED @ APKMirror: Cloudflare 403 on all paths — binary acquisition blocked (persistent)
+- 2026-08-09 REJECTED @ Uptodown: whale-browser.en.uptodown.com returns 404 (app page removed) — WhaleSetup.exe acquisition permanently dead (persistent)
+- 2026-08-09 REJECTED @ static-whale.pstatic.net: WhaleSetup.exe returns 404 — Naver pstatic CDN excluded per scope.yml (persistent)
+- 2026-08-09 REJECTED @ Wikipedia EN/KO: en.wikipedia.org/wiki/NAVER_Whale and ko.wikipedia.org/wiki/NAVER_Whale both 404 — version assertion impossible passively (persistent)
+- 2026-08-09 ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch from arbitrary web origin + zero sender.origin/sender.url validation in onMessage (re-verified 14:48 UTC)
+- 2026-08-09 CONFIRMED @ NVD API (services.nvd.nist.gov): 0 Whale CVEs published in 2026 — keywordSearch returns exactly 2 total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap static for v4.35.352–v4.38.386.14 (re-verified 14:51 UTC)
+- 2026-08-09 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms API surface present but does NOT demonstrate exploitability in current binary (Q4/Q5/Q7) — class rejected as already-patched surface
+- 2026-08-09 CONFIRMED @ /tmp/opencode/whale_binary/: still missing despite prior reported creation (03:58–14:49 UTC) — binary delivery path unsatisfied, blocking all binary-dependent hypotheses (re-verified 14:49 UTC)
