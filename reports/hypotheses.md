@@ -1217,3 +1217,25 @@
 - LEARN: CONFIRMED @ background.js static analysis: `whale.runtime.onMessage.addListener((message, sender, sendResponse) => {...})` accepts `sender` parameter but perfor
 - LEARN: REJECTED @ Wikipedia version assertion: `en.wikipedia.org/wiki/NAVER_Whale` HTML does not contain version strings (4.38/4.35 not found in parsed content); prior
 - LEARN: CONFIRMED @ NVD endpoint: `nvd.nist.gov/rest` now Cloudflare-blocked in-sandbox; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable — route future CVE
+
+## RANKED HYPOTHESES 2026-08-09 10:07:26 UTC
+- [65] Whale: Sidebar/web-panel SOP-boundary regression via unvalidated sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-laguna.txt)
+- [65] Whale: Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant) (from reports/hypotheses-bigpickle.txt)
+- [65] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet. Once delivere
+- LEARN: REJECTED binary acquisition @ all channels (cloudfront CDN, APKMirror, APKPure, Uptodown, pstatic): All 100% blocked in-sandbox — cloudfront DNS No-answer (gene
+- LEARN: REJECTED GitHub wiki sidebarAction docs @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: permanently unreachable (HTTP 404); SO
+- LEARN: ACCEPTED sample extension source @ translate branch: all 5 files (manifest.json, background.js, contentscript.js, index.html, index.js) HTTP 200 — ALL-origin co
+- LEARN: ACCEPTED CVE-2025-69234 @ NVD: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (same as CVE-2025-69235), shares identical
+- LEARN: CONFIRMED background.js static analysis @ translate branch: `whale.runtime.onMessage.addListener` accepts `sender` param but performs ZERO origin validation — h
+- LEARN: CONFIRMED NVD @ services.nvd.nist.gov: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754),
+- LEARN: REJECTED @ Wikipedia version assertion: Wikipedia page (`en.wikipedia.org/wiki/NAVER_Whale`) contains ZERO version strings matching 4.38/4.35/4.33 — prior "conf
+- LEARN: CONFIRMED @ sample extension source (translate branch): all 5 files (manifest.json, js/background.js, js/contentscript.js, index.html, js/index.js) still HTTP 2
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosu
+- LEARN: REJECTED binary acquisition @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net`+`*.cloudfront.net` still resolve `No answer` (127.0.0.53) — desktop `.deb` path pe
+- LEARN: REJECTED binary acquisition @ APKMirror: Cloudflare 403 on all paths — Android + desktop binary acquisition blocked.
+- LEARN: REJECTED binary acquisition @ Uptodown: `whale-browser.en.uptodown.com` still HTTP 404 (entire Whale app page removed) — passive WhaleSetup.exe path permanently
+- LEARN: REJECTED binary acquisition @ Naver pstatic: `static-whale.pstatic.net/WhaleSetup.exe` still HTTP 404 — Naver pstatic infra excluded per scope.yml.
+- LEARN: REJECTED @ GitHub wiki sidebarAction docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` still HTTP 404 — wiki documentation 
+- LEARN: CONFIRMED @ GitHub repo `naver/whale-browser-developers`: `pushed_at`=2019-09-23T08:03:26Z, `updated_at`=2025-10-22T03:15:17Z, 0 releases, 4 branches unchanged,
