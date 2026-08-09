@@ -1569,3 +1569,17 @@
 - LEARN: ACCEPTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: recovered (HTTP 200 @23:04 UTC, totalResults=2 both pre-2021) — route future CVE ve
 - LEARN: CONFIRMED @ binary delivery dir `/tmp/opencode/whale_binary/`: still absent @23:03 UTC — binary-dependent verification remains HUMAN-gated.
 - LEARN: CONFIRMED @ Uptodown Android page: still HTTP 404 — no live APK channel; passive acquisition permanently dead in-sandbox.
+
+## RANKED HYPOTHESES 2026-08-09 23:44:45 UTC
+- [62] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-laguna.txt)
+- [62] Whale: Desktop sync passphrase KDF + xv10 bootstrap-token envelope weak/device-recoverable key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) AND/OR com.naver.whale 3.9.14.9 APK to `/tmp/opencode/whale_binary/` via 
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- LEARN: ACCEPTED @ NVD services endpoint: `services.nvd.nist.gov/rest/json/cves/2.0` now HTTP 200 (was not responding) — confirms 0 Whale CVEs in 2026, 8-month disclosu
+- LEARN: REJECTED @ Uptodown Android acquisition channel: `naver-whale-browser.en.uptodown.com/android` HTTP 404 — passive APK download path permanently dead; no curl-ab
+- LEARN: REJECTED @ Wikipedia version assertion: EN/KO pages both 404 — passively verifiable version confirmation impossible; v4.38.386.14 claim from pre-August baseline
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms
+- LEARN: REJECTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: reverted from transient HTTP 200 (23:04 UTC) back to HTTP 404; both `nvd.nist.gov/r
+- LEARN: REJECTED @ Uptodown Android acquisition channel: `naver-whale-browser.en.uptodown.com/android` still HTTP 404 — passive APK download path permanently dead; no c
+- LEARN: ACCEPTED @ sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch +
+- LEARN: REJECTED @ binary acquisition channels: cloudfront DNS No-answer (general to *.cloudfront.net), APKMirror 403, Uptodown 404 both pages, static-whale.pstatic.net
