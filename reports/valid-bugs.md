@@ -139,3 +139,6 @@
 - 2 lead(s) marked VALID at 2026-08-09 11:06:49 UTC
   - | 7 | Multiplay URL Disclosure | **HOLD** | Potentially valid; binary shows URLs sync verbatim; needs active testing |
   - | 11 | Scrapbook Authz Bypass | **HOLD** | Potentially valid; needs active testing; scope unclear |
+
+- 1 lead(s) marked VALID at 2026-08-09 11:52:58 UTC
+  - | **VALID** | 0 | — |
