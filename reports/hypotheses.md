@@ -1429,3 +1429,12 @@
 - LEARN: ACCEPTED class @ sample extension source (translate branch): all 5 files (manifest.json, background.js, contentscript.js, index.html, index.js) HTTP 200 — ALL-o
 - LEARN: CONFIRMED @ NVD API (services.nvd.nist.gov): 0 Whale CVEs published in 2026 — keywordSearch returns exactly 2 total (CVE-2018-9859, CVE-2020-9754), both pre-202
 - LEARN: REJECTED @ Wikipedia version assertion: en.wikipedia.org/wiki/NAVER_Whale and ko.wikipedia.org/wiki/NAVER_Whale both HTTP 404 — passively verifiable version con
+
+## RANKED HYPOTHESES 2026-08-09 17:47:08 UTC
+- [70] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- LEARN: ACCEPTED acquisition channel @ uptodown Android page: `naver-whale-browser.en.uptodown.com/android` HTTP 200, live, pins com.naver.whale 3.9.14.9 — prior "Uptod
+- LEARN: REJECTED passive APK download @ uptodown: `dw.uptodown.com/dwn/<id>` → HTTP 400 errorCode -51 even with session cookie, and resolver JS `stc.utdstc.com/*/downlo
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: already REJECTED in 2026-08-09 triage (conf 38 < 40, runtime-fetched handler) — not re-emitted
+- LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (Dec 2025); CPE lists only Windows/macOS, Linu
+- LEARN: REJECTED @ Wikipedia version assertion: Wikipedia page (`en.wikipedia.org/wiki/NAVER_Whale`) contains ZERO version strings matching 4.38/4.35/4.33 — prior "conf

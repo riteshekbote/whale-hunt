@@ -440,3 +440,10 @@
 - NEW `dw.uptodown.com/dwn/1197336657` (session cookie) HTTP 400 `{"success":0,"errorCode":-51}` — passive APK fetch blocked
 - CHANGED Binary delivery `/tmp/opencode/whale_binary/` still missing after workspace re-provision — blocks all binary-dependent verification
 - CHANGED NVD primary `nvd.nist.gov/rest` Cloudflare-blocked; `services.nvd.nist.gov` returns 0 Whale CVEs in 2026 (2 total, pre-2021)
+
+## 2026-08-09 17:47:08 UTC
+- NEW uptodown Android page `naver-whale-browser.en.uptodown.com/android` HTTP 200 (155 KB) live-pins com.naver.whale **3.9.14.9** — only live Android acquisition channel confirmed
+- NEW uptodown download resolver JS `stc.utdstc.com/1786093238827/download.js` HTTP 410 Gone — client-side token generator dead
+- NEW `dw.uptodown.com/dwn/1197336657` (session cookie) HTTP 400 `{"success":0,"errorCode":-51}` — passive APK fetch blocked
+- CHANGED Binary delivery `/tmp/opencode/whale_binary/` still missing after workspace re-provision — blocks all binary-dependent verification
+- CHANGED NVD primary `nvd.nist.gov/rest` Cloudflare-blocked; `services.nvd.nist.gov` returns 0 Whale CVEs in 2026 (2 total, pre-2021)

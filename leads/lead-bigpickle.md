@@ -2274,3 +2274,4 @@ evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (k
 verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
 impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
 testability: AUTH_HELPED
+## 2026-08-09 17:44:58 UTC [sync] (model bigpickle)

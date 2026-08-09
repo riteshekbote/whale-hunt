@@ -5460,3 +5460,4 @@ testability: HUMAN_ONLY
 [RISK] sync: 60 — Whale-forked OSCrypt (xv10) + custom /whalesync endpoint (NEO_SES cookie) + Whale-only prefs keys present per prior binary runs, but KDF constants/iteration count/salt/master-key storage unextracted; regression window ~8 months since last CVE fix
 [RISK] browser: 70 — Sidebar SOP bypass attack surface (CVE-2025-69234/69235 Linux CPE unclaimed) + sample extension confirms ALL-origin content_scripts + unvalidated sidebarAction dispatch from any web origin; 0 CVEs published in 2026 for 3 minor versions past last fix
 [RISK] libs: 30 — socket.io.slim.js confidence 38 < 40 threshold (handler runtime-fetched); no confirmed Whale-only third-party library vulnerability; lib surface limited to resources.pak static content
+## 2026-08-09 17:42:50 UTC [browser] (model laguna)

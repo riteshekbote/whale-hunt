@@ -29692,3 +29692,319 @@ testability: AUTH_HELPED
 - [RISK] sync: 58 — two AUTH hypotheses (desktop conf 60, Android conf 50) with confirmed prior-binary evidence (xv10 fork, per-account bootstrap tokens, /whalesync, NEO_SES); KDF/master-key unextracted, both acquisition channels dead/unstable, 8-month disclosure gap — moderate exposure, HUMAN-gated
 - [RISK] browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED as duplicate of fixed CVEs; 0 CVEs in 2026; no binary to confirm regression — Medium
 - [RISK] libs: 30 — socket.io.slim.js class rejected/stale (runtime-fetched); no public library manifest; binary inaccessible so drift audit blocked — Low visibility
+===== ANALYST bigpickle 2026-08-09 17:47:08 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; ls /tmp/opencode/ 2>&1
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "uptodown_android=%{http_code}\n" --max-time 20 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" "https://naver-whale-browser.en.uptodown.com/android" 2>&1
+uptodown_android=200
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale" -o /tmp/opencode/nvd_whale.json -w "nvd_http=%{http_code}\n" 2>&1; python3 -c "import json;d=json.load(open('/tmp/opencode/nvd_whale.json'));print('totalResults=',d.get('totalResults'));[print(v['cve']['id']) for v in d.get('vulnerabilities',[])]" 2>&1
+nvd_http=200
+totalResults= 2
+CVE-2018-9859
+CVE-2020-9754
+[0m
+[0m$ [0mcurl -s --max-time 25 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" "https://naver-whale-browser.en.uptodown.com/android" -o /tmp/opencode/uptodown_android.html -w "http=%{http_code} bytes=%{size_download}\n" 2>&1; grep -oE "3\.9\.14\.[0-9]+" /tmp/opencode/uptodown_android.html 2>/dev/null | sort -u
+http=200 bytes=156337
+3.9.14.5
+3.9.14.6
+3.9.14.7
+3.9.14.9
+[0m
+[0m$ [0mfor f in "manifest.json" "js/background.js" "js/contentscript.js" "index.html" "js/index.js"; do curl -s -o /dev/null -w "$f=%{http_code}\n" --max-time 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/$f" 2>&1; done
+manifest.json=200
+js/background.js=200
+js/contentscript.js=200
+index.html=200
+js/index.js=200
+[0m
+[0m$ [0mgrep -oE 'data-id="[0-9]+"' /tmp/opencode/uptodown_android.html 2>/dev/null | head -3; grep -oE '/dwn/[0-9]+' /tmp/opencode/uptodown_android.html 2>/dev/null | head -3; grep -oE 'app_version_id[^,]{0,20}' /tmp/opencode/uptodown_android.html 2>/dev/null | head -3
+(no output)
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "dwn_http=%{http_code}\n" --max-time 15 -A "Mozilla/5.0" -e "https://naver-whale-browser.en.uptodown.com/android" "https://dw.uptodown.com/dwn/1197336657" 2>&1; curl -s --max-time 15 -A "Mozilla/5.0" "https://stc.utdstc.com/1786093238827/download.js" -o /tmp/opencode/dl.js -w "dljs_http=%{http_code}\n" 2>&1
+dwn_http=400
+dljs_http=200
+[0m
+[0m$ [0mwc -c /tmp/opencode/dl.js; head -c 600 /tmp/opencode/dl.js 2>&1
+28453 /tmp/opencode/dl.js
+������0�=+��u`NZ= ��f$(wm��* 
+1��0�30{�0{c���/n�~x1����u����iَ����|�����n�-�l+v~��ȡ�/m��/�D�T�GR�i���f�'M[��S���`�t��9n��'���`�{�4�S ���Y���&�i�e:Č%G��	pmߝ���OSq���yEB�޻W¥��}KS�j�?�Bv���(��[9O�Q��XXȱ�2[5��5�p��i�fo�C��p��T��v?d�>F��1�+pE��`�&��P��Β�۬���� Z
+&�B��m�����z1)�M&S^h�>8BZk�w��0�ȷ�N�O/��P�qa�/�Z	�����c:��6VJ�m���SE������(M�ޗ.�����%�-��fQ��a^�x�} �aZ+��M���H��5${ݝ=~���f� ����{���+�y�x+C�);$���ej5��DBm�:w��zJ1X�o�����������bgV6�
+�LHuh"
+ ��ϟ?Y��� �v{(��L;R��M����T�w�=��
+�%�Js��4����q��9�ר���VBz��7�-{�
+[0m
+[0m$ [0mfile /tmp/opencode/dl.js; cd /tmp/opencode && cp dl.js dl.gz && gunzip -f dl.gz 2>&1 && echo "GUNZIP OK" && head -c 300 dl 2>&1 || echo "gunzip failed - not gzip"
+/tmp/opencode/dl.js: data
+
+gzip: dl.gz: not in gzip format
+gunzip failed - not gzip
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import zlib
+data=open('dl.js','rb').read()
+print('first4', data[:4].hex())
+try:
+    d=zlib.decompress(data, -15)
+    print('deflate OK', len(d))
+    open('dl_deflate.txt','wb').write(d)
+except Exception as e:
+    print('deflate fail', e)
+try:
+    d=zlib.decompress(data)
+    print('zlib OK', len(d))
+    open('dl_zlib.txt','wb').write(d)
+except Exception as e:
+    print('zlib fail', e)
+"
+first4 81aa918d
+deflate fail Error -3 while decompressing data: invalid stored block lengths
+zlib fail Error -3 while decompressing data: incorrect header check
+[0m
+[0m$ [0mcurl -s -I --max-time 15 -A "Mozilla/5.0" "https://stc.utdstc.com/1786093238827/download.js" 2>&1 | head -20; echo "---try brotli---"; python3 -c "
+try:
+    import brotli
+    data=open('/tmp/opencode/dl.js','rb').read()
+    d=brotli.decompress(data)
+    print('brotli OK', len(d))
+    open('/tmp/opencode/dl_brotli.txt','wb').write(d)
+except Exception as e:
+    print('brotli fail', e)
+" 2>&1
+HTTP/2 200 
+content-type: application/javascript
+expires: Sat, 07 Aug 2027 09:20:34 GMT
+access-control-allow-origin: *
+etag: "6a759ec0-1b236"
+x-frame-options: SAMEORIGIN
+via: 1.1 varnish, 1.1 varnish
+last-modified: Fri, 07 Aug 2026 09:00:48 GMT
+referrer-policy: strict-origin-when-cross-origin
+cache-control: max-age=31536000, public
+pragma: public
+content-encoding: br
+accept-ranges: bytes
+date: Sun, 09 Aug 2026 17:43:08 GMT
+age: 202954
+x-served-by: cache-chi-kigq8000088-CHI, cache-chi-kigq8000088-CHI, cache-chi-kmdw8640067-CHI
+x-cache: MISS, HIT
+x-cache-hits: 0, 1
+x-timer: S1786297388.401577,VS0,VE1
+vary: Accept-Encoding
+---try brotli---
+brotli fail No module named 'brotli'
+[0m
+[0m$ [0mwhich brotli 2>&1; pip install brotli -q 2>&1 | tail -1; python3 -c "
+import brotli
+data=open('/tmp/opencode/dl.js','rb').read()
+d=brotli.decompress(data)
+print('brotli OK', len(d))
+open('/tmp/opencode/dl_brotli.txt','wb').write(d)
+" 2>&1
+/usr/bin/brotli
+brotli OK 111158
+[0m
+[0m$ [0mgrep -oE 'dwn[^;]{0,80}' /tmp/opencode/dl_brotli.txt | head -10; echo "===token fns==="; grep -oE 'function [a-zA-Z0-9_]{2,20}\(' /tmp/opencode/dl_brotli.txt | sort -u | head -20; echo "===urls==="; grep -oE 'https?://[a-z0-9./_-]+' /tmp/opencode/dl_brotli.txt | sort -u | head -20
+dwn/"+e)})
+dwn/"+o,n.download=o.split("/").pop()),null!=r){var i
+dwn/"+r,i.download=r.split("/").pop(),be(),document.body.appendChild(i),i.click(),d
+===token fns===
+function Ee(
+function Pe(
+function fe(
+function qe(
+function xe(
+===urls===
+http://www.w3.org/2000/svg
+https://dw.uptodown.com/dwn/
+https://stc.utdstc.com/img/no-img.png
+https://stc.utdstc.com/img/spinner-100.svg
+https://stc.utdstc.com/img/svgs/icon-20-download-button.svg
+https://stc.utdstc.com/img/svgs/icon-bar-close.svg
+[0m
+[0m$ [0mgrep -nE 'dwn/' /tmp/opencode/dl_brotli.txt | head; echo "==="; python3 - <<'EOF'
+import re
+src=open('/tmp/opencode/dl_brotli.txt').read()
+i=src.find('dwn/"')
+# print context around dw build
+for m in re.finditer(r'dwn/"', src):
+    s=max(0,m.start()-400); print(src[s:m.start()+200]); print('--------')
+    break
+EOF
+...output truncated...
+
+Full output saved to: /home/runner/.local/share/opencode/tool-output/tool_fe79f53b2001fCsy7iTE2E6kdi
+
+ion:4e3,close:!0,gravity:"top",position:"right",style:{background:c.Ev},stopOnFocus:!0}).showToast()}),(0,c.OK)(),(0,c.XZ)(),r()("#detail-download-button-xapk").on("click",function(){var e=this.getAttribute("data-url");null!==e&&(location.href=e)}),r()("#detail-download-button-know-native").on("click",function(){var e=this.getAttribute("data-url");null!==e&&(location.href="https://dw.uptodown.com/dwn/"+e)});var w=document.getElementById("on-board-badge");null==w||w.addEventListener("click",function(){(0,u.AJ)()}),(0,c.ug)(),null===(e=document.querySelector("#detail-rating-id"))||void 0===e||e.
+--------
+[0m
+[0m$ [0mpython3 - <<'EOF'
+src=open('/tmp/opencode/dl_brotli.txt').read()
+import re
+# find the main download button handler - look for detail-download-button normal
+for kw in ['detail-download-button").on','getElementById("detail-download-button")','data-url','signature','token','expire']:
+    for m in re.finditer(re.escape(kw), src):
+        s=max(0,m.start()-150); print(f"[{kw}]...", src[s:m.start()+250].replace('\n',' ')[:400]); print('---')
+        break
+EOF
+[detail-download-button").on]... t\t<span class='loader'></span>\n\t\t</button>"),i=document.querySelector(".button-group");null!==i&&(i.innerHTML+=r+n)},K=function(){(0,c.z)(),r()("#detail-download-button").on("click",function(){Q(G(this)).catch(function(e){})})},G=function(e){var t=ve(e);return null!==t?function(){return ke(t)}:he},Q=function(e){return p(function(){var t;return m(this,function(n){switch(n.label){case 0:return[4
+---
+[getElementById("detail-download-button")]... t(function(){(0,u.rI)('<div class="text-box"><p>'+e+"</p></div>",b.Notification||"Notification"),(0,c.TE)(),(0,u.ct)(),t()},1)})}(e)});var v=document.getElementById("detail-download-button");v&&"true"===v.getAttribute("data-showspinner")&&(0,c.zo)(v,function(e){e.isIntersecting&&e.target.classList.add("active")});var y=document.getElementById("brew-command");null==y||y.addEventListener("click",fun
+---
+[data-url]... ull!=n){var o=n.includes("/windows")||n.includes("/mac")||n.includes("/ios")?"":"/android";(0,l.UO)("".concat(n).concat(o,"/").concat(t.getAttribute("data-url")))}})})},1362:function(e,t,n){"use strict";n.d(t,{AJ:function(){return b},JO:function(){return y},T3:function(){return v},X1:function(){return w},ct:function(){return m},jz:function(){return h},rI:function(){return g}});var o=n(5553),r=n.n(
+---
+[token]... ance:"interaction-only",action:"download",language:document.documentElement.lang||"auto",retry:"never",callback:function(e){return p({status:"solved",token:e})},"error-callback":function(){return p({status:"failed"}),!0},"timeout-callback":function(){return p({status:"failed"})},"unsupported-callback":function(){return p({status:"failed"})},"before-interactive-callback":u,"after-interactive-callba
+---
+[expire]... ubstring(1);if(0==r.indexOf(t))return r.substring(t.length,r.length)}}function a(e,t,n,o){var r=new Date;r.setTime(r.getTime()+24*n*60*60*1e3);var i="expires="+r.toUTCString();document.cookie=e+"="+t+";"+i+";path=/; domain="+o}function s(e,t,n){void 0!==i(e)&&(document.cookie=e+"="+(void 0!==t?";path="+t:"")+(void 0!==n?";domain="+n:"")+";expires=Thu, 01 Jan 1970 00:00:01 GMT")}var l={langCookie:f
+---
+[0m
+[0m$ [0mpython3 - <<'EOF'
+src=open('/tmp/opencode/dl_brotli.txt').read()
+import re
+# Find the url assembly: search for patterns building dw url with a query param
+for kw in ['dw.uptodown.com/dwn/', 'function he', 'function ke', 'function ve', '?token', 'callbackUrl', 'sitekey', 'hcaptcha', 'turnstile', 'proof']:
+    idx=[m.start() for m in re.finditer(re.escape(kw), src)]
+    print(f"[{kw}] hits={len(idx)}")
+    if idx:
+        s=max(0,idx[0]-200); print("   ", src[s:idx[0]+300].replace('\n',' ')[:480])
+    print()
+EOF
+[dw.uptodown.com/dwn/] hits=3
+    ar e=this.getAttribute("data-url");null!==e&&(location.href=e)}),r()("#detail-download-button-know-native").on("click",function(){var e=this.getAttribute("data-url");null!==e&&(location.href="https://dw.uptodown.com/dwn/"+e)});var w=document.getElementById("on-board-badge");null==w||w.addEventListener("click",function(){(0,u.AJ)()}),(0,c.ug)(),null===(e=document.querySelector("#detail-rating-id"))||void 0===e||e.addEventListener("click",function(){null!==a&&f().then(function(
+
+[function he] hits=0
+
+[function ke] hits=0
+
+[function ve] hits=0
+
+[?token] hits=0
+
+[callbackUrl] hits=0
+
+[sitekey] hits=2
+    ull==l||l.classList.remove(a)},p=function(e){var t=c;null!==t&&(c=null,d(),t(e))},m=function(){var e;if(null===l){var t=document.getElementById("download-turnstile-widget"),n=null==t?void 0:t.dataset.sitekey;null!==t&&void 0!==n&&""!==n&&void 0!==(null===(e=window.turnstile)||void 0===e?void 0:e.render(t,{sitekey:n,execution:"execute",appearance:"interaction-only",action:"download",language:document.documentElement.lang||"auto",retry:"never",callback:function(e){return p({sta
+
+[hcaptcha] hits=0
+
+[turnstile] hits=6
+    (){null==l||l.classList.add(a)},d=function(){null==l||l.classList.remove(a)},p=function(e){var t=c;null!==t&&(c=null,d(),t(e))},m=function(){var e;if(null===l){var t=document.getElementById("download-turnstile-widget"),n=null==t?void 0:t.dataset.sitekey;null!==t&&void 0!==n&&""!==n&&void 0!==(null===(e=window.turnstile)||void 0===e?void 0:e.render(t,{sitekey:n,execution:"execute",appearance:"interaction-only",action:"download",language:document.documentElement.lang||"auto",re
+
+[proof] hits=0
+[0m
+[0m$ [0mgrep -oE 'data-sitekey="[^"]+"' /tmp/opencode/uptodown_android.html | head -2; grep -oE 'download-turnstile-widget' /tmp/opencode/uptodown_android.html | head -2; grep -oE 'data-url="[^"]+"' /tmp/opencode/uptodown_android.html | head -5; grep -oE 'versionId[^,;]{0,30}' /tmp/opencode/uptodown_android.html | head -5; grep -oE '"id":[0-9]{8,12}' /tmp/opencode/uptodown_android.html | head -3
+data-url="apps"
+data-url="https://naver-whale-browser.en.uptodown.com/android/versions"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+data-url="https://naver-whale-browser.en.uptodown.com/android"
+[0m
+[0m$ [0mpython3 - <<'EOF'
+src=open('/tmp/opencode/dl_brotli.txt').read()
+import re
+i=src.find('var t=ve(e)')
+print(src[i-200:i+1200])
+EOF
+"),i=document.querySelector(".button-group");null!==i&&(i.innerHTML+=r+n)},K=function(){(0,c.z)(),r()("#detail-download-button").on("click",function(){Q(G(this)).catch(function(e){})})},G=function(e){var t=ve(e);return null!==t?function(){return ke(t)}:he},Q=function(e){return p(function(){var t;return m(this,function(n){switch(n.label){case 0:return[4,re()];case 1:return null===(t=n.sent())?(e(),[2]):(ie(t,e),[2])}})})()},ee=function(){var e="gplay-button",t="gplay-url",n=r()("#".concat(e)),o=r()("#".concat(t));n.on("click",function(){te(e,!1).catch(function(e){})}),o.on("click",function(){te(t,!0).catch(function(e){})})},te=function(e,t){return p(function(){var n;return m(this,function(o){switch(o.label){case 0:return[4,ne(t)];case 1:return null===(n=o.sent())||oe(n,e),[2]}})})()},ne=function(e){return p(function(){var t,n,o,r;return m(this,function(i){switch(i.label){case 0:if(null==(n=null===(t=document.querySelector("#detail-app-name"))||void 0===t?void 0:t.getAttribute("data-code")))return[2,null];i.label=1;case 1:return i.trys.push([1,3,,4]),o="/ajax/app/".concat(n,"/gplay/pop-ups").concat(e?"?from-link=1":""),[4,s.Z.get(o)];case 2:return 204===(r=i.sent()).status||200!==r.status?[2,null]:[2,r.data.data];case 3:return i.sent(),[2,null];case 4:return[2]}})})()},oe=function(e,t){var n,o,r,i;null===(n=document.querySelector("#pop-up-download-alerts"))||void 0===n||n.remove(
+[0m
+[0m$ [0mpython3 - <<'EOF'
+src=open('/tmp/opencode/dl_brotli.txt').read()
+import re
+for name in ['re=function','he=function','ke=function','ve=function','te=function','_ajax','/ajax/']:
+    idx=[m.start() for m in re.finditer(re.escape(name), src)]
+    print(f"[{name}] hits={len(idx)}")
+    if idx:
+        s=max(0,idx[0]-100); print("   ", src[s:idx[0]+400].replace('\n',' ')[:500])
+    print()
+EOF
+[re=function] hits=1
+    url");if(null!=n){var o=document.createElement("a");o.href=n,o.target="_blank",o.click(),ue(a)}}))},re=function(){return p(function(){var e,t,n;return m(this,function(o){switch(o.label){case 0:if(null==(t=null===(e=document.querySelector("#detail-app-name"))||void 0===e?void 0:e.getAttribute("data-code")))return[2,null];o.label=1;case 1:return o.trys.push([1,3,,4]),[4,s.Z.get("/ajax/app/".concat(t,"/pop-ups"))];case 2:return 204===(n=o.sent()).status||200!==n.status?[2,null]:[2,n.data.data];case
+
+[he=function] hits=1
+    ")?".local":e.includes(".staging.")?".staging":e.includes(".pre-production.")?".pre-production":""},he=function(){var e,t,n=document.createElement("a"),o=null===(e=document.querySelector("#detail-download-button"))||void 0===e?void 0:e.getAttribute("data-url"),r=null===(t=document.querySelector("#detail-download-button"))||void 0===t?void 0:t.getAttribute("data-url-ext");if(null!=o&&(n.href="https://dw.uptodown.com/dwn/"+o,n.download=o.split("/").pop()),null!=r){var i;n.href=r,n.download=r.split
+
+[ke=function] hits=1
+    loadURL:n.data.data.downloadURL}];case 2:return o.sent(),[2,{ok:!1}];case 3:return[2]}})})()},we=!1,ke=function(e){we||(we=!0,function(e){return p(function(){var t,n;return m(this,function(o){switch(o.label){case 0:return[4,(0,c.Z)()];case 1:return"solved"!==(t=o.sent()).status?("failed"===t.status&&Ae(),[2]):[4,ye(e,t.token)];case 2:return(n=o.sent()).ok?(r=n.downloadURL,(i=document.createElement("a")).href="https://dw.uptodown.com/dwn/"+r,i.download=r.split("/").pop(),be(),document.body.append
+
+[ve=function] hits=1
+    ("#from_","").split("_"),s=null!==(o=a[1])&&void 0!==o?o:"1";Te(r,"downloadStarted",i,a[0]||"",s)}},ve=function(e){var t,n,o,r=null!==(t=null==e?void 0:e.getAttribute("data-app-id"))&&void 0!==t?t:null,i=null!==(n=null==e?void 0:e.getAttribute("data-file-id"))&&void 0!==n?n:null;return null===e||null===r||null===i?null:{appID:r,fileID:i,onlyXapk:null!==(o=e.getAttribute("data-only-xapk"))&&void 0!==o?o:"0"}},ye=function(e,t){return p(function(){var n;return m(this,function(o){switch(o.label){cas
+
+[te=function] hits=1
+    function(){te(e,!1).catch(function(e){})}),o.on("click",function(){te(t,!0).catch(function(e){})})},te=function(e,t){return p(function(){var n;return m(this,function(o){switch(o.label){case 0:return[4,ne(t)];case 1:return null===(n=o.sent())||oe(n,e),[2]}})})()},ne=function(e){return p(function(){var t,n,o,r;return m(this,function(i){switch(i.label){case 0:if(null==(n=null===(t=document.querySelector("#detail-app-name"))||void 0===t?void 0:t.getAttribute("data-code")))return[2,null];i.label=1;ca
+
+[_ajax] hits=0
+
+[/ajax/] hits=10
+    okenSocialLogin=function(e){var t,n;(t=e.credential,n=new FormData,n.append("accessToken",t),fetch("/ajax/1.0/user/social-sign-up",{method:"POST",body:n}).then(function(e){return e.json()}).then(function(e){if(1===e.success)return e.data.udata;throw e}).catch(function(e){throw e})).then(function(e){var t,n,o;t=e.id,o=null===(n=document.querySelector('meta[name="domain"]'))||void 0===n?void 0:n.getAttribute("content"),document.cookie="userID=".concat(t,";999;path=/;domain=").concat(o),window.loca
+[0m
+[0m$ [0mpython3 - <<'EOF'
+src=open('/tmp/opencode/dl_brotli.txt').read()
+import re
+i=src.find('ye=function')
+print(src[i:i+900])
+EOF
+ye=function(e,t){return p(function(){var n;return m(this,function(o){switch(o.label){case 0:return o.trys.push([0,2,,3]),[4,s.Z.post("/ajax/app/".concat(e.appID,"/file/").concat(e.fileID,"/download-url"),{token:t,onlyXapk:e.onlyXapk})];case 1:return 200!==(n=o.sent()).status?[2,{ok:!1}]:[2,{ok:!0,downloadURL:n.data.data.downloadURL}];case 2:return o.sent(),[2,{ok:!1}];case 3:return[2]}})})()},we=!1,ke=function(e){we||(we=!0,function(e){return p(function(){var t,n;return m(this,function(o){switch(o.label){case 0:return[4,(0,c.Z)()];case 1:return"solved"!==(t=o.sent()).status?("failed"===t.status&&Ae(),[2]):[4,ye(e,t.token)];case 2:return(n=o.sent()).ok?(r=n.downloadURL,(i=document.createElement("a")).href="https://dw.uptodown.com/dwn/"+r,i.download=r.split("/").pop(),be(),document.body.appendChild(i),i.click(),document.body.removeChild(i),[2]):(Ae(),[2])}var r,i})})()}(e).catch(function(e
+[0m
+[0m$ [0mgrep -oE 'data-code="[^"]+"' /tmp/opencode/uptodown_android.html | head -2; grep -oE 'detail-download-button[^>]*' /tmp/opencode/uptodown_android.html | head -3; grep -oE 'app_id[^,;]{0,20}|"appId":[0-9]+|file_id[^,;]{0,20}' /tmp/opencode/uptodown_android.html | head -5; grep -oE 'download-count[^<]{0,40}|installs[^<]{0,40}' /tmp/opencode/uptodown_android.html | head -3
+data-code="777828"
+data-code="en"
+app_id" content="277304817
+[0m
+## STEP 1 — DELTA
+- [NEW] `stc.utdstc.com/*/download.js` revived: HTTP 410 → **200** (content-encoding br, 111 KB webpack bundle, last-modified 2026-08-07, cached age ~2d) — full uptodown download-flow source now passively retrievable; prior "410 dead" knowledge is stale
+- [NEW] Download gate is **Cloudflare Turnstile**: bundle calls `window.turnstile.render(#download-turnstile-widget,{sitekey, execution:"execute", appearance:"interaction-only", action:"download"})`, then `POST /ajax/app/<appID>/file/<fileID>/download-url {token, onlyXapk}` → server returns `downloadURL` → `https://dw.uptodown.com/dwn/<downloadURL>` (function `ke`/`ye`). Replaces the old cookie/hash-token mechanism; token is server-side validated, unforgeable passively.
+- [NEW] uptodown Android page flip-flopped back to HTTP 200 (was 404 at 17:58 UTC last run); version history still pins **com.naver.whale 3.9.14.9** (3.9.14.5/6/7/9); `data-code="777828"`, meta `app_id=277304817`
+- [CHANGED] `dw.uptodown.com/dwn/1197336657` still HTTP 400 errorCode -51 — now explainable: dw requires a Turnstile-issued `downloadURL`, a session cookie alone is insufficient
+- [UNCHANGED] `/tmp/opencode/whale_binary/` still absent; NVD 0 Whale CVEs in 2026; sample extension 5 files all HTTP 200
+
+## STEP 2 — PRIORITIZE
+- [PRIO] com.naver.whale 3.9.14.9 Android sync engine: attack 6, business 9, tech 6, gate 2, cloud 3, fresh 9 → **6.15**
+- [PRIO] Desktop v4.38.386.14 sync (os_crypt_whale.cc xv10 fork, /whalesync): attack 5, business 9, tech 6, gate 1, cloud 3, fresh 3 → **5.15** (version claim unverifiable, binary absent)
+- [PRIO] uptodown Turnstile-gated APK channel (acquisition infra): attack 3, business 5, tech 5, gate 2, cloud 2, fresh 9 → **4.15**
+
+## STEP 3 — HYPOTHESES
+[HYP] Android sync encryption KDF / master-key persistence (custom mobile impl, only-Whale)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine; /whalesync client; Android Keystore
+confidence: 55
+reasoning: Latest pin 3.9.14.9 re-confirmed live (uptodown 200, 156 KB); sync encryption only shipped since 3.8.6.2 (2025-04) → likely custom impl distinct from the Chromium fork; KDF alg/iteration count + master-key locality remain unextracted. Acquisition gate now precisely characterized (Turnstile → `/ajax/app/777828/file/<fileID>/download-url`).
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
+verify_steps: AUTH_HELPED: HUMAN opens uptodown android page in a real browser, completes Turnstile (interaction-only), fetches `downloadURL` via the documented POST, saves APK to /tmp/opencode/whale_binary/, then decompile + grep dex for KDF constants + key-store paths; authorized login snapshot for key lifecycle. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords/cookies/autofill on Android → cross-device sync account compromise; High
+testability: AUTH_HELPED
+
+[HYP] Desktop sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary os_crypt_whale.cc / whale_sync_util.cc; Local State + keyring; /whalesync
+confidence: 62
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token[_per_account]`, `_migration_done`, `whale_need_encryption_key_forced_time`) + xv10 OSCrypt fork + /whalesync + NEO_SES confirmed in prior binary runs; KDF constants + master-key locality still unextracted; binary dir absent again this run.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State).
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+
+## STEP 4 — SELF-CRITIQUE
+- Both hypotheses kept: conf 55/62 ≥ 40, class AUTH not on REJECTED list (sync KDF is HOLD, not REJECTED), concrete AUTH_HELPED verify_steps present.
+- [PARKED] uptodown Turnstile-flow exploitation: acquisition infra, not a Whale browser vuln surface — out of program scope, no in-scope hypothesis.
+- [FINAL] 1. Desktop sync KDF/bootstrap-token (conf 62) — higher prior-evidence weight, fully HUMAN-gated.
+- [FINAL] 2. Android sync KDF/master-key (conf 55) — acquisition gate now precisely characterized (Turnstile, exact ajax namespace), best near-term path.
+
+## STEP 5 — NEXT ACTION
+[NEXT] HUMAN: In a real browser, open `https://naver-whale-browser.en.uptodown.com/android`, click download (Cloudflare Turnstile `interaction-only`), capture the `POST /ajax/app/777828/file/<fileID>/download-url` request + response to get `downloadURL`, fetch `https://dw.uptodown.com/dwn/<downloadURL>`, save APK to `/tmp/opencode/whale_binary/`, record sha256 (hash only, never raw). Then decompile and grep dex for KDF constants + Keystore/shared-pref paths.
+
+## STEP 6 — LEARNING
+- [LEARN] ACCEPTED acquisition channel @ stc.utdstc.com download.js: revived HTTP 200 (was 410) — full webpack bundle proves the download gate is now Cloudflare Turnstile (`execution:"execute", appearance:"interaction-only", action:"download"` → `POST /ajax/app/<appID>/file/<fileID>/download-url {token,onlyXapk}` → `dw.uptodown.com/dwn/<url>`); prior "410 dead" knowledge stale
+- [LEARN] REJECTED passive APK download @ uptodown: dw requires a Turnstile-issued, server-validated `downloadURL`; no cookie-only or token-free curl path exists — client-side-only gate, HUMAN-gated
+- [LEARN] ACCEPTED channel status @ uptodown Android page: flip-flops (404→200); data-code=777828, app_id=277304817; still pins com.naver.whale 3.9.14.9
+- [LEARN] REJECTED class @ binary acquisition (cloudfront DNS No-answer, APKMirror 403, pstatic 404): unchanged, 100% blocked
+- [LEARN] CONFIRMED @ NVD (services.nvd.nist.gov): 0 Whale CVEs in 2026 — exactly 2 total (CVE-2018-9859, CVE-2020-9754), both pre-2021; disclosure gap static for v4.35.352–v4.38.386.14
+
+## STEP 7 — RISK SCORE
+- [RISK] sync: 62 — uptodown channel re-live + fully characterized Turnstile gate modestly raises acquisition odds, but KDF/master-key evidence gap unchanged, binary HUMAN-gated, 8-month disclosure gap — moderate-high, HUMAN-gated
+- [RISK] browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED as duplicate of fixed CVEs (2025-69234/69235); 0 CVEs in 2026; no binary to confirm regression — Medium
+- [RISK] libs: 30 — socket.io.slim.js class rejected/stale (runtime-fetched); no public library manifest; binary inaccessible so drift audit blocked — Low visibility
