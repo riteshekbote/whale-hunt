@@ -379,3 +379,15 @@
 ## 2026-08-09 11:52:29 UTC
 - CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` reported as created in prior scans (03:58, 07:01, 07:58, 08:47, 09:31 UTC) but now missing — `ls` returns "No such file or directory"
 - CHANGED NVD primary endpoint `nvd.nist.gov/rest` confirmed Cloudflare-blocked in-sandbox; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable (persistent since 07:01 UTC)
+
+## 2026-08-09 12:22:42 UTC
+- NEW Binary delivery directory `/tmp/opencode/whale_binary/` still missing (reported created in prior scans but `ls` returns "No such file or directory")
+- NEW NVD primary endpoint `nvd.nist.gov/rest` confirmed Cloudflare-blocked; `services.nvd.nist.gov` reachable and returns 0 Whale CVEs in 2026 (2 total, both pre-2021)
+- NEW All binary acquisition channels remain 100% blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 page removed, pstatic 404)
+- CHANGED Wikipedia infobox version assertion cannot be passively re-verified — HTML parse shows no version strings (4.38/4.35/4.33 not found)
+- CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch + zero origin validation in `onMessage` confirme
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` reported as created in prior scans (03:58–11:52 UTC) but now missing — `ls` returns "No such file or directory"
+- NEW Wikipedia infobox version assertion cannot be passively re-verified — HTML parse shows no version strings (4.38/4.35/4.33 not found at parse time)
+- CHANGED NVD primary endpoint `nvd.nist.gov/rest` confirmed Cloudflare-blocked in-sandbox; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable (persistent since 07:01 UTC)
+- NEW NVD API re-verify: `keywordSearch=naver whale` returns total=2 (CVE-2018-9859, CVE-2020-9754), both pre-2021 — 0 CVEs in 2026, disclosure gap static for v4.35.352–v4.38.386.14 (confirmed at scan 12:19
+- CHANGED Sample extension (translate branch): all 5 files re-confirmed HTTP 200 (manifest.json, background.js, contentscript.js, index.html, index.js) — attack surface live and unchanged (re-verified at 12:19 
