@@ -173,3 +173,21 @@
   - **Verdict: HOLD** — passes Q1-Q3, Q6. Blocker is evidential: APK unreachable in-sandbox (Uptodown download endpoint returns 400 errorCode -51, resolver JS 410). Could elevate to VALID with binary deli
   - | **VALID** | 0 | — |
   - | **VALID** | 0 | — |
+
+- 10 lead(s) triaged at 2026-08-09 19:52 UTC — **0 VALID / 5 HOLD / 5 INVALID**
+  - Full 7Q analysis per lead; Q4 (passive proof) is the universal blocker for all binary-dependent leads
+  - 5 INVALID: Lead 05 (dupes CVE-2022-24072/2024-40618), Lead 06 (no new variant), Lead 07 (no concrete finding), Lead 08 (below confidence threshold), Lead 10 (reposcan REGRESSED)
+  - 5 HOLD: Lead 01 (sidebar Linux CPE gap), Lead 02 (sync KDF), Lead 03 (bootstrap-token OSCrypt), Lead 04 (Android keystore), Lead 09 (Scrapbook/Multiplay)
+  - Reposcan pipeline still REGRESSED (scanning gladiaio/ not whale/); 0 hits
+  - See `triage/run-2026-08-09-19-52.md` for full analysis
+
+- 9 lead(s) marked VALID at 2026-08-09 19:56:28 UTC
+  - | Q6 | YES | SOP bypass is a valid vuln class |
+  - | Q6 | YES | Valid vuln class |
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Valid vuln class |
+  - | Q6 | YES | Authz bypass is a valid class |
+  - | **VALID** | 0 | — |
+  - - **Verdict: HOLD** — passes Q1-Q3, Q6. Blocker is evidential: APK unreachable in-sandbox (Uptodown download endpoint returns 400 errorCode -51, resolver JS 410). Could elevate to VALID with binary de
+  - | **VALID** | 0 | — |
