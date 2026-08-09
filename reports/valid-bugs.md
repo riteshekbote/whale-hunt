@@ -118,3 +118,7 @@
 - 2 lead(s) marked VALID at 2026-08-08 23:56:53 UTC
   - valid-bugs.md
   - | **VALID** | 0 | — |
+
+- 2 lead(s) marked VALID at 2026-08-09 00:39:19 UTC
+  - | Q6 Not rejected? | YES — SOP bypass is a valid vuln class |
+  - | **VALID** | **0** | — |
