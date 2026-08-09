@@ -122,3 +122,7 @@
 - 2 lead(s) marked VALID at 2026-08-09 00:39:19 UTC
   - | Q6 Not rejected? | YES — SOP bypass is a valid vuln class |
   - | **VALID** | **0** | — |
+
+- 2 lead(s) marked VALID at 2026-08-09 02:55:26 UTC
+  - | Q6 Not rejected? | **YES** — SOP bypass is a valid vuln class |
+  - | **VALID** | **0** | — |
