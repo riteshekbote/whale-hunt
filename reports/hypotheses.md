@@ -1529,3 +1529,14 @@
 - LEARN: REJECTED @ binary acquisition channels: cloudfront DNS No-answer (general to *.cloudfront.net at resolver 127.0.0.53), APKMirror 403, Uptodown 404 (Windows + An
 - LEARN: REJECTED @ Wikipedia version assertion: EN/KO pages (en.wikipedia.org/wiki/NAVER_Whale, ko.wikipedia.org/wiki/NAVER_Whale) both HTTP 404 — passively verifiable 
 - LEARN: REJECTED @ GitHub wiki sidebarAction docs: raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md HTTP 404 + wiki API 404 + has_pages fa
+
+## RANKED HYPOTHESES 2026-08-09 22:02:26 UTC
+- [70] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF + xv10 bootstrap-token envelope weak/device-recoverable key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) AND/OR com.naver.whale 3.9.14.9 APK to `/tmp/opencode/whale_binary/` via 
+- LEARN: REJECTED @ Uptodown Android acquisition channel: `naver-whale-browser.en.uptodown.com/android` flipped to HTTP 404 — passive APK download path permanently dead;
+- LEARN: REJECTED @ Wikipedia version assertion: EN/KO pages both 404 — passively verifiable version confirmation impossible; v4.38.386.14 claim from pre-August baseline
+- LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12; CPE lists only Windows/macOS, Linux fix statu
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms
+- LEARN: REJECTED @ binary acquisition: cloudfront DNS `No answer` (general to `*.cloudfront.net` at resolver 127.0.0.53), APKMirror 403, Uptodown 404 (Windows + Android

@@ -2363,3 +2363,24 @@ verify_steps: AUTH_HELPED: HUMAN monitors uptodown Android page for next 200 win
 impact: local attacker decrypts synced passwords/cookies/autofill on Android → cross-device sync account compromise; High
 testability: AUTH_HELPED
 ## 2026-08-09 21:25:19 UTC [sync] (model bigpickle)
+## 2026-08-09 21:59:22 UTC [sync] (model bigpickle)
+[HYP] Desktop sync passphrase KDF + xv10 bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc` / `whale_sync_util.cc`; Local State + keyring (client-side, zero /whalesync interaction)
+confidence: 62
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + xv10 OSCrypt fork + /whalesync + NEO_SES confirmed in prior binary runs; official help docs confirm passphrase is client-side-only (never sent to server); Chromium Linux baseline is 1-iteration PBKDF2 + hardcoded keyring password — Whale's forked envelope deviation is unverified; KDF alg/iteration count + master-key locality still unextracted; binary dir absent (21:57 UTC)
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State)
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable; compare against Chromium baseline (macOS PBKDF2-1003, Linux v11 1-iteration). Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+[HYP] Android sync encryption KDF / master-key storage (custom mobile impl, passphrase feature since ~3.8.6.2)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore)
+confidence: 50
+reasoning: mobile sync-passphrase help page dated 2025-05-09 aligns with sync encryption since 3.8.6.2 (2025-04) → custom mobile impl likely distinct from Chromium fork; version pin 3.9.14.9 captured only during uptodown 200-windows (last @18:10); page 404/410 since 19:48, APK sha256 unpinned
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin
+verify_steps: AUTH_HELPED: HUMAN monitors uptodown Android page for next 200 window (flip-flop: 200@18:10 → 404 → 410@20:13 → 404); on 200, completes JS/token dw flow in real browser → delivers APK to `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords/cookies/autofill on Android → cross-device sync account compromise; High
+testability: AUTH_HELPED
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) AND/OR com.naver.whale 3.9.14.9 APK to `/tmp/opencode/whale_binary/` via unrestricted internet (uptodown Android page `naver-whale-browser.en.uptodown.com/android` flip-flops — complete the JS/token dw flow in a real browser on the next 200 window; record sha256 only). Passive path stays dead (uptodown 404, cloudfront DNS No-answer, APKMirror 403, pstatic 404). Zero Naver-infra requests.
+[RISK] sync: 60 — xv10 OSCrypt fork + Whale-only prefs + client-side passphrase KDF confirmed by docs, but binary absent and all acquisition channels dead (uptodown 404, cloudfront DNS dead, APKMirror 403, pstatic 404) — strongest open surface, fully HUMAN-gated | browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED (duplicate of fixed CVEs); 0 CVEs in 2026; no binary to confirm regression — Medium | libs: 30 — socket.io.slim.js class rejected (conf 38 < 40, runtime-fetched handler); no public library manifest; binary inaccessible — Low visibility

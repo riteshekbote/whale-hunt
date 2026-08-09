@@ -31030,3 +31030,634 @@ STEP 7 — RISK SCORE
 - [RISK] sync: 60 — conf-62 sync KDF/bootstrap-token class is the strongest open surface (xv10 OSCrypt fork + Whale-only prefs + 8-month disclosure gap), but 100% HUMAN-gated: binary absent, all channels dead-in-sandbox (uptodown now Turnstile-gated even on 200 windows)
 - [RISK] browser: 35 — sidebar SOP class rejected as duplicate; sample extension live but not exploitable-demonstrating; 0 CVEs in 2026
 - [RISK] libs: 30 — socket.io.slim.js class rejected/stale (conf 38 < 40); no public library manifest; binary inaccessible
+===== ANALYST bigpickle 2026-08-09 22:02:26 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; ls -la /tmp/opencode/ 2>&1 | head -20; echo "---"; ls -la . 2>&1 | head -30
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 .
+drwxrwxrwt 15 root   root   12288 Aug  9 21:57 ..
+---
+total 284
+drwxr-xr-x 11 runner runner  4096 Aug  9 21:57 .
+drwxr-xr-x  3 runner runner  4096 Aug  9 21:57 ..
+drwxr-xr-x  7 runner runner  4096 Aug  9 21:57 .git
+drwxr-xr-x  3 runner runner  4096 Aug  9 21:57 .github
+-rw-r--r--  1 runner runner  1057 Aug  9 21:57 README.md
+-rw-r--r--  1 runner runner    32 Aug  9 21:57 analyst-out.txt
+-rw-r--r--  1 runner runner 99858 Aug  9 21:57 analyst-prompt.txt
+-rw-r--r--  1 runner runner 96886 Aug  9 21:57 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 knowledge
+drwxr-xr-x  2 runner runner 12288 Aug  9 21:57 leads
+-rw-r--r--  1 runner runner  2194 Aug  9 21:57 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 reports
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  9 21:57 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 scripts
+-rw-r--r--  1 runner runner    34 Aug  9 21:57 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  9 21:57 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  9 21:57 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  9 21:57 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  9 21:57 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 triage
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "uptodown-android: %{http_code} size=%{size_download}\n" --max-time 15 "https://naver-whale-browser.en.uptodown.com/android"; curl -s --max-time 15 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale" | head -c 400
+uptodown-android: 404 size=83
+{"resultsPerPage":2,"startIndex":0,"totalResults":2,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-09T21:57:53.425","vulnerabilities":[{"cve":{"id":"CVE-2018-9859","sourceIdentifier":"cve@mitre.org","published":"2018-06-16T01:29:09.680","lastModified":"2026-06-17T02:07:18.247","vulnStatus":"Modified","cveTags":[],"descriptions":[{"lang":"en","value":"The path of Whale update service was u
+[0m
+[0m$ [0mls reports/ 2>&1; echo "---reports---"; ls knowledge/ 2>&1; echo "---knowledge---"; ls leads/ 2>&1 | tail -5; echo "---leads tail---"; ls reposcan-raw/ 2>&1 | head; echo "---reposcan---"; cat state_bigpickle.json; echo; cat analyst-out.txt; echo "---analyst-out---"
+analyst-bigpickle.log
+analyst-laguna.log
+analyst-ling3.log
+analyst-longcat.log
+analyst-nemotron3.log
+hypotheses-bigpickle.txt
+hypotheses-laguna.txt
+hypotheses-ling3.txt
+hypotheses-longcat.txt
+hypotheses-nemotron3.txt
+hypotheses.md
+valid-bugs.md
+---reports---
+index.md
+---knowledge---
+reposcan-2026-08-09-20-57.md
+reposcan-2026-08-09-21-08.md
+reposcan-2026-08-09-21-29.md
+reposcan-2026-08-09-21-47.md
+reposcan-latest.md
+---leads tail---
+analysis.txt
+grep-delta.txt
+grep-hits.prev.txt
+grep-hits.txt
+rag.txt
+---reposcan---
+{"phase": "POC", "target": "sync"}
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; ls -la /tmp/opencode/ 2>&1 | head -20; echo "---"; ls -la . 2>&1 | head -30
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 .
+drwxrwxrwt 15 root   root   12288 Aug  9 21:57 ..
+---
+total 284
+drwxr-xr-x 11 runner runner  4096 Aug  9 21:57 .
+drwxr-xr-x  3 runner runner  4096 Aug  9 21:57 ..
+drwxr-xr-x  7 runner runner  4096 Aug  9 21:57 .git
+drwxr-xr-x  3 runner runner  4096 Aug  9 21:57 .github
+-rw-r--r--  1 runner runner  1057 Aug  9 21:57 README.md
+-rw-r--r--  1 runner runner    32 Aug  9 21:57 analyst-out.txt
+-rw-r--r--  1 runner runner 99858 Aug  9 21:57 analyst-prompt.txt
+-rw-r--r--  1 runner runner 96886 Aug  9 21:57 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 inventory
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 knowledge
+drwxr-xr-x  2 runner runner 12288 Aug  9 21:57 leads
+-rw-r--r--  1 runner runner  2194 Aug  9 21:57 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 reports
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 reposcan-raw
+-rw-r--r--  1 runner runner  1513 Aug  9 21:57 scope.yml
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 scripts
+-rw-r--r--  1 runner runner    34 Aug  9 21:57 state_bigpickle.json
+-rw-r--r--  1 runner runner    37 Aug  9 21:57 state_laguna.json
+-rw-r--r--  1 runner runner    34 Aug  9 21:57 state_ling3.json
+-rw-r--r--  1 runner runner    34 Aug  9 21:57 state_longcat.json
+-rw-r--r--  1 runner runner    37 Aug  9 21:57 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 triage
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "uptodown-android: %{http_code} size=%{size_download}\n" --max-time 15 "https://naver-whale-browser.en.uptodown.com/android"; curl -s --max-time 15 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale" | head -c 400
+uptodown-android: 404 size=83
+{"resultsPerPage":2,"startIndex":0,"totalResults":2,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-09T21:57:53.425","vulnerabilities":[{"cve":{"id":"CVE-2018-9859","sourceIdentifier":"cve@mitre.org","published":"2018-06-16T01:29:09.680","lastModified":"2026-06-17T02:07:18.247","vulnStatus":"Modified","cveTags":[],"descriptions":[{"lang":"en","value":"The path of Whale update service was u
+[0m
+---analyst-out---
+[0m
+[0m✗ [0mRead knowledge/reposcan-latest.md failed
+[91m[1mError: [0mFile not found: /home/runner/work/whale-hunt/whale-hunt/knowledge/reposcan-latest.md
+[0m→ [0mRead reports/hypotheses.md
+[0m
+[0m$ [0mfind . -name "reposcan*" -o -name "probe-results*" 2>/dev/null | head; echo "---"; cat probe-results.md 2>/dev/null | head -60
+./.github/workflows/reposcan.yml
+./reposcan-raw
+./leads/reposcan-2026-08-09-05-59.md
+./leads/reposcan-2026-08-09-16-01.md
+./leads/reposcan-2026-08-09-21-08.md
+./leads/reposcan-2026-08-08-19-05.md
+./leads/reposcan-2026-08-08-10-26.md
+./leads/reposcan-2026-08-08-12-37.md
+./leads/reposcan-2026-08-07-19-19.md
+./leads/reposcan-2026-08-08-14-38.md
+---
+
+## 2026-08-08 17:04:37 UTC
+
+
+## 2026-08-08 17:42:50 UTC
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246 type=text/html;charset=UTF-8
+https://d1vdt4q2qgdbji.cloudfront.net/whale/...` -> ERR <urlopen error [Errno -5] No address associated wi
+https://d1vdt4q2qgdbji.cloudfront.net/whale/whale_stable_latest_amd64.deb` -> ERR <urlopen error [Errno -5] No address associated wi
+
+## 2026-08-08 18:06:07 UTC
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246 type=text/html;charset=UTF-8
+https://whale-browser.en.uptodown.com/windows/download` -> HTTP 404
+
+## 2026-08-08 19:03:55 UTC
+
+
+## 2026-08-08 19:31:15 UTC
+
+
+## 2026-08-08 19:58:10 UTC
+
+
+## 2026-08-08 20:26:23 UTC
+
+
+## 2026-08-08 20:55:36 UTC
+
+
+## 2026-08-08 21:30:03 UTC
+
+
+## 2026-08-08 21:57:51 UTC
+
+
+## 2026-08-08 22:29:16 UTC
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155246 type=text/html;charset=UTF-8
+https://whale-browser.en.uptodown.com/windows/download` -> HTTP 400
+
+## 2026-08-08 23:01:24 UTC
+
+
+## 2026-08-08 23:42:38 UTC
+
+
+## 2026-08-09 00:02:57 UTC
+
+
+## 2026-08-09 02:24:22 UTC
+
+
+## 2026-08-09 03:58:25 UTC
+
+
+## 2026-08-09 05:12:13 UTC
+
+
+## 2026-08-09 05:58:21 UTC
+
+
+## 2026-08-09 07:01:36 UTC
+[0m
+[0m$ [0mcat knowledge/index.md 2>/dev/null | head -40; echo "=== valid-bugs ==="; cat reports/valid-bugs.md 2>/dev/null | head -40
+# Knowledge Base (seed)
+
+## Program rules (from scope.yml)
+- Eligible: latest-version Whale browser bugs (must reproduce on latest at report time); third-party libraries used ONLY by Whale (not Chromium); synchronization bugs
+- NOT eligible: all Naver web services (*.naver.com, *.navercorp.com), web servers of built-in extensions (Papago, Belli), URL preview spoofing in status bar, bypassing XSS Auditor, IETab extension, SafeBrowsing FP/FN
+- Client-side software: static source analysis + repro-first validation; no server probing
+- Secrets in commits: sha256 only, never raw
+
+## Baseline surface (2026-08-07 passive recon)
+- Official GitHub repo: naver/whale-browser-developers (no public releases API; repo is developers channel)
+- Naver org is HUGE: reposcan clones ONLY whale-name repos
+- Known excluded classes to never report: XSS Auditor bypass, status-bar URL preview spoofing, SafeBrowsing FP/FN, anything in IETab
+
+## Rejected / parked
+- (none yet)
+- 2026-08-07 REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+- 2026-08-07 REJECTED browser source @ naver/whale-browser-developers: Repo is documentation-only; no browser binary source, sync flow code, or bundled library manifests available for static analysis
+- 2026-08-07 REJECTED naver web services @ developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com: All excluded per scope rules (Naver web services)
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 minor version bumps with zero published CVEs — regression or new variant possible
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CVEs published
+- 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo is documentation-only (last real commit 2019-09-23); "updated" metadata 2025-10-22 is GitHub system metadata refresh, no code changes
+- 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+- 2026-08-07 CONFIRMED @ GitHub: naver/whale-browser-developers repo remains documentation-only (last commit 2019-09-23; 2025-10-22 metadata-only refresh) — no source code, sync implementation, or library manifests available for static analysis
+- 2026-08-07 CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability disclosure gap
+- 2026-08-07 REJECTED @ store.whale.naver.com: Issue #23 maps to Naver web service, excluded per scope.yml out_of_scope (confirmed unchanged)
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346 SOP bypass) confirmed fixed in v4.35.351.12 (Dec 2025); latest v4.38.386.14 is 3 minor bumps ahead with 0 CVEs — regression window remains open
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358 CSP bypass) confirmed fixed in v4.33.325.17 (Oct 2025); ~8 months of undisclosed changes since
+- 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072 + CVE-2024-40618 confirmed — built-in extension processing is a recurring Whale-only injection vector
+- 2026-08-07 REJECTED @ naver/whale-browser-developers: Repo remains documentation-only (last real commit 2019-09-23; 2025-10-22 metadata-only refresh) — no browser binary source, sync flow code, or library manifests available for static analysis
+- 2026-08-07 REJECTED @ naver web services (developers.whale.naver.com, lab.whale.naver.com, store.whale.naver.com): All excluded per scope rules
+- 2026-08-07 CONFIRMED @ NVD: 0 CVEs published for Whale in 2026 — no public disclosures exist for versions 4.35.352 through 4.38.386, confirming a 6-month vulnerability disclosure gap
+- 2026-08-07 REJECTED class @ lead: 1 (Lead 2/6/14 — Sync KDF/bootstrap-token/OSCrypt):
+- 2026-08-07 REJECTED class @ lead: 2 (Lead 5 — Bundled library inventory):
+- 2026-08-07 REJECTED class @ lead: 3 (Lead 7/13 — socket.io push channel):
+- 2026-08-07 REJECTED class @ lead: 4 (Leads 2/6/14 consolidated as sync analysis; Lead 5 as lib inventory;
+- 2026-08-07 REJECTED class @ lead: 10 (speculative variant hunting, HUMAN_ONLY-only, or no evidence)
+- 2026-08-08 REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+=== valid-bugs ===
+# Validated Bugs
+
+- 2026-08-07 ~18:00 UTC - SEED STATE: 0 valid bugs. Pipeline not yet run; hypotheses are recon-based and UNVALIDATED.
+
+- 2026-08-07 23:53 UTC — Triage run (14 hypotheses): 0 VALID / 4 HOLD / 10 INVALID.
+- 2026-08-08 04:30 UTC — Follow-up triage (same 14 hypotheses, no new evidence): **0 VALID / 0 HOLD / 14 INVALID**.
+
+| Verdict | Count | Summary |
+|---------|-------|---------|
+| **VALID** | 0 | No lead passes all 7 gates |
+| **HOLD** | 0 | Prior HOLDs resolved to INVALID — no new evidence gathered |
+| **INVALID** | 14 | All leads are recon-level hypotheses without proof of a vulnerability on v4.38.386.14 |
+
+**Key findings:**
+- **No probe results** were produced (`probe-results.txt` empty) — all leads are model hypotheses without HTTP-level evidence
+- **Sidebar SOP bypass** was the #1 hypothesis across all 5 models, but every instance fails Q4 (HUMAN_ONLY), Q5 (no novel variant evidence), and Q7 (speculative)
+- **Most promising recon surface**: Whale sync engine — binary static analysis confirmed Whale-only prefs keys, custom OSCrypt fork, and socket.io bundled in core, but token-storage format and KDF constants remain **unverified**
+- **0 valid bugs** to report. Disclosure channel per scope.yml is TBD (operator-provided; not yet confirmed).
+
+- 3 lead(s) marked VALID at 2026-08-08 04:39:28 UTC
+  - VALID  : 0
+  - | **VALID** | 0 | No lead passes all 7 gates |
+  - VALID  : 0
+
+- 2 lead(s) marked VALID at 2026-08-08 06:09:27 UTC
+  - | **VALID** | 0 | — |
+  - | **VALID** | 0 | — |
+
+- 1 lead(s) marked VALID at 2026-08-08 09:06:43 UTC
+  - | **VALID** | 0 | — |
+
+- 1 lead(s) marked VALID at 2026-08-08 10:02:28 UTC
+  - | **VALID** | 0 | No lead passes all 7 gates |
+
+- 11 lead(s) triaged at 2026-08-08 13:00 UTC — **0 VALID / 0 HOLD / 11 INVALID**
+  - All leads fail Q4 (no passive GET/HEAD proof) and Q7 (no evidence of actual vulnerability)
+  - See `triage/run-2026-08-08-13-00.md` for full 7Q analysis per lead
+
+- 2 lead(s) marked VALID at 2026-08-08 13:16:49 UTC
+  - valid-bugs.md
+[0m
+[0m$ [0mls -la leads/reposcan-2026-08-09-21-08.md; echo "==="; cat leads/reposcan-2026-08-09-21-08.md; echo "=== reposcan-raw ==="; ls -la reposcan-raw/ | head
+-rw-r--r-- 1 runner runner 4571 Aug  9 21:57 leads/reposcan-2026-08-09-21-08.md
+===
+
+===== REPOSCAN 2026-08-09 21:08:13 UTC =====
+## Grep hits:
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+
+## Model analysis:
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[0m$ [0mgh api /orgs/gladiaio/repos --jq '.[] | {name: .name, description: .description, language: .language, updated_at: .updated_at, size: .size, fork: .fork}' 2>/dev/null || echo "gh not available or no access"
+gh not available or no access
+[0m
+I notice the knowledge base is about Naver Whale browser, but you're asking me to triage gladiaio/ org and @gladiaio/sdk. Let me scan the actual gladiaio repositories and npm package.
+[0m$ [0mnpm view @gladiaio/sdk --json 2>/dev/null || echo "npm view failed"
+{
+  "_id": "@gladiaio/sdk@1.1.0",
+  "_rev": "129-8d16ae11f6d0f01320400f5fcaa4e9e8",
+  "name": "@gladiaio/sdk",
+  "dist-tags": {
+    "latest": "1.1.0"
+  },
+  "versions": [
+    "0.1.0",
+    "0.1.1",
+    "0.1.2",
+    "0.2.0",
+    "0.2.1",
+    "0.3.0",
+    "0.3.1",
+    "0.4.0",
+    "0.4.1",
+    "0.4.2",
+    "0.4.3",
+    "0.5.0",
+    "0.5.1",
+    "0.5.2",
+    "0.5.3",
+    "0.6.0",
+    "0.6.1",
+    "1.0.0",
+    "1.0.4",
+    "1.0.5",
+    "1.0.7",
+    "1.1.0"
+  ],
+  "time": {
+    "created": "2025-09-09T15:01:20.684Z",
+    "modified": "2026-07-23T20:48:35.899Z",
+    "0.8.9": "2022-10-28T08:45:13.203Z",
+    "0.8.10": "2022-10-28T09:20:28.511Z",
+    "0.8.11": "2022-10-28T10:16:20.446Z",
+    "0.8.12": "2022-11-02T13:40:47.351Z",
+    "0.8.13": "2022-11-02T14:22:51.825Z",
+    "0.8.14": "2022-11-10T15:46:41.656Z",
+    "0.8.15": "2022-11-10T16:20:33.692Z",
+    "0.8.16": "2022-11-13T18:27:04.269Z",
+    "0.8.17": "2022-11-18T16:07:37.254Z",
+    "0.9.1": "2022-11-22T14:38:02.436Z",
+    "0.9.2": "2022-11-23T07:38:30.338Z",
+    "0.9.3": "2022-11-30T09:32:14.398Z",
+    "0.9.4": "2022-11-30T10:05:06.541Z",
+    "0.9.5": "2022-12-09T11:31:31.615Z",
+    "0.10.1": "2022-12-09T12:39:20.544Z",
+    "0.10.2": "2022-12-09T14:22:43.928Z",
+    "0.10.3": "2022-12-09T15:13:00.720Z",
+    "0.10.4": "2022-12-09T17:23:13.026Z",
+    "0.10.5": "2022-12-12T17:13:58.447Z",
+    "0.10.6": "2022-12-12T17:29:59.221Z",
+    "0.10.7": "2022-12-19T19:29:04.531Z",
+    "0.10.8": "2023-01-10T13:24:01.450Z",
+    "0.10.9": "2023-01-10T15:17:51.295Z",
+    "0.10.10": "2023-01-10T15:37:49.001Z",
+    "0.10.11": "2023-01-11T09:01:49.220Z",
+    "0.10.12": "2023-01-11T13:12:36.873Z",
+    "0.10.13": "2023-01-11T21:12:54.881Z",
+    "0.10.14": "2023-01-12T09:10:07.435Z",
+    "0.10.15": "2023-01-17T10:19:35.165Z",
+    "0.10.16": "2023-01-17T12:05:23.330Z",
+    "0.10.17": "2023-01-17T12:58:17.730Z",
+    "0.10.18": "2023-01-17T16:09:20.768Z",
+    "0.10.19": "2023-01-18T15:26:15.155Z",
+    "0.10.20": "2023-01-18T18:04:32.626Z",
+    "0.10.21": "2023-01-20T08:16:14.497Z",
+    "0.10.22": "2023-01-20T10:04:28.819Z",
+    "0.10.23": "2023-01-20T15:04:40.649Z",
+    "0.10.24": "2023-01-20T15:11:16.682Z",
+    "0.10.25": "2023-01-20T15:13:48.025Z",
+    "0.10.26": "2023-01-20T15:31:50.478Z",
+    "0.10.27": "2023-01-20T15:39:56.257Z",
+    "0.10.28": "2023-01-20T15:42:19.092Z",
+    "0.10.29": "2023-01-20T15:50:28.108Z",
+    "0.10.30": "2023-01-24T08:25:37.753Z",
+    "0.10.31": "2023-01-27T09:03:39.648Z",
+    "0.10.32": "2023-01-27T13:42:54.782Z",
+    "0.10.33": "2023-01-30T16:53:45.752Z",
+    "0.10.34": "2023-01-31T10:05:22.344Z",
+    "0.10.35": "2023-01-31T16:26:08.125Z",
+    "0.10.36": "2023-01-31T18:05:57.019Z",
+    "0.10.37": "2023-02-01T09:07:05.551Z",
+    "0.10.38": "2023-02-08T13:16:19.390Z",
+    "0.10.39": "2023-02-09T11:04:51.004Z",
+    "0.10.40": "2023-02-10T16:05:17.732Z",
+    "0.10.41": "2023-02-10T16:39:30.367Z",
+    "0.10.42": "2023-02-13T20:05:28.053Z",
+    "0.10.43": "2023-02-14T14:05:13.700Z",
+    "0.10.44": "2023-02-14T15:41:25.199Z",
+    "0.10.45": "2023-02-21T09:05:46.595Z",
+    "0.10.47": "2023-02-22T15:05:00.452Z",
+    "0.10.48": "2023-02-22T15:20:28.452Z",
+    "0.10.49": "2023-02-22T16:44:44.559Z",
+    "0.10.50": "2023-02-22T17:34:36.357Z",
+    "0.10.51": "2023-02-23T12:06:26.120Z",
+    "0.10.52": "2023-02-27T10:05:37.941Z",
+    "0.10.53": "2023-02-28T10:05:00.048Z",
+    "0.10.54": "2023-02-28T11:04:57.740Z",
+    "0.10.55": "2023-03-06T17:10:50.627Z",
+    "0.10.56": "2023-03-07T13:42:28.741Z",
+    "0.10.57": "2023-03-10T08:35:13.404Z",
+    "0.10.58": "2023-03-14T13:12:41.710Z",
+    "0.10.59": "2023-03-14T16:06:56.161Z",
+    "0.10.60": "2023-03-15T20:45:18.851Z",
+    "0.10.61": "2023-03-16T12:33:03.265Z",
+    "0.10.62": "2023-03-16T16:55:15.030Z",
+    "0.10.63": "2023-03-17T08:41:22.881Z",
+    "0.10.64": "2023-03-17T10:05:27.471Z",
+    "0.10.65": "2023-03-22T10:47:01.768Z",
+=== reposcan-raw ===
+total 104
+drwxr-xr-x  2 runner runner  4096 Aug  9 21:57 .
+drwxr-xr-x 11 runner runner  4096 Aug  9 21:57 ..
+-rw-r--r--  1 runner runner   854 Aug  9 21:57 analysis.txt
+-rw-r--r--  1 runner runner    40 Aug  9 21:57 grep-delta.txt
+-rw-r--r--  1 runner runner    50 Aug  9 21:57 grep-hits.prev.txt
+-rw-r--r--  1 runner runner    50 Aug  9 21:57 grep-hits.txt
+-rw-r--r--  1 runner runner 81463 Aug  9 21:57 rag.txt
+[0m
+[0m$ [0mcat reposcan-raw/analysis.txt; echo "=== grep-hits ==="; cat reposcan-raw/grep-hits.txt; echo "=== grep-delta ==="; cat reposcan-raw/grep-delta.txt; echo "=== rag head ==="; head -c 1500 reposcan-raw/rag.txt
+[0m
+> build · nemotron-3-ultra-free
+[0m
+There's a mismatch: the knowledge base you provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), but you're asking me to triage a scan of **gladiaio/** GitHub org and **@gladiaio/sdk** npm package.
+
+The knowledge base contains:
+- Whale browser CVEs, repo analysis, binary acquisition paths
+- Sidebar/dual-tab SOP bypass research
+- Sample extension analysis from naver/whale-browser-developers
+
+But no Gladia-related data, repos, or npm metadata.
+
+**To proceed, I need:**
+1. The actual scan results for gladiaio/ GitHub org repos
+2. The npm package metadata for @gladiaio/sdk
+3. Any Gladia-specific scope/rules (the scope.yml you referenced appears to be for Whale)
+
+Could you provide the Gladia scan data, or clarify if you meant to use the Whale knowledge base for a Whale scan?
+=== grep-hits ===
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+=== grep-delta ===
+DELTA: 0 new hit lines vs previous scan
+=== rag head ===
+=== KNOWLEDGE BASE (RAG) ===
+# Knowledge Base (seed)
+
+## Program rules (from scope.yml)
+- Eligible: latest-version Whale browser bugs (must reproduce on latest at report time); third-party libraries used ONLY by Whale (not Chromium); synchronization bugs
+- NOT eligible: all Naver web services (*.naver.com, *.navercorp.com), web servers of built-in extensions (Papago, Belli), URL preview spoofing in status bar, bypassing XSS Auditor, IETab extension, SafeBrowsing FP/FN
+- Client-side software: static source analysis + repro-first validation; no server probing
+- Secrets in commits: sha256 only, never raw
+
+## Baseline surface (2026-08-07 passive recon)
+- Official GitHub repo: naver/whale-browser-developers (no public releases API; repo is developers channel)
+- Naver org is HUGE: reposcan clones ONLY whale-name repos
+- Known excluded classes to never report: XSS Auditor bypass, status-bar URL preview spoofing, SafeBrowsing FP/FN, anything in IETab
+
+## Rejected / parked
+- (none yet)
+- 2026-08-07 REJECTED BCP47 @ store.whale.naver.com: Issue #23 maps to Naver web service (store.whale.naver.com/*), explicitly excluded from scope per scope.yml out_of_scope rules
+- 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+- 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+- 2026-08-07 ACCEPTED XSS @ extension API:
+[0m
+[0m$ [0mfor br in master translate v2 jdkim/update_documents; do echo "=== branch: $br ==="; curl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/$(echo $br | sed 's/\//%2F/')?recursive=1" | python3 -c "import json,sys; d=json.load(sys.stdin); print('truncated:', d.get('truncated')); [print(t['type'], t['path']) for t in d.get('tree',[])]" 2>&1 | head -40; sleep 1; done
+=== branch: master ===
+truncated: False
+tree translation
+tree translation/chromium
+tree translation/chromium/docs
+blob translation/chromium/docs/how_cc_works.md
+tree translation/chromium/docs/images
+blob translation/chromium/docs/images/how_cc_works-commit_flow.png
+blob translation/chromium/docs/images/how_cc_works-compositor_frame.png
+blob translation/chromium/docs/images/how_cc_works-data_flow.png
+=== branch: translate ===
+truncated: False
+blob README.ko.md
+tree docs
+blob docs/0a3101a4-0e2d-11e7-8eb5-0fb2bab6ba77.png
+blob docs/1765d6e4-0809-11e7-89ee-d88ac06318be.png
+blob docs/253a55b2-0fc8-11e7-9b7d-4afddeff04f8.png
+blob docs/25eb21f8-0e2e-11e7-8c6f-1c71d9cfab07.png
+blob docs/34650d96-080e-11e7-815c-854ab8a52ad9.png
+blob docs/40bc5c1e-0e2d-11e7-80ec-4137936a3bff.png
+blob docs/5dcfef0e-0e2e-11e7-9527-cabe957718d3.png
+blob docs/74c4ad62-0e2e-11e7-9831-c77bfa0808f9.png
+blob docs/7b2e651a-0809-11e7-8d33-7fe5093d0132.png
+blob docs/7fa170fe-0e2d-11e7-9402-538293aacb71.png
+blob docs/989e7932-0809-11e7-908c-7e3b96867080.png
+blob docs/NCapture004.PNG
+blob docs/NCapture005.PNG
+blob docs/contextmenu.png
+blob docs/e0d26564-0e2c-11e7-94b1-6d47c4edead0.png
+blob docs/f11076b4-0e2c-11e7-993b-3aba86b416e3.png
+blob docs/f6ad8410-0808-11e7-8942-1cab765a9168.png
+blob docs/fec442d6-080f-11e7-9a1c-f0d550f01d6e.png
+blob docs/wiki_image1.png
+blob docs/wiki_image2.png
+blob docs/wiki_image3.png
+blob docs/wiki_image4.png
+blob docs/wiki_image5.png
+blob docs/wiki_image6.png
+blob docs/wiki_image7.png
+blob docs/wiki_image8.png
+tree src
+tree src/sidebar-sample
+tree src/sidebar-sample/css
+blob src/sidebar-sample/css/style.css
+tree src/sidebar-sample/icons
+blob src/sidebar-sample/icons/icon128.png
+blob src/sidebar-sample/icons/icon16.png
+blob src/sidebar-sample/icons/icon48.png
+tree src/sidebar-sample/img
+blob src/sidebar-sample/img/img01.png
+blob src/sidebar-sample/img/img02.png
+=== branch: v2 ===
+truncated: False
+blob README.md
+blob img.png
+=== branch: jdkim/update_documents ===
+truncated: False
+tree translation
+tree translation/chromium
+tree translation/chromium/docs
+blob translation/chromium/docs/how_cc_works.md
+tree translation/chromium/docs/images
+blob translation/chromium/docs/images/LUCI-Build.png
+blob translation/chromium/docs/images/LUCI-Builder.png
+blob translation/chromium/docs/images/LUCI-Builders-View.png
+blob translation/chromium/docs/images/LUCI-CodeReview-Tag.png
+blob translation/chromium/docs/images/LUCI-Console-View.png
+blob translation/chromium/docs/images/LUCI-Feedback-Icon.png
+blob translation/chromium/docs/images/LUCI-Home-Hierarchy.png
+blob translation/chromium/docs/images/LUCI-Home.png
+blob translation/chromium/docs/images/LUCI-Project-Builders.png
+blob translation/chromium/docs/images/LUCI-Project-Diagram.png
+blob translation/chromium/docs/images/LUCI-Project.png
+blob translation/chromium/docs/images/LUCI-Search.png
+blob translation/chromium/docs/images/LUCI-Site-Project.png
+blob translation/chromium/docs/images/code_coverage_choose_tryjobs.png
+blob translation/chromium/docs/images/code_coverage_dashboard_component_view.png
+blob translation/chromium/docs/images/code_coverage_dashboard_directory_view.png
+blob translation/chromium/docs/images/code_coverage_dashboard_file_view.png
+blob translation/chromium/docs/images/code_coverage_dashboard_main_view.png
+blob translation/chromium/docs/images/code_coverage_infra_diagram.png
+blob translation/chromium/docs/images/code_coverage_linux_coverage_rel.png
+blob translation/chromium/docs/images/code_coverage_uncovered_lines.png
+blob translation/chromium/docs/images/code_coverage_workflow.png
+blob translation/chromium/docs/images/how_cc_works-commit_flow.png
+blob translation/chromium/docs/images/how_cc_works-compositor_frame.png
+blob translation/chromium/docs/images/how_cc_works-data_flow.png
+blob translation/chromium/docs/images/mojo_binding_and_dispatch.png
+blob translation/chromium/docs/images/mojo_message.png
+blob translation/chromium/docs/images/mojo_pipe.png
+blob translation/chromium/docs/images/mojo_stack.png
+blob translation/chromium/docs/images/mojo_sync_call_deadlock.png
+blob translation/chromium/docs/images/mojo_sync_call_flow.png
+blob translation/chromium/docs/images/ozone_caca.jpg
+blob translation/chromium/docs/images/parsing_test_results_build_results_1.png
+blob translation/chromium/docs/images/parsing_test_results_polygerrit.png
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1" | python3 -c "import json,sys; d=json.load(sys.stdin); [print(t['type'], t['path']) for t in d.get('tree',[]) if 'sidebar' in t['path'] or t['type']=='blob' and not t['path'].startswith('docs/')]" 2>&1; echo "=== master full ==="; curl -s --max-time 20 "https://api.github.com/repos/naver/whale-browser-developers/git/trees/master?recursive=1" | python3 -c "import json,sys; d=json.load(sys.stdin); [print(t['type'], t['path']) for t in d.get('tree',[])]"
+blob README.ko.md
+tree src/sidebar-sample
+tree src/sidebar-sample/css
+blob src/sidebar-sample/css/style.css
+tree src/sidebar-sample/icons
+blob src/sidebar-sample/icons/icon128.png
+blob src/sidebar-sample/icons/icon16.png
+blob src/sidebar-sample/icons/icon48.png
+tree src/sidebar-sample/img
+blob src/sidebar-sample/img/img01.png
+blob src/sidebar-sample/img/img02.png
+blob src/sidebar-sample/img/img03.png
+blob src/sidebar-sample/index.html
+tree src/sidebar-sample/js
+blob src/sidebar-sample/js/background.js
+blob src/sidebar-sample/js/contentscript.js
+blob src/sidebar-sample/js/index.js
+blob src/sidebar-sample/manifest.json
+=== master full ===
+tree translation
+tree translation/chromium
+tree translation/chromium/docs
+blob translation/chromium/docs/how_cc_works.md
+tree translation/chromium/docs/images
+blob translation/chromium/docs/images/how_cc_works-commit_flow.png
+blob translation/chromium/docs/images/how_cc_works-compositor_frame.png
+blob translation/chromium/docs/images/how_cc_works-data_flow.png
+[0m
+[0m◈ [0mExa Web Search "Naver Whale browser sync encryption os_crypt xv10 passphrase analysis"
+=== ANALYSIS COMPLETE ===
+
+## STEP 1 — DELTA
+- [NEW] Full recursive tree enumeration of ALL 4 branches (master/translate/v2/jdkim/update_documents) via GitHub API: `translate` branch contains ONLY `README.ko.md` + docs/ images + `src/sidebar-sample/` (7 files: css/style.css, 3 icons, 3 imgs, index.html, 3 js, manifest.json) — **proves ZERO sync-related code/docs exist anywhere in the public repo**; sidebar-sample is the only sample extension
+- [NEW] Official Whale help docs (help.whale.naver.com, desktop page 2024-10-11, mobile 2025-05-09) retrieved via websearch: sync passphrase "neither sent to NAVER nor saved on server" → client-side KDF only; UI at `whale://settings/syncSetup`; "Encrypt synced data with your own sync passphrase" option; forgot-passphrase path = reset synced data (server wipe); mobile page dated 2025-05-09 aligns with sync-encryption since 3.8.6.2 (2025-04)
+- [CHANGED] Uptodown Android page `naver-whale-browser.en.uptodown.com/android` → HTTP 404 (persistent since 19:48; historical flip-flop 200@18:10 / 410@20:13) — acquisition channel dead this window
+- [CHANGED] `/tmp/opencode/whale_binary/` still missing (verified 21:57 UTC) — binary delivery unsatisfied
+- [CONFIRMED] NVD (services.nvd.nist.gov): 0 Whale CVEs in 2026, totalResults=2 (CVE-2018-9859, CVE-2020-9754, both pre-2021)
+- [CONFIRMED] reposcan 2026-08-09 21:08: 0 code/config files, 0 hits — consistent with 1-repo documentation-only surface
+
+## STEP 2 — PRIORITIZE
+- [PRIO] Desktop sync OSCrypt KDF/key-storage (`os_crypt_whale.cc` xv10, `whale_sync_util.cc`, Local State + keyring): score 6.9 — attack 7, business 9, tech 7, gate 5, cloud 3, fresh 8
+- [PRIO] Android sync engine (com.naver.whale 3.9.14.9, /whalesync client, Keystore): score 6.2 — attack 6, business 8, tech 6, gate 5, cloud 3, fresh 7
+- [PRIO] Public repo sample extension (sidebar-sample, all 5 files HTTP 200): score 4.4 — attack 4, business 3, tech 5, gate 8, cloud 1, fresh 6 — class REJECTED (duplicate of fixed CVEs)
+
+## STEP 3 — HYPOTHESES
+[HYP] Desktop sync passphrase KDF + xv10 bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc` / `whale_sync_util.cc`; Local State + keyring (client-side, zero /whalesync interaction)
+confidence: 62
+reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + xv10 OSCrypt fork + /whalesync + NEO_SES confirmed in prior binary runs; official help docs confirm passphrase is client-side-only (never sent to server); Chromium Linux baseline is 1-iteration PBKDF2 + hardcoded keyring password — Whale's forked envelope deviation is unverified; KDF alg/iteration count + master-key locality still unextracted; binary dir absent (21:57 UTC)
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State)
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable; compare against Chromium baseline (macOS PBKDF2-1003, Linux v11 1-iteration). Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+
+[HYP] Android sync encryption KDF / master-key storage (custom mobile impl, passphrase feature since ~3.8.6.2)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore)
+confidence: 50
+reasoning: mobile sync-passphrase help page dated 2025-05-09 aligns with sync encryption since 3.8.6.2 (2025-04) → custom mobile impl likely distinct from Chromium fork; version pin 3.9.14.9 captured only during uptodown 200-windows (last @18:10); page 404/410 since 19:48, APK sha256 unpinned
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin
+verify_steps: AUTH_HELPED: HUMAN monitors uptodown Android page for next 200 window (flip-flop: 200@18:10 → 404 → 410@20:13 → 404); on 200, completes JS/token dw flow in real browser → delivers APK to `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords/cookies/autofill on Android → cross-device sync account compromise; High
+testability: AUTH_HELPED
+
+## STEP 4 — SELF-CRITIQUE
+- Both hypotheses ≥ 40, neither on REJECTED list, both have concrete verify_steps — kept.
+- [PARKED] Any new hypothesis from public repo surface: tree enumeration proves zero sync code/docs publicly; help-center docs add contextual evidence but no exploitable endpoint (Naver web service, excluded).
+- [FINAL] 1. Desktop sync KDF/OSCrypt envelope (conf 62, AUTH_HELPED) 2. Android sync KDF (conf 50, AUTH_HELPED)
+
+## STEP 5 — NEXT ACTION
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) AND/OR com.naver.whale 3.9.14.9 APK to `/tmp/opencode/whale_binary/` via unrestricted internet (uptodown Android page `naver-whale-browser.en.uptodown.com/android` flip-flops — complete the JS/token dw flow in a real browser on the next 200 window; record sha256 only). Passive path stays dead (uptodown 404, cloudfront DNS No-answer, APKMirror 403, pstatic 404). Zero Naver-infra requests.
+
+## STEP 6 — LEARNING
+- [LEARN] ACCEPTED documentation @ help.whale.naver.com sync-passphrase pages (desktop 2024-10-11, mobile 2025-05-09): official docs confirm passphrase is client-side-only (never sent to NAVER), encrypted-sync option at `whale://settings/syncSetup`, forgot-passphrase = reset synced data — documents the local KDF surface but no constants; NOT a reporting target (Naver web service)
+- [LEARN] CONFIRMED class @ public repo sync surface: complete 4-branch tree enumeration (master 8 files, translate = README.ko.md + docs images + sidebar-sample only, v2 = README+img, jdkim = translation docs) — zero sync code/docs exist publicly; public-source class permanently dead for sync
+- [LEARN] REJECTED acquisition @ uptodown Android: `naver-whale-browser.en.uptodown.com/android` HTTP 404 again (persistent since 19:48; flip-flop history 200/404/410) — only live channel, HUMAN-gated on next 200 window
+
+## STEP 7 — RISK SCORE
+[RISK] sync: 60 — xv10 OSCrypt fork + Whale-only prefs + client-side passphrase KDF confirmed by docs, but binary absent and all acquisition channels dead (uptodown 404, cloudfront DNS dead, APKMirror 403, pstatic 404) — strongest open surface, fully HUMAN-gated | browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED (duplicate of fixed CVEs); 0 CVEs in 2026; no binary to confirm regression — Medium | libs: 30 — socket.io.slim.js class rejected (conf 38 < 40, runtime-fetched handler); no public library manifest; binary inaccessible — Low visibility
