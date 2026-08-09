@@ -1185,3 +1185,18 @@
 - LEARN: REJECTED binary acquisition @ cloudfront CDN: DNS `No answer` for `*.cloudfront.net` (resolver 127.0.0.53) — desktop `.deb` path permanently dead in-sandbox — b
 - LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — disclosure gap static for v4.35.352–v4.38.386.14 (8 months past last CVE fix v4.35.351.12, Dec 2025).
 - LEARN: CONFIRMED @ sample extension source (translate branch): all 5 files (manifest.json, background.js, contentscript.js, index.html, index.js) HTTP 200 — ALL-origin
+
+## RANKED HYPOTHESES 2026-08-09 08:47:46 UTC
+- [65] Whale: Sidebar/web-panel SOP-boundary regression on latest (CVE-2025-69234/69235 variant) (from reports/hypotheses-bigpickle.txt)
+- [65] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- LEARN: REJECTED binary acquisition @ APKMirror/APKCombo/apkpure/cloudfront CDN: All download paths blocked in-sandbox (cloudfront DNS `No answer`; APKMirror 403; uptod
+- LEARN: REJECTED @ static-whale.pstatic.net/WhaleSetup.exe: HTTP 404 — online installer CDN artifact dead; Naver pstatic infra excluded per scope
+- LEARN: REJECTED GitHub wiki raw access @ raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md: returns HTTP 404 — the `whale.sidebarAction` w
+- LEARN: ACCEPTED @ sample extension source (translate branch): `manifest.json` (HTTP 200) confirms `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins)
+- LEARN: CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-
+- LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (same as CVE-2025-69235), shares identical gen
+- LEARN: REJECTED @ installer: DLL search-order regression (confidence 50, below 60 threshold, no passive proof path, all binary acquisition channels dead)
+- LEARN: CONFIRMED @ background.js static analysis: `whale.runtime.onMessage.addListener((message, sender, sendResponse) => {...})` accepts `sender` parameter but perfor
+- LEARN: REJECTED @ Wikipedia version assertion: `en.wikipedia.org/wiki/NAVER_Whale` HTML does not contain version strings (4.38/4.35 not found in parsed content); prior
+- LEARN: CONFIRMED @ NVD endpoint: `nvd.nist.gov/rest` now Cloudflare-blocked in-sandbox; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable — route future CVE

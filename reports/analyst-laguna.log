@@ -34432,3 +34432,248 @@ All 3 hypotheses pass minimum thresholds: confidence ≥ 40, class not on REJECT
 [RISK] sync: 65 — Custom `/whalesync` + per-account bootstrap tokens + Whale-forked OSCrypt (xv10 magic) + NEO_SES cookie auth confirmed present in v4.38.386.14 binary via prior analysis; client-side KDF + key-storage is entire attack surface; KDF iter count + master-key locality unextracted (binary egress-blocked); client-side KDF weakness → full sync decryption (High)
 [RISK] browser: 82 — Sidebar/dual-tab surface (6 CVEs in 2025: CWE-346 SOP, CWE-346 iframe-sandbox escape, CWE-358 CSP) remain 3 minor versions past last fix (v4.35.351.12, Dec 2025) with 0 CVEs published in 2026; sample extension (5 files HTTP 200) confirms ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch from arbitrary web origin → high-priority regression window (Critical, $4k SOP tier)
 [RISK] libs: 35 — Whale bundles Chromium (ineligible per scope); `socket.io.slim.js` confirmed Whale-only in `resources.pak` but push-handler runtime-fetched (stale evidence); no public library manifest; binary inaccessible so version-drift audit blocked (Low)
+===== ANALYST laguna 2026-08-09 08:47:46 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>/dev/null; echo " - manifest.json"
+200 - manifest.json
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" 2>/dev/null; echo " - background.js"
+200 - background.js
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js" 2>/dev/null; echo " - contentscript.js"
+200 - contentscript.js
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/index.js" 2>/dev/null; echo " - index.js"
+200 - index.js
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/index.html" 2>/dev/null; echo " - index.html"
+200 - index.html
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers" 2>/dev/null | grep -E '"pushed_at"|"updated_at"|"size"|"releases"' 2>/dev/null | head -5
+"updated_at": "2025-10-22T03:15:17Z",
+  "pushed_at": "2019-09-23T08:03:26Z",
+  "size": 5043,
+[0m
+[0m$ [0mcurl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00.000&pubEndDate=2026-12-31T23:59:59.999" 2>/dev/null | grep -o '"totalResults":[0-9]*'
+(no output)
+[0m
+I'll run the 8-step bug bounty analysis workflow. First, let me probe the current surface to establish delta.
+[0m$ [0mcurl -s "https://api.github.com/search/repositories?q=org:naver+whale" 2>/dev/null | grep -o '"total_count":[0-9]*'
+"total_count":
+[0m
+[0m$ [0mcurl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('total:', d.get('totalResults','?')); [print(v.get('cve',{}).get('id','?'), v.get('cve',{}).get('descriptions',[{}])[0].get('value','')[:60]) for v in d.get('vulnerabilities',[])]" 2>/dev/null || echo "NVD parse failed"
+total: 2
+CVE-2018-9859 The path of Whale update service was unquoted in NAVER Whale
+CVE-2020-9754 NAVER Whale browser mobile app before 1.10.6.2 allows the at
+[0m
+[0m$ [0mcurl -s "https://api.github.com/search/repositories?q=org:naver+whale" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('total_count:', d.get('total_count','?'))" 2>/dev/null
+total_count: 1
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" 2>/dev/null | head -80
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message === 'sidebarAction.show') {
+    whale.sidebarAction.show({
+      reload : false
+    }, () => {
+
+    });
+  } else if (message === 'sidebarAction.hide') {
+    whale.sidebarAction.hide(() => {
+    });
+  } else if (message === 'sidebarAction.show2') {
+    whale.windows.create((windowInfo) => {
+      whale.sidebarAction.show(windowInfo.id, () => {
+
+      });
+    });
+  } else if (message === 'sidebarAction.hideAll') {
+    whale.windows.getAll((windowList) => {
+      for(let i = 0, len = windowList.length ; i < len ; i++) {
+        whale.sidebarAction.hide(windowList[i].id, () => {
+        });
+      }
+    });
+  }
+});
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>/dev/null | head -80
+{
+  "manifest_version": 2,
+  "name": "Whale Sidebar Extension",
+  "description": "Helloworld sample test for Whale browser sidebar extension",
+  "version": "1.0",
+  "icons": {
+    "16": "icons/icon16.png", /* used in context menu icon */
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png" 
+  },
+  "sidebar_action": {
+    "default_icon": {
+      "16": "icons/icon16.png" /* used in sidebar menu icon */
+    },
+    "default_page": "index.html",
+    "default_title": "Whale Sidebar Extension"
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "js/contentscript.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "permissions": [
+    "tabs"
+  ]
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js" 2>/dev/null | head -80
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+if (navigator.userAgent.includes('sidebar') === false) {
+  let a = document.createElement('button');
+  a.innerHTML = 'Show sidebar';
+  a.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:0;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid red;
+    color: red;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(a);
+  a.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show');
+  }, false);
+
+  let c = document.createElement('button');
+  c.innerHTML = 'Show sidebar in new window';
+  c.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:40px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid green;
+    color: green;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(c);
+  c.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show2');
+  }, false);
+
+  let b = document.createElement('button');
+  b.innerHTML = 'Hide sidebar';
+  b.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:80px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid blue;
+    color: blue;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(b);
+  b.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hide');
+  }, false);
+
+  let d = document.createElement('button');
+  d.innerHTML = 'Hide all sidebars';
+  d.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:120px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid black;
+[0m
+[0m$ [0mnslookup d1vdt4q2qgdbji.cloudfront.net 2>&1 | tail -3; echo "---cloudfront---"; curl -s -o /dev/null -w "%{http_code}" "https://static-whale.pstatic.net/WhaleSetup.exe" 2>/dev/null; echo " - pstatic installer"; curl -s -o /dev/null -w "%{http_code}" "https://whale-browser.en.uptodown.com/android" 2>/dev/null; echo " - uptodown"
+Non-authoritative answer:
+*** Can't find d1vdt4q2qgdbji.cloudfront.net: No answer
+
+---cloudfront---
+404 - pstatic installer
+404 - uptodown
+[0m
+[0m✱ [0mGlob "**/*.md"[90m 100 matches[0m
+[0m✱ [0mGlob "**/*.txt"[90m 13 matches[0m
+[0m→ [0mRead .
+NO_DELTA confirmed. Let me check existing workspace files for context.
+[0m→ [0mRead analyst-prompt.txt
+[0m→ [0mRead state_laguna.json
+[0m→ [0mRead probe-results.md
+[0m→ [0mRead reports/hypotheses-laguna.txt
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>/dev/null; echo "exit=$?"
+exit=2
+[0m
+[0m→ [0mRead reports/hypotheses-nemotron3.txt
+[0m
+[0m$ [0mmkdir -p /tmp/opencode/whale_binary && echo "created"
+created
+[0m
+All surface items static. Binary acquisition directory doesn't exist. Let me create it and write the structured analysis output.
+[0m← [0mWrite triage/run-2026-08-09-09-15.md
+Wrote file successfully.
+[0m
+Analysis complete. Summary:
+
+**STEP 1 — DELTA:** NO_DELTA. All surface items static since last run. Sample extension (5 files HTTP 200), GitHub repo (documentation-only, last push 2019), NVD (0 2026 CVEs), binary acquisition channels (all 100% blocked in-sandbox) — unchanged.
+
+**STEP 2 — PRIORITIZE:**
+- sidebarAction message handler — score **82** (atk=9, biz=9, tech=8, gate=2, fresh=10)
+- desktop sync KDF/OSCrypt — score **62**
+- Android sync KDF — score **58**
+
+**STEP 3 — HYPOTHESES:** 3 emitted (sidebar SOP bypass conf 65; sync KDF/OSCrypt deviation conf 62; Android sync KDF conf 55).
+
+**STEP 4 — SELF-CRITIQUE:** Android hypothesis PARKED (conf 55 < 60, consolidates under #2). 3 FINALs remain.
+
+**STEP 5 — NEXT:** HUMAN — deliver Whale v4.38.386.14 binary to `/tmp/opencode/whale_binary/` (directory created). Resolves both sync-KDF evidence gap AND sidebar origin-check static confirmation.
+
+**STEP 6 — LEARNING:** 6 lines (2 NEW/REJECTED confirmations, 4 restatements).
+
+**STEP 7 — RISK:** sync=65, browser=82, libs=35.
+
+Full structured output written to `triage/run-2026-08-09-09-15.md`.
