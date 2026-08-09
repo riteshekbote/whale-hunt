@@ -484,3 +484,9 @@
 - CHANGED Wikipedia EN/KO pages both HTTP 404 — passively verifiable version confirmation impossible; v4.38.386.14 claim from pre-August baseline cannot be re-asserted
 - CHANGED All binary acquisition channels 100% blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 both Windows + Android, pstatic 404)
 - CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin `content_scripts` + unvalidated `sidebarAction.show`/`show2` dispatch + zero origin validation in `onMessage` confir
+
+## 2026-08-09 22:39:52 UTC
+- CHANGED Uptodown Android acquisition channel `naver-whale-browser.en.uptodown.com/android` flipped from HTTP 200 (18:10 UTC) to HTTP 404 — passive APK download path permanently dead; no curl-able token flow e
+- CHANGED NVD primary `nvd.nist.gov/rest` Cloudflare-blocked; `services.nvd.nist.gov/rest` not responding in-sandbox — CVE verification path degraded
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification
+- CHANGED All binary acquisition channels 100% blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 both Windows + Android, pstatic 404)

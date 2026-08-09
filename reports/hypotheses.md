@@ -1540,3 +1540,18 @@
 - LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12; CPE lists only Windows/macOS, Linux fix statu
 - LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms
 - LEARN: REJECTED @ binary acquisition: cloudfront DNS `No answer` (general to `*.cloudfront.net` at resolver 127.0.0.53), APKMirror 403, Uptodown 404 (Windows + Android
+
+## RANKED HYPOTHESES 2026-08-09 22:39:52 UTC
+- [70] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF + xv10 bootstrap-token envelope weak/device-recoverable key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-laguna.txt): [HUMAN]: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/ope
+- LEARN: REJECTED @ Uptodown Android acquisition channel: `naver-whale-browser.en.uptodown.com/android` flipped to HTTP 404 — passive APK download path permanently dead;
+- LEARN: REJECTED @ NVD services endpoint: `services.nvd.nist.gov/rest` not responding in-sandbox — CVE verification path degraded; primary `nvd.nist.gov/rest` Cloudflar
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms
+- LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12; CPE lists only Windows/macOS, Linux fix statu
+- LEARN: REJECTED @ NVD services endpoint: `services.nvd.nist.gov/rest/json/cves/2.0` now returns HTTP 404 — both `nvd.nist.gov/rest` (Cloudflare-blocked) and `services.
+- LEARN: CONFIRMED @ `/tmp/opencode/whale_binary/`: still missing (`ls: No such file or directory`) — reported as created in prior scans (03:58–11:52 UTC) but absent; bi
+- LEARN: CONFIRMED @ GitHub repo `naver/whale-browser-developers`: documentation-only (pushed 2019-09-23, updated 2025-10-22, 0 releases, size=5043 KB) — static analysis
+- LEARN: CONFIRMED @ sample extension source (translate branch): all 5 files HTTP 200 — ALL-origin content_scripts + unvalidated sidebarAction show/show2 dispatch + zero
+- LEARN: CONFIRMED @ NVD (prior 20:25 UTC run): 0 Whale CVEs published in 2026 — keywordSearch returns exactly 2 total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-m

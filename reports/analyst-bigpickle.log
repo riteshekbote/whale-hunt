@@ -31661,3 +31661,118 @@ testability: AUTH_HELPED
 
 ## STEP 7 — RISK SCORE
 [RISK] sync: 60 — xv10 OSCrypt fork + Whale-only prefs + client-side passphrase KDF confirmed by docs, but binary absent and all acquisition channels dead (uptodown 404, cloudfront DNS dead, APKMirror 403, pstatic 404) — strongest open surface, fully HUMAN-gated | browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED (duplicate of fixed CVEs); 0 CVEs in 2026; no binary to confirm regression — Medium | libs: 30 — socket.io.slim.js class rejected (conf 38 < 40, runtime-fetched handler); no public library manifest; binary inaccessible — Low visibility
+===== ANALYST bigpickle 2026-08-09 22:39:52 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; ls /tmp/opencode/ 2>&1
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale" 2>&1; echo; curl -s -o /dev/null -w "%{http_code}" "https://naver-whale-browser.en.uptodown.com/android" 2>&1; echo
+200
+404
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "manifest:%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>&1; curl -s -o /dev/null -w "background:%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" 2>&1; curl -s -o /dev/null -w "api.github:%{http_code}\n" "https://api.github.com/repos/naver/whale-browser-developers" 2>&1
+manifest:200
+background:200
+api.github:200
+[0m
+[0m$ [0mcurl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver%20whale&resultsPerPage=5" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); print('totalResults:', d.get('totalResults')); [print(c['cve']['id'], c['cve'].get('published')) for c in d.get('vulnerabilities',[])]" 2>&1
+totalResults: 2
+CVE-2018-9859 2018-06-16T01:29:09.680
+CVE-2020-9754 2022-06-27T02:15:06.977
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/naver/whale-browser-developers" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); print('pushed_at:', d.get('pushed_at')); print('updated_at:', d.get('updated_at')); print('releases:', d.get('size'))" 2>&1
+pushed_at: 2019-09-23T08:03:26Z
+updated_at: 2025-10-22T03:15:17Z
+releases: 5043
+[0m
+[0m$ [0mcurl -s -m 20 "https://grep.app/api/search?q=os_crypt_whale" 2>&1 | head -c 800; echo; echo "==="; curl -s -m 20 "https://grep.app/api/search?q=encryption_bootstrap_token" 2>&1 | head -c 800; echo
+<!DOCTYPE html><html lang="en" data-astro-cid-nbv56vs3> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#000"><title>Vercel Security Checkpoint</title><style>.spinner[data-astro-cid-jlpqxutv]{display:flex;flex-direction:column;justify-content:center;align-items:center}.spinner-circle[data-astro-cid-jlpqxutv]{transform-origin:center;animation:spinner-circle-animate 1s step-start infinite}rect[data-astro-cid-jlpqxutv]{fill:var(--ds-gray-900)}@keyframes spinner-circle-animate{0%{transform:rotate(0)}10%{transform:rotate(36deg)}20%{transform:rotate(72deg)}30%{transform:rotate(108deg)}40%{transform:rotate(144deg)}50%{transform:rotate(180deg)}60%{transform:rotate(216deg)}70%{transform:rotate(252deg)}80%{transform:ro
+===
+<!DOCTYPE html><html lang="en" data-astro-cid-nbv56vs3> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#000"><title>Vercel Security Checkpoint</title><style>.spinner[data-astro-cid-jlpqxutv]{display:flex;flex-direction:column;justify-content:center;align-items:center}.spinner-circle[data-astro-cid-jlpqxutv]{transform-origin:center;animation:spinner-circle-animate 1s step-start infinite}rect[data-astro-cid-jlpqxutv]{fill:var(--ds-gray-900)}@keyframes spinner-circle-animate{0%{transform:rotate(0)}10%{transform:rotate(36deg)}20%{transform:rotate(72deg)}30%{transform:rotate(108deg)}40%{transform:rotate(144deg)}50%{transform:rotate(180deg)}60%{transform:rotate(216deg)}70%{transform:rotate(252deg)}80%{transform:ro
+[0m
+[0m$ [0mcurl -s -m 25 "https://sourcegraph.com/.api/search/stream?q=context:global%20os_crypt_whale&display=10" -H "Accept: text/event-stream" 2>&1 | head -c 1500; echo
+event: filters
+data: [{"value":"archived:yes","label":"Include archived repos","count":92504,"exhaustive":false,"kind":"utility"},{"value":"fork:yes","label":"Include forked repos","count":281,"exhaustive":false,"kind":"utility"}]
+
+event: progress
+data: {"done":false,"matchCount":0,"durationMs":213,"skipped":[{"reason":"repository-fork","title":"281 forked","message":"By default we exclude forked repositories. Include them with `fork:yes` in your query.","severity":"info","suggested":{"title":"include forked","queryExpression":"fork:yes"}},{"reason":"excluded-archive","title":"92k archived","message":"By default we exclude archived repositories. Include them with `archived:yes` in your query.","severity":"info","suggested":{"title":"include archived","queryExpression":"archived:yes"}}],"trace":"https://console.cloud.google.com/traces/list?tid=2789a868b09bc88fd93fdeb44416cf49\u0026authuser=0\u0026project=src-c4cd661e8a76d6b51c26"}
+
+event: progress
+data: {"done":false,"matchCount":0,"durationMs":5013,"skipped":[{"reason":"repository-fork","title":"281 forked","message":"By default we exclude forked repositories. Include them with `fork:yes` in your query.","severity":"info","suggested":{"title":"include forked","queryExpression":"fork:yes"}},{"reason":"excluded-archive","title":"92k archived","message":"By default we exclude archived repositories. Include them with `archived:yes` in your query.","severity":"info","suggested":{"title":"include archived","queryExpression":"archiv
+[0m
+[0m$ [0mcurl -s -m 30 "https://sourcegraph.com/.api/search/stream?q=context:global%20os_crypt_whale%20fork:yes%20archived:yes%20count:100&display=20" -H "Accept: text/event-stream" 2>&1 | python3 -c "import sys; [print(l) for l in sys.stdin if l.startswith('data:')]" | head -60
+data: {"done":true,"matchCount":0,"durationMs":4574,"skipped":[],"trace":"https://console.cloud.google.com/traces/list?tid=2f00e419064b3339483e838db239ba01\u0026authuser=0\u0026project=src-c4cd661e8a76d6b51c26"}
+
+data: {}
+[0m
+[0m$ [0mcurl -s -m 30 "https://sourcegraph.com/.api/search/stream?q=context:global%20%22whale_need_encryption_key_forced_time%22%20fork:yes%20archived:yes%20count:100&display=20" -H "Accept: text/event-stream" 2>&1 | python3 -c "import sys; [print(l) for l in sys.stdin if l.startswith('data:')]" | head -60
+data: {"done":false,"matchCount":0,"durationMs":5011,"skipped":[],"trace":"https://console.cloud.google.com/traces/list?tid=31064552e983ee2af0df3234e9406447\u0026authuser=0\u0026project=src-c4cd661e8a76d6b51c26"}
+
+data: {"done":false,"matchCount":0,"durationMs":10012,"skipped":[],"trace":"https://console.cloud.google.com/traces/list?tid=31064552e983ee2af0df3234e9406447\u0026authuser=0\u0026project=src-c4cd661e8a76d6b51c26"}
+
+data: {"done":true,"matchCount":0,"durationMs":10703,"skipped":[],"trace":"https://console.cloud.google.com/traces/list?tid=31064552e983ee2af0df3234e9406447\u0026authuser=0\u0026project=src-c4cd661e8a76d6b51c26"}
+
+data: {}
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}\n" "https://api.github.com/search/code?q=os_crypt_whale" 2>&1; curl -s -m 30 "https://sourcegraph.com/.api/search/stream?q=context:global%20%22sync.encryption_bootstrap_token_per_account%22%20fork:yes%20archived:yes%20count:100&display=10" -H "Accept: text/event-stream" 2>&1 | python3 -c "import sys; [print(l) for l in sys.stdin if l.startswith('data:')]" | head -5
+401
+data: [{"value":"type:file","label":"Code","count":3,"exhaustive":false,"kind":"type"},{"value":"lang:c++","label":"C++","count":3,"exhaustive":false,"kind":"lang"},{"value":"repo:^github\\.com/chromium/chromium$","label":"github.com/chromium/chromium","count":1,"exhaustive":false,"kind":"repo"},{"value":"repo:^github\\.com/reisxd/TizenTubeCobalt$","label":"github.com/reisxd/TizenTubeCobalt","count":1,"exhaustive":false,"kind":"repo"},{"value":"repo:^github\\.com/youtube/cobalt$","label":"github.com/youtube/cobalt","count":1,"exhaustive":false,"kind":"repo"},{"value":"repo:has.topic(browser)","label":"browser","count":1,"exhaustive":false,"kind":"repo topic"},{"value":"repo:has.topic(chromium)","label":"chromium","count":1,"exhaustive":false,"kind":"repo topic"},{"value":"repo:has.topic(cpp)","label":"cpp","count":1,"exhaustive":false,"kind":"repo topic"},{"value":"repo:has.topic(web)","label":"web","count":1,"exhaustive":false,"kind":"repo topic"},{"value":"repo:has.topic(youtube)","label":"youtube","count":1,"exhaustive":false,"kind":"repo topic"}]
+
+data: [{"type":"content","path":"components/sync/base/pref_names.h","repositoryID":37778235,"repository":"github.com/chromium/chromium","repoStars":23778,"repoLastFetched":"2026-08-09T22:36:25.851845Z","branches":[""],"commit":"bfa42e3d5683193f40b35211587b597728166613","hunks":null,"lineMatches":[{"line":"    \"sync.encryption_bootstrap_token_per_account\";","lineNumber":122,"offsetAndLengths":[[4,45]]}],"language":"C++"},{"type":"content","path":"components/sync/base/pref_names.h","repositoryID":40623673,"repository":"github.com/youtube/cobalt","repoStars":435,"repoLastFetched":"2026-08-09T22:36:12.660184Z","branches":[""],"commit":"9765ed6b8346a504f566ae4a7084476f59fda684","hunks":null,"lineMatches":[{"line":"    \"sync.encryption_bootstrap_token_per_account\";","lineNumber":121,"offsetAndLengths":[[4,45]]}],"language":"C++"},{"type":"content","path":"components/sync/base/pref_names.h","repositoryID":64162044,"repository":"github.com/reisxd/TizenTubeCobalt","repoStars":2419,"repoLastFetched":"2026-08-09T18:06:25.618495Z","branches":[""],"commit":"505aa031a9150d9319508c71371801c9670a2763","hunks":null,"lineMatches":[{"line":"    \"sync.encryption_bootstrap_token_per_account\";","lineNumber":121,"offsetAndLengths":[[4,45]]}],"language":"C++"}]
+
+data: {"done":false,"matchCount":3,"durationMs":2043,"skipped":[],"trace":"https://console.cloud.google.com/traces/list?tid=17f8f9150d2006aaa9c44ad399216839\u0026authuser=0\u0026project=src-c4cd661e8a76d6b51c26"}
+[0m
+STEP 1 — DELTA
+- [NEW] Sourcegraph indexed-code sweep: `os_crypt_whale` and `whale_need_encryption_key_forced_time` → 0 matches (fork:yes+archived:yes) — no public mirror of Whale sync-crypto source exists on code-search engines; passive static-analysis vector proven dead (grep.app Vercel-blocked, GitHub code-search 401)
+- [NEW] `sync.encryption_bootstrap_token_per_account` is STOCK Chromium — present in `chromium/chromium` `components/sync/base/pref_names.h:122` (also youtube/cobalt) — prior knowledge mislabeled it "Whale-only"; Whale-unique sync markers narrow to `os_crypt_whale.cc`/`xv10` + `whale_need_encryption_key_forced_time`
+- [CHANGED] `services.nvd.nist.gov` reachable again (was "not responding" @22:02) — confirms totalResults=2, 0 Whale CVEs in 2026
+- [CHANGED] uptodown Android page `naver-whale-browser.en.uptodown.com/android` still HTTP 404 — no 200 window since 18:10 UTC
+- [CHANGED] `/tmp/opencode/whale_binary/` still missing — all binary-dependent verification remains blocked
+
+STEP 2 — PRIORITIZE
+- [PRIO] Whale desktop binary `os_crypt_whale.cc`/xv10 sync envelope: score 6.0 = (attack 6, business 9, tech 8, gate 3, cloud 2, fresh 4) — strongest sync surface, HUMAN-gated only
+- [PRIO] com.naver.whale 3.9.14.9 APK sync engine (/whalesync client, Keystore): score 4.95 = (attack 5, business 8, tech 6, gate 2, cloud 2, fresh 3) — only channel is flip-flopping uptodown
+- [PRIO] sidebar extension API surface (live sample, translate branch): score 4.9 = (attack 7, business 4, tech 4, gate 7, cloud 0, fresh 5) — class REJECTED (duplicate of fixed CVEs), no hypothesis emitted
+
+STEP 3 — HYPOTHESES
+[HYP] Desktop sync passphrase KDF + xv10 bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`wbc_wrapper_apis.cc`; Local State + keyring (client-side only, zero /whalesync interaction)
+confidence: 62
+reasoning: Whale-unique markers narrowed this cycle — `os_crypt_whale` + `whale_need_encryption_key_forced_time` have 0 public-source matches (code-search engines), confirming closed source with no mirror; the per-account bootstrap-token pref is stock Chromium (baseline PBKDF2); xv10 magic = Whale's forked envelope whose KDF alg/iteration count + master-key locality remain unextracted; binary dir still absent (22:40 UTC)
+evidence_needed: PBKDF2/scrypt/scrypt-X alg + iteration count from Whale fork; derived-key persistence (keyring vs file vs Local State); comparison vs Chromium baselines (macOS PBKDF2-1003, Linux v11 1-iteration)
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+[HYP] Android sync encryption KDF / master-key storage (custom mobile impl, passphrase feature since ~3.8.6.2)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore)
+confidence: 45
+reasoning: sync encryption since 2025-04 + mobile passphrase help page dated 2025-05-09 → custom mobile impl likely distinct from Chromium fork; version pin 3.9.14.9 last captured only during uptodown 200-windows (last @18:10); page 404 again this cycle, APK sha256 unpinned
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin
+verify_steps: AUTH_HELPED: HUMAN monitors uptodown Android page for next 200 window (flip-flop pattern observed 18:10→19:48→20:13→now); on 200, completes JS/token dw flow in real browser → delivers APK to `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords/cookies/autofill on Android → cross-device sync account compromise; High
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- Kept: Desktop sync KDF (62) — only in-scope Whale-unique crypto surface; marker set now precisely bounded; source-mirror angle closed; verify_steps concrete
+- Kept: Android sync KDF (45) — valid class, concrete verify_steps, but channel currently dead; confidence trimmed 50→45 for channel unreliability
+- [PARKED] none dropped below 40 this cycle; no REJECTED-class hypotheses emitted (sidebar class excluded)
+
+[FINAL] 1) Desktop sync KDF (62)  2) Android sync KDF (45)
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: Monitor `naver-whale-browser.en.uptodown.com/android` for the next HTTP 200 window (flip-flop: 200@18:10 → 404 → 410 → 404 now) and complete the JS/token dw flow in a real browser → deliver com.naver.whale 3.9.14.9 APK to `/tmp/opencode/whale_binary/` (record sha256 only); desktop v4.38.386.14 `.deb`/`WhaleSetup.exe` also welcome via unrestricted internet. This is the only acquisition channel that has ever returned 200; all desktop channels are permanently dead in-sandbox (cloudfront DNS No-answer, pstatic 404, uptodown Windows 404).
+
+STEP 6 — LEARNING
+- REJECTED class @ source-archive search (grep.app Vercel-blocked, GitHub code-search 401, sourcegraph 0 hits for `os_crypt_whale` + `whale_need_encryption_key_forced_time` with fork:yes+archived:yes): no public mirror of Whale sync-crypto source exists — code-search static-analysis vector dead, same as GitHub repo
+- REJECTED claim @ sync prefs: `sync.encryption_bootstrap_token_per_account` is stock Chromium (chromium/chromium `components/sync/base/pref_names.h:122`) — "Whale-only prefs key" framing partially retracted; remaining Whale-unique sync markers = `os_crypt_whale.cc` (xv10) + `whale_need_encryption_key_forced_time`
+- ACCEPTED class @ xv10 sync envelope: Whale-unique deviation from Chromium baseline crypto remains the only in-scope sync surface; KDF constants still unextracted — holds at conf 62, fully HUMAN-gated
+
+STEP 7 — RISK SCORE
+- [RISK] sync: 60 — xv10 OSCrypt fork + forced_time pref confirmed Whale-unique and source-less, but one "Whale-only" pref retracted to stock Chromium, no binary, no source mirror, all acquisition channels dead except flip-flopping uptodown — strongest open surface, fully HUMAN-gated
+- [RISK] browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED (duplicate of fixed CVEs); 0 CVEs in 2026; no binary to confirm Linux regression — Medium-low
+- [RISK] libs: 30 — socket.io.slim.js class rejected (conf 38, runtime-fetched handler); no public library manifest; code-search sweep dead — Low visibility
