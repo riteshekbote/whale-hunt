@@ -159,3 +159,17 @@
 
 - 1 lead(s) marked VALID at 2026-08-09 16:22:47 UTC
   - **Verdict: HOLD** — passes Q1–Q3, Q5–Q6; fails Q4 but has a concrete AUTH_HELPED path (two authorized accounts). Could be elevated to VALID if a human tester can run the interactive test. Not reportab
+
+- 12 lead(s) marked VALID at 2026-08-09 17:55:25 UTC
+  - | Q6 | YES | SOP bypass is a valid vuln class |
+  - | Q6 | YES | Valid vuln class |
+  - | Q6 | YES | Valid vuln class |
+  - | Q6 | YES | Authz bypass is a valid class |
+  - **Verdict: HOLD** — passes Q1-Q3, Q5-Q6. Blocker is evidential: needs a human to run a two-account interactive session on v4.38.386.14. Could elevate to VALID if cross-session data leakage is demonstr
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Valid class |
+  - **Verdict: HOLD** — strongest sync-surface lead (Whale-specific OSCrypt fork confirmed). Blocker is purely evidential: binary required. Elevates to VALID upon binary delivery + static extraction of to
+  - | Q6 | YES | Valid class |
+  - **Verdict: HOLD** — passes Q1-Q3, Q6. Blocker is evidential: APK unreachable in-sandbox (Uptodown download endpoint returns 400 errorCode -51, resolver JS 410). Could elevate to VALID with binary deli
+  - | **VALID** | 0 | — |
+  - | **VALID** | 0 | — |
