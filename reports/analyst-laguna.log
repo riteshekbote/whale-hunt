@@ -39475,3 +39475,136 @@ no binary
 - `[RISK]` sync: 60 — Whale-forked OSCrypt (xv10) + custom `/whalesync` endpoint (NEO_SES cookie) + Whale-only prefs keys present per prior binary runs, but KDF constants/iteration count/salt/master-key storage unextracted; regression window ~8 months since last CVE fix
 - `[RISK]` browser: 70 — Sidebar SOP bypass attack surface (CVE-2025-69234/69235 Linux CPE unclaimed) + sample extension confirms ALL-origin `content_scripts` + unvalidated `sidebarAction` dispatch from any web origin; 0 CVEs published in 2026 for 3 minor versions past last fix
 - `[RISK]` libs: 30 — socket.io.slim.js confidence 38 < 40 threshold (handler runtime-fetched); no confirmed Whale-only third-party library vulnerability; lib surface limited to resources.pak static content
+===== ANALYST laguna 2026-08-09 18:17:46 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; ls -la /tmp/opencode/ 2>&1
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug  9 18:14 .
+drwxrwxrwt 15 root   root   12288 Aug  9 18:14 ..
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" "https://api.github.com/repos/naver/whale-browser-developers" 2>&1; echo ""; curl -s "https://api.github.com/repos/naver/whale-browser-developers" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); print('pushed_at:',d.get('pushed_at')); print('updated_at:',d.get('updated_at')); print('size:',d.get('size')); print('releases:',d.get('releases_url'))" 2>&1
+200
+pushed_at: 2019-09-23T08:03:26Z
+updated_at: 2025-10-22T03:15:17Z
+size: 5043
+releases: https://api.github.com/repos/naver/whale-browser-developers/releases{/id}
+[0m
+[0m$ [0mcurl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00&pubEndDate=2026-12-31T23:59:59" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); print('totalResults:',d.get('totalResults')); for v in d.get('vulnerabilities',[]): print(v.get('cve',{}).get('id','?'))" 2>&1
+File "<string>", line 1
+    import sys,json; d=json.load(sys.stdin); print('totalResults:',d.get('totalResults')); for v in d.get('vulnerabilities',[]): print(v.get('cve',{}).get('id','?'))
+                                                                                           ^^^
+SyntaxError: invalid syntax
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "manifest:%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>&1; curl -s -o /dev/null -w "background:%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" 2>&1; curl -s -o /dev/null -w "contentscript:%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js" 2>&1; curl -s -o /dev/null -w "indexjs:%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/index.js" 2>&1; curl -s -o /dev/null -w "indexhtml:%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/index.html" 2>&1
+manifest:200
+background:200
+contentscript:200
+indexjs:200
+indexhtml:200
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" 2>&1 | grep -ciE 'sender\.(origin|url)' 2>&1; echo "---sender-origin-grep-done---"
+0
+---sender-origin-grep-done---
+[0m
+I'll run passive probes to determine the current surface state, then complete the 8 steps.
+[0m$ [0mcurl -s -o /dev/null -w "wikipedia_en:%{http_code}\n" -L "https://en.wikipedia.org/wiki/NAVER_Whale" 2>&1; curl -s "https://en.wikipedia.org/wiki/NAVER_Whale" 2>&1 | grep -oiE '4\.3[0-9]\.[0-9]+' 2>&1 | head -5; echo "---wikipedia-done---"
+wikipedia_en:404
+---wikipedia-done---
+[0m
+[0m$ [0mcurl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00&pubEndDate=2026-12-31T23:59:59" 2>&1 | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+print('totalResults:',d.get('totalResults'))
+for v in d.get('vulnerabilities',[]):
+    print(v.get('cve',{}).get('id','?'))
+" 2>&1
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "uptodown_android:%{http_code}\n" -L "https://naver-whale-browser.en.uptodown.com/android" 2>&1; curl -s -o /dev/null -w "uptodown_win:%{http_code}\n" -L "https://whale-browser.en.uptodown.com/windows/download" 2>&1; curl -s -o /dev/null -w "cloudfront:%{http_code}\n" "https://d1vdt4q2qgdbji.cloudfront.net/" 2>&1; curl -s -o /dev/null -w "psstatic:%{http_code}\n" "https://static-whale.pstatic.net/WhaleSetup.exe" 2>&1; curl -s -o /dev/null -w "apkmirror:%{http_code}\n" -L "https://www.apkmirror.com/apk/naver-corp/whale/" 2>&1
+uptodown_android:404
+uptodown_win:404
+cloudfront:000
+psstatic:404
+apkmirror:403
+[0m
+[0m$ [0mcurl -s -w "\nHTTP_CODE:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&pubStartDate=2026-01-01T00:00:00&pubEndDate=2026-12-31T23:59:59" 2>&1 | head -c 500
+HTTP_CODE:404
+[0m
+[0m$ [0mcurl -s -w "\nHTTP_CODE:%{http_code}\n" "https://naver-whale-browser.en.uptodown.com/android" 2>&1 | head -c 800
+<html><body><h1>404 Not Found</h1>
+The resource could not be found.
+</body></html>
+
+HTTP_CODE:404
+[0m
+[0m$ [0mcurl -sv "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=20" 2>&1 | head -30
+* Host services.nvd.nist.gov:443 was resolved.
+* IPv6: 2606:4700:78::90:0:183, 2606:4700:78::90:0:180, 2606:4700:78::90:0:181, 2606:4700:78::90:0:182
+* IPv4: 172.65.90.27, 172.65.90.26, 172.65.90.24, 172.65.90.25
+*   Trying 172.65.90.27:443...
+* Connected to services.nvd.nist.gov (172.65.90.27) port 443
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+*  CAfile: /etc/ssl/certs/ca-certificates.crt
+*  CApath: /etc/ssl/certs
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [88 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [155 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [19 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [3430 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [78 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [52 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [52 bytes data]
+[0m
+[0m$ [0mcurl -s -w "\nHTTP_CODE:%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/1.0?keyword=naver+whale" 2>&1 | head -c 300
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en-US"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en-US"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en-US"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en-US"> <!
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "dns_cloudfront:%{http_code}\n" "https://d1vdt4q2qgdbji.cloudfront.net/" 2>&1; nslookup d1vdt4q2qgdbji.cloudfront.net 2>&1 | tail -5
+dns_cloudfront:000
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+*** Can't find d1vdt4q2qgdbji.cloudfront.net: No answer
+[0m
+[0m$ [0mcurl -s -w "\nHTTP_CODE:%{http_code}\nCONTENT_TYPE:%{content_type}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale" 2>&1 | tail -c 400
+onEndExcluding":"1.10.6.2","matchCriteriaId":"F0FE3C89-6E05-4348-8F00-CE4FFB9C4D5F"}]}]}],"references":[{"url":"https://cve.naver.com/detail/cve-2020-9754.html","source":"cve@navercorp.com","tags":["Vendor Advisory"]},{"url":"https://cve.naver.com/detail/cve-2020-9754.html","source":"af854a3a-2127-422b-91ae-364da2661108","tags":["Vendor Advisory"]}]}}]}
+HTTP_CODE:200
+CONTENT_TYPE:application/json
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mcurl -s -w "\nHTTP_CODE:%{http_code}\n" "https://naver-whale-browser.en.uptodown.com/android" 2>&1 > /tmp/uptodown_check.txt; cat /tmp/uptodown_check.txt | tail -c 300 failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.

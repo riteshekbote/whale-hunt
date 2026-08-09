@@ -447,3 +447,5 @@
 - NEW `dw.uptodown.com/dwn/1197336657` (session cookie) HTTP 400 `{"success":0,"errorCode":-51}` — passive APK fetch blocked
 - CHANGED Binary delivery `/tmp/opencode/whale_binary/` still missing after workspace re-provision — blocks all binary-dependent verification
 - CHANGED NVD primary `nvd.nist.gov/rest` Cloudflare-blocked; `services.nvd.nist.gov` returns 0 Whale CVEs in 2026 (2 total, pre-2021)
+
+## 2026-08-09 18:17:46 UTC

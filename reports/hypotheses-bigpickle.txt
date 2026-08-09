@@ -1,1 +1,29 @@
-## 2026-08-09 17:44:58 UTC [sync] (model bigpickle)
+## 2026-08-09 18:15:34 UTC [sync] (model bigpickle)
+[HYP] Desktop sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+class: AUTH
+asset: Whale binary os_crypt_whale.cc / whale_sync_util.cc; Local State + keyring; /whalesync
+confidence: 62
+reasoning: Whale-only prefs (per-account bootstrap token, `_migration_done`, `whale_need_encryption_key_forced_time`) + xv10 OSCrypt fork + /whalesync + NEO_SES confirmed in prior binary runs; KDF alg/iteration count + master-key locality unextracted; binary dir absent again (18:10 UTC).
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State).
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+[HYP] Android sync encryption KDF / master-key storage (custom mobile impl)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore)
+confidence: 58
+reasoning: uptodown Android page re-confirmed HTTP 200 (18:10 UTC) live-pinning 3.9.14.9 — channel alive despite 17:03 transient 404; sync encryption only since 3.8.6.2 (2025-04) → likely custom mobile impl distinct from Chromium fork; KDF alg/iterations + master-key location unextracted.
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
+verify_steps: AUTH_HELPED: HUMAN completes JS/token dw flow in real browser → deliver APK to /tmp/opencode/whale_binary/ → decompile → grep dex for KDF constants + key-store paths; authorized login snapshot for key lifecycle. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords/cookies/autofill on Android → cross-device sync account compromise; High
+testability: AUTH_HELPED
+[PARKED] none this run.
+[FINAL] 1. Desktop sync passphrase KDF/bootstrap-token envelope (conf 62, AUTH, AUTH_HELPED) — highest prior-evidence weight (xv10 fork + prefs keys), acquisition path dead
+[FINAL] 2. Android sync KDF/master-key (conf 58, AUTH, AUTH_HELPED) — only hypothesis with a newly-live in-sandbox-confirmed channel this run (uptodown 200 @ 18:10)
+[NEXT] HUMAN: In a real browser visit https://naver-whale-browser.en.uptodown.com/android/download (live HTTP 200 this run), complete the JS/client-side token flow (passive curl proven dead: `dw.uptodown.com/dwn/<id>` → 400 errorCode -51, resolver `stc.utdstc.com/*/download.js` → 410), save official com.naver.whale 3.9.14.9 APK to /tmp/opencode/whale_binary/, record sha256 (hash only, never raw). Then decompile and grep dex for `PBKDF2|scrypt|AES/GCM` constants + Keystore/shared-pref key paths. Zero requests to *.naver.com/*/whalesync.
+[LEARN] ACCEPTED acquisition channel @ uptodown Android page: flip-flopped back to HTTP 200 (18:10 UTC) and still live-pins com.naver.whale 3.9.14.9 — the 17:03-run 404 was transient; channel remains the only live, in-scope acquisition path (Windows page 404, cloudfront DNS dead, APKMirror 403, pstatic 404)
+[LEARN] CONFIRMED @ NVD (services.nvd.nist.gov, 18:15 UTC): 0 Whale CVEs in 2026; totalResults=2 (both pre-2021) — 8-month disclosure gap static for v4.35.352–v4.38.386.14
+[LEARN] REJECTED @ binary delivery dir `/tmp/opencode/whale_binary/`: still missing (18:10 UTC) — binary-dependent verification remains HUMAN-gated
+[RISK] sync: 62 — uptodown re-pin (200 @ 18:10) confirms latest Android build 3.9.14.9; prior desktop evidence (xv10 fork, per-account bootstrap tokens, /whalesync, NEO_SES); KDF/master-key unextracted, binary HUMAN-gated, 8-month gap — moderate-high, HUMAN-gated
+[RISK] browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED as duplicate of fixed CVEs (2025-69234/69235); 0 CVEs in 2026; no binary to confirm regression — Medium
+[RISK] libs: 30 — socket.io.slim.js class stale/rejected (runtime-fetched handler); no public library manifest; binary inaccessible — Low visibility

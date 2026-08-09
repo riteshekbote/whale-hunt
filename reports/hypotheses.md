@@ -1438,3 +1438,16 @@
 - LEARN: REJECTED class @ socket.io.slim.js event-handler injection: already REJECTED in 2026-08-09 triage (conf 38 < 40, runtime-fetched handler) — not re-emitted
 - LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (Dec 2025); CPE lists only Windows/macOS, Linu
 - LEARN: REJECTED @ Wikipedia version assertion: Wikipedia page (`en.wikipedia.org/wiki/NAVER_Whale`) contains ZERO version strings matching 4.38/4.35/4.33 — prior "conf
+
+## RANKED HYPOTHESES 2026-08-09 18:17:46 UTC
+- [70] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler (CVE-2025-69234/69235 variant on Linux) (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-bigpickle.txt): HUMAN: In a real browser visit https://naver-whale-browser.en.uptodown.com/android/download (live HTTP 200 this run), complete the JS/client-side token flow (pa
+- LEARN: REJECTED @ Wikipedia version assertion: Wikipedia page (`en.wikipedia.org/wiki/NAVER_Whale`) contains ZERO version strings matching 4.38/4.35/4.33 — prior "conf
+- LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (Dec 2025); CPE lists only Windows/macOS, Linu
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40 threshold; handler runtime-fetched degrading passive evidence; no novel XSS vul
+- LEARN: ACCEPTED acquisition channel @ uptodown Android page: flip-flopped back to HTTP 200 (18:10 UTC) and still live-pins com.naver.whale 3.9.14.9 — the 17:03-run 404
+- LEARN: CONFIRMED @ NVD (services.nvd.nist.gov, 18:15 UTC): 0 Whale CVEs in 2026; totalResults=2 (both pre-2021) — 8-month disclosure gap static for v4.35.352–v4.38.386
+- LEARN: REJECTED @ binary delivery dir `/tmp/opencode/whale_binary/`: still missing (18:10 UTC) — binary-dependent verification remains HUMAN-gated
