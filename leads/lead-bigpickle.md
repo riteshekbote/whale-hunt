@@ -2304,3 +2304,4 @@ testability: AUTH_HELPED
 [RISK] sync: 62 — uptodown re-pin (200 @ 18:10) confirms latest Android build 3.9.14.9; prior desktop evidence (xv10 fork, per-account bootstrap tokens, /whalesync, NEO_SES); KDF/master-key unextracted, binary HUMAN-gated, 8-month gap — moderate-high, HUMAN-gated
 [RISK] browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED as duplicate of fixed CVEs (2025-69234/69235); 0 CVEs in 2026; no binary to confirm regression — Medium
 [RISK] libs: 30 — socket.io.slim.js class stale/rejected (runtime-fetched handler); no public library manifest; binary inaccessible — Low visibility
+## 2026-08-09 19:05:27 UTC [sync] (model bigpickle)

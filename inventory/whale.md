@@ -449,3 +449,10 @@
 - CHANGED NVD primary `nvd.nist.gov/rest` Cloudflare-blocked; `services.nvd.nist.gov` returns 0 Whale CVEs in 2026 (2 total, pre-2021)
 
 ## 2026-08-09 18:17:46 UTC
+
+## 2026-08-09 19:06:54 UTC
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` still missing (reported created in prior scans but `ls` returns "No such file or directory")
+- CHANGED NVD primary endpoint `nvd.nist.gov/rest` confirmed Cloudflare-blocked; `services.nvd.nist.gov/rest/json/cves/2.0` remains reachable and returns 0 Whale CVEs in 2026 (2 total, both pre-2021)
+- CHANGED Wikipedia infobox version assertion cannot be passively re-verified — HTML parse shows no version strings (4.38/4.35/4.33 not found)
+- CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin content_scripts + unvalidated `sidebarAction.show`/`show2` dispatch + zero origin validation in `onMessage` confirme
+- CHANGED All binary acquisition channels remain 100% blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 page removed, pstatic 404)

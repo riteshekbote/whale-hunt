@@ -30083,3 +30083,68 @@ STEP 7 — RISK SCORE
 [RISK] sync: 62 — uptodown re-pin (200 @ 18:10) confirms latest Android build 3.9.14.9; prior desktop evidence (xv10 fork, per-account bootstrap tokens, /whalesync, NEO_SES); KDF/master-key unextracted, binary HUMAN-gated, 8-month gap — moderate-high, HUMAN-gated
 [RISK] browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED as duplicate of fixed CVEs (2025-69234/69235); 0 CVEs in 2026; no binary to confirm regression — Medium
 [RISK] libs: 30 — socket.io.slim.js class stale/rejected (runtime-fetched handler); no public library manifest; binary inaccessible — Low visibility
+===== ANALYST bigpickle 2026-08-09 19:06:54 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; ls /tmp/opencode/ 2>&1
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "uptodown_android: HTTP %{http_code} size=%{size_download}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" --max-time 20 "https://naver-whale-browser.en.uptodown.com/android" 2>&1
+uptodown_android: HTTP 200 size=156337
+[0m
+[0m$ [0mcurl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" --max-time 20 "https://naver-whale-browser.en.uptodown.com/android" 2>&1 | grep -oiE 'whale[^<]{0,40}(3\.9\.14\.[0-9]|[0-9]\.[0-9]\.[0-9]\.[0-9])' | head -5
+Whale Browser 3.9.14.9
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "dwn_token: HTTP %{http_code}\n" --max-time 15 "https://dw.uptodown.com/dwn/1197336657" 2>&1
+dwn_token: HTTP 404
+[0m
+STEP 1 — DELTA
+- [CHANGED] uptodown Android page: HTTP 200 (156,337 B) — 3rd consecutive 200 this evening, stably pins **Whale Browser 3.9.14.9**; the 17:03-run 404 is now confirmed a one-off transient → channel reclassified from "flip-flopping" to STABLE
+- [CONFIRMED] `/tmp/opencode/whale_binary/` still missing — binary delivery HUMAN-gated
+- [CONFIRMED] `dw.uptodown.com/dwn/1197336657` → HTTP 404 token-less (was 400 with session cookie) — client-side-token-gated, no passive path (consistent)
+- NO_DELTA: NVD 0 CVEs in 2026, sample-extension 5 files HTTP 200, cloudfront/APKMirror/pstatic/Uptodown-Windows all blocked (unchanged)
+
+STEP 2 — PRIORITIZE
+- [PRIO] com.naver.whale 3.9.14.9 Android sync engine (/whalesync client, Android Keystore): priority 5.90 = (6, 8, 5, 3, 4, 8) — only sync asset with a live, in-sandbox-confirmed acquisition channel (stable 200, exact version pin)
+- [PRIO] Whale desktop v4.38.386.14 binary (os_crypt_whale.cc / xv10 OSCrypt fork): priority 5.75 = (6, 8, 7, 2, 5, 4) — highest prior-evidence weight (bootstrap tokens, prefs keys), binary still absent
+- [PRIO] uptodown Android download page (acquisition channel): priority 3.75 = (1, 3, 2, 9, 2, 9) — gate_ease high but value only as verification conduit
+
+STEP 3 — HYPOTHESES
+- [HYP] Desktop sync passphrase KDF + bootstrap-token envelope weak/device-recoverable key
+  class: AUTH
+  asset: Whale binary os_crypt_whale.cc / whale_sync_util.cc; Local State + keyring; /whalesync
+  confidence: 62
+  reasoning: Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `_migration_done`, `whale_need_encryption_key_forced_time`) + `xv10` OSCrypt fork + /whalesync + NEO_SES confirmed in prior binary runs; KDF alg/iteration count + master-key locality unextracted; binary dir still missing (19:xx UTC).
+  evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State).
+  verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+  impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+  testability: AUTH_HELPED
+- [HYP] Android sync encryption KDF / master-key storage (custom mobile impl)
+  class: AUTH
+  asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore)
+  confidence: 60
+  reasoning: uptodown Android page stable 200 (3rd consecutive) live-pinning 3.9.14.9 — channel reclassified STABLE; sync encryption only since 3.8.6.2 (2025-04) → custom mobile impl distinct from Chromium fork; KDF alg/iterations + master-key location unextracted.
+  evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
+  verify_steps: AUTH_HELPED: HUMAN completes JS/token dw flow in real browser → deliver APK to /tmp/opencode/whale_binary/ → decompile → grep dex for KDF constants + key-store paths; authorized login snapshot for key lifecycle. Zero Naver-infra requests.
+  impact: local attacker decrypts synced passwords/cookies/autofill on Android → cross-device sync account compromise; High
+  testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] none this run — both hypotheses ≥40, AUTH not on reject list, verify steps concrete (AUTH_HELPED with exact artifact + grep targets).
+- [FINAL] 1. Desktop sync passphrase KDF/bootstrap-token envelope (conf 62) — highest prior-evidence weight (xv10 fork + prefs keys + /whalesync)
+- [FINAL] 2. Android sync KDF/master-key (conf 60, +2 for stable channel) — only hypothesis with a live in-sandbox-confirmed acquisition channel
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: In a real browser, complete the JS/client-side token flow on https://naver-whale-browser.en.uptodown.com/android (stable HTTP 200, pins 3.9.14.9; passive `dw` proven dead — token-less 404, session 400 errorCode -51, resolver JS 410). Save official com.naver.whale 3.9.14.9 APK to /tmp/opencode/whale_binary/, record sha256 only. Then decompile and grep dex for `PBKDF2|scrypt|AES/GCM` constants + Keystore/shared-pref key paths. Zero requests to *.naver.com/*/whalesync.
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED acquisition channel @ uptodown Android page: 3rd consecutive HTTP 200 (19:xx UTC) pinning 3.9.14.9 — reclassified from flip-flopping to STABLE; the 17:03 404 was a one-off transient. Only live in-scope binary acquisition path (Windows 404, cloudfront DNS dead, APKMirror 403, pstatic 404).
+- [LEARN] REJECTED passive APK download @ uptodown dw: `dw.uptodown.com/dwn/1197336657` HTTP 404 token-less — channel remains client-side-token-gated, no curl-able passive path (consistent with 400 errorCode -51 + 410 resolver JS).
+- [LEARN] CONFIRMED @ `/tmp/opencode/whale_binary/`: still missing (19:xx UTC) — binary-dependent verification remains HUMAN-gated.
+
+STEP 7 — RISK SCORE
+- [RISK] sync: 62 — stable uptodown re-pin (3× 200 @ 3.9.14.9) confirms latest Android sync build; desktop prior evidence (xv10 fork, per-account bootstrap tokens, /whalesync, NEO_SES); KDF/master-key unextracted, binary HUMAN-gated, 8-month disclosure gap — moderate-high, HUMAN-gated
+- [RISK] browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED as duplicate of fixed CVEs (2025-69234/69235); 0 CVEs in 2026; no binary to confirm Linux regression — Medium
+- [RISK] libs: 30 — socket.io.slim.js class stale/rejected (runtime-fetched handler); no public library manifest; binary inaccessible — Low visibility

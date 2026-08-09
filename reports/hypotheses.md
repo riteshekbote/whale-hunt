@@ -1451,3 +1451,20 @@
 - LEARN: ACCEPTED acquisition channel @ uptodown Android page: flip-flopped back to HTTP 200 (18:10 UTC) and still live-pins com.naver.whale 3.9.14.9 — the 17:03-run 404
 - LEARN: CONFIRMED @ NVD (services.nvd.nist.gov, 18:15 UTC): 0 Whale CVEs in 2026; totalResults=2 (both pre-2021) — 8-month disclosure gap static for v4.35.352–v4.38.386
 - LEARN: REJECTED @ binary delivery dir `/tmp/opencode/whale_binary/`: still missing (18:10 UTC) — binary-dependent verification remains HUMAN-gated
+
+## RANKED HYPOTHESES 2026-08-09 19:06:54 UTC
+- [70] Whale: Sidebar SOP bypass / iframe sandbox escape via unvalidated origin in sidebarAction message handler on v4.38.386.14 Linux (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb`) to `/tmp/opencode/whale_binary/` via unrestricted internet. Once delivered run: (1) `strings 
+- LEARN: REJECTED @ Wikipedia version assertion: Wikipedia page (`en.wikipedia.org/wiki/NAVER_Whale`) contains ZERO version strings matching 4.38/4.35/4.33 — prior "conf
+- LEARN: ACCEPTED @ CVE-2025-69234: CONFIRMED CVSS 9.1 (CWE-346, iframe sandbox escape in sidebar) — fixed in v4.35.351.12 (Dec 2025); CPE lists only Windows/macOS, Linu
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40 threshold; handler runtime-fetched degrading passive evidence; no novel XSS vuln 
+- LEARN: ACCEPTED acquisition channel @ uptodown Android page: `naver-whale-browser.en.uptodown.com/android` HTTP 200, live, pins com.naver.whale 3.9.14.9 — prior "Uptod
+- LEARN: REJECTED passive APK download @ uptodown: `dw.uptodown.com/dwn/<id>` → HTTP 400 errorCode -51 even with session cookie, and resolver JS `stc.utdstc.com/*/downlo
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: Confidence 38 < 40 threshold, handler runtime-fetched, no passive proof path — already rejected in p
+- LEARN: ACCEPTED class @ sample extension source (translate branch): all 5 files (manifest.json, js/background.js, js/contentscript.js, index.html, js/index.js) HTTP 20
+- LEARN: CONFIRMED @ NVD API (services.nvd.nist.gov): 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 total (CVE-2018-9859, CVE-2020-9754)
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: Confidence 38 < 40 threshold, handler runtime-fetched, no passive proof path — already rejected in p
+- LEARN: ACCEPTED class @ sample extension source (translate branch): all 5 files (manifest.json, background.js, contentscript.js, index.html, index.js) HTTP 200 — ALL-o
+- LEARN: CONFIRMED @ NVD API (services.nvd.nist.gov): 0 Whale CVEs published in 2026 — keywordSearch naver+whale returns exactly 2 total (CVE-2018-9859, CVE-2020-9754), 
