@@ -651,3 +651,9 @@
 - CHANGED Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged (persistent)
 - CHANGED GitHub complete branch inventory confirmed: 0 Whale-specific source files beyond sidebar-sample
 - CHANGED CVE-2025-69235/69234 CPE corrected to platform-agnostic (Linux fix IS covered)
+
+## 2026-08-10 19:13:24 UTC
+- NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was 404 @18:05:46 UTC) — passive CVE-gap path LIVE again; `keywordSearch=whale` re-confirmed totalResults=28 this cycle
+- NEW NVD services host date-range filters (`pubStartDate`/`pubEndDate`) return HTTP 404 while bare `keywordSearch` returns 200 — gap checks must use full pagination of `keywordSearch=whale`, not date-filte
+- CHANGED uptodown Android page `naver-whale-browser.en.uptodown.com/android` HTTP 404 @19:10 UTC — the 16:10 UTC HTTP-200 flip window has closed; APK channel flip-flops, treat per-cycle
+- CHANGED `/tmp/opencode/whale_binary/` still missing (re-verified @19:10 UTC) — binary-gated verification permanently HUMAN-gated

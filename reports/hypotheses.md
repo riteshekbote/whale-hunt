@@ -1876,3 +1876,24 @@
 - LEARN: REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code
 - LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
 - LEARN: CHANGED @ NVD: services endpoint recovered HTTP 200 this cycle — passive CVE-gap verification path live again; `keywordSearch=whale` (28 total) is correct surfa
+
+## RANKED HYPOTHESES 2026-08-10 19:13:24 UTC
+- [62] Whale: Sync passphrase KDF weak iteration count or recoverable master-key storage in Whale OSCrypt fork on Linux (from reports/hypotheses-longcat.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork (from reports/hypotheses-bigpickle.txt)
+- [54] `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/`: Sidebar SOP bypass via unvalidated sender origin in official sidebar-sample extension + wiki-documented API (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe`) to `/tmp/
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` — cloudfront DNS `No answer` in-sandbox, so unrestricted 
+- NEXT(hypotheses-longcat.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net or WhaleSetup.exe from Naver CDN) to /tmp/opencode/whale_bina
+- LEARN: ACCEPTED @ NVD services host: date-range filters (pubStartDate/pubEndDate) return 404 while bare `keywordSearch=whale` returns 200 — route all gap verification 
+- LEARN: ACCEPTED @ NVD: `keywordSearch=whale` totalResults=28 re-confirmed HTTP 200 @19:10 UTC — 0-in-2026 gap knowledge refreshed (latest CVE-2025-69235 @2025-12-30, 8
+- LEARN: REJECTED class @ uptodown Android channel: page HTTP 404 @19:10 UTC (was 200 @16:10) — channel is flip-floppy, no monotonic status; treat each cycle independent
+- LEARN: REJECTED @ NVD `keywordSearch=naver+whale`: returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 total, 0 in 2026) is correct surface — rout
+- LEARN: CONFIRMED @ sample extension source (translate branch): all 5 files HTTP 200 — `background.js` accepts `sender` param in `onMessage` but grep confirms ZERO `sen
+- LEARN: CONFIRMED @ sample extension manifest.json (translate branch): `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins) + `permissions: ["tabs"]` —
+- LEARN: REJECTED @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` still resolve `No answer` (127.0.0.53) — general resolver block, not domain-spec
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked.
+- LEARN: ACCEPTED @ README.ko.md RAG (translate branch): documentation-only — 0 sync/crypto/library-manifest content; fully exhausted; confirms NO public sync design doc
+- LEARN: REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
+- LEARN: CHANGED @ NVD: services endpoint recovered HTTP 200 this cycle — passive CVE-gap verification path live again; `keywordSearch=whale` (28 total) is correct surfa
