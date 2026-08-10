@@ -542,3 +542,30 @@
 - CHANGED Sample extension (translate branch): all 5 files HTTP 200 — manifest.json confirms `content_scripts` matches `http://*/*` + `https://*/*`; background.js has 0 matches for `sender.origin`/`sender.url`;
 - CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` confirmed HTTP 200 — `keywordSearch=whale` returns 28 total CVEs, 0 published in 2026; `naver+whale` returns 0 (keyword quirk)
 - CHANGED NVD `keywordSearch=naver+whale` now returns 0 results (was 2 pre-2021 IDs) — query surface shifted
+
+## 2026-08-10 06:12:45 UTC
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` reverted to HTTP 404 (was HTTP 200 in prior cycle) — both `nvd.nist.gov/rest` (403 Cloudflare) and `services.nvd.nist.gov/rest` (404) now dead in-sandbox
+- CHANGED NVD `keywordSearch=naver+whale` returns 0 results (was 2 pre-2021 IDs) — keyword-matching quirk; broad `whale` query (28 total) is the correct surface
+- CHANGED NVD `keywordSearch=whale` fully paginated (28/28 items swept): 0 published in 2026, latest CVE-2025-69235 @2025-12-30 — 8-month gap re-confirmed with complete coverage
+- CHANGED Binary delivery dir `/tmp/opencode/whale_binary/` still missing @04:40 UTC — HUMAN-gated (persistent)
+- CHANGED All binary acquisition channels 100% blocked in-sandbox: cloudfront DNS `No answer` (general `*.cloudfront.net`), APKMirror 403, Uptodown 404 (Windows + Android), pstatic 404 (persistent)
+- CHANGED Sample extension (translate branch): all 5 files HTTP 200 — manifest.json confirms `content_scripts` matches `http://*/*` + `https://*/*`; background.js has 0 matches for `sender.origin`/`sender.url` 
+- CHANGED Wikipedia version assertion impossible — EN/KO pages both HTTP 404 (persistent)
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` reverted to HTTP 404 (was HTTP 200 in prior cycle) — both `nvd.nist.gov/rest` (403 Cloudflare) and `services.nvd.nist.gov/rest` (404) now dead in-sandbox
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification (persistent)
+- CHANGED All binary acquisition channels 100% blocked in-sandbox: cloudfront DNS `No answer` (general `*.cloudfront.net`), APKMirror 403, Uptodown 404 (Windows + Android), pstatic 404 (persistent)
+- CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin `content_scripts` + unvalidated `sidebarAction.show`/`show2` dispatch + zero `sender.origin`/`sender.url` validation
+- CHANGED Wikipedia version assertion impossible — EN/KO pages both HTTP 404 (persistent)
+- CHANGED NVD `keywordSearch=naver+whale` returns 0 results; broad `whale` query returns 28 total but **0 published in 2026** (latest CVE-2025-69234/69235 Dec 2025)
+- CHANGED NVD `keywordSearch=whale` fully paginated (28/28 items swept, not first-page sample): 0 published in 2026, latest CVE-2025-69235 @2025-12-30 — 8-month gap re-confirmed with complete coverage
+- CHANGED Binary delivery dir `/tmp/opencode/whale_binary/` still missing @04:40 UTC — HUMAN-gated (persistent)
+- CHANGED uptodown Android page still HTTP 404 — no new 200 window (persistent)
+- CHANGED Sample extension (translate branch) manifest still HTTP 200 — surface unchanged (persistent)
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered to HTTP 200 (was fluctuating 404/200) — returns totalResults=28 for `keywordSearch=whale`, **0 published in 2026** (8 in 2025, 0 in 2026), conf
+- CHANGED NVD `keywordSearch=naver+whale` now returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 results) is the correct surface — route future gap checks via `whale` keyword
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — blocks all binary-dependent verification (persistent, 03:00–04:42 UTC)
+- CHANGED All binary acquisition channels 100% blocked in-sandbox: cloudfront DNS `No answer` (general to `*.cloudfront.net` @ 127.0.0.53), APKMirror 403, Uptodown 404 (Windows + Android pages removed), pstatic
+- CHANGED Sample extension (translate branch): all 5 files HTTP 200 — manifest.json confirms `content_scripts` matches `http://*/*` + `https://*/*`; background.js has 0 matches for `sender.origin`/`sender.url`;
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` confirmed HTTP 200 — `keywordSearch=whale` returns 28 total CVEs, 0 published in 2026; `naver+whale` returns 0 (keyword quirk)
+- CHANGED NVD `keywordSearch=naver+whale` now returns 0 results (was 2 pre-2021 IDs) — query surface shifted
+- NEW GitHub complete branch inventory: all 4 branches fully enumerated (`master`, `translate`, `v2`, `jdkim/update_documents`) — **0 additional Whale-specific code files** beyond the already-known sidebar-

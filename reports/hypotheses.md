@@ -1643,3 +1643,58 @@
 - LEARN: REJECTED NVD keywordSearch `naver+whale` query: returns 0 results (keyword-matching quirk) — use `whale` (28 total) as broad surface for future CVE-gap checks
 - LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
 - LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
+
+## RANKED HYPOTHESES 2026-08-10 06:12:45 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Whale: Desktop sync passphrase KDF weak iteration count or recoverable master-key storage on Linux (from reports/hypotheses-longcat.txt)
+- [62] Whale: Desktop sync passphrase KDF + xv10 bootstrap-token envelope weak/device-recoverable key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb`/`WhaleSetup.exe`) AND/OR com.naver.whale 3.9.14.9 APK to `/tmp/opencode/whale_binary/` — the p
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-longcat.txt): RAG: Fetch `README.ko.md` from translate branch (`https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md`) — may contain docume
+- LEARN: REJECTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: reverted to HTTP 404; both `nvd.nist.gov/rest` (403 Cloudflare) and `services.nvd.n
+- LEARN: REJECTED @ Uptodown Android acquisition channel: `naver-whale-browser.en.uptodown.com/android` HTTP 404 — passive APK download path permanently dead; no curl-ab
+- LEARN: REJECTED @ Wikipedia version assertion: EN/KO pages both HTTP 404 — passively verifiable version confirmation impossible; v4.38.386.14 claim from pre-August bas
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms
+- LEARN: ACCEPTED NVD query surface: `keywordSearch=whale` (28 total) is the accurate broad surface for Whale CVE-gap checks; `naver+whale` now returns 0 (keyword-matchi
+- LEARN: REJECTED @ binary acquisition channels: cloudfront DNS `No answer` (general to `*.cloudfront.net`), APKMirror 403, Uptodown 404 both pages, pstatic 404 — ALL 10
+- LEARN: ACCEPTED class @ full repo enumeration: recursive trees of all 4 branches (master 3, v2 2, translate 57, jdkim 39 blobs) confirm sidebar-sample is the ONLY exec
+- LEARN: CONFIRMED @ services.nvd.nist.gov/rest/json/cves/2.0: HTTP 200 this cycle (fluctuating) — `whale` keywordSearch totalResults=28, 0 published in 2026; keep using
+- LEARN: REJECTED @ uptodown Android page: still HTTP 404, no 200 window this cycle — APK acquisition remains HUMAN-gated.
+- LEARN: CONFIRMED @ /tmp/opencode/whale_binary/: still missing — binary-dependent verification permanently HUMAN-gated.
+- LEARN: REJECTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: reverted to HTTP 404; both `nvd.nist.gov/rest` (403 Cloudflare) and `services.nvd.n
+- LEARN: REJECTED @ Uptodown Android acquisition channel: `naver-whale-browser.en.uptodown.com/android` HTTP 404 — passive APK download path permanently dead; no curl-ab
+- LEARN: REJECTED @ Wikipedia version assertion: EN/KO pages both HTTP 404 — passively verifiable version confirmation impossible; v4.38.386.14 claim from pre-August bas
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms
+- LEARN: ACCEPTED @ sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin `content_scripts` + unvalidated `sidebarAction.show`/`show2` disp
+- LEARN: REJECTED @ binary acquisition channels: cloudfront DNS `No answer` (general to `*.cloudfront.net`), APKMirror 403, Uptodown 404 both pages, pstatic 404 — ALL 10
+- LEARN: ACCEPTED NVD gap surface: `keywordSearch=whale` fully paginated (28/28, resultsPerPage=200) confirms 0 CVEs published in 2026, latest CVE-2025-69235 @2025-12-30
+- LEARN: CONFIRMED @ services.nvd.nist.gov/rest/json/cves/2.0: HTTP 200 this cycle — passive CVE verification path live; keep using services host.
+- LEARN: REJECTED @ Uptodown Android page: still HTTP 404, no flip window this cycle — APK acquisition remains HUMAN-gated.
+- LEARN: CONFIRMED @ sample extension source (translate branch): 5 files HTTP 200 — surface unchanged; class remains REJECTED (duplicate of fixed CVEs).
+- LEARN: CONFIRMED @ /tmp/opencode/whale_binary/: still missing — binary-dependent verification permanently HUMAN-gated.
+- LEARN: ACCEPTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: HTTP 200 this cycle — 0 Whale CVEs published in 2026 confirmed (28 total, 8 in 2025
+- LEARN: REJECTED @ NVD `keywordSearch=naver+whale`: returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 results) is the correct surface for Whale C
+- LEARN: CONFIRMED @ GitHub repo `naver/whale-browser-developers`: `pushed_at=2019-09-23T08:03:26Z`, `updated_at=2025-10-22T03:15:17Z`, size=5043, 0 releases — documenta
+- LEARN: CONFIRMED @ sample extension source (translate branch): all 5 files HTTP 200 — manifest.json `content_scripts` match ALL origins (`http://*/*` + `https://*/*`);
+- LEARN: REJECTED @ binary acquisition channels: cloudfront DNS `No answer` (general `*.cloudfront.net`), APKMirror 403, Uptodown 404 (Windows + Android), pstatic 404 — 
+- LEARN: REJECTED @ Wikipedia version assertion: EN/KO pages (`en.wikipedia.org/wiki/NAVER_Whale`, `ko.wikipedia.org/wiki/NAVER_Whale`) both HTTP 404 — passively verifia
+- LEARN: REJECTED @ GitHub wiki `sidebarAction` docs: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/sidebarAction.md` HTTP 404 + wiki API 404 + `has_pag
+- LEARN: ACCEPTED @ NVD services endpoint: `services.nvd.nist.gov/rest/json/cves/2.0` confirmed HTTP 200 (was fluctuating 404/200) — 0 Whale CVEs in 2026, 8-month disclo
+- LEARN: REJECTED NVD keywordSearch `naver+whale` query: returns 0 results (keyword-matching quirk) — use `whale` (28 total) as broad surface for future CVE-gap checks
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
+- LEARN: ACCEPTED @ GitHub wiki raw path: raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md → HTTP 200 — wiki sidebarAction API docume
+- LEARN: ACCEPTED @ GitHub wiki How-to-avoid-my-extension-from-changing-urls.md → HTTP 200 — documents drag-drop navigation risk in sidebar; mitigation covers drag-drop 
+- LEARN: ACCEPTED @ GitHub wiki Client-side-application-vs-Server-side-application.md → HTTP 200 — documents server-side applications loading remote web content in sideb
+- LEARN: CORRECTED @ CVE-2025-69235/69234 CPE: cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:* is platform-agnostic (NOT Windows/macOS-only as knowledge base claimed) — Linux 
+- LEARN: CONFIRMED @ NVD services.nvd.nist.gov/rest/json/cves/2.0: HTTP 200 — 0 Whale CVEs published in 2026 (28 total, 8 in 2025, 0 in 2026, latest CVE-2025-69235 @2025
+- LEARN: CONFIRMED @ GitHub repo naver/whale-browser-developers: pushed_at=2019-09-23, updated_at=2025-10-22, size=5043, 0 releases, has_wiki=true — documentation-only s
+- LEARN: CONFIRMED @ sample extension translate branch: all 5 files HTTP 200 — manifest.json content_scripts match ALL origins; background.js 0 sender.origin/sender.url 
+- LEARN: REJECTED @ binary acquisition channels: cloudfront DNS No-answer (general *.cloudfront.net), APKMirror 403, Uptodown 404 (Win+Android), pstatic 404 — ALL 100% b
+- LEARN: REJECTED @ Wikipedia version assertion: EN/KO pages both 404 — passively verifiable version confirmation impossible; v4.38.386.14 claim from pre-August baseline
+- LEARN: REJECTED @ GitHub code search for sync.encryption_bootstrap_token/os_crypt_whale in naver/whale-browser-developers: 0 results — no sync/crypto source code on pu
+- LEARN: libs: 20 — socket.io.slim.js confirmed Whale-only in resources.pak but confidence 38 < 40 (handler runtime-fetched, binary inaccessible, no passive version stri
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — `master` and `jdkim/update_documents` are Chromium doc tra
+- LEARN: ACCEPTED @ NVD (services.nvd.nist.gov, HTTP 200): 28 total "whale" keyword results, 0 published in 2026. After filtering false positives (Whale Communications, 
+- LEARN: REJECTED @ class sidebar/dual-tab/web-panel SOP-CSP bypass: sample extension confirms API surface present but does NOT demonstrate exploitability in current bin
