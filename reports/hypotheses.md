@@ -1812,3 +1812,19 @@
 - LEARN: REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code
 - LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
 - LEARN: CHANGED @ NVD: services endpoint HTTP 404 this cycle — both NVD endpoints dead; CVE-gap verification frozen at 0-in-2026 (last known: 28 total, latest CVE-2025-
+
+## RANKED HYPOTHESES 2026-08-10 16:24:39 UTC
+- [62] Whale: Whale Linux sync passphrase KDF weak iteration count or recoverable master-key storage in os_crypt_whale fork (from reports/hypotheses-laguna.txt)
+- [62] Whale: Sync passphrase KDF weak iteration count or recoverable master-key storage in Whale OSCrypt fork on Linux (from reports/hypotheses-longcat.txt)
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from cloudfront CDN `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe`) to `/tmp/opencode/wha
+- NEXT(hypotheses-longcat.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net or WhaleSetup.exe from Naver CDN) to /tmp/opencode/whale_bina
+- LEARN: REJECTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: HTTP 404 this cycle (was fluctuating 200/404) — both NVD endpoints dead in-sandbox;
+- LEARN: ACCEPTED @ `/tmp/opencode/whale_binary/` missing: persistent blocker — confirms all binary-dependent hypotheses require HUMAN delivery; no passive acquisition p
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235 — sample extension API-surface evidence insufficient wit
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; runtime-fetched handler; no passive proof path; permanently parked
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; stale lead — parked permanently.
+- LEARN: ACCEPTED @ README.ko.md RAG (translate branch): documentation-only — 0 sync/crypto/library-manifest content; fully exhausted; confirms NO public sync design doc
+- LEARN: REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
+- LEARN: CHANGED @ NVD: both endpoints dead (nvd.nist.gov/rest 403 Cloudflare, services.nvd.nist.gov/rest 404) — CVE-gap verification frozen at 0-in-2026 (last known: 28

@@ -632,3 +632,5 @@
 ## 2026-08-10 15:12:30 UTC
 - CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` reverted to HTTP 404 — both NVD endpoints dead in-sandbox; passive CVE-gap verification unavailable
 - CHANGED NVD `keywordSearch=naver+whale` confirmed returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 total) remains correct surface
+
+## 2026-08-10 16:24:39 UTC

@@ -425,3 +425,9 @@
 - 2026-08-10 REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch
 - 2026-08-10 CHANGED @ NVD: both endpoints dead (nvd.nist.gov/rest 403 Cloudflare, services.nvd.nist.gov/rest 404) — CVE-gap verification frozen at 0-in-2026 (last known: 28 total, latest CVE-2025-69235 @2025-12-30)
 - 2026-08-10 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; stale lead — parked permanently.
+- 2026-08-10 REJECTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: HTTP 404 this cycle (was fluctuating 200/404) — both NVD endpoints dead in-sandbox; CVE-gap verification frozen at 0-in-2026 (last confirmed: 28 total, 0 in 2026, latest CVE-2025-69235 @2025-12-30)
+- 2026-08-10 ACCEPTED @ `/tmp/opencode/whale_binary/` missing: persistent blocker — confirms all binary-dependent hypotheses require HUMAN delivery; no passive acquisition path exists
+- 2026-08-10 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235 — sample extension API-surface evidence insufficient without binary exploitability proof
+- 2026-08-10 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; runtime-fetched handler; no passive proof path; permanently parked
+- 2026-08-10 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension confirms API surface present but NOT exploitability in current binary.
+- 2026-08-10 CHANGED @ NVD: both endpoints dead (nvd.nist.gov/rest 403 Cloudflare, services.nvd.nist.gov/rest 404) — CVE-gap verification frozen at 0-in-2026 (last known: 28 total, latest CVE-2025-69235 @2025-12-30).
