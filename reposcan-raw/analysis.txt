@@ -1,57 +1,20 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-[0m$ [0mls -la
-total 772
-drwxr-xr-x 11 runner runner   4096 Aug 10 09:45 .
-drwxr-xr-x  3 runner runner   4096 Aug 10 09:45 ..
-drwxr-xr-x  7 runner runner   4096 Aug 10 09:45 .git
-drwxr-xr-x  3 runner runner   4096 Aug 10 09:45 .github
--rw-r--r--  1 runner runner   1057 Aug 10 09:45 README.md
--rw-r--r--  1 runner runner      0 Aug 10 09:45 cands-naver.txt
-drwxr-xr-x  2 runner runner   4096 Aug 10 09:45 inventory
-drwxr-xr-x  2 runner runner   4096 Aug 10 09:45 knowledge
-drwxr-xr-x  2 runner runner  12288 Aug 10 09:45 leads
--rw-r--r--  1 runner runner   3111 Aug 10 09:45 probe-results.md
-drwxr-xr-x  2 runner runner   4096 Aug 10 09:45 reports
--rw-r--r--  1 runner runner 598138 Aug 10 09:45 repos-naver.json
-drwxr-xr-x  3 runner runner   4096 Aug 10 09:45 reposcan-raw
--rw-r--r--  1 runner runner  98901 Aug 10 09:45 scan-prompt.txt
--rw-r--r--  1 runner runner   1513 Aug 10 09:45 scope.yml
-drwxr-xr-x  2 runner runner   4096 Aug 10 09:45 scripts
--rw-r--r--  1 runner runner     34 Aug 10 09:45 state_bigpickle.json
--rw-r--r--  1 runner runner     37 Aug 10 09:45 state_laguna.json
--rw-r--r--  1 runner runner     34 Aug 10 09:45 state_ling3.json
--rw-r--r--  1 runner runner     34 Aug 10 09:45 state_longcat.json
--rw-r--r--  1 runner runner     37 Aug 10 09:45 state_nemotron3.json
-drwxr-xr-x  2 runner runner   4096 Aug 10 09:45 triage
-[0m
-The knowledge base you provided is entirely about **Whale browser (naver/whale-browser-developers)**, but you're asking me to triage **gladiaio/ GitHub org** and **@gladiaio/sdk** npm package. These are completely different targets.
+There's a significant mismatch here. You've asked me to triage a scan of **gladiaio/** GitHub org repos and **@gladiaio/sdk** npm package, but the entire knowledge base provided (2000+ lines) is exclusively about **Naver Whale browser** (`naver/whale-browser-developers`), including:
+- Whale CVEs (CVE-2025-69235, 69234, 62585, etc.)
+- Whale sidebar/dual-tab SOP/CSP bypasses
+- Whale binary acquisition channels (cloudfront, APKMirror, Uptodown)
+- Whale sample extension analysis
+- Whale GitHub repo enumeration
 
-Let me check the current workspace for any gladiaio-related content:
-[0m→ [0mRead scope.yml
-[0m✱ [0mGlob "reposcan-raw/**/*"[90m 5 matches[0m
-[0m→ [0mRead reposcan-raw/grep-hits.txt
-[0m→ [0mRead reposcan-raw/grep-delta.txt
-[0m→ [0mRead reposcan-raw/analysis.txt
-[0m✱ [0mGlob "inventory/**/*"[90m 1 match[0m
-[0m✱ [0mGlob "knowledge/**/*"[90m 1 match[0m
-[0m✱ [0mGlob "leads/**/*"[90m 100 matches[0m
-The workspace is for **Naver Whale Browser** (scope.yml confirms `github_orgs: [naver]`), not gladiaio. The prompt appears to have a copy-paste error.
+The "=== INVENTORY gladia ===" section at the end even says `# Inventory: whale` and contains only Whale data.
 
-**Triage Result:**
+**I have zero scan data, file contents, or repository metadata for gladiaio/** or **@gladiaio/sdk** to triage.
 
-| Category | Count | Details |
-|----------|-------|---------|
-| REAL_SECRET | 0 | No code/config files scanned |
-| TEST_OR_EXAMPLE | 0 | No code/config files scanned |
-| ENDPOINT_LEAK | 0 | No code/config files scanned |
-| INTERESTING | 0 | No code/config files scanned |
+Please provide:
+1. The actual static scan results (file lists, grep hits, secret scan output, etc.) for gladiaio repos
+2. The npm package metadata for @gladiaio/sdk (version, dependencies, repository URL, etc.)
+3. Any gladiaio GitHub repo contents you want analyzed
 
-**Verdict:**
-- **REPORT_CANDIDATE: no** — The only public repo (`naver/whale-browser-developers`) is documentation-only (last code commit 2019-09-23). Static source analysis path is permanently dead; 0 code/config files were scanned, 0 hits.
-- All binary acquisition channels blocked in-sandbox (CloudFront DNS `No answer`, APKMirror 403, Uptodown 404, pstatic 404).
-- Only live surface: sample extension in `translate` branch (ALL-origin `content_scripts` + unvalidated `sidebarAction.show` dispatch) — but this duplicates **CVE-2025-69234/69235** (fixed v4.35.351.12), no novel variant proven without binary.
-- NVD confirms 0 Whale CVEs in 2026 (8-month disclosure gap for v4.35.352–v4.38.386.14).
-
-**Action:** Binary acquisition + interactive browser install requires HUMAN with unrestricted internet. No reportable findings from passive static scan.
+Once you share the actual Gladia scan artifacts, I'll triage them per your classification framework (REAL_SECRET, TEST_OR_EXAMPLE, ENDPOINT_LEAK, INTERESTING) with SHA256-only secret handling.
