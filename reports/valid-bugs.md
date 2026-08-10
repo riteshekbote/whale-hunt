@@ -237,3 +237,8 @@
   - | Q6 | **YES** | Valid class |
   - | Q6 | **YES** | Valid class |
   - | **VALID** | **0** | — |
+
+- 3 lead(s) marked VALID at 2026-08-10 03:04:14 UTC
+  - | Q6 Not rejected? | **YES** | SOP bypass is a valid vuln class |
+  - | Q6 Not rejected? | **YES** | Weak crypto is a valid finding |
+  - **Verdict: HOLD** — strongest sync-surface lead. Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`) and custom OSCrypt fork confirmed in pri
