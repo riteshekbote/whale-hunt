@@ -1,13 +1,62 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-There's a fundamental mismatch: the knowledge base and inventory provided are entirely about **Naver Whale browser** (`naver/whale-browser-developers`), but the task asks to triage **gladiaio/** GitHub org and `@gladiaio/sdk` npm package.
+[0m$ [0mls -la
+total 780
+drwxr-xr-x 11 runner runner   4096 Aug 10 18:32 .
+drwxr-xr-x  3 runner runner   4096 Aug 10 18:32 ..
+drwxr-xr-x  7 runner runner   4096 Aug 10 18:33 .git
+drwxr-xr-x  3 runner runner   4096 Aug 10 18:32 .github
+-rw-r--r--  1 runner runner   1057 Aug 10 18:32 README.md
+-rw-r--r--  1 runner runner      0 Aug 10 18:32 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 10 18:32 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 10 18:32 knowledge
+drwxr-xr-x  2 runner runner  12288 Aug 10 18:32 leads
+-rw-r--r--  1 runner runner   3589 Aug 10 18:32 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 10 18:32 reports
+-rw-r--r--  1 runner runner 598138 Aug 10 18:32 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 10 18:32 reposcan-raw
+-rw-r--r--  1 runner runner 109469 Aug 10 18:32 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 10 18:32 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 10 18:32 scripts
+-rw-r--r--  1 runner runner     34 Aug 10 18:32 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 10 18:32 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 10 18:32 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 10 18:32 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 10 18:32 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Aug 10 18:32 triage
+[0m
+[0m→ [0mRead scope.yml
+[0m→ [0mRead README.md
+[0m✱ [0mGlob "triage/*"[90m 89 matches[0m
+[0m✱ [0mGlob "leads/*"[90m 100 matches[0m
+[0m→ [0mRead leads/reposcan-latest.md
+[0m→ [0mRead leads/lead-nemotron3.md
+[0m✗ [0mRead triage/run-2026-08-10-18-08.md failed
+[91m[1mError: [0mFile not found: /home/runner/work/whale-hunt/whale-hunt/triage/run-2026-08-10-18-08.md
+[0m
+[0m$ [0mls -lt triage/ | head -5
+total 1416
+-rw-r--r-- 1 runner runner 17826 Aug 10 18:32 run-2026-08-10-08-23.md
+-rw-r--r-- 1 runner runner   548 Aug 10 18:32 run-2026-08-10-09-55.md
+-rw-r--r-- 1 runner runner   339 Aug 10 18:32 run-2026-08-10-10-55.md
+-rw-r--r-- 1 runner runner 33589 Aug 10 18:32 run-2026-08-10-12-06.md
+[0m
+[0m→ [0mRead triage/run-2026-08-10-12-06.md
+There's a mismatch: your prompt references **gladiaio** + `@gladiaio/sdk`, but this workspace and the provided knowledge base are entirely about **Naver Whale Browser** (the `naver/whale-browser-developers` repo, sidebar/dual-tab SOP bypasses, sync KDF, binary acquisition).
 
-The "INVENTORY gladia" section explicitly states `# Inventory: whale` and documents Whale browser CVEs, sidebar SOP bypasses, sync KDF, binary acquisition channels, and GitHub repo enumeration — none of which relate to Gladia's SDK.
+The latest triage (`run-2026-08-10-12-06.md`) already covers the Whale browser scan:
 
-**No gladiaio scan data is present in this context.** To proceed, I'd need:
-1. Actual static scan results for `gladiaio/` GitHub repos
-2. npm package metadata for `@gladiaio/sdk` (version, dependencies, repository URL, etc.)
-3. Any secret/endpoint/interesting-string hits from scanning those sources
+| Verdict | Count | Leads |
+|---------|-------|-------|
+| **VALID** | 0 | — |
+| **HOLD** | 5 | Sync KDF, Bootstrap-token OSCrypt, Multiplay URL disclosure, WhaleON authz, Android keystore |
+| **INVALID** | 8 | Sidebar/dual-tab SOP (dupes CVE-2025-69234/69235/53600/62583/62584/62585), Extension XSS (dupes CVE-2022-24072/2024-40618), socket.io (runtime-fetched), /whalesync/reset (no_doom), lib version drift (best-practice), Scrapbook (scope unclear) |
 
-Could you provide the correct scan output for the gladiaio target?
+**Key blockers**: All 6 binary acquisition channels permanently blocked in-sandbox (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404/410, pstatic 404). No passive proof path exists for any HOLD lead.
+
+**Recommendation**: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to unblock the 5 HOLD verdicts (all sync/crypto-surface leads).
+
+---
+
+If you meant **Gladia**, I need actual scan data for `gladiaio/` repos + `@gladiaio/sdk` npm metadata — none exists in this workspace.
