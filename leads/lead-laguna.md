@@ -5846,3 +5846,4 @@ testability: AUTH_HELPED
 [PARKED] socket.io.slim.js event-handler injection: confidence 38 < 40 AND class on REJECTED list (confidence threshold + runtime-fetched handler, no passive proof path); binary inaccessible.
 [FINAL]
 [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb`) to `/tmp/opencode/whale_binary/` via unrestricted internet — all passive channels confirmed dead (cloudfront DNS `No answer` general to `*.cloudfront.net` @127.0.0.53; APKMirror 403; Uptodown 404 both Windows + Android; static-whale.pstatic.net/WhaleSetup.exe 404; broad GitHub source search → 0 repos). Upon delivery run `strings`/`objdump`/`nm -D` on libwhale.so for xv10 + PBKDF2/scrypt iteration constants + sync.encryption_bootstrap_token call sites; snapshot Linux keyring + Preferences/Local State pre/post enabling encrypted sync. Zero requests to Naver /whalesync.
+## 2026-08-10 03:00:03 UTC [browser] (model laguna)

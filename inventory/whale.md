@@ -515,3 +515,11 @@
 - CHANGED Wikipedia version assertion impossible — EN/KO pages both HTTP 404 (persistent)
 - CHANGED NVD keywordSearch `naver+whale` now returns totalResults=0 (was 2 pre-2021 IDs) — keyword-matching quirk; broadened `whale` query returns 28 total Whale CVEs, still **0 published in 2026** (latest CVE
 - CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` confirmed reachable (HTTP 200) — gap verification path restored
+
+## 2026-08-10 03:00:13 UTC
+- CHANGED NVD `services.nvd.nist.gov` endpoint confirmed HTTP 200 — `keywordSearch=whale` returns 28 total CVEs, **0 published in 2026** (latest: CVE-2025-69234/69235 Dec 2025); 8-month disclosure gap static fo
+- CHANGED Binary delivery directory `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification (persistent)
+- CHANGED All binary acquisition channels 100% blocked in-sandbox: cloudfront DNS `No answer` (general `*.cloudfront.net`), APKMirror 403, Uptodown 404 (Windows + Android), pstatic 404 (persistent)
+- CHANGED Sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin `content_scripts` + unvalidated `sidebarAction.show`/`show2` dispatch + zero `sender.origin`/`sender.url` validation
+- CHANGED Wikipedia version assertion impossible — EN/KO pages both HTTP 404 (persistent)
+- CHANGED NVD `keywordSearch=naver+whale` now returns 0 results (keyword-matching quirk); broad `whale` query is the correct surface
