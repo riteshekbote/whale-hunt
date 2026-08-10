@@ -1729,3 +1729,27 @@
 - LEARN: REJECTED NVD keywordSearch naver+whale query: returns 0 results (keyword-matching quirk) — use whale (28 total) as broad surface for future CVE-gap checks
 - LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
 - LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
+
+## RANKED HYPOTHESES 2026-08-10 10:55:13 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Whale: Desktop sync passphrase KDF weak iteration count or recoverable master-key storage on Linux (from reports/hypotheses-longcat.txt)
+- [62] Whale: Whale Linux sync KDF/envelope deviation in os_crypt_whale fork (from reports/hypotheses-laguna.txt)
+- [62] Whale: Desktop sync passphrase KDF + xv10 bootstrap-token envelope weak/device-recoverable key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): RAG: Fetch `https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md` (passive GET, 200 confirmed) — grep for sync/whale.encrypti
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet (push artifact
+- NEXT(hypotheses-longcat.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe`) to this sandbox via unrestricted int
+- LEARN: REJECTED passive CVE verification @ NVD: `nvd.nist.gov/rest` (403 Cloudflare) AND `services.nvd.nist.gov/rest` (404) both dead this cycle — 0 CVEs v4.35.352–v4.
+- LEARN: REJECTED binary acquisition @ uptodown Android: `naver-whale-browser.en.uptodown.com/android` still HTTP 404 — APK + desktop binary remain HUMAN-gated.
+- LEARN: ACCEPTED live doc surface @ translate-branch `README.ko.md`: HTTP 200 — the only resolvable longcat RAG NEXT; no sync/crypto source expected (repo fully enumera
+- LEARN: CONFIRMED @ `/tmp/opencode/whale_binary/`: still missing (10:47 UTC) — binary-dependent verification permanently HUMAN-gated.
+- LEARN: REJECTED @ README.ko.md RAG (translate branch): HTTP 200, 4608 bytes — Korean sidebar extension docs only; 0 matches for sync|crypt|KDF|key|encrypt|bootstrap|so
+- LEARN: REJECTED @ naver/whale-developers repo: API `301 Moved Permanently` → redirects to `repositories/87390266` = `naver/whale-browser-developers`; `git ls-remote` c
+- LEARN: CONFIRMED @ NVD (services.nvd.nist.gov, HTTP 200): `keywordSearch=whale` fully paginated (28/28) → 19 navercorp CPE matches, 0 published in 2026, latest CVE-202
+- LEARN: PERSISTENT @ all binary acquisition channels: cloudfront DNS `No answer` (general `*.cloudfront.net`), APKMirror 403, Uptodown 404 (Windows+Android), pstatic 40
+- LEARN: ACCEPTED @ GitHub wiki docs (HTTP 200): `whale.sidebarAction.md` confirms `show({details:{url}})` loads arbitrary URL in panel + `use_navigation_bar=false` drag
+- LEARN: ACCEPTED @ README.ko.md (translate branch): documentation-only — confirms sidebar_action manifest schema, whale.* namespace, web-panel vs sidebar resource loadi
+- LEARN: REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code
+- LEARN: ACCEPTED @ NVD services endpoint: `services.nvd.nist.gov/rest/json/cves/2.0` confirmed HTTP 200 — 0 Whale CVEs in 2026, 8-month disclosure gap static
+- LEARN: REJECTED NVD keywordSearch `naver+whale` query: returns 0 results (keyword-matching quirk) — use `whale` (28 total) as broad surface for future CVE-gap checks
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati

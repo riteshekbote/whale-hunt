@@ -594,3 +594,16 @@
 - NEW NVD services.nvd.nist.gov/rest/json/cves/2.0 stable HTTP 200 — keywordSearch=whale fully paginated: 28 total, 0 in 2026, latest CVE-2025-69235 @2025-12-30
 - CHANGED CVE-2025-69235/69234 CPE corrected to platform-agnostic (Linux fix IS covered)
 - CHANGED GitHub complete branch inventory confirmed: 0 Whale-specific source files beyond sidebar-sample
+
+## 2026-08-10 10:55:13 UTC
+- NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` reverted to HTTP 404 (was HTTP 200 in prior cycle) — both `nvd.nist.gov/rest` (403 Cloudflare) and `services.nvd.nist.gov/rest` (404) now dead in-sandbox
+- CHANGED NVD `keywordSearch=naver+whale` returns 0 results (was 2 pre-2021 IDs) — keyword-matching quirk; broad `whale` query (28 total) is the correct surface
+- CHANGED Binary delivery dir `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification (persistent)
+- CHANGED All binary acquisition channels 100% blocked in-sandbox: cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 (Win+Android), pstatic 404 (persistent)
+- CHANGED Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged (persistent)
+- CHANGED Wikipedia EN/KO pages both HTTP 404 — passively verifiable version confirmation impossible (persistent)
+- NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` flipped back to HTTP 404 — both NVD endpoints now dead in-sandbox (primary 403, services 404); passive CVE-gap verification currently unavailable
+- NEW longcat's pending RAG NEXT is now resolvable: `raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md` returns HTTP 200 — a live, previously-unread doc surface exists in the f
+- CHANGED `/tmp/opencode/whale_binary/` still missing (confirmed 10:47 UTC) — binary-gated sync/Android hypotheses remain HUMAN-gated
+- CHANGED uptodown Android page still HTTP 404 — no 200 window this cycle; APK acquisition remains blocked
+- CHANGED README.ko.md RAG fetch completed (was [NEXT] RAG from prior cycle) — HTTP 200, 4608 bytes; content is Korean sidebar-extension docs **only** (whale.* namespace, sidebar_action manifest, use_navigation
