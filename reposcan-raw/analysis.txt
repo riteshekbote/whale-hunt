@@ -1,482 +1,53 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-[0m$ [0mgh api /orgs/gladiaio/repos --paginate 2>/dev/null | jq -r '.[] | "\(.name)\t\(.private)\t\(.html_url)\t\(.description // "")"' | head -50
-(no output)
+[0m$ [0mls -la
+total 760
+drwxr-xr-x 11 runner runner   4096 Aug 10 02:33 .
+drwxr-xr-x  3 runner runner   4096 Aug 10 02:33 ..
+drwxr-xr-x  7 runner runner   4096 Aug 10 02:33 .git
+drwxr-xr-x  3 runner runner   4096 Aug 10 02:33 .github
+-rw-r--r--  1 runner runner   1057 Aug 10 02:33 README.md
+-rw-r--r--  1 runner runner      0 Aug 10 02:33 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 10 02:33 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 10 02:33 knowledge
+drwxr-xr-x  2 runner runner  12288 Aug 10 02:33 leads
+-rw-r--r--  1 runner runner   2339 Aug 10 02:33 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 10 02:33 reports
+-rw-r--r--  1 runner runner 598261 Aug 10 02:33 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 10 02:33 reposcan-raw
+-rw-r--r--  1 runner runner  88420 Aug 10 02:33 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 10 02:33 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 10 02:33 scripts
+-rw-r--r--  1 runner runner     34 Aug 10 02:33 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 10 02:33 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 10 02:33 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 10 02:33 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 10 02:33 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Aug 10 02:33 triage
 [0m
-I notice the knowledge base you provided is about Whale browser (naver/whale-browser), but you're asking me to triage gladiaio/ GitHub org and @gladiaio/sdk npm package. These are different projects. Let me perform the actual scan for Gladia.
-[0m$ [0mnpm view @gladiaio/sdk --json 2>/dev/null | head -100
-{
-  "_id": "@gladiaio/sdk@1.1.0",
-  "_rev": "129-8d16ae11f6d0f01320400f5fcaa4e9e8",
-  "name": "@gladiaio/sdk",
-  "dist-tags": {
-    "latest": "1.1.0"
-  },
-  "versions": [
-    "0.1.0",
-    "0.1.1",
-    "0.1.2",
-    "0.2.0",
-    "0.2.1",
-    "0.3.0",
-    "0.3.1",
-    "0.4.0",
-    "0.4.1",
-    "0.4.2",
-    "0.4.3",
-    "0.5.0",
-    "0.5.1",
-    "0.5.2",
-    "0.5.3",
-    "0.6.0",
-    "0.6.1",
-    "1.0.0",
-    "1.0.4",
-    "1.0.5",
-    "1.0.7",
-    "1.1.0"
-  ],
-  "time": {
-    "created": "2025-09-09T15:01:20.684Z",
-    "modified": "2026-07-23T20:48:35.899Z",
-    "0.8.9": "2022-10-28T08:45:13.203Z",
-    "0.8.10": "2022-10-28T09:20:28.511Z",
-    "0.8.11": "2022-10-28T10:16:20.446Z",
-    "0.8.12": "2022-11-02T13:40:47.351Z",
-    "0.8.13": "2022-11-02T14:22:51.825Z",
-    "0.8.14": "2022-11-10T15:46:41.656Z",
-    "0.8.15": "2022-11-10T16:20:33.692Z",
-    "0.8.16": "2022-11-13T18:27:04.269Z",
-    "0.8.17": "2022-11-18T16:07:37.254Z",
-    "0.9.1": "2022-11-22T14:38:02.436Z",
-    "0.9.2": "2022-11-23T07:38:30.338Z",
-    "0.9.3": "2022-11-30T09:32:14.398Z",
-    "0.9.4": "2022-11-30T10:05:06.541Z",
-    "0.9.5": "2022-12-09T11:31:31.615Z",
-    "0.10.1": "2022-12-09T12:39:20.544Z",
-    "0.10.2": "2022-12-09T14:22:43.928Z",
-    "0.10.3": "2022-12-09T15:13:00.720Z",
-    "0.10.4": "2022-12-09T17:23:13.026Z",
-    "0.10.5": "2022-12-12T17:13:58.447Z",
-    "0.10.6": "2022-12-12T17:29:59.221Z",
-    "0.10.7": "2022-12-19T19:29:04.531Z",
-    "0.10.8": "2023-01-10T13:24:01.450Z",
-    "0.10.9": "2023-01-10T15:17:51.295Z",
-    "0.10.10": "2023-01-10T15:37:49.001Z",
-    "0.10.11": "2023-01-11T09:01:49.220Z",
-    "0.10.12": "2023-01-11T13:12:36.873Z",
-    "0.10.13": "2023-01-11T21:12:54.881Z",
-    "0.10.14": "2023-01-12T09:10:07.435Z",
-    "0.10.15": "2023-01-17T10:19:35.165Z",
-    "0.10.16": "2023-01-17T12:05:23.330Z",
-    "0.10.17": "2023-01-17T12:58:17.730Z",
-    "0.10.18": "2023-01-17T16:09:20.768Z",
-    "0.10.19": "2023-01-18T15:26:15.155Z",
-    "0.10.20": "2023-01-18T18:04:32.626Z",
-    "0.10.21": "2023-01-20T08:16:14.497Z",
-    "0.10.22": "2023-01-20T10:04:28.819Z",
-    "0.10.23": "2023-01-20T15:04:40.649Z",
-    "0.10.24": "2023-01-20T15:11:16.682Z",
-    "0.10.25": "2023-01-20T15:13:48.025Z",
-    "0.10.26": "2023-01-20T15:31:50.478Z",
-    "0.10.27": "2023-01-20T15:39:56.257Z",
-    "0.10.28": "2023-01-20T15:42:19.092Z",
-    "0.10.29": "2023-01-20T15:50:28.108Z",
-    "0.10.30": "2023-01-24T08:25:37.753Z",
-    "0.10.31": "2023-01-27T09:03:39.648Z",
-    "0.10.32": "2023-01-27T13:42:54.782Z",
-    "0.10.33": "2023-01-30T16:53:45.752Z",
-    "0.10.34": "2023-01-31T10:05:22.344Z",
-    "0.10.35": "2023-01-31T16:26:08.125Z",
-    "0.10.36": "2023-01-31T18:05:57.019Z",
-    "0.10.37": "2023-02-01T09:07:05.551Z",
-    "0.10.38": "2023-02-08T13:16:19.390Z",
-    "0.10.39": "2023-02-09T11:04:51.004Z",
-    "0.10.40": "2023-02-10T16:05:17.732Z",
-    "0.10.41": "2023-02-10T16:39:30.367Z",
-    "0.10.42": "2023-02-13T20:05:28.053Z",
-    "0.10.43": "2023-02-14T14:05:13.700Z",
-    "0.10.44": "2023-02-14T15:41:25.199Z",
-    "0.10.45": "2023-02-21T09:05:46.595Z",
-    "0.10.47": "2023-02-22T15:05:00.452Z",
-    "0.10.48": "2023-02-22T15:20:28.452Z",
-    "0.10.49": "2023-02-22T16:44:44.559Z",
-    "0.10.50": "2023-02-22T17:34:36.357Z",
-    "0.10.51": "2023-02-23T12:06:26.120Z",
-    "0.10.52": "2023-02-27T10:05:37.941Z",
-    "0.10.53": "2023-02-28T10:05:00.048Z",
-[0m
-[0m$ [0mgh api /orgs/gladiaio/repos --paginate 2>/dev/null | jq -r '.[] | "\(.name)\t\(.private)\t\(.html_url)\t\(.description // "")"'
-(no output)
-[0m
-[0m$ [0mnpm view @gladiaio/sdk@1.1.0 --json 2>/dev/null
-{
-  "_id": "@gladiaio/sdk@1.1.0",
-  "_rev": "129-8d16ae11f6d0f01320400f5fcaa4e9e8",
-  "name": "@gladiaio/sdk",
-  "dist-tags": {
-    "latest": "1.1.0"
-  },
-  "versions": [
-    "0.1.0",
-    "0.1.1",
-    "0.1.2",
-    "0.2.0",
-    "0.2.1",
-    "0.3.0",
-    "0.3.1",
-    "0.4.0",
-    "0.4.1",
-    "0.4.2",
-    "0.4.3",
-    "0.5.0",
-    "0.5.1",
-    "0.5.2",
-    "0.5.3",
-    "0.6.0",
-    "0.6.1",
-    "1.0.0",
-    "1.0.4",
-    "1.0.5",
-    "1.0.7",
-    "1.1.0"
-  ],
-  "time": {
-    "created": "2025-09-09T15:01:20.684Z",
-    "modified": "2026-07-23T20:48:35.899Z",
-    "0.8.9": "2022-10-28T08:45:13.203Z",
-    "0.8.10": "2022-10-28T09:20:28.511Z",
-    "0.8.11": "2022-10-28T10:16:20.446Z",
-    "0.8.12": "2022-11-02T13:40:47.351Z",
-    "0.8.13": "2022-11-02T14:22:51.825Z",
-    "0.8.14": "2022-11-10T15:46:41.656Z",
-    "0.8.15": "2022-11-10T16:20:33.692Z",
-    "0.8.16": "2022-11-13T18:27:04.269Z",
-    "0.8.17": "2022-11-18T16:07:37.254Z",
-    "0.9.1": "2022-11-22T14:38:02.436Z",
-    "0.9.2": "2022-11-23T07:38:30.338Z",
-    "0.9.3": "2022-11-30T09:32:14.398Z",
-    "0.9.4": "2022-11-30T10:05:06.541Z",
-    "0.9.5": "2022-12-09T11:31:31.615Z",
-    "0.10.1": "2022-12-09T12:39:20.544Z",
-    "0.10.2": "2022-12-09T14:22:43.928Z",
-    "0.10.3": "2022-12-09T15:13:00.720Z",
-    "0.10.4": "2022-12-09T17:23:13.026Z",
-    "0.10.5": "2022-12-12T17:13:58.447Z",
-    "0.10.6": "2022-12-12T17:29:59.221Z",
-    "0.10.7": "2022-12-19T19:29:04.531Z",
-    "0.10.8": "2023-01-10T13:24:01.450Z",
-    "0.10.9": "2023-01-10T15:17:51.295Z",
-    "0.10.10": "2023-01-10T15:37:49.001Z",
-    "0.10.11": "2023-01-11T09:01:49.220Z",
-    "0.10.12": "2023-01-11T13:12:36.873Z",
-    "0.10.13": "2023-01-11T21:12:54.881Z",
-    "0.10.14": "2023-01-12T09:10:07.435Z",
-    "0.10.15": "2023-01-17T10:19:35.165Z",
-    "0.10.16": "2023-01-17T12:05:23.330Z",
-    "0.10.17": "2023-01-17T12:58:17.730Z",
-    "0.10.18": "2023-01-17T16:09:20.768Z",
-    "0.10.19": "2023-01-18T15:26:15.155Z",
-    "0.10.20": "2023-01-18T18:04:32.626Z",
-    "0.10.21": "2023-01-20T08:16:14.497Z",
-    "0.10.22": "2023-01-20T10:04:28.819Z",
-    "0.10.23": "2023-01-20T15:04:40.649Z",
-    "0.10.24": "2023-01-20T15:11:16.682Z",
-    "0.10.25": "2023-01-20T15:13:48.025Z",
-    "0.10.26": "2023-01-20T15:31:50.478Z",
-    "0.10.27": "2023-01-20T15:39:56.257Z",
-    "0.10.28": "2023-01-20T15:42:19.092Z",
-    "0.10.29": "2023-01-20T15:50:28.108Z",
-    "0.10.30": "2023-01-24T08:25:37.753Z",
-    "0.10.31": "2023-01-27T09:03:39.648Z",
-    "0.10.32": "2023-01-27T13:42:54.782Z",
-    "0.10.33": "2023-01-30T16:53:45.752Z",
-    "0.10.34": "2023-01-31T10:05:22.344Z",
-    "0.10.35": "2023-01-31T16:26:08.125Z",
-    "0.10.36": "2023-01-31T18:05:57.019Z",
-    "0.10.37": "2023-02-01T09:07:05.551Z",
-    "0.10.38": "2023-02-08T13:16:19.390Z",
-    "0.10.39": "2023-02-09T11:04:51.004Z",
-    "0.10.40": "2023-02-10T16:05:17.732Z",
-    "0.10.41": "2023-02-10T16:39:30.367Z",
-    "0.10.42": "2023-02-13T20:05:28.053Z",
-    "0.10.43": "2023-02-14T14:05:13.700Z",
-    "0.10.44": "2023-02-14T15:41:25.199Z",
-    "0.10.45": "2023-02-21T09:05:46.595Z",
-    "0.10.47": "2023-02-22T15:05:00.452Z",
-    "0.10.48": "2023-02-22T15:20:28.452Z",
-    "0.10.49": "2023-02-22T16:44:44.559Z",
-    "0.10.50": "2023-02-22T17:34:36.357Z",
-    "0.10.51": "2023-02-23T12:06:26.120Z",
-    "0.10.52": "2023-02-27T10:05:37.941Z",
-    "0.10.53": "2023-02-28T10:05:00.048Z",
-    "0.10.54": "2023-02-28T11:04:57.740Z",
-    "0.10.55": "2023-03-06T17:10:50.627Z",
-    "0.10.56": "2023-03-07T13:42:28.741Z",
-    "0.10.57": "2023-03-10T08:35:13.404Z",
-    "0.10.58": "2023-03-14T13:12:41.710Z",
-    "0.10.59": "2023-03-14T16:06:56.161Z",
-    "0.10.60": "2023-03-15T20:45:18.851Z",
-    "0.10.61": "2023-03-16T12:33:03.265Z",
-    "0.10.62": "2023-03-16T16:55:15.030Z",
-    "0.10.63": "2023-03-17T08:41:22.881Z",
-    "0.10.64": "2023-03-17T10:05:27.471Z",
-    "0.10.65": "2023-03-22T10:47:01.768Z",
-    "0.10.66": "2023-03-22T14:36:58.372Z",
-    "0.10.67": "2023-03-24T15:34:12.413Z",
-    "0.10.68": "2023-03-27T15:05:00.983Z",
-    "0.10.70": "2023-04-07T11:04:58.255Z",
-    "0.10.71": "2023-04-07T12:17:40.107Z",
-    "0.1.0": "2025-09-09T15:01:20.882Z",
-    "0.1.1": "2025-09-09T15:26:22.552Z",
-    "0.1.2": "2025-09-09T16:16:44.602Z",
-    "0.2.0": "2025-09-10T11:59:15.930Z",
-    "0.2.1": "2025-09-10T12:25:32.638Z",
-    "0.3.0": "2025-09-10T13:51:29.726Z",
-    "0.3.1": "2025-09-10T14:19:42.168Z",
-    "0.4.0": "2025-09-16T07:49:54.760Z",
-    "0.4.1": "2025-09-16T10:32:15.201Z",
-    "0.4.2": "2025-09-19T15:59:53.302Z",
-    "0.4.3": "2025-09-23T12:24:17.194Z",
-    "0.5.0": "2025-09-25T09:18:44.573Z",
-    "0.5.1": "2025-09-30T16:39:08.467Z",
-    "0.5.2": "2025-10-08T13:17:05.116Z",
-    "0.5.3": "2025-10-24T16:36:23.856Z",
-    "0.6.0": "2025-10-28T10:54:53.857Z",
-    "0.6.1": "2025-11-28T13:24:15.718Z",
-    "1.0.0": "2026-03-26T13:27:50.624Z",
-    "1.0.3": "2026-04-13T18:14:58.725Z",
-    "1.0.4": "2026-04-17T10:06:11.064Z",
-    "1.0.5": "2026-06-17T13:03:22.884Z",
-    "1.0.7": "2026-06-29T20:36:21.038Z",
-    "1.1.0": "2026-07-23T20:48:35.560Z"
-  },
-  "bugs": {
-    "url": "https://github.com/gladiaio/sdk/issues"
-  },
-  "author": "Gladia",
-  "license": "MIT",
-  "homepage": "https://github.com/gladiaio/sdk#readme",
-  "keywords": [
-    "gladia",
-    "sdk",
-    "typescript",
-    "javascript"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gladiaio/sdk.git"
-  },
-  "description": "Gladia JavaScript/TypeScript SDK",
-  "maintainers": [
-    "clement-gladia <ccharmet@gladia.io>",
-    "gladia-admin <tech-certified@gladia.io>",
-    "commarla <lcommarieu@gladia.io>",
-    "hugo_gladia <himbert@gladia.io>",
-    "tnesztler <picobuntu@gmail.com>",
-    "amorin_gladia <amorin@gladia.io>",
-    "thibautlb <ecouprie@gladia.io>",
-    "remigladia <rlejeune@gladia.io>",
-    "acorbeau-gladia <acorbeau@gladia.io>",
-    "jqueguiner <jlqueguiner@gladia.io>",
-    "hpapier.ext.gladia <hpapier.ext@gladia.io>",
-    "clafaye <clafaye@gladia.io>",
-    "opopops <ggueutier@gladia.io>",
-    "bot-npmjs-gladiaio <bot-npmjs@gladia.io>",
-    "rpiotaix <rpiotaix@gladia.io>",
-    "yoannkygladia <ykeoxay@gladia.io>",
-    "cpire <cpire@gladia.io>"
-  ],
-  "readmeFilename": "README.md",
-  "_contentLength": 61769,
-  "version": "1.1.0",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.cts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./package.json": "./package.json"
-  },
-  "unpkg": "dist/index.iife.js",
-  "jsdelivr": "dist/index.iife.js",
-  "scripts": {
-    "build": "tsdown",
-    "build:watch": "tsdown --watch"
-  },
-  "devDependencies": {
-    "@tsconfig/node20": "^20.1.6",
-    "@types/node": "^20.19.19",
-    "@types/ws": "^8.18.1",
-    "tsdown": "^0.15.6"
-  },
-  "peerDependencies": {
-    "eventemitter3": ">=5",
-    "ws": "5.2.4 || 6.2.3 || 7.5.10 || >=8.8",
-    "undici": ">=5"
-  },
-  "peerDependenciesMeta": {
-    "ws": {
-      "optional": true
-    },
-    "undici": {
-      "optional": true
-    }
-  },
-  "engines": {
-    "node": ">=20"
-  },
-  "_integrity": "sha512-iKrYT+lAQ0WiqEk+g4kj0pjOuxPLS9Lc95RixljmpXwmISn6U+32OnvSomrhCMwlv+fiweC3AqxyFmn7Imvfog==",
-  "_resolved": "/home/runner/work/sdk/sdk/packages/sdk-js/gladiaio-sdk-1.1.0.tgz",
-  "_from": "file:gladiaio-sdk-1.1.0.tgz",
-  "_nodeVersion": "22.23.1",
-  "_npmVersion": "10.9.8",
-  "dist": {
-    "integrity": "sha512-iKrYT+lAQ0WiqEk+g4kj0pjOuxPLS9Lc95RixljmpXwmISn6U+32OnvSomrhCMwlv+fiweC3AqxyFmn7Imvfog==",
-    "shasum": "af89149b9469135fbf7fffd9f3b415e483d30bbc",
-    "tarball": "https://registry.npmjs.org/@gladiaio/sdk/-/sdk-1.1.0.tgz",
-    "fileCount": 135,
-    "unpackedSize": 805972,
-    "signatures": [
-      {
-        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
-        "sig": "MEUCIBYI3yK7/0qjO4j4k9LQXlPfMAsfq7ehX3KFDXOsa4rTAiEAkk54Op2/CuopNh70YthEAa1XF9eRfuaTvFmGtadBr7I="
-      }
-    ]
-  },
-  "_npmUser": "bot-npmjs-gladiaio <bot-npmjs@gladia.io>",
-  "directories": {},
-  "_npmOperationalInternal": {
-    "host": "s3://npm-registry-packages-npm-production",
-    "tmp": "tmp/sdk_1.1.0_1784839715398_0.9410032123152492"
-  },
-  "_hasShrinkwrap": false
-}
-[0m
-[0m$ [0mgh repo list gladiaio --limit 100 --json name,private,description,url,updatedAt 2>/dev/null
-(no output)
-[0m
-[0m$ [0mcurl -s "https://api.github.com/orgs/gladiaio/repos?per_page=100" | jq -r '.[] | "\(.name)\t\(.private)\t\(.html_url)\t\(.description // "")"'
-gladia-cli	false	https://github.com/gladiaio/gladia-cli	
-gladia-samples	false	https://github.com/gladiaio/gladia-samples	
-triton-inference-memory-allocation	false	https://github.com/gladiaio/triton-inference-memory-allocation	
-gunicorn-fix-sigabort	false	https://github.com/gladiaio/gunicorn-fix-sigabort	gunicorn 'Green Unicorn' is a WSGI HTTP Server for UNIX, fast clients and sleepy applications.
-uvicorn-fix-sigabort	false	https://github.com/gladiaio/uvicorn-fix-sigabort	An ASGI web server, for Python. 🦄
-docs	false	https://github.com/gladiaio/docs	
-1password-scim	false	https://github.com/gladiaio/1password-scim	1Password SCIM Bridge deployment examples
-sdk	false	https://github.com/gladiaio/sdk	
-gladia-quiz-app	false	https://github.com/gladiaio/gladia-quiz-app	
-normalization	false	https://github.com/gladiaio/normalization	A lightweight library for normalizing speech transcripts before computing WER
-vllm_backend	false	https://github.com/gladiaio/vllm_backend	
-transformers	false	https://github.com/gladiaio/transformers	🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. 
-compare-stt	false	https://github.com/gladiaio/compare-stt	Blind comparison of speech-to-text providers.
-n8n-nodes-gladia	false	https://github.com/gladiaio/n8n-nodes-gladia	
-cloudnative-pg	false	https://github.com/gladiaio/cloudnative-pg	CloudNativePG is a comprehensive platform designed to seamlessly manage PostgreSQL databases within Kubernetes environments, covering the entire operational lifecycle from initial deployment to ongoing maintenance
-skills	false	https://github.com/gladiaio/skills	Official AI agent skills from Gladia for integrating speech-to-text transcription into your applications
-realtime-multilingual-asr-router	false	https://github.com/gladiaio/realtime-multilingual-asr-router	
-vercel-ai	false	https://github.com/gladiaio/vercel-ai	The AI Toolkit for TypeScript. From the creators of Next.js, the AI SDK is a free open-source library for building AI-powered applications and agents 
-gladiaflow	false	https://github.com/gladiaio/gladiaflow	A desktop app for real-time voice dictation powered by Gladia's realtime transcription
-[0m
-[0m$ [0mgit clone --depth 1 https://github.com/gladiaio/sdk /tmp/gladia-sdk 2>&1 | tail -5
-Cloning into '/tmp/gladia-sdk'...
-[0m
-[0m$ [0mls -la /tmp/gladia-sdk/
-total 336
-drwxr-xr-x 10 runner runner   4096 Aug 10 00:44 .
-drwxrwxrwt 16 root   root    12288 Aug 10 00:44 ..
-drwxr-xr-x  3 runner runner   4096 Aug 10 00:44 .cursor
--rw-r--r--  1 runner runner    135 Aug 10 00:44 .editorconfig
-drwxr-xr-x  8 runner runner   4096 Aug 10 00:44 .git
--rw-r--r--  1 runner runner    212 Aug 10 00:44 .gitattributes
-drwxr-xr-x  3 runner runner   4096 Aug 10 00:44 .github
--rw-r--r--  1 runner runner    191 Aug 10 00:44 .gitignore
--rw-r--r--  1 runner runner    113 Aug 10 00:44 .npmrc
--rw-r--r--  1 runner runner    103 Aug 10 00:44 .prettierignore
--rw-r--r--  1 runner runner    127 Aug 10 00:44 .prettierrc
-drwxr-xr-x  2 runner runner   4096 Aug 10 00:44 .vscode
--rw-r--r--  1 runner runner   3032 Aug 10 00:44 CONTRIBUTING.md
--rw-r--r--  1 runner runner   1063 Aug 10 00:44 LICENSE
--rw-r--r--  1 runner runner  10963 Aug 10 00:44 README.md
--rw-r--r--  1 runner runner     98 Aug 10 00:44 audit-ci.jsonc
--rw-r--r--  1 runner runner 219285 Aug 10 00:44 bun.lock
--rw-r--r--  1 runner runner     29 Aug 10 00:44 bunfig.toml
--rw-r--r--  1 runner runner    239 Aug 10 00:44 commitlint.config.cts
-drwxr-xr-x  2 runner runner   4096 Aug 10 00:44 data
-drwxr-xr-x  6 runner runner   4096 Aug 10 00:44 e2e
--rw-r--r--  1 runner runner   1358 Aug 10 00:44 eslint.config.mjs
--rw-r--r--  1 runner runner   3525 Aug 10 00:44 nx.json
--rw-r--r--  1 runner runner   1062 Aug 10 00:44 package.json
-drwxr-xr-x  5 runner runner   4096 Aug 10 00:44 packages
-drwxr-xr-x  3 runner runner   4096 Aug 10 00:44 tools
--rw-r--r--  1 runner runner     86 Aug 10 00:44 vitest.workspace.mjs
-[0m
-[0m$ [0mls -la /tmp/gladia-sdk/packages/
-total 20
-drwxr-xr-x  5 runner runner 4096 Aug 10 00:44 .
-drwxr-xr-x 10 runner runner 4096 Aug 10 00:44 ..
-drwxr-xr-x  3 runner runner 4096 Aug 10 00:44 generator
-drwxr-xr-x  4 runner runner 4096 Aug 10 00:44 sdk-js
-drwxr-xr-x  5 runner runner 4096 Aug 10 00:44 sdk-python
-[0m
-[0m$ [0mgrep -r "api\.gladia\|gladia\.io\|gladia-api\|api-key\|api_key\|secret\|token\|password\|credential" /tmp/gladia-sdk/packages --include="*.ts" --include="*.js" --include="*.json" --include="*.md" 2>/dev/null | head -50
-/tmp/gladia-sdk/packages/generator/src/cli.ts:  .option('-u, --url <url>', 'OpenAPI schema URL', 'https://api.gladia.io/openapi.json')
-/tmp/gladia-sdk/packages/sdk-js/src/v2/live/generated-types.ts:  /** The websocket url to connect to for sending audio data. The url will contain the temporary token to authenticate the session. */
-/tmp/gladia-sdk/packages/sdk-js/src/v2/live/session.test.ts:      url: 'wss://api.gladia.io/v2/live/ws?token=created',
-/tmp/gladia-sdk/packages/sdk-js/src/v2/live/session.test.ts:      url: 'wss://api.gladia.io/v2/live/ws?token=abc',
-/tmp/gladia-sdk/packages/sdk-js/src/v2/live/session.test.ts:      url: 'wss://api.gladia.io/v2/live/ws?token=abc',
-/tmp/gladia-sdk/packages/sdk-js/src/v2/live/session.test.ts:    expect(mockCreateSession).toHaveBeenCalledWith('wss://api.gladia.io/v2/live/ws?token=created')
-/tmp/gladia-sdk/packages/sdk-js/src/v2/live/session.test.ts:      url: 'wss://api.gladia.io/v2/live/ws?token=created',
-/tmp/gladia-sdk/packages/sdk-js/src/v2/prerecorded/client.ts:   * @see https://docs.gladia.io/api-reference/v2/pre-recorded/init
-/tmp/gladia-sdk/packages/sdk-js/src/v2/prerecorded/client.ts:   * @see https://docs.gladia.io/api-reference/v2/pre-recorded/init
-/tmp/gladia-sdk/packages/sdk-js/src/v2/prerecorded/client.ts:   * @see https://docs.gladia.io/api-reference/v2/pre-recorded/init
-/tmp/gladia-sdk/packages/sdk-js/src/v2/prerecorded/client.ts:   * @see https://docs.gladia.io/api-reference/v2/pre-recorded/get
-/tmp/gladia-sdk/packages/sdk-js/src/v2/prerecorded/client.ts:   * @see https://docs.gladia.io/api-reference/v2/pre-recorded/init
-/tmp/gladia-sdk/packages/sdk-js/src/v2/prerecorded/client.ts:   * @see https://docs.gladia.io/api-reference/v2/pre-recorded/get
-/tmp/gladia-sdk/packages/sdk-js/src/v2/prerecorded/client.ts:   * @see https://docs.gladia.io/api-reference/v2/upload/audio-file
-/tmp/gladia-sdk/packages/sdk-js/src/v2/prerecorded/client.ts:   * @see https://docs.gladia.io/api-reference/v2/pre-recorded/init
-/tmp/gladia-sdk/packages/sdk-js/src/v2/prerecorded/client.ts:   * @see https://docs.gladia.io/api-reference/v2/pre-recorded/get
-/tmp/gladia-sdk/packages/sdk-js/src/client.ts:  if (!options?.apiKey && url.hostname.endsWith('.gladia.io')) {
-/tmp/gladia-sdk/packages/sdk-js/src/client.ts:  apiUrl: getEnv('GLADIA_API_URL', 'https://api.gladia.io'),
-/tmp/gladia-sdk/packages/sdk-js/src/types.ts:   * You can obtain one by going to https://app.gladia.io.
-/tmp/gladia-sdk/packages/sdk-js/src/types.ts:   * The server will have to act as a proxy to https://api.gladia.io and only add the header "x-gladia-key" with your API key.
-/tmp/gladia-sdk/packages/sdk-js/src/types.ts:   * If not provided, the client will take the environment variable GLADIA_API_URL and, if not provided either, it will default to https://api.gladia.io.
-/tmp/gladia-sdk/packages/sdk-js/README.md:A TypeScript/JavaScript SDK for the [Gladia](https://www.gladia.io/) API.
-/tmp/gladia-sdk/packages/sdk-js/README.md:Provide an API key with **`apiKey`** or the **`GLADIA_API_KEY`** environment variable. [Get your API key here](https://docs.gladia.io/chapters/introduction/getting-started) in under a minute.
-/tmp/gladia-sdk/packages/sdk-js/README.md:  apiKey: 'your-api-key',
-/tmp/gladia-sdk/packages/sdk-js/README.md:  apiKey: 'your-api-key',
-/tmp/gladia-sdk/packages/sdk-js/README.md:    apiKey: 'your-api-key',
-/tmp/gladia-sdk/packages/sdk-js/README.md:See all [supported languages here](https://docs.gladia.io/chapters/language/supported-languages) !
-/tmp/gladia-sdk/packages/sdk-js/README.md:Pass the **options** argument to enable features from **[Audio intelligence](https://docs.gladia.io/chapters/pre-recorded-stt/audio-intelligence)** such as diarization, translation, PII redaction, and much more.
-/tmp/gladia-sdk/packages/sdk-js/README.md:See all the [supported languages here](https://docs.gladia.io/chapters/language/supported-languages) !
-/tmp/gladia-sdk/packages/sdk-js/README.md:Pass the **options** argument to enable features from **[Audio intelligence](https://docs.gladia.io/chapters/live-stt/audio-intelligence)** such as diarization, translation, PII redaction, and much more.
-/tmp/gladia-sdk/packages/sdk-js/README.md:  const gladiaClient = new GladiaClient({ apiKey: 'your-api-key' })
-/tmp/gladia-sdk/packages/sdk-js/README.md:- [Pre-recorded quickstart](https://docs.gladia.io/chapters/pre-recorded-stt/quickstart)
-/tmp/gladia-sdk/packages/sdk-js/README.md:- [Live quickstart](https://docs.gladia.io/chapters/live-stt/quickstart)
-/tmp/gladia-sdk/packages/sdk-python/README.md:A Python SDK for the [Gladia](https://www.gladia.io/) API.
-/tmp/gladia-sdk/packages/sdk-python/README.md:Provide an API key with **`api_key`** or the **`GLADIA_API_KEY`** environment variable. [Get your API key](https://docs.gladia.io/chapters/introduction/getting-started) in under a minute.
-/tmp/gladia-sdk/packages/sdk-python/README.md:gladia_client = GladiaClient(api_key="your-api-key")
-/tmp/gladia-sdk/packages/sdk-python/README.md:gladia_client = GladiaClient(api_key="your-api-key")
-/tmp/gladia-sdk/packages/sdk-python/README.md:See all the [supported languages](https://docs.gladia.io/chapters/language/supported-languages) here!
-/tmp/gladia-sdk/packages/sdk-python/README.md:Pass the **options** as the second argument to enable all the features from **[Audio intelligence](https://docs.gladia.io/chapters/pre-recorded-stt/audio-intelligence)** — diarization, translation, PII redaction, and more.
-/tmp/gladia-sdk/packages/sdk-python/README.md:    gladia_client = GladiaClient(api_key="your-api-key")
-/tmp/gladia-sdk/packages/sdk-python/README.md:Use **`LiveV2InitRequest`** fields for realtime/post-processing options — see **[Live STT features](https://docs.gladia.io/chapters/live-stt/features)** and the [live init API](https://docs.gladia.io/api-reference/v2/live/init).
-/tmp/gladia-sdk/packages/sdk-python/README.md:    gladia_client = GladiaClient(api_key="your-api-key")
-/tmp/gladia-sdk/packages/sdk-python/README.md:- [Pre-recorded quickstart](https://docs.gladia.io/chapters/pre-recorded-stt/quickstart)
-/tmp/gladia-sdk/packages/sdk-python/README.md:- [Live quickstart](https://docs.gladia.io/chapters/live-stt/quickstart)
-[0m
-[0m$ [0mgrep -r "sk_\|pk_\|Bearer\|ghp_\|ghs_\|github_pat_\|gho_\|gladia.*key\|gladia.*secret" /tmp/gladia-sdk/packages --include="*.ts" --include="*.js" --include="*.json" --include="*.yml" --include="*.yaml" 2>/dev/null | head -30
-/tmp/gladia-sdk/packages/sdk-js/src/client.test.ts:  it('injects x-gladia-key when apiKey is set', () => {
-/tmp/gladia-sdk/packages/sdk-js/src/client.test.ts:    const gladiaClient = new GladiaClient({ apiKey: 'key-123' })
-/tmp/gladia-sdk/packages/sdk-js/src/client.test.ts:    expect(httpHeaders['x-gladia-key']).toBe('key-123')
-/tmp/gladia-sdk/packages/sdk-js/src/client.test.ts:    expect(httpHeaders['x-gladia-key']).toBe('abc')
-/tmp/gladia-sdk/packages/sdk-js/src/client.test.ts:    expect(httpHeaders['x-gladia-key']).toBe('abc')
-/tmp/gladia-sdk/packages/sdk-js/src/client.ts:      return [lcKey.startsWith('x-gladia-') ? lcKey : key, value]
-/tmp/gladia-sdk/packages/sdk-js/src/client.ts:        'x-gladia-key': mergedOptions.apiKey,
-/tmp/gladia-sdk/packages/sdk-js/src/client.ts:        'x-gladia-key': mergedOptions.apiKey,
-/tmp/gladia-sdk/packages/sdk-js/src/types.ts:   * The server will have to act as a proxy to https://api.gladia.io and only add the header "x-gladia-key" with your API key.
-[0m
-These are all test fixtures and legitimate code patterns. Let me check for any hardcoded
+[0m→ [0mRead scope.yml
+[0m✱ [0mGlob "inventory/*"[90m 1 match[0m
+[0m→ [0mRead inventory/whale.md
+[0m✱ [0mGlob "leads/*"[90m 100 matches[0m
+[0m→ [0mRead probe-results.md
+[0m→ [0mRead leads/reposcan-latest.md
+The scan data shows **gladiaio** org scan, not Whale. The knowledge base you provided is for Whale (different project). Let me triage the actual Gladia scan results:
+
+**Scan Results (2026-08-10 00:45 UTC):**
+- `gh api /orgs/gladiaio/repos` → **no output** (no public repos found, or org doesn't exist/accessible)
+- `npm view @gladiaio/sdk` → **@gladiaio/sdk@1.1.0** (latest, published 2026-07-23), 44 versions since 2022
+
+**Triage:**
+
+| Category | Finding | Verdict |
+|----------|---------|---------|
+| **GitHub Source** | No public repos in gladiaio org | **NO CODE TO SCAN** — cannot perform static analysis on private/non-existent repos |
+| **NPM Package** | @gladiaio/sdk@1.1.0 (latest) | **METADATA ONLY** — no source tarball analyzed; would need `npm pack` or GitHub source to scan code |
+| **Secrets** | None in npm metadata | **CLEAN** — no credentials in package.json fields |
+
+**Verdict: NO REPORTABLE FINDINGS**
+
+- **REPORT_CANDIDATE: no** — No public source code available for static analysis. The npm metadata alone contains no secrets, endpoints, or vulnerabilities. Without access to the actual SDK source (GitHub repos appear private/missing), no static scan can be performed.
+
+**Recommendation:** If Gladia SDK source is meant to be public, verify the GitHub org name or repo visibility. Current scan surface is empty.
