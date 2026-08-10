@@ -321,3 +321,13 @@
   - **Verdict: HOLD** — Passes Q2, Q3, Q6. Fails Q4 (AUTH_HELPED). Blocker is Q1 (scope ambiguous — Scrapbook "coming soon" feature) and Q4. Could elevate to VALID with interactive testing but scope needs
   - | Q6 Not rejected? | YES | Valid class |
   - **Verdict: HOLD** — Passes Q1, Q2, Q3, Q6. Blocker is Q4 (APK acquisition). Could elevate to VALID with APK delivery + decompilation showing weak key storage (e.g., EncryptedSharedPreferences with har
+
+- 8 lead(s) marked VALID at 2026-08-10 19:48:46 UTC
+  - **Verdict: HOLD** — Passes Q1, Q2, Q3, Q5, Q6. Fails purely on Q4 (evidential). Whale-only OSCrypt fork (`xv10` magic, `os_crypt_whale.cc`, custom prefs keys `sync.encryption_bootstrap_token_per_accou
+  - **Verdict: HOLD** — Same blocker as Lead 04. Whale-only prefs deviation confirmed but envelope format unverified. **Elevates to VALID upon:** binary delivery showing `sync.encryption_bootstrap_token_p
+  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** APK delivery → decompilation showing `EncryptedSharedPreferences` with hardcoded key, or sync key stored in plaintext World-Readabl
+  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. Blocker is Q4 (AUTH_HELPED). **Elevates to VALID upon:** two-account interactive test on v4.38.386.14 demonstrating joiner observes (a) token-bearing query str
+  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** binary delivery showing Whale refresh/access tokens stored outside Chromium token_service (plaintext in Preferences/Cookies).
+  - **Verdict: HOLD** — Passes Q2-Q3, Q5-Q6. Fails Q1 (scope ambiguous — feature may not be GA) and Q4. **Elevates to VALID with:** scope confirmation + interactive test.
+  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** interactive test showing inviteCode replay or empty-password room join on v4.38.386.14.
+  - | **VALID** | **0** | — |
