@@ -348,3 +348,6 @@
   - -  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** interactive test showing inviteCode replay or empty-password room join on v4.38.386.14.
   - +- **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** interactive test showing inviteCode replay or empty-password room join on v4.38.386.14.
   - | **VALID** | **0** |
+
+- 1 lead(s) marked VALID at 2026-08-10 21:31:34 UTC
+  - | **VALID** | 0 |
