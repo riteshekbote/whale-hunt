@@ -253,3 +253,22 @@
 
 - 1 lead(s) marked VALID at 2026-08-10 08:23:46 UTC
   - | **VALID** | 0 |
+
+- 17 lead(s) marked VALID at 2026-08-10 12:06:58 UTC
+  - | Q6 Not rejected? | YES | SOP bypass is a valid vuln class |
+  - | Q6 | YES | Valid vuln class |
+  - | Q6 | YES | Weak crypto is a valid finding |
+  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. Blocker is purely evidential (Q4): binary required to extract KDF constants. Whale-only OSCrypt fork (`xv10` magic, `os_crypt_whale.cc`, custom prefs keys) con
+  - | Q6 | YES | Valid class |
+  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. Same blocker as Lead 03: binary required. Elevates to VALID upon binary delivery + objdump showing plaintext (non-OSCrypt-v10) token storage in Preferences.
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Valid class |
+  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. Blocker is Q4 (AUTH_HELPED). Could elevate to VALID if a human tester runs a two-account session and demonstrates cross-session URL leakage (especially token-b
+  - | Q6 | YES | Valid class |
+  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. Blocker is Q4. Could elevate to VALID if human tester demonstrates inviteCode replay or empty-password room join on v4.38.386.14.
+  - | Q6 | YES | Valid class |
+  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. Blocker is Q4 (APK acquisition). SHA256 pinned (`3c723291…`) but download channels 100% blocked. Elevates to VALID with APK delivery + decompilation showing we
+  - | Q6 | YES | Valid class |
+  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. Blocker is Q4. Elevates to VALID upon binary delivery showing plaintext token storage outside Chromium token_service.
+  - | **VALID** | **0** | — |
