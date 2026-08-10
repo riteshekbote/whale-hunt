@@ -1781,3 +1781,15 @@
 - LEARN: REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code
 - LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
 - LEARN: CHANGED @ NVD: services endpoint HTTP 404 this cycle — both NVD endpoints dead; CVE-gap verification frozen at 0-in-2026 (last known: 28 total, latest CVE-2025-
+
+## RANKED HYPOTHESES 2026-08-10 14:04:36 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork (from reports/hypotheses-bigpickle.txt)
+- [54] translate: Unvalidated cross-origin sidebarAction.show dispatch via ALL-matching content_scripts in sample extension (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe`) to this sandbox via unrestricted int
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe` via unrestricted internet) to `/tmp/o
+- NEXT(hypotheses-laguna.txt): AUTH_HELPED: HUMAN delivers official Whale desktop binary v4.38.386.14 (`.deb` from cloudfront CDN `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe`) to `/tmp
+- LEARN: ACCEPTED @ NVD services endpoint: `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 — passive CVE verification path live; `keywordSearch=whale` (28 
+- LEARN: REJECTED @ NVD `keywordSearch=naver+whale` query: returns 0 results (keyword-matching quirk) — use `whale` (28 total) as broad surface for future CVE-gap checks
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
