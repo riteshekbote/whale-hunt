@@ -3340,3 +3340,15 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED @ NVD `keywordSearch=naver+whale`: returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 results) is the correct surface for Whale CVE-gap checks
 [LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension confirms API surface present but NOT exploitability in current binary
 [RISK] sync: 65 reason: custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 82 reason: sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; CPE Linux gap resolved; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show() message handling — high-priority regression window unchanged | libs: 35 reason: Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk
+## 2026-08-10 09:42:51 UTC [browser] (model nemotron3)
+[NEW] GitHub wiki documentation now accessible: `whale.sidebarAction.md`, `How-to-avoid-my-extension-from-changing-urls.md`, `Client-side-application-vs-Server-side-application.md` all HTTP 200 (were 404)
+[NEW] NVD `services.nvd.nist.gov/rest/json/cves/2.0` stable HTTP 200 — `keywordSearch=whale` fully paginated: 28 total CVEs, 0 published in 2026, latest CVE-2025-69235 @2025-12-30
+[CHANGED] CPE correction: CVE-2025-69235/69234 CPE `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` is platform-agnostic — Linux fix IS covered (prior knowledge base claimed Linux absent)
+[CHANGED] GitHub complete branch inventory confirmed: all 4 branches enumerated, 0 Whale-specific source files beyond sidebar-sample extension (5 files)
+[CHANGED] NVD `keywordSearch=naver+whale` now returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 results) is the correct surface
+[CHANGED] Binary delivery dir `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification
+[CHANGED] All binary acquisition channels 100% blocked: cloudfront DNS `No answer`, APKMirror 403, Uptodown 404, pstatic 404
+[CHANGED] Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged
+[CHANGED] Wikipedia EN/KO pages both HTTP 404 — passively verifiable version confirmation impossible
+[PRIO] whalesync client engine (api.whale.naver.com/whalesync + profile prefs `sync.encryption_bootstrap_token_per_account`), 7.10, atk=8 biz=9 tech=9 gate=2 cloud=4 fresh=8
+[PRIO] Whale v4.38.386.14 desktop Linux sidebar (

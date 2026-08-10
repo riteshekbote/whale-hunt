@@ -6134,3 +6134,4 @@ class: XSS
 asset: Whale v4.38.386.14 resources.pak — socket.io.slim.js confirmed Whale-only bundled; no public library manifest; version string unextractable passively
 confidence: 38
 reasoning: socket.io.slim.js confirmed Whale-only in resources.pak (non-Chromium). Version unextractable (binary absent). Event-handler registration path suspected runtime-fetched, degrading passive evidence. Socket.io
+## 2026-08-10 09:45:10 UTC [browser] (model laguna)

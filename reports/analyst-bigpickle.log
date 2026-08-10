@@ -32606,3 +32606,73 @@ STEP 6 — LEARNING:
 
 STEP 7 — RISK SCORE:
 - [RISK] sync: 60 — xv10 OSCrypt fork + Whale-only prefs + client-side passphrase KDF confirmed by prior binary runs, repo proven to hold zero sync code (fork binary-exclusive), but binary absent and all acquisition channels dead (uptodown 404, cloudfront DNS dead, APKMirror 403, pstatic 404) — strongest open surface, fully HUMAN-gated | browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED (duplicate of fixed CVEs); 0 CVEs in 2026; no binary to confirm regression; NVD path live but empty for current versions — Medium | libs: 30 — socket.io.slim.js class rejected (conf 38 < 40, runtime-fetched handler); no public library manifest; binary inaccessible — Low visibility.
+===== ANALYST bigpickle 2026-08-10 09:45:23 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; ls -la /tmp/opencode/ 2>&1 | head -20
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+total 16
+drwxr-xr-x  2 runner runner  4096 Aug 10 09:41 .
+drwxrwxrwt 15 root   root   12288 Aug 10 09:41 ..
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "nvd_services:%{http_code}\n" --max-time 15 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=5" 2>&1; curl -s -o /dev/null -w "uptodown_android:%{http_code}\n" --max-time 15 "https://naver-whale-browser.en.uptodown.com/android" 2>&1; curl -s -o /dev/null -w "manifest:%{http_code}\n" --max-time 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>&1
+nvd_services:200
+uptodown_android:404
+manifest:200
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); tv=d.get('totalResults',0); pub2026=[c['cve']['published'] for c in d.get('vulnerabilities',[]) if c['cve']['published'].startswith('2026')]; print('total:',tv,'pub2026:',len(pub2026))" 2>&1
+total: 28 pub2026: 0
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "wiki_sidebar:%{http_code}\n" --max-time 15 "https://raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md"; for f in background.js contentscript.js; do curl -s -o /dev/null -w "sample_$f:%{http_code}\n" --max-time 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/$f"; done; curl -s -o /dev/null -w "github_repo:%{http_code}\n" --max-time 15 "https://api.github.com/repos/naver/whale-browser-developers" 2>&1
+wiki_sidebar:200
+sample_background.js:200
+sample_contentscript.js:200
+github_repo:200
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://github.com/naver/whale-browser-developers/wiki" 2>&1 | python3 -c "import sys,re; h=sys.stdin.read(); pages=sorted(set(re.findall(r'wiki/([A-Za-z0-9._%+-]+)\"', h))); print('wiki pages found:', len(pages)); [print(' -',p) for p in pages]" 2>&1 | head -40
+wiki pages found: 6
+ - Client-side-application-vs-Server-side-application
+ - Home
+ - How-to-avoid-my-extension-from-changing-urls
+ - How-to-test-and-debug-my-extension
+ - index
+ - whale.sidebarAction
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://raw.githubusercontent.com/wiki/naver/whale-browser-developers/How-to-test-and-debug-my-extension.md" 2>&1 | python3 -c "import sys; print(sys.stdin.read()[:1500])" 2>&1
+### Installing 
+
+1) Open `whale://extensions` 
+
+2) Select 'install unpacked extension (압축 해제 된 앱 로드)'
+
+![image.png](https://raw.githubusercontent.com/naver/whale-developers/master/docs/e0d26564-0e2c-11e7-94b1-6d47c4edead0.png)
+
+3) Select extension folder 
+
+![image.png](https://raw.githubusercontent.com/naver/whale-developers/master/docs/f11076b4-0e2c-11e7-993b-3aba86b416e3.png)
+
+4) Confirm extension loaded
+
+![image.png](https://raw.githubusercontent.com/naver/whale-developers/master/docs/0a3101a4-0e2d-11e7-8eb5-0fb2bab6ba77.png)
+
+
+### Debugging
+* When debugging sidebar extension, right click on sidebar and select `Inspect` on context menu
+![image.png](https://raw.githubusercontent.com/naver/whale-developers/master/docs/40bc5c1e-0e2d-11e7-80ec-4137936a3bff.png)
+
+* When debugging background page
+  * Open `whale://inspect`
+  * Select 'Extension' > 'Extension development (개발중인 익스텐션)`
+  * Developer tools > 'Source' tab > select background script to debug
+![image.png](https://raw.githubusercontent.com/naver/whale-developers/master/docs/7fa170fe-0e2d-11e7-9402-538293aacb71.png)
+
+* When debugging content script
+  * If you are injecting any js or css using content script,
+![image.png](https://raw.githubusercontent.com/naver/whale-developers/master/docs/25eb21f8-0e2e-11e7-8c6f-1c71d9cfab07.png)
+  * Open the Developer tools
+  * 'Source' tab > 'Ctrl+O' > select script resource to content script debug
+![image.png](https://raw.githubusercontent.com/naver/whale-developers/master/docs/5dcfef
+[0m
+STEP 1 — DELTA

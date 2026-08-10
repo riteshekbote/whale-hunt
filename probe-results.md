@@ -153,3 +153,6 @@ https://raw.githubusercontent.com/naver/whale-browser-developers/translate/READM
 
 ## 2026-08-10 08:04:00 UTC
 https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md` -> HTTP 404
+
+## 2026-08-10 09:45:23 UTC
+https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md -> 200 len=4608 type=text/plain; charset=utf-8
