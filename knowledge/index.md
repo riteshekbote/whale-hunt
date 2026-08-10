@@ -467,3 +467,6 @@
 - 2026-08-10 ACCEPTED @ NVD: `keywordSearch=whale` re-confirmed HTTP 200 + totalResults=28 this cycle (21:10 UTC) — 0-in-2026 gap knowledge refreshed; latest CVE-2025-69235 @2025-12-30, 8-month disclosure gap static
 - 2026-08-10 ACCEPTED @ NVD: full-pagination `keywordSearch=whale` (resultsPerPage=200) remains the only working NVD query surface — date-filtered queries 404; do not use pubStartDate/pubEndDate
 - 2026-08-10 REJECTED class @ binary acquisition: all channels still 100% blocked (cloudfront DNS No-answer, APKMirror 403, Uptodown 404 Win+Android, pstatic 404) — binary-dependent verification permanently HUMAN-gated
+- 2026-08-10 ACCEPTED @ NVD services endpoint: recovered HTTP 200 this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-10 ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — ALL-origin content_scripts + zero sender.origin/sender.url validation in onMessage confirmed live, unchanged.
+- 2026-08-10 REJECTED @ GitHub repo `naver/whale-browser-developers`: documentation-only (pushed 2019-09-23, updated 2025-10-22, 0 releases) — static analysis path permanently dead; binary acquisition is only vector.

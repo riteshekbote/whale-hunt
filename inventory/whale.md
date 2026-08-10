@@ -683,3 +683,7 @@
 - NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was 404 @21:01) — gap surface re-locked live: totalResults=28, byYear {2003:1, 2009:1, 2018:5, 2020:1, 2021:1, 2022:6, 2023:3, 2024:2
 - CHANGED `/tmp/opencode/whale_binary/` still missing (re-verified 21:10 UTC) — binary-gated verification remains HUMAN-gated
 - CHANGED Sample extension (5 files) + 3 wiki docs all HTTP 200 — surfaces unchanged (persistent)
+
+## 2026-08-10 22:31:32 UTC
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was 404 in prior cycle) — passive CVE-gap verification path live; `keywordSearch=whale` returns totalResults=28, 0 published in 2026,
+- CHANGED NVD `keywordSearch=naver+whale` confirmed returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 total) is correct surface
