@@ -628,3 +628,7 @@
 - CHANGED GitHub wiki docs (whale.sidebarAction.md, How-to-avoid..., Client-side-vs-Server-side...) all HTTP 200 — live (persistent)
 
 ## 2026-08-10 14:04:36 UTC
+
+## 2026-08-10 15:12:30 UTC
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` reverted to HTTP 404 — both NVD endpoints dead in-sandbox; passive CVE-gap verification unavailable
+- CHANGED NVD `keywordSearch=naver+whale` confirmed returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 total) remains correct surface

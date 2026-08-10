@@ -422,3 +422,6 @@
 - 2026-08-10 REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist; static analysis path permanently dead.
 - 2026-08-10 REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstatic 404) — binary requires HUMAN with unrestricted internet.
 - 2026-08-10 CHANGED @ NVD: services endpoint HTTP 404 this cycle — both NVD endpoints dead; CVE-gap verification frozen at 0-in-2026 (last known: 28 total, latest CVE-2025-69235 @2025-12-30).
+- 2026-08-10 REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch
+- 2026-08-10 CHANGED @ NVD: both endpoints dead (nvd.nist.gov/rest 403 Cloudflare, services.nvd.nist.gov/rest 404) — CVE-gap verification frozen at 0-in-2026 (last known: 28 total, latest CVE-2025-69235 @2025-12-30)
+- 2026-08-10 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; stale lead — parked permanently.

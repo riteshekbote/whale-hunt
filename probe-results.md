@@ -168,3 +168,6 @@ https://naver-whale-browser.en.uptodown.com/android/download` -> HTTP 404
 
 ## 2026-08-10 14:04:37 UTC
 
+
+## 2026-08-10 15:12:30 UTC
+https://naver-whale-browser.en.uptodown.com/android/download` -> HTTP 400

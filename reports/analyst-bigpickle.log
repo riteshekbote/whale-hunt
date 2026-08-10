@@ -33235,3 +33235,154 @@ Both hypotheses survive: 62 ≥ 40 and 45 ≥ 40; AUTH is not on the REJECTED li
 
 **STEP 7 — RISK SCORE**
 [RISK] sync: 60 — xv10 OSCrypt fork + Whale-only prefs + client-side passphrase KDF confirmed by prior binary runs; repo proven to hold ZERO sync code (fork binary-exclusive); 0 CVEs in 2026 re-confirmed live (NVD up this cycle); binary still absent, all acquisition channels dead — strongest open surface, fully HUMAN-gated | browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED (duplicate of fixed CVEs); 0 CVEs in 2026; no binary to confirm regression — Medium | libs: 30 — socket.io.slim.js class rejected (conf 38 < 40, runtime-fetched handler); no public library manifest; binary inaccessible — Low visibility
+===== ANALYST bigpickle 2026-08-10 15:12:30 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls /tmp/opencode/whale_binary/ 2>&1; echo "---"; curl -s -o /dev/null -w "services.nvd: %{http_code}\n" --max-time 15 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=1" 2>&1; echo "---"; curl -s -o /dev/null -w "sample manifest: %{http_code}\n" --max-time 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" 2>&1
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+services.nvd: 200
+---
+sample manifest: 200
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200" 2>&1 | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+cves=d.get('vulnerabilities',[])
+print('total:', d.get('totalResults'))
+for v in cves:
+    c=v['cve']
+    desc=c['descriptions'][0]['value'] if c['descriptions'] else ''
+    if 'naver' in desc.lower() or 'whale' in desc.lower() and ('naver' in desc.lower() or 'navercorp' in c['id'].lower()):
+        y=c['published'][:4]
+        if y>='2020':
+            print(c['id'], c['published'][:10], desc[:60])
+" 2>&1 | head -40
+total: 28
+CVE-2020-9754 2022-06-27 NAVER Whale browser mobile app before 1.10.6.2 allows the at
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200" 2>&1 | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+cves=d.get('vulnerabilities',[])
+out=[]
+for v in cves:
+    c=v['cve']
+    desc=c['descriptions'][0]['value'] if c['descriptions'] else ''
+    if 'NAVER' in desc or 'Naver' in desc or 'whale browser' in desc.lower():
+        out.append((c['id'], c['published'][:10], desc[:50]))
+for o in sorted(out, key=lambda x:x[1]):
+    print(o[0], o[1], o[2])
+print('count:', len(out))
+"
+CVE-2018-9859 2018-06-16 The path of Whale update service was unquoted in N
+CVE-2018-7635 2018-07-03 Whale Browser before 1.0.41.8 displays no URL info
+CVE-2018-12448 2018-08-02 Whale Browser before 1.3.48.4 displays no URL info
+CVE-2018-12449 2018-10-11 The Whale browser installer 0.4.3.0 and earlier ve
+CVE-2020-9753 2020-05-20 Whale Browser Installer before 1.2.0.5 versions do
+CVE-2021-33593 2021-11-02 Whale browser for iOS before 1.14.0 has an inconsi
+CVE-2022-24071 2022-01-28 A Built-in extension in Whale browser before 3.12.
+CVE-2022-24072 2022-03-17 The devtools API in Whale browser before 3.12.129.
+CVE-2022-24073 2022-03-17 The Web Request API in Whale browser before 3.12.1
+CVE-2022-24074 2022-03-17 Whale Bridge, a default extension in Whale browser
+CVE-2022-24075 2022-03-17 Whale browser before 3.12.129.18 allowed extension
+CVE-2020-9754 2022-06-27 NAVER Whale browser mobile app before 1.10.6.2 all
+CVE-2023-25632 2023-11-27 The Android Mobile Whale browser app before 3.0.1.
+CVE-2024-40618 2024-07-11 Whale browser before 3.26.244.21 allows an attacke
+CVE-2024-50583 2024-10-25 Whale browser Installer before 3.1.0.0 allows an a
+CVE-2025-53599 2025-07-04 Whale browser for iOS before 3.9.1.4206 allow an a
+CVE-2025-53600 2025-07-04 Whale browser before 4.32.315.22 allow an attacker
+CVE-2025-62583 2025-10-16 Whale Browser before 4.33.325.17 allows an attacke
+CVE-2025-62584 2025-10-16 Whale browser before 4.33.325.17 allows an attacke
+CVE-2025-62585 2025-10-16 Whale browser before 4.33.325.17 allows an attacke
+CVE-2025-69234 2025-12-30 Whale browser before 4.35.351.12 allows an attacke
+CVE-2025-69235 2025-12-30 Whale browser before 4.35.351.12 allows an attacke
+count: 22
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "uptodown android: %{http_code}\n" --max-time 15 -A "Mozilla/5.0" "https://naver-whale-browser.en.uptodown.com/android" 2>&1; curl -s -o /dev/null -w "wiki sidebarAction: %{http_code}\n" --max-time 15 "https://raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md" 2>&1
+uptodown android: 200
+wiki sidebarAction: 200
+[0m
+[0m$ [0mcurl -s --max-time 15 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" "https://naver-whale-browser.en.uptodown.com/android" 2>&1 | python3 -c "
+import sys,re
+h=sys.stdin.read()
+m=re.search(r'com\.naver\.whale[^<\"]{0,40}', h)
+print('version pin:', m.group(0) if m else 'NONE')
+m2=re.findall(r'data-signal-url=\"[^\"]+\"', h)
+print('signal urls:', m2[:2])
+m3=re.findall(r'/android/download', h)
+print('download link present:', bool(m3))
+" 2>&1
+version pin: com.naver.whale
+signal urls: []
+download link present: True
+[0m
+[0m$ [0mcurl -s --max-time 15 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" "https://naver-whale-browser.en.uptodown.com/android" 2>&1 | python3 -c "
+import sys,re
+h=sys.stdin.read()
+m=re.search(r'data-app-id=\"(\d+)\"', h)
+print('app id:', m.group(1) if m else 'NONE')
+m=re.search(r'href=\"([^\"]*?/android/download[^\"]*)\"', h)
+print('dl path:', m.group(1) if m else 'NONE')
+m=re.search(r'whale-browser\.en\.uptodown\.com/android/apps/(\d+)', h)
+print('apps id:', m.group(1) if m else 'NONE')
+print('len:', len(h))
+" 2>&1
+app id: NONE
+dl path: https://naver-whale-browser.en.uptodown.com/android/download
+apps id: NONE
+len: 156225
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "dw probe: %{http_code}\n" --max-time 15 -A "Mozilla/5.0" -H "Referer: https://naver-whale-browser.en.uptodown.com/android" "https://dw.uptodown.com/dwn/1197336657" 2>&1; curl -s --max-time 15 -A "Mozilla/5.0" -H "Referer: https://naver-whale-browser.en.uptodown.com/android" "https://dw.uptodown.com/dwn/1197336657" 2>&1 | head -c 300
+dw probe: 400
+{"success":0,"errorCode":-51,"errorMsg":"Bad request"}
+[0m
+## STEP 1 — DELTA
+- [CHANGED] NVD `services.nvd.nist.gov/rest/json/cves/2.0` HTTP 200 this cycle — 22 Naver-Whale CVEs (filtered from 28 `whale` hits), 0 in 2026, latest CVE-2025-69235 @2025-12-30; 8-month gap re-confirmed live
+- [CHANGED] uptodown Android page `naver-whale-browser.en.uptodown.com/android` flipped back to HTTP 200 (was 404 in prior cycles) — `/android/download` link present; HUMAN-gated APK window OPEN
+- [CHANGED] `dw.uptodown.com/dwn/1197336657` still HTTP 400 errorCode -51 — token client-side-only, no curl-able path (unchanged)
+- [CHANGED] `/tmp/opencode/whale_binary/` still missing (verified this cycle) — binary-gated verification remains HUMAN-gated
+- [CHANGED] sample extension manifest + wiki `whale.sidebarAction.md` both HTTP 200 — surface unchanged
+- [NO_DELTA] GitHub repo, Wikipedia, APKMirror/pstatic/cloudfront all unchanged (dead)
+
+## STEP 2 — PRIORITIZE
+- [PRIO] whale Linux `os_crypt_whale` fork (xv10 envelope + passphrase KDF): attack 6, business 9, tech 8, gate 7, cloud 0, fresh 6 → priority 6.35
+- [PRIO] com.naver.whale 3.9.14.9 Android sync engine (/whalesync client, Keystore): attack 5, business 8, tech 7, gate 8, cloud 0, fresh 6 → priority 5.95
+- [PRIO] uptodown Android page as live acquisition window (not a vuln, an enabler): attack 0, business 2, tech 1, gate 10, cloud 0, fresh 10 → priority 1.80
+
+## STEP 3 — HYPOTHESES
+[HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` + Local State/keyring (client-side, zero /whalesync)
+confidence: 62
+reasoning: Whale-unique markers (`os_crypt_whale`, `whale_need_encryption_key_forced_time`) have 0 public-source matches; repo holds ZERO sync code (4/4 branches + wiki + README.ko.md enumerated); NVD gap re-live (22 Naver CVEs, 0 in 2026); xv10 envelope KDF alg/iterations + key locality unextracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); Linux v11 1-iteration baseline comparison.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+
+[HYP] Android sync encryption KDF / master-key storage (custom mobile impl, passphrase feature, zero CVE coverage)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore)
+confidence: 45
+reasoning: NVD tally shows Android sync client has NEVER had a CVE while iOS 3.9.1.4206 got CVE-2025-53599; sync encryption since 2025-04 + mobile passphrase implies custom impl; uptodown page LIVE this cycle (200, download link present) re-pinning the acquisition path; APK sha256 still unpinned.
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
+verify_steps: AUTH_HELPED: HUMAN runs uptodown dw JS flow in a real browser while page is live (app code 777828, file id 1197336657) → drop APK at `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise; High
+testability: AUTH_HELPED
+
+## STEP 4 — SELF-CRITIQUE
+- [PARKED] browser/translate sidebar SOP-CSP: class on REJECTED list (duplicates CVE-2025-69234/69235/53600/62583/62584/62585), no novel variant — not re-emitted
+- [FINAL] 1) Desktop sync KDF (62) — unchanged, strongest open surface | 2) Android sync KDF (45) — confidence intact; uptodown live window raises acquisition feasibility this cycle
+
+## STEP 5 — NEXT ACTION
+[NEXT] HUMAN: The uptodown Android page is HTTP 200 RIGHT NOW (flip window open). Open `https://naver-whale-browser.en.uptodown.com/android/download` in a real browser, let the client-side dw token resolve (curl cannot: `dw.uptodown.com/dwn/1197336657` → errorCode -51), download com.naver.whale 3.9.14.9, and drop the APK at `/tmp/opencode/whale_binary/`; record sha256 only.
+
+## STEP 6 — LEARNING
+- [LEARN] ACCEPTED acquisition channel @ uptodown Android page: HTTP 200 this cycle (was 404) — page is cyclically live; the flip-window remains the only in-scope HUMAN-gated APK path; dw token still client-side-only
+- [LEARN] ACCEPTED @ NVD services endpoint: HTTP 200 this cycle — 22 Naver-Whale CVEs, 0 in 2026, latest CVE-2025-69235 @2025-12-30; gap knowledge re-confirmed live
+- [LEARN] REJECTED class @ socket.io.slim.js: unchanged (conf 38 < 40, runtime-fetched handler, no passive proof) — not re-emitted
+
+## STEP 7 — RISK SCORE
+[RISK] sync: 60 — xv10 OSCrypt fork + Whale-only prefs + client-side passphrase KDF confirmed by prior binary runs; repo proven ZERO sync code (fork binary-exclusive); NVD gap live (22 Naver CVEs, 0 in 2026); uptodown page live this cycle but download HUMAN-gated (dw 400 -51) — strongest open surface, fully HUMAN-gated | browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED (duplicate of fixed CVEs); no binary to confirm regression; NVD path live — Medium | libs: 30 — socket.io.slim.js rejected (conf 38 < 40); no public library manifest; binary inaccessible — Low visibility

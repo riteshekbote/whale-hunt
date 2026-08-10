@@ -1,7 +1,9 @@
-## 2026-08-10 14:04:17 UTC [browser] (model nemotron3)
-[PRIO] whalesync client engine (api.whale.naver.com/whalesync + profile prefs `sync.encryption_bootstrap_token_per_account`), 7.10, atk=8 biz=9 tech=9 gate=2 cloud=4 fresh=8
+## 2026-08-10 15:12:19 UTC [browser] (model nemotron3)
+[CHANGED] NVD `services.nvd.nist.gov/rest/json/cves/2.0` reverted to HTTP 404 — both NVD endpoints dead in-sandbox; passive CVE-gap verification unavailable
+[CHANGED] NVD `keywordSearch=naver+whale` confirmed returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 total) remains correct surface
+[PRIO] whalesync client engine (api.whale.naver.com/whalesync + profile prefs `sync.encryption_bootstrap_token_per_account`), 7.20, atk=9 biz=9 tech=8 gate=2 cloud=4 fresh=8
 [PRIO] Whale v4.38.386.14 desktop Linux sidebar (sidebarAction.show + ALL-origin content_scripts + background.js no origin check), 8.50, atk=9 biz=9 tech=8 gate=10 cloud=3 fresh=10
-[PRIO] Whale Android 3.9.14.9 sync surface (com.naver.whale + whalesync prefs), 5.80, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=6
+[PRIO] Whale Android 3.9.14.9 sync surface (com.naver.whale + whalesync prefs), 6.00, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=6
 [HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
 class: AUTH
 asset: whalesync client engine (api.whale.naver.com/whalesync) + profile prefs `sync.encryption_bootstrap_token_per_account`
@@ -33,8 +35,8 @@ testability: HUMAN_ONLY
 [PARKED] Android sync bootstrap-token envelope — Whale OSCrypt deviation on Android keystore: confidence 45 < 60 threshold; no passive proof path (APK acquisition dead); requires HUMAN APK delivery
 [FINAL] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (confidence 62)
 [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/opencode/whale_binary/`) — all passive download paths confirmed dead (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 both pages, pstatic 404)
-[LEARN] ACCEPTED @ NVD services endpoint: `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 — passive CVE verification path live; `keywordSearch=whale` (28 total) is correct surface, 0 CVEs in 2026 confirmed
-[LEARN] REJECTED @ NVD `keywordSearch=naver+whale` query: returns 0 results (keyword-matching quirk) — use `whale` (28 total) as broad surface for future CVE-gap checks
 [LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension confirms API surface present but NOT exploitability in current binary
 [LEARN] REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstatic 404) — binary static analysis requires HUMAN intervention
+[LEARN] REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch
+[LEARN] CHANGED @ NVD: both endpoints dead (nvd.nist.gov/rest 403 Cloudflare, services.nvd.nist.gov/rest 404) — CVE-gap verification frozen at 0-in-2026 (last known: 28 total, latest CVE-2025-69235 @2025-12-30)
 [RISK] sync: 65 reason: custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 82 reason: sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; CPE Linux gap resolved; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show() message handling — high-priority regression window unchanged | libs: 35 reason: Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk
