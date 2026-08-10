@@ -329,5 +329,22 @@
   - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. Blocker is Q4 (AUTH_HELPED). **Elevates to VALID upon:** two-account interactive test on v4.38.386.14 demonstrating joiner observes (a) token-bearing query str
   - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** binary delivery showing Whale refresh/access tokens stored outside Chromium token_service (plaintext in Preferences/Cookies).
   - **Verdict: HOLD** — Passes Q2-Q3, Q5-Q6. Fails Q1 (scope ambiguous — feature may not be GA) and Q4. **Elevates to VALID with:** scope confirmation + interactive test.
-  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** interactive test showing inviteCode replay or empty-password room join on v4.38.386.14.
-  - | **VALID** | **0** | — |
+- **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** interactive test showing inviteCode replay or empty-password room join on v4.38.386.14.
+- | **VALID** | **0** | — |
+
+- 15 lead(s) triaged at 2026-08-10 20:26 UTC — **0 VALID / 6 HOLD / 9 INVALID**
+  - Full 7Q analysis per lead; Q4 (passive proof) is the universal blocker for all 15 leads
+  - 5 models de-duplicated to 15 distinct lead categories (1 new: installer DLL-execution regression)
+  - 9 INVALID: Lead 01/02/03 (dupes fixed CVE classes), Lead 07 (inventory gap, best-practice), Lead 08 (unreachable handler + dupe), Lead 09 (out of scope Naver web service), Lead 12 (scope unclear), Lead 13 (low confidence), Lead 14 (adjacent to fixed CVE)
+  - 6 HOLD: Lead 04 (sync KDF, binary required), Lead 05 (bootstrap-token OSCrypt, binary required), Lead 06 (Android keystore, APK required), Lead 10 (Multiplay URL, AUTH_HELPED), Lead 11 (refresh-token, binary required), Lead 15 (installer DLL-execution, binary required)
+  - All binary-acquisition channels remain 100% blocked; NVD endpoint recovered HTTP 200 (0 CVEs in 2026 re-confirmed)
+  - See `triage/run-2026-08-10-20-26.md` for full analysis
+
+- 7 lead(s) marked VALID at 2026-08-10 20:33:17 UTC
+  - - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** APK delivery → decompilation showing `EncryptedSharedPreferences` with hardcoded key, or sync key stored in plaintext World-Reada
+  - - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. Blocker is Q4 (AUTH_HELPED). **Elevates to VALID upon:** two-account interactive test on v4.38.386.14 demonstrating joiner observes (a) token-bearing query s
+  - - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** binary delivery showing Whale refresh/access tokens stored outside Chromium token_service (plaintext in Preferences/Cookies).
+  - - **Verdict: HOLD** — Passes Q2-Q3, Q5-Q6. Fails Q1 (scope ambiguous — feature may not be GA) and Q4. **Elevates to VALID with:** scope confirmation + interactive test.
+  - -  - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** interactive test showing inviteCode replay or empty-password room join on v4.38.386.14.
+  - +- **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** interactive test showing inviteCode replay or empty-password room join on v4.38.386.14.
+  - | **VALID** | **0** |
