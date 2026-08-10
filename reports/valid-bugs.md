@@ -305,3 +305,19 @@
   - | Q6 | YES | Authz bypass is valid |
   - | Q6 | YES | Weak crypto is valid |
   - **VERDICT: HOLD** — Passes Q1, Q2, Q3, Q6. Blocker is Q4 (APK acquisition). **Elevates to VALID upon:** APK delivery → decompilation showing `EncryptedSharedPreferences` with hardcoded key, or sync ke
+
+- 14 lead(s) marked VALID at 2026-08-10 17:45:19 UTC
+  - | Q6 Not rejected? | YES | SOP bypass is a valid vuln class |
+  - | Q6 Not rejected? | YES | Valid vuln class |
+  - | Q6 Not rejected? | YES | XSS/injection is a valid class |
+  - | Q6 Not rejected? | YES | Weak crypto is a valid finding |
+  - **Verdict: HOLD** — Passes Q1, Q2, Q3, Q6. Fails Q4 (no passive proof path; binary blocked). Cannot be elevated to VALID without binary delivery + static extraction showing weak KDF or plaintext token
+  - | Q6 Not rejected? | YES | Valid class |
+  - | Q6 Not rejected? | YES | Valid class |
+  - | Q6 Not rejected? | YES | Valid class when specific |
+  - | Q6 Not rejected? | YES | Info disclosure / authz bypass is valid |
+  - **Verdict: HOLD** — Passes Q1, Q2, Q3, Q6. Blocker is Q4 (AUTH_HELPED). Could elevate to VALID if a human tester runs a two-account session and demonstrates joiner observes token-bearing query strings
+  - | Q6 Not rejected? | YES | Authz bypass is valid |
+  - **Verdict: HOLD** — Passes Q2, Q3, Q6. Fails Q4 (AUTH_HELPED). Blocker is Q1 (scope ambiguous — Scrapbook "coming soon" feature) and Q4. Could elevate to VALID with interactive testing but scope needs
+  - | Q6 Not rejected? | YES | Valid class |
+  - **Verdict: HOLD** — Passes Q1, Q2, Q3, Q6. Blocker is Q4 (APK acquisition). Could elevate to VALID with APK delivery + decompilation showing weak key storage (e.g., EncryptedSharedPreferences with har
