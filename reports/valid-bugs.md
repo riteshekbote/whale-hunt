@@ -350,4 +350,16 @@
   - | **VALID** | **0** |
 
 - 1 lead(s) marked VALID at 2026-08-10 21:31:34 UTC
-  - | **VALID** | 0 |
+  - | **VALID** | 0 | — |
+
+- 3 lead(s) triaged at 2026-08-10 22:21 UTC — **0 VALID / 2 HOLD / 1 INVALID**
+  - Full 7Q analysis per lead; Q4 (passive proof) is the universal blocker for all 3 leads
+  - 3 active models de-duplicated to 3 distinct lead categories (ling3, laguna produced no output)
+  - 1 INVALID: Lead 03 (sidebar SOP bypass — dupes CVE-2025-69234/69235; sample extension is a tutorial, not a vuln)
+  - 2 HOLD: Lead 01 (desktop sync KDF, binary required), Lead 02 (Android sync KDF, APK required)
+  - All binary-acquisition channels remain 100% blocked; reposcan pipeline still REGRESSED (gladiaio/ not whale/)
+  - See `triage/run-2026-08-10-22-21.md` for full analysis
+
+- 2 lead(s) marked VALID at 2026-08-10 22:26:33 UTC
+  - - +- **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. **Elevates to VALID upon:** interactive test showing inviteCode replay or empty-password room join on v4.38.386.14.
+  - | **VALID** | 0 | — |
