@@ -290,3 +290,18 @@
   - **Verdict: HOLD** — Same as Lead 04. Whale-only OSCrypt fork confirmed but KDF unextracted. Blocker is Q4. Elevates to VALID upon binary delivery. Not reportable now.
   - | Q6 | YES | Valid class |
   - | **VALID** | **0** | — |
+
+- 13 lead(s) marked VALID at 2026-08-10 16:43:37 UTC
+  - | Q6 | YES | SOP bypass is a valid vuln class |
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Valid class (when novel) |
+  - | Q6 | YES | Weak crypto is a valid finding |
+  - **VERDICT: HOLD** — Passes Q1, Q2, Q3, Q6. Blocker is purely evidential (Q4): binary artifact required. Whale-specific OSCrypt deviation is confirmed real and historically where weak crypto hides, but
+  - | Q6 | YES | Valid class |
+  - **VERDICT: HOLD** — Passes Q1, Q2, Q3, Q6. Same blocker as Lead 04: binary required. **Elevates to VALID upon:** binary delivery showing `sync.encryption_bootstrap_token_per_account` stored as plainte
+  - | Q6 | YES | Valid class |
+  - | Q6 | YES | Authz bypass / info disclosure is valid |
+  - **VERDICT: HOLD** — Passes Q1, Q2, Q3, Q6. Blocker is Q4 (AUTH_HELPED). **Elevates to VALID upon:** two-account interactive test on v4.38.386.14 demonstrating joiner observes (a) token-bearing query s
+  - | Q6 | YES | Authz bypass is valid |
+  - | Q6 | YES | Weak crypto is valid |
+  - **VERDICT: HOLD** — Passes Q1, Q2, Q3, Q6. Blocker is Q4 (APK acquisition). **Elevates to VALID upon:** APK delivery → decompilation showing `EncryptedSharedPreferences` with hardcoded key, or sync ke
