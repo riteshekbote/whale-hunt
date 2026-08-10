@@ -2733,3 +2733,23 @@ evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key per
 verify_steps: AUTH_HELPED: HUMAN runs uptodown dw JS flow during next 200 window (app code 777828, file id 1197336657) → drop APK at `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
 impact: local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise; High
 testability: AUTH_HELPED
+## 2026-08-10 18:02:57 UTC [sync] (model bigpickle)
+[HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork
+class: AUTH
+asset: Whale binary `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` + Local State/keyring (client-side, zero /whalesync)
+confidence: 62
+reasoning: Whale-only markers (`os_crypt_whale`, `whale_need_encryption_key_forced_time`) have 0 public-source matches; repo holds ZERO sync code (fully enumerated); NVD live this cycle confirms 0 CVEs in 2026 (latest fix CVE-2025-69235 @2025-12-30); xv10 envelope KDF alg/iteration count + master-key locality remain unextracted.
+evidence_needed: PBKDF2/scrypt alg + iteration count; derived-key persistence (keyring vs file vs Local State); v11 1-iteration baseline comparison.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+[HYP] Android sync encryption KDF / master-key storage (custom mobile impl, passphrase feature, zero CVE coverage)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore)
+confidence: 45
+reasoning: iOS client got CVE-2025-53599 (fixed 3.9.1.4206) while Android 3.9.14.9 has never had a published CVE; sync encryption since 2025-04 + mobile passphrase implies custom impl distinct from Chromium fork; uptodown Android 404 this cycle, APK sha256 still unpinned.
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
+verify_steps: AUTH_HELPED: HUMAN runs uptodown dw JS flow during next 200 window (app code 777828, file id 1197336657) → drop APK at `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise; High
+testability: AUTH_HELPED
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/`; if uptodown Android flips back to HTTP 200 (`naver-whale-browser.en.uptodown.com/android`), run the dw JS flow in a real browser for com.naver.whale 3.9.14.9 instead (app code 777828, file id 1197336657). Either artifact unblocks both ranked sync hypotheses. Zero Naver-infra requests.

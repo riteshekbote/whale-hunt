@@ -440,3 +440,5 @@
 - 2026-08-10 CONFIRMED @ NVD services endpoint: `services.nvd.nist.gov/rest/json/cves/2.0` HTTP 200 this cycle (recovered from 404 at 16:24 UTC); route CVE checks through services host, use `keywordSearch=whale` (not `naver+whale` which returns 0 due to keyword quirk)
 - 2026-08-10 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked.
 - 2026-08-10 CHANGED @ NVD: services endpoint recovered HTTP 200 this cycle — passive CVE-gap verification path live again; `keywordSearch=whale` (28 total) is correct surface, 0 CVEs in 2026 confirmed.
+- 2026-08-10 ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch
+- 2026-08-10 ACCEPTED @ CVE-2025-69235/69234 CPE: `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` is platform-agnostic (NOT Windows/macOS-only) — Linux fix IS covered

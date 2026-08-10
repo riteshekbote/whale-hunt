@@ -1,5 +1,4 @@
-## 2026-08-10 17:09:27 UTC [libs] (model longcat)
-[CHANGED] NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was 404 in 15:12 and 16:24 cycles) — passive CVE-gap verification path live again
+## 2026-08-10 18:02:53 UTC [libs] (model longcat)
 [PRIO] Whale desktop binary (v4.38.386.14) sync/OSCrypt module — score 6.85 (attack=8, business=9, tech=4, gate=10, cloud=0, fresh=5)
 [PRIO] resources.pak bundled socket.io.slim.js + /whalesync push — score 5.95 (attack=6, business=8, tech=5, gate=10, cloud=0, fresh=2)
 [PRIO] sidebarAction.show URL-loading path on Whale Linux — score 5.6 (attack=7, business=8, tech=3, gate=6, cloud=0, fresh=5)
@@ -11,6 +10,24 @@ reasoning: Prior binary recon confirms Whale-only sync.encryption_bootstrap_toke
 evidence_needed: Extract KDF iteration count + salt mechanism from binary; identify master-key storage path on Linux (keyring/plaintext file?)
 verify_steps: HUMAN_ONLY: Requires live Whale desktop binary (.deb from dead cloudfront CDN or WhaleSetup.exe) — extract strings for xv10/pbkdf2/scrypt/argon2 patterns, trace os_crypt_whale.cc logic for encryption key derivation path
 impact: Attacker with local access recovers sync passphrase → decrypts all synced data (passwords, history, bookmarks) across all user devices
+testability: HUMAN_ONLY
+[HYP] Sidebar iframe sandbox escape via CVE-2025-69234 variant regression on Whale Linux
+class: OTHER
+asset: sidebarAction.show URL-loading path on Whale Linux
+confidence: 58
+reasoning: CVE-2025-69234 fixed in v4.35.351.12 (Dec 2025) with platform-agnostic CPE. Latest v4.38.386.14 is 3 minor bumps ahead with 0 CVEs published — Linux regression window is unclaimed. Sample extension confirms content_scripts fire sidebarAction.show from arbitrary web origins without sender validation, but exploitability in current binary is unproven.
+evidence_needed: Binary diff of sidebar process isolation between v4.35.351.12 and v4.38.386.14 on Linux; or live reproduction
+verify_steps: HUMAN_ONLY: Requires Whale Linux binary + live browser install with two-account sync to test cross-origin sidebar navigation against a controlled iframe
+impact: Attacker-controlled iframe in sidebar escapes sandbox → same-origin access to sidebar content/credentials
+testability: HUMAN_ONLY
+[HYP] Built-in extension socket.io.slim.js event-handler injection via /whalesync push channel
+class: XSS
+asset: resources.pak bundled socket.io.slim.js + /whalesync push
+confidence: 38
+reasoning: Prior recon confirms socket.io.slim.js (Whale-specific bundle) present in resources.pak. Socket.io historically has prototype pollution + event-handler injection vectors. However handler may be runtime-fetched, degrading passive evidence. No version string or handler registration path extractable without binary.
+evidence_needed: Extract socket.io version from binary; identify event-handler registration path; craft malicious event payload
+verify_steps: HUMAN_ONLY: Binary extraction required; then AUTH_HELPED: authenticated sync account to receive push messages
+impact: XSS or RCE in browser process via crafted push message from sync server
 testability: HUMAN_ONLY
 [PARKED] Built-in extension socket.io.slim.js event-handler injection via /whalesync push channel: confidence 38 < 40 threshold; handler runtime-fetched degrading passive evidence; no passive proof path exists; stale lead from prior cycles.
 [PARKED] Sidebar iframe sandbox escape via CVE-2025-69234 variant regression on Whale Linux: class on REJECTED list (sidebar/dual-tab/web-panel SOP-CSP bypass duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant proven; sample extension confirms API surface but NOT current-binary exploitability).
