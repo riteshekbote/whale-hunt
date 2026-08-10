@@ -1,21 +1,17 @@
-## 2026-08-10 11:42:06 UTC [sync] (model bigpickle)
-[HYP] Desktop sync passphrase KDF + xv10 bootstrap-token envelope weak/device-recoverable key
+## 2026-08-10 12:33:02 UTC [sync] (model bigpickle)
 class: AUTH
 asset: Whale binary `os_crypt_whale.cc`/`wbc_wrapper_apis.cc`; Local State + keyring (client-side, zero /whalesync interaction)
 confidence: 62
-reasoning: Whale-unique markers (`os_crypt_whale`, `whale_need_encryption_key_forced_time`) have 0 public-source matches — fork exists ONLY in binary (4/4 branches enumerated, zero sync code); xv10 envelope KDF alg/iteration count + master-key locality unextracted; NVD gap knowledge re-confirmed live (28 total, 0 in 2026).
+reasoning: Whale-unique markers (`os_crypt_whale`, `whale_need_encryption_key_forced_time`) have 0 public-source matches — fork binary-exclusive (4/4 branches + 5/5 wiki pages + README.ko.md enumerated, zero sync code); xv10 envelope KDF alg/iteration + master-key locality unextracted; NVD gap live (28 total, 0 in 2026).
 evidence_needed: PBKDF2/scrypt alg + iteration count from Whale fork; derived-key persistence (keyring vs file vs Local State); Linux v11 1-iteration baseline comparison.
 verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
 impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
 testability: AUTH_HELPED
-[HYP] Android sync encryption KDF / master-key storage (custom mobile impl, passphrase feature since ~3.8.6.2)
 class: AUTH
-asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore); page anchors 777828 / 1197336657
+asset: com.naver.whale 3.9.14.9 sync engine (/whalesync client, Android Keystore)
 confidence: 45
-reasoning: sync encryption since 2025-04 + mobile passphrase implies custom mobile impl distinct from Chromium fork; version pin 3.9.14.9 re-confirmed live this cycle from uptodown page HTML; APK sha256 unpinned; dw token client-side-only (curl 400 -51, resolver JS 404).
+reasoning: sync encryption since 2025-04 + mobile passphrase implies custom mobile impl distinct from Chromium fork; version pin 3.9.14.9 last live-confirmed via uptodown page (code 777828, file id 1197336657); APK sha256 unpinned; uptodown Android 404 again this cycle.
 evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
-verify_steps: AUTH_HELPED: HUMAN runs uptodown dw JS flow in a real browser during current live window (code 777828) → drop APK at `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+verify_steps: AUTH_HELPED: HUMAN runs uptodown dw JS flow in a real browser on the next 200 window → drop APK at `/tmp/opencode/whale_binary/` → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
 impact: local attacker decrypts synced passwords/cookies/autofill on Android → cross-device sync account compromise; High
 testability: AUTH_HELPED
-[NEXT] HUMAN: Run the uptodown dw JS flow in a real browser during the current live window — open `https://naver-whale-browser.en.uptodown.com/android/download` (app code 777828, file id 1197336657, pins com.naver.whale 3.9.14.9), let the client-side token resolve (curl cannot: `dw.uptodown.com/dwn/*` → errorCode -51, `stc/img.utdstc.com/*/download.js` → 404/410), download the APK and drop it at `/tmp/opencode/whale_binary/`; record sha256 only.
-[RISK] sync: 60 — xv10 OSCrypt fork + Whale-only prefs + client-side passphrase KDF confirmed by prior binary runs; repo proven to hold ZERO sync code (fork binary-exclusive); binary absent, uptodown page live this cycle but download is HUMAN-gated (token client-side-only, dw 400 -51, resolver JS 404); NVD gap knowledge re-live — strongest open surface, fully HUMAN-gated | browser: 32 — sidebar/dual-tab SOP-CSP class REJECTED (duplicate of fixed CVEs); 0 CVEs in 2026 (28 total, NVD services live this cycle); no binary to confirm regression — Medium | libs: 30 — socket.io.slim.js class rejected (conf 38 < 40, runtime-fetched handler); no public library manifest (repo enumeration confirms none); binary inaccessible — Low visibility

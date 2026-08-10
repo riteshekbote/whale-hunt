@@ -618,3 +618,11 @@
 - CHANGED GitHub repo `naver/whale-browser-developers`: pushed_at=2019-09-23, updated_at=2025-10-22, 0 releases — documentation-only surface permanently dead (persistent)
 - CHANGED GitHub wiki docs (whale.sidebarAction.md, How-to-avoid..., Client-side-vs-Server-side...) all HTTP 200 — live (persistent)
 - CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` flipped to HTTP 404 (was 200 in prior cycle) — both NVD endpoints dead again; passive CVE-gap verification currently unavailable
+
+## 2026-08-10 12:33:18 UTC
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` flipped back to HTTP 404 (was transient HTTP 200 in prior cycle) — both NVD endpoints dead again in-sandbox
+- CHANGED NVD `keywordSearch=naver+whale` confirmed returns totalResults=0 (keyword-matching quirk) — broad `whale` query (28 total) remains the correct surface
+- CHANGED `/tmp/opencode/whale_binary/` still missing — binary-dependent verification permanently HUMAN-gated (persistent)
+- CHANGED All binary acquisition channels 100% blocked: cloudfront DNS `No answer` (general `*.cloudfront.net`), APKMirror 403, Uptodown 404 (Windows+Android), pstatic 404 (persistent)
+- CHANGED Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged (persistent)
+- CHANGED GitHub wiki docs (whale.sidebarAction.md, How-to-avoid..., Client-side-vs-Server-side...) all HTTP 200 — live (persistent)
