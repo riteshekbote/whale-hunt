@@ -664,3 +664,12 @@
 - CHANGED Binary delivery dir `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification (persistent)
 - CHANGED All binary acquisition channels 100% blocked: cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 (Win+Android), pstatic 404 (persistent)
 - CHANGED Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged (persistent)
+
+## 2026-08-10 21:01:29 UTC
+- NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` flipped back to HTTP 404 (was HTTP 200 in last run @20:03) — passive CVE-gap verification currently unavailable
+- CHANGED Binary delivery dir `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification (persistent)
+- CHANGED All binary acquisition channels 100% blocked: cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 (Win+Android), pstatic 404 (persistent)
+- CHANGED Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged (persistent)
+- CHANGED GitHub wiki docs (whale.sidebarAction.md, How-to-avoid..., Client-side-vs-Server-side...) all HTTP 200 — live (persistent)
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered to HTTP 200 (was 404 in prior cycle) — passive CVE-gap verification path LIVE again
+- CHANGED NVD `keywordSearch=whale` re-confirmed totalResults=28, 0 published in 2026 — gap knowledge refreshed

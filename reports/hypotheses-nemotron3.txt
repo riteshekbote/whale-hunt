@@ -1,9 +1,9 @@
-## 2026-08-10 20:03:07 UTC [browser] (model nemotron3)
-[NEW] NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered to HTTP 200 (was 404 in prior cycle) — passive CVE-gap verification path LIVE again
-[NEW] NVD `keywordSearch=whale` confirmed totalResults=28, 0 published in 2026 (latest CVE-2025-69235 @2025-12-30) — 8-month disclosure gap static for v4.35.352–v4.38.386.14
+## 2026-08-10 20:57:13 UTC [browser] (model nemotron3)
+[NEW] NVD `services.nvd.nist.gov/rest/json/cves/2.0` flipped back to HTTP 404 (was HTTP 200 in last run @20:03) — passive CVE-gap verification currently unavailable
 [CHANGED] Binary delivery dir `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification (persistent)
 [CHANGED] All binary acquisition channels 100% blocked: cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 (Win+Android), pstatic 404 (persistent)
 [CHANGED] Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged (persistent)
+[CHANGED] GitHub wiki docs (whale.sidebarAction.md, How-to-avoid..., Client-side-vs-Server-side...) all HTTP 200 — live (persistent)
 [PRIO] whalesync client engine (api.whale.naver.com/whalesync + profile prefs `sync.encryption_bootstrap_token_per_account`), 7.20, atk=9 biz=9 tech=8 gate=2 cloud=4 fresh=8
 [PRIO] Whale v4.38.386.14 desktop Linux sidebar (sidebarAction.show + ALL-origin content_scripts + background.js no origin check), 5.80, atk=7 biz=7 tech=6 gate=10 cloud=3 fresh=6
 [PRIO] Whale Android 3.9.14.9 sync surface (com.naver.whale + whalesync prefs), 4.95, atk=6 biz=8 tech=7 gate=3 cloud=4 fresh=4
@@ -38,11 +38,9 @@ testability: HUMAN_ONLY
 [FINAL] 1) Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (confidence 62)
 [FINAL] 2) Sidebar SOP bypass via unvalidated sender origin in official sidebar-sample extension + wiki-documented API (confidence 54)
 [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/opencode/whale_binary/`) — all passive download paths confirmed dead (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 both pages, pstatic 404)
-[LEARN] ACCEPTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: recovered HTTP 200 — passive CVE-gap verification path live; `keywordSearch=whale` (28 total) is correct surface, 0 CVEs in 2026 confirmed
-[LEARN] REJECTED @ NVD `keywordSearch=naver+whale` query: returns 0 results (keyword-matching quirk) — use `whale` (28 total) as broad surface for future CVE-gap checks
-[LEARN] ACCEPTED @ GitHub wiki raw path: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md` → HTTP 200 — wiki sidebarAction API documentation IS live; earlier "404" rejections were due to wrong filename
 [LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension confirms API surface present but NOT exploitability in current binary
 [LEARN] REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstatic 404) — binary static analysis requires HUMAN intervention
 [LEARN] REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch
 [LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; stale lead — parked permanently
+[LEARN] CHANGED @ NVD: both endpoints dead (nvd.nist.gov/rest 403 Cloudflare, services.nvd.nist.gov/rest 404) — CVE-gap verification frozen at 0-in-2026 (last known: 28 total, latest CVE-2025-69235 @2025-12-30)
 [RISK] sync: 65 reason: custom `/whalesync` + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 82 reason: sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; CPE Linux gap resolved; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show() message handling — high-priority regression window unchanged | libs: 35 reason: Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk
