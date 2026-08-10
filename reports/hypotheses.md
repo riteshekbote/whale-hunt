@@ -1897,3 +1897,23 @@
 - LEARN: REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code
 - LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
 - LEARN: CHANGED @ NVD: services endpoint recovered HTTP 200 this cycle — passive CVE-gap verification path live again; `keywordSearch=whale` (28 total) is correct surfa
+
+## RANKED HYPOTHESES 2026-08-10 20:04:24 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Sync passphrase KDF weak iteration count or recoverable master-key storage in Whale OSCrypt fork on Linux (from reports/hypotheses-longcat.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe`) to this sandbox via unrestricted int
+- NEXT(hypotheses-longcat.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net or WhaleSetup.exe from Naver CDN) to /tmp/opencode/whale_bina
+- LEARN: ACCEPTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: recovered HTTP 200 — passive CVE-gap verification path live; `keywordSearch=whale` 
+- LEARN: REJECTED @ NVD `keywordSearch=naver+whale` query: returns 0 results (keyword-matching quirk) — use `whale` (28 total) as broad surface for future CVE-gap checks
+- LEARN: ACCEPTED @ GitHub wiki raw path: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md` → HTTP 200 — wiki sidebarAction API docu
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
+- LEARN: REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; stale lead — parked permanently
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked.
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KD
+- LEARN: REJECTED @ public repo static analysis: all 4 branches + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt co
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
+- LEARN: CHANGED @ NVD: services endpoint recovered HTTP 200 this cycle — passive CVE-gap verification path live again; keywordSearch=whale (28 total) is correct surface
+- LEARN: ACCEPTED @ wiki page inventory: 5 total wiki pages confirmed via atom feed — whale.sidebarAction, How-to-test-and-debug-my-extension, Client-side-vs-Server-side

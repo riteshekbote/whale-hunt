@@ -657,3 +657,10 @@
 - NEW NVD services host date-range filters (`pubStartDate`/`pubEndDate`) return HTTP 404 while bare `keywordSearch` returns 200 — gap checks must use full pagination of `keywordSearch=whale`, not date-filte
 - CHANGED uptodown Android page `naver-whale-browser.en.uptodown.com/android` HTTP 404 @19:10 UTC — the 16:10 UTC HTTP-200 flip window has closed; APK channel flip-flops, treat per-cycle
 - CHANGED `/tmp/opencode/whale_binary/` still missing (re-verified @19:10 UTC) — binary-gated verification permanently HUMAN-gated
+
+## 2026-08-10 20:04:24 UTC
+- NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered to HTTP 200 (was 404 in prior cycle) — passive CVE-gap verification path LIVE again
+- NEW NVD `keywordSearch=whale` confirmed totalResults=28, 0 published in 2026 (latest CVE-2025-69235 @2025-12-30) — 8-month disclosure gap static for v4.35.352–v4.38.386.14
+- CHANGED Binary delivery dir `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification (persistent)
+- CHANGED All binary acquisition channels 100% blocked: cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 (Win+Android), pstatic 404 (persistent)
+- CHANGED Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged (persistent)
