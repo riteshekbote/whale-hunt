@@ -42432,3 +42432,485 @@ testability: AUTH_HELPED
 **[STEP 7 — RISK SCORE]**
 
 [RISK] sync: 65 — Whale-forked OSCrypt (xv10) + custom /whalesync endpoint (NEO_SES cookie auth) + Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) confirmed present in v4.38.386.14 binary via prior runs, but KDF constants/iteration count/salt/master-key storage remain unextracted; 8-month disclosure gap since last fix (v4.35.351.12, Dec 2025); regression window open on Linux; PII cascade risk (passwords+cookies+autofill) | browser: 80 — Sidebar SOP bypass attack surface (CVE-2025-69234/69235, Linux CPE unclaimed) + sample extension (5 files HTTP 200) confirms ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch with zero sender.origin/sender.url validation; 0 CVEs published in 2026 for 3 minor versions past last fix; high-priority regression window, class matches REJECTED (no novel variant proven in current binary) | libs: 25 — socket.io.slim.js confirmed Whale-only in resources.pak but confidence 38 < 40 (handler runtime-fetched, binary inaccessible); no confirmed third-party library vulnerability; lib surface limited to static resources.pak content
+===== ANALYST laguna 2026-08-10 00:43:14 UTC =====
+[0m
+> build · laguna-s-2.1-free
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code} %{time_total}s\n" --max-time 12 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=2" 2>&1; echo "---"; curl -s --max-time 12 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=naver+whale&resultsPerPage=2" 2>&1 | head -c 500
+200 0.299481s
+---
+{"resultsPerPage":2,"startIndex":0,"totalResults":2,"format":"NVD_CVE","version":"2.0","timestamp":"2026-08-10T00:36:40.401","vulnerabilities":[{"cve":{"id":"CVE-2018-9859","sourceIdentifier":"cve@mitre.org","published":"2018-06-16T01:29:09.680","lastModified":"2026-06-17T02:07:18.247","vulnStatus":"Modified","cveTags":[],"descriptions":[{"lang":"en","value":"The path of Whale update service was unquoted in NAVER Whale before 1.0.40.7. This vulnerability can be used for persistent privilege esca
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}\n" --max-time 12 "https://api.github.com/repos/naver/whale-browser-developers" 2>&1; echo "---repo-stats---"; curl -s --max-time 12 "https://api.github.com/repos/naver/whale-browser-developers" 2>&1 | grep -E '"pushed_at"|"updated_at"|"size"|"has_issues"|"has_pages"' ; echo "---branches---"; curl -s --max-time 12 "https://api.github.com/repos/naver/whale-browser-developers/branches" 2>&1 | grep '"name"'
+200
+---repo-stats---
+  "updated_at": "2025-10-22T03:15:17Z",
+  "pushed_at": "2019-09-23T08:03:26Z",
+  "size": 5043,
+  "has_issues": true,
+  "has_pages": false,
+---branches---
+    "name": "jdkim/update_documents",
+    "name": "master",
+    "name": "translate",
+    "name": "v2",
+[0m
+[0m$ [0mfor f in translate/src/sidebar-sample/manifest.json translate/src/sidebar-sample/js/background.js translate/src/sidebar-sample/js/contentscript.js translate/src/sidebar-sample/index.html translate/src/sidebar-sample/js/index.js; do code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 12 "https://raw.githubusercontent.com/naver/whale-browser-developers/$f"); echo "$code $f"; done
+200 translate/src/sidebar-sample/manifest.json
+200 translate/src/sidebar-sample/js/background.js
+200 translate/src/sidebar-sample/js/contentscript.js
+200 translate/src/sidebar-sample/index.html
+200 translate/src/sidebar-sample/js/index.js
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---workspace---"; ls -la /home/runner/work/whale-hunt/whale-hunt/ 2>&1; echo "---reports---"; ls -la /home/runner/work/whale-hunt/whale-hunt/reports/ 2>&1
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---workspace---
+total 304
+drwxr-xr-x 11 runner runner   4096 Aug 10 00:36 .
+drwxr-xr-x  3 runner runner   4096 Aug 10 00:35 ..
+drwxr-xr-x  7 runner runner   4096 Aug 10 00:36 .git
+drwxr-xr-x  3 runner runner   4096 Aug 10 00:35 .github
+-rw-r--r--  1 runner runner   1057 Aug 10 00:35 README.md
+-rw-r--r--  1 runner runner   2268 Aug 10 00:36 analyst-out.txt
+-rw-r--r--  1 runner runner 110385 Aug 10 00:36 analyst-prompt.txt
+-rw-r--r--  1 runner runner 107413 Aug 10 00:36 ctx.txt
+drwxr-xr-x  2 runner runner   4096 Aug 10 00:35 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 10 00:35 knowledge
+drwxr-xr-x  2 runner runner  12288 Aug 10 00:35 leads
+-rw-r--r--  1 runner runner   2310 Aug 10 00:35 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 10 00:35 reports
+drwxr-xr-x  2 runner runner   4096 Aug 10 00:35 reposcan-raw
+-rw-r--r--  1 runner runner   1513 Aug 10 00:35 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 10 00:35 scripts
+-rw-r--r--  1 runner runner     34 Aug 10 00:35 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 10 00:35 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 10 00:35 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 10 00:35 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 10 00:35 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Aug 10 00:35 triage
+---reports---
+total 7380
+drwxr-xr-x  2 runner runner    4096 Aug 10 00:35 .
+drwxr-xr-x 11 runner runner    4096 Aug 10 00:36 ..
+-rw-r--r--  1 runner runner 2613745 Aug 10 00:35 analyst-bigpickle.log
+-rw-r--r--  1 runner runner 4057294 Aug 10 00:35 analyst-laguna.log
+-rw-r--r--  1 runner runner   32217 Aug 10 00:35 analyst-ling3.log
+-rw-r--r--  1 runner runner    6570 Aug 10 00:35 analyst-longcat.log
+-rw-r--r--  1 runner runner  676722 Aug 10 00:35 analyst-nemotron3.log
+-rw-r--r--  1 runner runner    2801 Aug 10 00:35 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner   18948 Aug 10 00:35 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner      48 Aug 10 00:35 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner      50 Aug 10 00:35 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner      55 Aug 10 00:35 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  241302 Aug 10 00:35 hypotheses.md
+-rw-r--r--  1 runner runner   13175 Aug 10 00:35 valid-bugs.md
+[0m
+I'll start by running verification probes to update the current state, since the knowledge base shows several flapping endpoints.
+[0m→ [0mRead scope.yml
+[0m→ [0mRead probe-results.md
+[0m
+[0m$ [0mcat /home/runner/work/whale-hunt/whale-hunt/reports/hypotheses-nemotron3.txt 2>&1; echo "===LING3==="; cat /home/runner/work/whale-hunt/whale-hunt/reports/hypotheses-ling3.txt 2>&1; echo "===LONGCAT==="; cat /home/runner/work/whale-hunt/whale-hunt/reports/hypotheses-longcat.txt 2>&1
+## 2026-08-09 23:43:14 UTC [browser] (model nemotron3)
+===LING3===
+## 2026-08-09 23:42:26 UTC [sync] (model ling3)
+===LONGCAT===
+## 2026-08-09 23:42:31 UTC [libs] (model longcat)
+[0m
+NVD endpoint is now HTTP 200 (recovered), sample extension all live (HTTP 200), repo still doc-only. Let me read the key workspace files to ground my analysis.
+[0m→ [0mRead reports/hypotheses-bigpickle.txt
+[0m→ [0mRead reports/valid-bugs.md
+Let me read the rich hypothesis files and valid-bugs to ground my analysis.
+[0m
+[0m$ [0mcurl -s --max-time 15 "https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*&resultsPerPage=200" 2>&1 | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+print('totalResults:', d.get('totalResults'))
+years={}
+for v in d.get('vulnerabilities',[]):
+    cve=v['cve']
+    y=cve['published'][:4]
+    years[y]=years.get(y,0)+1
+print('by year:', years)
+print('---ids---')
+for v in d.get('vulnerabilities',[]):
+    print(v['cve']['id'], '|', v['cve']['published'][:10], '|', v['cve']['descriptions'][0]['value'][:90])
+"
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=cpe%3A2.3%3Aa%3Anavercorp%3Awhale%3A*%3A*%3A*%3A*%3A*%3A*%3A*%3A*&resultsPerPage=500" 2>&1 | head -c 2000; echo; echo "=== HTTP check ==="; curl -s -o /dev/null -w "%{http_code} len=%{size_download}\n" --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=cpe%3A2.3%3Aa%3Anavercorp%3Awhale%3A*%3A*%3A*%3A*%3A*%3A*%3A*%3A*&resultsPerPage=20"
+=== HTTP check ===
+404 len=0
+[0m
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/knowledge/ /home/runner/work/whale-hunt/whale-hunt/inventory/ /home/runner/work/whale-hunt/whale-hunt/reposcan-raw/ 2>&1
+/home/runner/work/whale-hunt/whale-hunt/inventory/:
+total 72
+drwxr-xr-x  2 runner runner  4096 Aug 10 00:35 .
+drwxr-xr-x 11 runner runner  4096 Aug 10 00:36 ..
+-rw-r--r--  1 runner runner 62825 Aug 10 00:35 whale.md
+
+/home/runner/work/whale-hunt/whale-hunt/knowledge/:
+total 92
+drwxr-xr-x  2 runner runner  4096 Aug 10 00:35 .
+drwxr-xr-x 11 runner runner  4096 Aug 10 00:36 ..
+-rw-r--r--  1 runner runner 82069 Aug 10 00:35 index.md
+
+/home/runner/work/whale-hunt/whale-hunt/reposcan-raw/:
+total 112
+drwxr-xr-x  2 runner runner  4096 Aug 10 00:35 .
+drwxr-xr-x 11 runner runner  4096 Aug 10 00:36 ..
+-rw-r--r--  1 runner runner  5495 Aug 10 00:35 analysis.txt
+-rw-r--r--  1 runner runner    40 Aug 10 00:35 grep-delta.txt
+-rw-r--r--  1 runner runner    50 Aug 10 00:35 grep-hits.prev.txt
+-rw-r--r--  1 runner runner    50 Aug 10 00:35 grep-hits.txt
+-rw-r--r--  1 runner runner 85484 Aug 10 00:35 rag.txt
+[0m
+[0m$ [0mls /home/runner/work/whale-hunt/whale-hunt/knowledge/ 2>&1 | head; echo "==="; grep -rl "CVE-2025" /home/runner/work/whale-hunt/whale-hunt/knowledge/ 2>&1 | head; echo "===grep 21 CVEs==="; grep -rn "21 total Whale" /home/runner/work/whale-hunt/whale-hunt/ 2>&1 | head
+index.md
+===
+/home/runner/work/whale-hunt/whale-hunt/knowledge/index.md
+===grep 21 CVEs===
+/home/runner/work/whale-hunt/whale-hunt/reposcan-raw/rag.txt:26:- 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+/home/runner/work/whale-hunt/whale-hunt/reposcan-raw/rag.txt:64:- 2026-08-08 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+/home/runner/work/whale-hunt/whale-hunt/reposcan-raw/rag.txt:68:- 2026-08-08 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+/home/runner/work/whale-hunt/whale-hunt/knowledge/index.md:25:- 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+/home/runner/work/whale-hunt/whale-hunt/knowledge/index.md:63:- 2026-08-08 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+/home/runner/work/whale-hunt/whale-hunt/knowledge/index.md:67:- 2026-08-08 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+/home/runner/work/whale-hunt/whale-hunt/leads/lead-bigpickle.md:69:[NEW] 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+/home/runner/work/whale-hunt/whale-hunt/leads/lead-bigpickle.md:239:[NEW] 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+/home/runner/work/whale-hunt/whale-hunt/leads/lead-bigpickle.md:383:[LEARN] CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+/home/runner/work/whale-hunt/whale-hunt/leads/lead-laguna.md:100:[LEARN] CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+[0m
+The CPE query errored (likely timeout). Let me retry it properly and check the knowledge/inventory files for the full CVE baseline.
+[0m$ [0mecho "=== grep 21 CVEs source in leads ==="; grep -n "21 total\|keywordSearch\|totalResults" /home/runner/work/whale-hunt/whale-hunt/leads/lead-bigpickle.md 2>&1 | head -20; echo "=== CVE-2025 list in inventory ==="; grep -n "CVE-2025\|CVE-2024\|CVE-2022" /home/runner/work/whale-hunt/whale-hunt/inventory/whale.md 2>&1 | head -30
+=== grep 21 CVEs source in leads ===
+69:[NEW] 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+239:[NEW] 2026-08-07 CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+383:[LEARN] CONFIRMED @ NVD: 21 total Whale CVEs, 0 published in 2026 — no public vulnerability disclosures exist for versions 4.35.352 through 4.38.386, creating a knowledge gap for current-version vulnerability discovery
+1430:[LEARN] CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+1497:[LEARN] CONFIRMED @ NVD API: 0 Whale CVEs published in 2026 — keywordSearch `naver+whale` returns exactly 2 CVEs total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+1528:reasoning: Whale-only non-Chromium bundled lib confirmed present in `resources.pak`; handler may be runtime-fetched, degrading passive evidence; no in-sandbox static path to the extracted lib; NVD keywordSearch confirms zero new disclosures to pivot from.
+1536:[LEARN] CONFIRMED @ NVD (services.nvd.nist.gov alt host): 0 Whale CVEs published in 2026 — keywordSearch `naver whale` returns exactly 2 total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+1562:reasoning: Whale-only non-Chromium bundled lib confirmed present in `resources.pak`; handler may be runtime-fetched, degrading passive evidence; no in-sandbox static path to the extracted lib; NVD keywordSearch confirms zero new disclosures to pivot from.
+1590:reasoning: Whale-only non-Chromium bundled lib confirmed present in `resources.pak`; handler may be runtime-fetched, degrading passive evidence; no in-sandbox static path to extracted lib; zero new disclosures to pivot from (NVD re-confirmed 21 total).
+2171:[LEARN] CONFIRMED @ NVD API (services.nvd.nist.gov): 0 Whale CVEs published in 2026 — keywordSearch returns exactly 2 total (CVE-2018-9859, CVE-2020-9754), both pre-2021; 8-month disclosure gap static for v4.35.352–v4.38.386.14 (re-verified 14:51 UTC)
+2208:[CHANGED] NVD re-verify @ 15:52:35 UTC via services.nvd.nist.gov: totalResults=2 (CVE-2018-9859, CVE-2020-9754), both pre-2021 — 0 CVEs in 2026, disclosure gap static for v4.35.352–v4.38.386.14 (unchanged)
+2302:[LEARN] CONFIRMED @ NVD (services.nvd.nist.gov, 18:15 UTC): 0 Whale CVEs in 2026; totalResults=2 (both pre-2021) — 8-month disclosure gap static for v4.35.352–v4.38.386.14
+2408:[CHANGED] NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered to HTTP 200 @23:04 UTC (was 404/not-responding through 21:27–22:39 cycles) — returns totalResults=2 (CVE-2018-9859, CVE-2020-9754, both pre-2021); passive CVE-verification path restored.
+2433:[LEARN] ACCEPTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: recovered (HTTP 200 @23:04 UTC, totalResults=2 both pre-2021) — route future CVE verification back through services host; prior "permanently unavailable" claim retracted.
+=== CVE-2025 list in inventory ===
+27:- NEW Latest known affected version from CVEs: 4.35.351.12 (CVE-2025-69234/69235, Dec 2025); no 2026 CVEs published yet
+49:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+50:- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+51:- NEW 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+54:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 mi
+55:- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CV
+58:- CHANGED 2026-08-07 Latest known affected version from CVEs: 4.35.351.12 (CVE-2025-69234/69235, Dec 2025); no 2026 CVEs published yet — version increment to v4.38.386.14; 3 minor version bumps since last CVE-f
+63:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+64:- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+65:- NEW 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+68:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 mi
+69:- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CV
+72:- CHANGED 2026-08-07 Latest known affected version from CVEs: 4.35.351.12 (CVE-2025-69234/69235, Dec 2025); no 2026 CVEs published yet — version increment to v4.38.386.14; 3 minor version bumps since last CVE-f
+79:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+80:- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+81:- NEW 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+84:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 mi
+85:- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CV
+88:- CHANGED 2026-08-07 Latest known affected version from CVEs: 4.35.351.12 (CVE-2025-69234/69235, Dec 2025); no 2026 CVEs published yet — version increment to v4.38.386.14; 3 minor version bumps since last CVE-f
+123:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+124:- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+125:- NEW 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+128:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 mi
+129:- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CV
+132:- CHANGED 2026-08-07 Latest known affected version from CVEs: 4.35.351.12 (CVE-2025-69234/69235, Dec 2025); no 2026 CVEs published yet — version increment to v4.38.386.14; 3 minor version bumps since last CVE-f
+136:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346) confirmed — SOP bypass in sidebar context, fixed in v4.35.351.12
+137:- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-53600, 62584 confirmed — SOP bypass in dual-tab context, fixed in v4.33.325.17
+138:- NEW 2026-08-07 ACCEPTED XSS @ extension API: CVE-2022-24072, CVE-2024-40618 confirmed — injection/XSS via devtools API and built-in extension processing
+141:- NEW 2026-08-07 ACCEPTED OTHER @ sidebar environment: CVE-2025-69235 (CWE-346, SOP bypass via sidebarAction.show URL loading) confirmed fixed in v4.35.351.12 (Dec 2025); latest stable v4.38.386.14 has 3 mi
+142:- NEW 2026-08-07 ACCEPTED OTHER @ dual-tab environment: CVE-2025-62585 (CWE-358, CSP bypass via specific scheme) confirmed fixed in v4.33.325.17 (Oct 2025); latest v4.38.386.14 is ~8 months ahead, no new CV
+[0m
+The CPE query is returning 404, and there's a discrepancy: knowledge claims "21 total Whale CVEs" but keyword search returns only 2. Let me investigate the actual CVE list source.
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale+browser&resultsPerPage=10" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); print('totalResults:',d.get('totalResults')); [print(v['cve']['id'],v['cve']['published'][:10]) for v in d.get('vulnerabilities',[])]" 2>&1; echo "=== alt keyword ==="; curl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Naver+Whale&resultsPerPage=200" 2>&1 | python3 -c "import sys,json; d=json.load(sys.stdin); print('totalResults:',d.get('totalResults')); [print(v['cve']['id'],v['cve']['published'][:10],v['cve']['descriptions'][0]['value'][:60]) for v in d.get('vulnerabilities',[])]" 2>&1
+totalResults: 21
+CVE-2018-7635 2018-07-03
+CVE-2018-12448 2018-08-02
+CVE-2018-12449 2018-10-11
+CVE-2020-9753 2020-05-20
+CVE-2021-33593 2021-11-02
+CVE-2022-24071 2022-01-28
+CVE-2022-24072 2022-03-17
+CVE-2022-24073 2022-03-17
+CVE-2022-24074 2022-03-17
+CVE-2022-24075 2022-03-17
+=== alt keyword ===
+totalResults: 2
+CVE-2018-9859 2018-06-16 The path of Whale update service was unquoted in NAVER Whale
+CVE-2020-9754 2022-06-27 NAVER Whale browser mobile app before 1.10.6.2 allows the at
+[0m
+[0m$ [0mcurl -s --max-time 20 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale+browser&resultsPerPage=200" 2>&1 | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+print('totalResults:', d.get('totalResults'))
+years={}
+for v in d.get('vulnerabilities',[]):
+    cve=v['cve']
+    y=cve['published'][:4]
+    years[y]=years.get(y,0)+1
+print('by year:', years)
+print('---2025+---')
+for v in d.get('vulnerabilities',[]):
+    cve=v['cve']
+    if cve['published'][:4] in ('2025','2026'):
+        print(cve['id'], '|', cve['published'][:10], '|', cve['descriptions'][0]['value'][:110])
+"
+totalResults: 21
+by year: {'2018': 3, '2020': 1, '2021': 1, '2022': 6, '2023': 1, '2024': 2, '2025': 7}
+---2025+---
+CVE-2025-53599 | 2025-07-04 | Whale browser for iOS before 3.9.1.4206 allow an attacker to execute malicious scripts in the browser via a cr
+CVE-2025-53600 | 2025-07-04 | Whale browser before 4.32.315.22 allow an attacker to bypass the Same-Origin Policy in a dual-tab environment.
+CVE-2025-62583 | 2025-10-16 | Whale Browser before 4.33.325.17 allows an attacker to escape the iframe sandbox in a dual-tab environment.
+CVE-2025-62584 | 2025-10-16 | Whale browser before 4.33.325.17 allows an attacker to bypass the Same-Origin Policy in a dual-tab environment
+CVE-2025-62585 | 2025-10-16 | Whale browser before 4.33.325.17 allows an attacker to bypass the Content Security Policy via a specific schem
+CVE-2025-69234 | 2025-12-30 | Whale browser before 4.35.351.12 allows an attacker to escape the iframe sandbox in a sidebar environment.
+CVE-2025-69235 | 2025-12-30 | Whale browser before 4.35.351.12 allows an attacker to bypass the Same-Origin Policy in a sidebar environment.
+[0m
+The "whale browser" keyword returns 21 CVEs (confirming the knowledge base claim). Let me get the full list with years to verify the 2026 disclosure gap precisely.
+[0m$ [0mcurl -s --max-time 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js" 2>&1 | head -80
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+whale.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message === 'sidebarAction.show') {
+    whale.sidebarAction.show({
+      reload : false
+    }, () => {
+
+    });
+  } else if (message === 'sidebarAction.hide') {
+    whale.sidebarAction.hide(() => {
+    });
+  } else if (message === 'sidebarAction.show2') {
+    whale.windows.create((windowInfo) => {
+      whale.sidebarAction.show(windowInfo.id, () => {
+
+      });
+    });
+  } else if (message === 'sidebarAction.hideAll') {
+    whale.windows.getAll((windowList) => {
+      for(let i = 0, len = windowList.length ; i < len ; i++) {
+        whale.sidebarAction.hide(windowList[i].id, () => {
+        });
+      }
+    });
+  }
+});
+[0m
+[0m$ [0mcurl -s --max-time 15 "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-69235" 2>&1 | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+v=d['vulnerabilities'][0]['cve']
+print('id:', v['id'])
+print('published:', v['published'])
+print('descriptions[0]:', v['descriptions'][0]['value'][:200])
+for c in v.get('configurations',[]):
+    for node in c.get('nodes',[]):
+        for cc in node.get('cpeMatch',[]):
+            print('CPE:', cc['criteria'], '| criteriaPresent:', cc.get('vulnerable'))
+" 2>&1 | head -30
+id: CVE-2025-69235
+published: 2025-12-30T02:16:16.930
+descriptions[0]: Whale browser before 4.35.351.12 allows an attacker to bypass the Same-Origin Policy in a sidebar environment.
+CPE: cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:* | criteriaPresent: True
+[0m
+NVD disclosure gap verified: 21 CVEs total (2025: 7, 2026: 0), last fix v4.35.351.12. Sample extension `background.js` re-confirmed live with zero origin validation. Let me verify the CVE-2025-69235 fix CPE (Linux gap claim) and confirm the content-script origin-fires path.
+[0m$ [0mcurl -s --max-time 15 "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js" 2>&1; echo "=== END contentscript ==="
+/*
+ * Copyright 2017 NAVER Corp.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+if (navigator.userAgent.includes('sidebar') === false) {
+  let a = document.createElement('button');
+  a.innerHTML = 'Show sidebar';
+  a.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:0;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid red;
+    color: red;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(a);
+  a.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show');
+  }, false);
+
+  let c = document.createElement('button');
+  c.innerHTML = 'Show sidebar in new window';
+  c.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:40px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid green;
+    color: green;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(c);
+  c.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.show2');
+  }, false);
+
+  let b = document.createElement('button');
+  b.innerHTML = 'Hide sidebar';
+  b.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:80px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid blue;
+    color: blue;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(b);
+  b.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hide');
+  }, false);
+
+  let d = document.createElement('button');
+  d.innerHTML = 'Hide all sidebars';
+  d.style.cssText = `
+    position:absolute;
+    left:5px;
+    top:120px;
+    width: 250px;
+    height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 9999;
+    border: 2px solid black;
+    color: black;
+    box-sizing: border-box;
+  `;
+  document.body.appendChild(d);
+  d.addEventListener('click', () => {
+    whale.runtime.sendMessage('sidebarAction.hideAll');
+  }, false);
+}
+
+=== END contentscript ===
+[0m
+NVD disclosure gap fully verified (21 CVEs: 2025×7, 2026×0), CVE-2025-69235 CPE is generic wildcard (no platform-specific fix), and `contentscript.js` re-confirms messages fire from any web page. Let me run one final broad repo probe to ensure no whale-binary source repo was missed.
+[0m$ [0mecho "=== naver org whale repos ==="; curl -s --max-time 15 "https://api.github.com/search/repositories?q=org:naver+whale&per_page=100" 2>&1 | python3 -c "import sys,json;d=json.load(sys.stdin);print('total:',d.get('total_count'));[print(r['full_name'],'|',r['pushed_at'],'|',r.get('size')) for r in d.get('items',[])]" 2>&1; echo "=== broad whale-browser source ==="; curl -s --max-time 15 "https://api.github.com/search/repositories?q=whale+browser+sync+language:cpp&per_page=30&sort=stars" 2>&1 | python3 -c "import sys,json;d=json.load(sys.stdin);print('total:',d.get('total_count'));[print(r['full_name'],'|',r['stargazers_count']) for r in d.get('items',[])]" 2>&1
+=== naver org whale repos ===
+total: 1
+naver/whale-browser-developers | 2019-09-23T08:03:26Z | 5043
+=== broad whale-browser source ===
+total: 0
+[0m
+[0m# [0mTodos
+[✓] Run DELTA probes (NVD, GitHub, sample ext, binary dir)
+[•] Run PRIORITIZE + HYPOTHESES + SELF-CRITIQUE + NEXT + LEARNING + RISK blocks
+[0m
+Verified: only 1 whale repo on GitHub (doc-only) and 0 source repos for "whale browser sync" in C++ — passive surface is exhausted. Compiling final analysis.
+[0m# [0mTodos
+[✓] Run DELTA probes (NVD, GitHub, sample ext, binary dir)
+[✓] Run PRIORITIZE + HYPOTHESES + SELF-CRITIQUE + NEXT + LEARNING + RISK blocks
+[0m
+## STEP 1 — DELTA
+- [CHANGED] NVD `services.nvd.nist.gov/rest/json/cves/2.0` stable HTTP 200 @2026-08-10 00:36 UTC (was flapping 404/403 through 21:27–23:44 cycles); corrected keyword `whale browser` → totalResults=21, by-year `2018:3/2020:1/2021:1/2022:6/2023:1/2024:2/2025:7/2026:0` — disclosure-gap claim now evidence-grade (prior `naver whale` kw returning only 2 was incomplete).
+- [CHANGED] CVE-2025-69235 fix CPE re-verified: config is generic wildcard `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` only — no platform-specific fix CPE exists; prior "CPE lists only Windows/macOS, Linux unclaimed" nuance NOT corroborated by entry (fix generic, last fixed v4.35.351.12, 2025-12-30).
+- [CHANGED] Sample extension `js/contentscript.js` (translate branch) re-fetched live HTTP 200 — confirms `sidebarAction.{show/show2/hide/hideAll}` fired from `navigator.userAgent.includes('sidebar')===false` branch (any web-page content_script, manifest `content_scripts`=`<all_urls>`) → privileged background.js with ZERO `sender.origin`/`sender.url` inspection.
+- [CHANGED] Broad GitHub repo search confirms no public whale-browser source exists — `q=org:naver whale` → 1 repo (doc-only); `q=whale browser sync language:cpp` → 0 repos.
+
+## STEP 2 — PRIORITIZE
+- [PRIO] Whale sync engine (api.whale.naver.com/whalesync + local prefs), 7.20, atk=8 biz=9 tech=9 gate=2 cloud=5 fresh=8
+- [PRIO] Whale sidebar context (sidebarAction SOP bypass regression), 7.05, atk=9 biz=9 tech=8 gate=1 cloud=3 fresh=9
+- [PRIO] Whale bundled socket.io.slim.js (resources.pak), 4.35, atk=4 biz=5 tech=6 gate=2 cloud=2 fresh=7
+
+## STEP 3 — HYPOTHESES
+[HYP] Sync bootstrap-token envelope / OSCrypt xv10 master-key storage on Linux
+class: AUTH
+asset: Whale desktop v4.38.386.14 sync engine (os_crypt_whale.cc / wbc_wrapper_apis.cc + profile prefs sync.encryption_bootstrap_token_per_account [sha256=053ffa4b…] + Linux keyring + NEO_SES cookie on /whalesync); client-side only, zero /whalesync interaction
+confidence: 62
+reasoning: v4.38.386.14 binary confirmed via prior runs to contain Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) + Whale-forked libos_crypt (xv10 magic); KDF algorithm/iteration count + salt + master-key storage locality (keyring vs Local State vs file) on Linux unextracted; per-account bootstrap-token envelope deviates from upstream Chromium KDF; 0 CVEs in 2026, 8-month gap since last fix v4.35.351.12 (Dec 2025); sync.cookies/sync.passwords in type list ⇒ PII cascade risk
+evidence_needed: PBKDF2/scrypt iteration constant + xv10 envelope KDF alg in .rodata/.text; master-key persistence location (Linux keyring /org/freedesktop/secrets vs Local State vs plaintext file); whether whale_need_encryption_key_forced_time downgrades to a stale/weak key
+verify_steps: AUTH_HELPED: HUMAN delivers official Whale desktop v4.38.386.14 `.deb` to `/tmp/opencode/whale_binary/`. Then: `strings -n8 libwhale.so | grep -iE 'xv10|pbkdf2|scrypt'`; `objdump -d libwhale.so | grep -iE 'sync_encryption_bootstrap_token'`; `nm -D libwhale.so | grep -iE 'os_crypt|whale_need_encryption_key'`; scan .rodata for PBKDF2-HMAC-SHA strings. Then authorized Linux login snapshot of keyring + Preferences/Local State pre/post enabling encrypted sync. Zero requests to Naver /whalesync.
+impact: Local attacker/infostealer with profile access decrypts synced passwords+cookies+autofill across all synced devices → full sync account takeover; High
+testability: AUTH_HELPED
+
+[HYP] Sidebar SOP bypass regression via unvalidated sender origin in sidebarAction handler
+class: OTHER
+asset: Whale desktop v4.38.386.14 sidebar context + GitHub sample extension translate/src/sidebar-sample/ (manifest.json `<all_urls>` + background.js onMessage + contentscript.js firing from non-sidebar context)
+confidence: 70
+reasoning: Sample extension (5 files HTTP 200) confirms content_scripts match ALL origins; contentscript.js fires sidebarAction.show/show2 from `navigator.userAgent.includes('sidebar')===false` branch (any web page) to privileged background.js; background.js onMessage accepts `sender` param but ZERO inspection of sender.origin/sender.url (only string-equality on message); CVE-2025-69234/69235 (SOP bypass in sidebar) fixed v4.35.351.12 (Dec 2025, generic wildcard CPE — no platform claim); v4.38.386.14 is 3 minor versions ahead with 0 CVEs in 2026; regression window open on Linux
+evidence_needed: Proof that current v4.38.386.14 binary does NOT enforce sender-origin isolation in sidebar message handler
+verify_steps: AUTH_HELPED: HUMAN installs latest Whale desktop, loads sample extension (translate branch), navigates malicious page, triggers sidebarAction.show2 via contentscript, observes whether privileged whale.windows.create() executes from cross-origin context without sender.origin check
+impact: SOP bypass in sidebar context → cross-origin data theft + privileged extension API invocation from any web origin; High/Critical
+testability: AUTH_HELPED
+
+[HYP] Bundled socket.io.slim.js event-handler injection in resources.pak
+class: XSS
+asset: Whale v4.38.386.14 resources.pak (socket.io.slim.js confirmed Whale-only bundled)
+confidence: 38
+reasoning: socket.io.slim.js confirmed Whale-only in resources.pak via prior runs; handler suspected runtime-fetched, degrading passive evidence; binary inaccessible to verify version or event-handler wiring; no passively-extractable version string
+evidence_needed: Static audit of socket.io.slim.js version + event-handler registration path in libwhale.so
+verify_steps: AUTH_HELPED: HUMAN delivers binary, extracts resources.pak → locates socket.io.slim.js → compares version → greps libwhale.so for event-handler wiring
+impact: Event-handler injection → XSS in privileged extension context; Critical
+testability: AUTH_HELPED
+
+## STEP 4 — SELF-CRITIQUE
+[PARKED] Sidebar SOP bypass / unvalidated origin in sidebarAction handler: confidence 70 ≥ 40 but class `sidebar/dual-tab/web-panel SOP-CSP bypass` is on the REJECTED list — duplicates CVE-2025-69234/69235/53600/62583/62584/62585; sample extension confirms API surface EXISTS but does NOT demonstrate exploitability in current v4.38.386.14 binary (no passive GET/HEAD can prove cross-origin access in a compiled browser — requires live install); no novel variant proven.
+[PARKED] socket.io.slim.js event-handler injection: confidence 38 < 40 AND class on REJECTED list (confidence threshold + runtime-fetched handler, no passive proof path); binary inaccessible.
+
+[FINAL]
+1. Sync bootstrap-token envelope / OSCrypt xv10 master-key storage on Linux — conf 62, class AUTH, testability AUTH_HELPED — ONLY surviving hypothesis (not on REJECTED list, concrete verify_steps); requires binary delivery + authorized login snapshot.
+
+## STEP 5 — NEXT ACTION
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb`) to `/tmp/opencode/whale_binary/` via unrestricted internet — all passive channels confirmed dead (cloudfront DNS `No answer` general to `*.cloudfront.net` @127.0.0.53; APKMirror 403; Uptodown 404 both Windows + Android; static-whale.pstatic.net/WhaleSetup.exe 404; broad GitHub source search → 0 repos). Upon delivery run `strings`/`objdump`/`nm -D` on libwhale.so for xv10 + PBKDF2/scrypt iteration constants + sync.encryption_bootstrap_token call sites; snapshot Linux keyring + Preferences/Local State pre/post enabling encrypted sync. Zero requests to Naver /whalesync.
+
+## STEP 6 — LEARNING
+- [LEARN] CONFIRMED @ NVD `services.nvd.nist.gov/rest/json/cves/2.0`: stable HTTP 200 @2026-08-10 00:36 UTC; corrected keyword `whale browser` → 21 total CVEs (2018:3/2020:1/2021:1/2022:6/2023:1/2024:2/2025:7/2026:0) — `0 CVEs in 2026` + 8-month disclosure gap now evidence-grade.
+- [LEARN] CONFIRMED @ CVE-2025-69235: fix CPE is generic wildcard only — no platform-specific claim (prior "Linux CPE unclaimed" nuance not corroborated; fix generic, last v4.35.351.12 Dec 2025).
+- [LEARN] CONFIRMED @ sample extension `contentscript.js` (HTTP 200): sidebarAction messages fire from any web-page content_script (`<all_urls>`) to privileged background with ZERO sender.origin/sender.url validation — attack surface unchanged; class REJECTED (no novel variant proven in current binary).
+- [LEARN] CONFIRMED @ GitHub: 0 public whale-browser source repos beyond doc-only `naver/whale-browser-developers` (broad `whale browser sync language:cpp` search → 0 results) — static analysis path permanently dead.
+- [LEARN] REJECTED @ binary acquisition channels: all 100% still blocked in-sandbox — persistent since 2026-08-08; binary static analysis + interactive install remain HUMAN_ONLY-gated.
+- [LEARN] REJECTED @ `/tmp/opecode/whale_binary/` (typo corrected: `/tmp/opencode/whale_binary/`): still absent @00:36 UTC — all binary-dependent verification permanently HUMAN-gated.
+
+## STEP 7 — RISK SCORE
+- sync: 65 — Whale-forked OSCrypt (xv10) + NEO_SES cookie auth on /whalesync + Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) confirmed in v4.38.386.14 via prior binary runs; KDF constants/iteration count + master-key storage locality on Linux unextracted; Whale-only /whalesync endpoint; 0 CVEs in 2026, 8 months since last fix → passwords+cookies+autofill PII cascade if KDF/master-key is weak/recoverable.
+- browser: 78 — sidebar/dual-tab SOP bypass surface (6 CVEs in 2025: CVE-2025-69234/69235/53600/62583/62584/62585 fixed v4.33.325.17–4.35.351.12, generic CPE) + sample extension (5 files HTTP 200) confirms ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch + zero sender.origin validation; v4.38.386.14 is 3–4 versions past last fix with 0 CVEs in 2026 → high-priority regression window, currently unprovable (class REJECTED: no novel variant proven in current binary).
+- libs: 35 — Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible, handler runtime-fetched, conf 38 < 40) → low visibility, moderate inherent risk.
+Analysis complete. Passive surface is exhausted and stable-blocked: no public Whale browser binary source (GitHub doc-only, broad source search → 0 repos), all download channels dead (cloudfront DNS No-answer, APKMirror 403, Uptodown 404 both pages, pstatic 404), and `/tmp/opencode/whale_binary/` still absent. The **only surviving in-scope hypothesis** is the sync KDF/OSCrypt-xv10 master-key storage weakness (conf 62, class AUTH) — it clears the REJECTED-list gate and has concrete verify_steps, but needs a human to deliver the official binary. Full structured report above.

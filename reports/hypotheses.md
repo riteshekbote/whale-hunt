@@ -1583,3 +1583,19 @@
 - LEARN: REJECTED @ Uptodown Android acquisition channel: `naver-whale-browser.en.uptodown.com/android` still HTTP 404 — passive APK download path permanently dead; no c
 - LEARN: ACCEPTED @ sample extension source (translate branch): all 5 files still HTTP 200 — ALL-origin content_scripts + unvalidated sidebarAction.show/show2 dispatch +
 - LEARN: REJECTED @ binary acquisition channels: cloudfront DNS No-answer (general to *.cloudfront.net), APKMirror 403, Uptodown 404 both pages, static-whale.pstatic.net
+
+## RANKED HYPOTHESES 2026-08-10 00:43:14 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Sync bootstrap-token envelope / OSCrypt xv10 master-key storage on Linux (from reports/hypotheses-laguna.txt)
+- [62] Whale: Desktop sync passphrase KDF + xv10 bootstrap-token envelope weak/device-recoverable key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb`/`WhaleSetup.exe`) AND/OR com.naver.whale 3.9.14.9 APK to `/tmp/opencode/whale_binary/` — uptod
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb`) to `/tmp/opencode/whale_binary/` via unrestricted internet — all passive channels confirmed d
+- LEARN: ACCEPTED @ NVD services endpoint: `services.nvd.nist.gov/rest/json/cves/2.0` now HTTP 200 (was fluctuating) — confirms 0 Whale CVEs in 2026, 8-month disclosure 
+- LEARN: REJECTED @ Uptodown Android acquisition channel: `naver-whale-browser.en.uptodown.com/android` HTTP 404 — passive APK download path permanently dead; no curl-ab
+- LEARN: REJECTED @ Wikipedia version assertion: EN/KO pages both 404 — passively verifiable version confirmation impossible; v4.38.386.14 claim from pre-August baseline
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant; sample extension confirms
+- LEARN: ACCEPTED NVD query surface: `keywordSearch=whale` (28 total) is the accurate broad surface for Whale CVE-gap checks; `naver+whale` now returns 0 (keyword-matchi
+- LEARN: CONFIRMED @ services.nvd.nist.gov/rest/json/cves/2.0: HTTP 200 this cycle — passive CVE verification path live; keep using services host.
+- LEARN: REJECTED @ Uptodown Android page: still HTTP 404, no flip window this cycle — APK acquisition remains HUMAN-gated.
+- LEARN: CONFIRMED @ sample extension source (translate branch): all 5 files HTTP 200 — surface unchanged; class remains REJECTED (duplicate of fixed CVEs).
