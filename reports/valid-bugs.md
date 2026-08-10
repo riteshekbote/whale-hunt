@@ -242,3 +242,14 @@
   - | Q6 Not rejected? | **YES** | SOP bypass is a valid vuln class |
   - | Q6 Not rejected? | **YES** | Weak crypto is a valid finding |
   - **Verdict: HOLD** — strongest sync-surface lead. Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`) and custom OSCrypt fork confirmed in pri
+
+- 12 lead(s) triaged at 2026-08-10 08:18 UTC — **0 VALID / 4 HOLD / 8 INVALID**
+  - Full 7Q analysis per lead; Q4 (passive proof) is the universal blocker for all 12 leads
+  - 5 models de-duplicated to 12 distinct lead categories
+  - 8 INVALID: Lead 01/02/03/10 (dupes fixed CVE classes, Q4/Q5/Q7), Lead 06 (socket.io unreachable + below threshold), Lead 07 (version drift, no specific vuln), Lead 08 (/whalesync/reset, server OOS), Lead 12 (Scrapbook, scope unclear)
+  - 4 HOLD: Lead 04 (sync KDF, binary required), Lead 05 (bootstrap-token OSCrypt, binary required), Lead 09 (Multiplay URL disclosure, AUTH_HELPED), Lead 11 (Android keystore, APK required)
+  - All binary-acquisition channels remain 100% blocked; reposcan pipeline still REGRESSED (scanning gladiaio/ not whale/)
+  - See `triage/run-2026-08-10-08-18.md` for full analysis
+
+- 1 lead(s) marked VALID at 2026-08-10 08:23:46 UTC
+  - | **VALID** | 0 |
