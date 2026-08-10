@@ -272,3 +272,7 @@
   - | Q6 | YES | Valid class |
   - **Verdict: HOLD** — Passes Q1-Q3, Q5-Q6. Blocker is Q4. Elevates to VALID upon binary delivery showing plaintext token storage outside Chromium token_service.
   - | **VALID** | **0** | — |
+
+- 2 lead(s) marked VALID at 2026-08-10 14:53:02 UTC
+  - Verdict: **HOLD** — Recurring CVE class (6 sidebar/dual-tab CVEs in 2025) makes this a valid hypothesis, but no variant demonstrated in current binary. Blocked on binary acquisition (cloudfront DNS no
+  - **VALID: 0**
