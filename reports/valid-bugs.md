@@ -276,3 +276,17 @@
 - 2 lead(s) marked VALID at 2026-08-10 14:53:02 UTC
   - Verdict: **HOLD** — Recurring CVE class (6 sidebar/dual-tab CVEs in 2025) makes this a valid hypothesis, but no variant demonstrated in current binary. Blocked on binary acquisition (cloudfront DNS no
   - **VALID: 0**
+
+- 12 lead(s) marked VALID at 2026-08-10 15:47:06 UTC
+  - | Q6 | YES | SOP bypass is a valid vuln class |
+  - | Q6 | YES | Valid vuln class |
+  - | Q6 | YES | Valid vuln class |
+  - | Q6 | YES | Weak crypto is a valid finding |
+  - **Verdict: HOLD** — Passes Q1, Q3, Q6. Blocker is purely evidential (Q4). Whale-only OSCrypt fork (`xv10` magic, `os_crypt_whale.cc`, custom prefs keys `sync.encryption_bootstrap_token_per_account`, `
+  - | Q6 | YES | Authz bypass is valid class |
+  - **Verdict: HOLD** — Passes Q1, Q2, Q3, Q6. Blocker is Q4 (AUTH_HELPED). Could elevate to VALID if human tester runs a two-account session and demonstrates cross-session URL/DOM leakage beyond intended
+  - | Q6 | YES | Valid vuln class |
+  - | Q6 | YES | Valid class |
+  - **Verdict: HOLD** — Same as Lead 04. Whale-only OSCrypt fork confirmed but KDF unextracted. Blocker is Q4. Elevates to VALID upon binary delivery. Not reportable now.
+  - | Q6 | YES | Valid class |
+  - | **VALID** | **0** | — |
