@@ -159,3 +159,6 @@ https://raw.githubusercontent.com/naver/whale-browser-developers/translate/READM
 
 ## 2026-08-10 10:55:13 UTC
 https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md` -> HTTP 404
+
+## 2026-08-10 11:42:39 UTC
+https://naver-whale-browser.en.uptodown.com/android/download` -> HTTP 404

@@ -607,3 +607,14 @@
 - CHANGED `/tmp/opencode/whale_binary/` still missing (confirmed 10:47 UTC) — binary-gated sync/Android hypotheses remain HUMAN-gated
 - CHANGED uptodown Android page still HTTP 404 — no 200 window this cycle; APK acquisition remains blocked
 - CHANGED README.ko.md RAG fetch completed (was [NEXT] RAG from prior cycle) — HTTP 200, 4608 bytes; content is Korean sidebar-extension docs **only** (whale.* namespace, sidebar_action manifest, use_navigation
+
+## 2026-08-10 11:42:39 UTC
+- NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered to HTTP 200 (was HTTP 404 in prior cycle) — passive CVE verification path LIVE again
+- CHANGED NVD `keywordSearch=naver+whale` now returns totalResults=0 (was 2 pre-2021 IDs in earlier cycles) — keyword-matching quirk confirmed; broad `whale` query (28 results) is correct surface
+- CHANGED Binary delivery dir `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification (persistent)
+- CHANGED All binary acquisition channels 100% blocked in-sandbox: cloudfront DNS `No answer`, APKMirror 403, Uptodown 404 (Win+Android), pstatic 404 (persistent)
+- CHANGED Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged (persistent)
+- CHANGED Wikipedia EN/KO pages both HTTP 404 — passively verifiable version confirmation impossible (persistent)
+- CHANGED GitHub repo `naver/whale-browser-developers`: pushed_at=2019-09-23, updated_at=2025-10-22, 0 releases — documentation-only surface permanently dead (persistent)
+- CHANGED GitHub wiki docs (whale.sidebarAction.md, How-to-avoid..., Client-side-vs-Server-side...) all HTTP 200 — live (persistent)
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` flipped to HTTP 404 (was 200 in prior cycle) — both NVD endpoints dead again; passive CVE-gap verification currently unavailable
