@@ -1698,3 +1698,21 @@
 - LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — `master` and `jdkim/update_documents` are Chromium doc tra
 - LEARN: ACCEPTED @ NVD (services.nvd.nist.gov, HTTP 200): 28 total "whale" keyword results, 0 published in 2026. After filtering false positives (Whale Communications, 
 - LEARN: REJECTED @ class sidebar/dual-tab/web-panel SOP-CSP bypass: sample extension confirms API surface present but does NOT demonstrate exploitability in current bin
+
+## RANKED HYPOTHESES 2026-08-10 08:04:00 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Whale: Desktop sync passphrase KDF weak iteration count or recoverable master-key storage on Linux (from reports/hypotheses-longcat.txt)
+- [62] Whale: Whale Linux sync KDF/envelope deviation in os_crypt_whale fork (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` or `WhaleSetup.exe`) to this sandbox via unrestricted internet (push artifact into `/tmp/openc
+- NEXT(hypotheses-longcat.txt): RAG: Fetch `README.ko.md` from translate branch (`https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md`) — may contain docume
+- LEARN: ACCEPTED @ GitHub wiki raw path: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md` → HTTP 200 — wiki sidebarAction API docu
+- LEARN: ACCEPTED @ GitHub wiki How-to-avoid-my-extension-from-changing-urls.md → HTTP 200 — documents drag-drop navigation risk in sidebar; mitigation covers drag-drop 
+- LEARN: ACCEPTED @ GitHub wiki Client-side-application-vs-Server-side-application.md → HTTP 200 — documents server-side applications loading remote web content in sideb
+- LEARN: CORRECTED @ CVE-2025-69235/69234 CPE: `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` is platform-agnostic (NOT Windows/macOS-only) — Linux fix IS covered
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — `master` and `jdkim/update_documents` are Chromium doc tra
+- LEARN: REJECTED @ NVD `keywordSearch=naver+whale`: returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 results) is the correct surface for Whale C
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: ACCEPTED @ NVD services endpoint: `services.nvd.nist.gov/rest/json/cves/2.0` confirmed HTTP 200 (was fluctuating 404/200) — 0 Whale CVEs in 2026, 8-month disclo
+- LEARN: REJECTED NVD keywordSearch `naver+whale` query: returns 0 results (keyword-matching quirk) — use `whale` (28 total) as broad surface for future CVE-gap checks
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati

@@ -569,3 +569,13 @@
 - CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0` confirmed HTTP 200 — `keywordSearch=whale` returns 28 total CVEs, 0 published in 2026; `naver+whale` returns 0 (keyword quirk)
 - CHANGED NVD `keywordSearch=naver+whale` now returns 0 results (was 2 pre-2021 IDs) — query surface shifted
 - NEW GitHub complete branch inventory: all 4 branches fully enumerated (`master`, `translate`, `v2`, `jdkim/update_documents`) — **0 additional Whale-specific code files** beyond the already-known sidebar-
+
+## 2026-08-10 08:04:00 UTC
+- NEW GitHub wiki documentation now accessible: `whale.sidebarAction.md`, `How-to-avoid-my-extension-from-changing-urls.md`, `Client-side-application-vs-Server-side-application.md` all HTTP 200 (were 404)
+- NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` stable HTTP 200 — `keywordSearch=whale` fully paginated: 28 total CVEs, 0 published in 2026, latest CVE-2025-69235 @2025-12-30
+- CHANGED CPE correction: CVE-2025-69235/69234 CPE `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` is platform-agnostic — Linux fix IS covered (prior knowledge base claimed Linux absent)
+- CHANGED GitHub complete branch inventory confirmed: all 4 branches enumerated, 0 Whale-specific source files beyond sidebar-sample extension (5 files)
+- CHANGED Binary delivery dir `/tmp/opencode/whale_binary/` still missing — blocks all binary-dependent verification
+- CHANGED All binary acquisition channels 100% blocked: cloudfront DNS `No answer`, APKMirror 403, Uptodown 404, pstatic 404
+- CHANGED Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged
+- CHANGED Wikipedia EN/KO pages both HTTP 404 — passively verifiable version confirmation impossible

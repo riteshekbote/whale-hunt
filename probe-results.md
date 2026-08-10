@@ -150,3 +150,6 @@ https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?
 ## 2026-08-10 06:12:45 UTC
 https://api.github.com/repos/naver/whale-browser-developers/git/trees/translate?recursive=1` -> 200 len=11766 type=application/json; charset=utf-8
 https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md` -> HTTP 404
+
+## 2026-08-10 08:04:00 UTC
+https://raw.githubusercontent.com/naver/whale-browser-developers/translate/README.ko.md` -> HTTP 404
