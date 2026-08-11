@@ -6832,3 +6832,32 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED passive binary acquisition: all channels 100% blocked (cloudfront DNS `No answer` general to `*.cloudfront.net` at resolver 127.0.0.53, APKMirror 403, Uptodown 404 both Win+Android, pstatic WhaleSetup.exe 404) — binary-dependent verification permanently HUMAN-gated
 [LEARN] REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-gated verification permanently HUMAN-gated
 [RISK] sync: 72 | Whale-only OSCrypt fork (`os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic) + Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time` downgrade flag) + custom `/whalesync` endpoint confirmed in v4.38.386.14 via prior binary recon; KDF iteration + master-key storage path unextracted (binary absent at `/tmp/opencode/whale_binary/`); 8-month CVE disclosure gap (NVD: 28 total "whale" CVEs, 19 navercorp CPE, 0 in 2026, latest CVE-2025-69235 @2025-12-30); platform-agnostic CPE covers Linux; strongest open surface, fully HUMAN-gated | browser: 55 | sidebar/dual-tab SOP-CSP class REJECTED as duplicate of fixed CVEs (6 known 2025); sample extension confirms API surface live (5 files HTTP 200, 0 sender validation) but no novel variant or binary exploitability proof for v4.38.386.14; no binary to confirm regression; HUMAN_ONLY | libs: 30 | socket.io.slim.js confirmed Whale-only in resources.pak (prior binary recon strings) but confidence 38 < 40, handler runtime-fetched, version unknown, binary inaccessible for extraction; no public library manifest; passive lib-inventory path speculative; Low visibility
+## 2026-08-11 11:27:32 UTC [browser] (model laguna)
+[HYP] Whale sync passphrase KDF weak iteration count or recoverable master-key storage in os_crypt_whale fork on Linux
+class: AUTH
+asset: Whale desktop v4.38.386.14 `libwhale.so` + profile `Local State`/`Preferences` (binary absent at `/tmp/opencode/whale_binary/`)
+confidence: 62
+reasoning: NVD re-confirms 0 CVEs in 2026 (28 total whale, latest CVE-2025-69235 @2025-12-30) after 8-month disclosure gap. Prior binary recon confirms Whale-only prefs `sync.encryption_bootstrap_token_per_account` + forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic + `whale_need_encryption_key_forced_time` downgrade flag. Whale deviates from upstream Chromium OSCrypt — historically where weak crypto hides. No public source (repo fully enumerated: 0 sync/crypto files).
+evidence_needed: PBKDF2/scrypt/argon2 iteration constant in `.rodata`; master-key storage path (keyring vs plaintext); `whale_need_encryption_key_forced_time` downgrade exploitability.
+verify_steps: HUMAN_ONLY: Deliver official Whale desktop v4.38.386.14 `.deb` (cloudfront DNS `No answer` in-sandbox — unrestricted internet required) to `/tmp/opencode/whale_binary/`. Then: `strings -n8 libwhale.so | grep -iE 'xv10|pbkdf2|scrypt|argon2|whale_need_encryption_key'` → extract KDF iteration constant; `nm -D libwhale.so | grep -iE 'os_crypt|sync_encryption_bootstrap'` → symbol map; authorized Linux login snapshot of keyring + `Preferences`/`Local State` pre/post enabling encrypted sync. Zero requests to Naver `/whalesync` endpoint or any `*.naver.com`.
+impact: Local attacker/infostealer with profile access decrypts locally-stored synced passwords + cookies + autofill + bookmarks; weak KDF or plaintext master-key = offline recovery → cross-device sync account takeover → full credential cascade. High–Critical.
+testability: HUMAN_ONLY
+[HYP] Sync bootstrap-token envelope storage — Whale OSCrypt v10 deviation on Linux
+class: AUTH
+asset: Whale desktop v4.38.386.14 `os_crypt_whale.so` + profile prefs `sync.encryption_bootstrap_token_per_account` / `whale_need_encryption_key_forced_time`
+confidence: 60
+reasoning: v4.38.386.14 binary confirms Whale-only prefs `sync.encryption_bootstrap_token_per_account` + forked `os_crypt_whale.cc` + `wbc_wrapper_apis.cc` with `xv10` magic. Bootstrap-token envelope deviates from upstream Chromium `sync.encryption_bootstrap_token`. `whale_need_encryption_key_forced_time` downgrade flag suggests time-based key-staleness bypass. 8-month CVE gap. No public sync source.
+evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; master-key locality; downgrade flag exploitability.
+verify_steps: HUMAN_ONLY: Deliver Whale v4.38.386.14 `.deb` → objdump/strings/.rodata on `os_crypt_whale` for xv10 envelope derivation + `sync_encryption_bootstrap_token` call sites for bootstrap-token storage path; diff pref set vs upstream Chromium. Zero network.
+impact: Local attacker decrypts synced passwords + cookies + autofill + bookmarks → full-account compromise. High.
+testability: HUMAN_ONLY
+[HYP] Android sync encryption KDF / master-key storage (custom mobile impl, zero CVE coverage)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (Android Keystore / SharedPreferences / native lib)
+confidence: 46
+reasoning: iOS client got CVE-2025-53599 (fixed 3.9.1.4206) while Android 3.9.14.9 has zero published CVEs; Play page confirms active Android fix cadence. Sync encryption added 3.8.6.2 (2025-04) implies custom impl. APK acquisition blocked (all channels 403/404).
+evidence_needed: APK sha256 pin; KDF constants in dex; key-store paths.
+verify_steps: HUMAN_ONLY: HUMAN pulls com.naver.whale 3.9.14.9 APK via Play on real Android → `/tmp/opencode/whale_binary/` → `apktool` + `dexdump -d` → grep for KDF constants + key-store paths. Record sha256 only. Zero Naver-infra requests.
+impact: Local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise. High.
+testability: HUMAN_ONLY
+[FINAL] 1) Whale sync passphrase KDF weak iteration / recoverable master-key storage in os_crypt_whale fork on Linux (confidence 62, HUMAN_ONLY)
