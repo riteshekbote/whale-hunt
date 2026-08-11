@@ -366,3 +366,17 @@
 
 - 1 lead(s) marked VALID at 2026-08-10 23:03:56 UTC
   - | **VALID** | 0 | — |
+
+- 12 lead(s) marked VALID at 2026-08-11 04:13:58 UTC
+  - | Q6 | Not on rejected list? | YES — SOP bypass is a valid class |
+  - | Q6 | Not on rejected list? | YES — weak crypto is a valid finding |
+  - | Q7 | Reasonable triager accept? | **NO** — valid hypothesis but zero evidence of actual weakness. Binary acquisition blocked. |
+  - **Verdict: HOLD** — Passes Q1–Q3, Q5–Q6. Blocker is purely evidential (Q4). Whale-only OSCrypt fork confirmed real. **Elevates to VALID upon:** binary delivery + static extraction showing weak KDF (e.
+  - | Q6 | Not on rejected list? | YES — SOP/CSP bypass is valid |
+  - | Q6 | Not on rejected list? | YES — XSS is valid |
+  - | Q6 | Not on rejected list? | YES — authz bypass is valid |
+  - **Verdict: HOLD** — Passes Q1–Q3, Q6. Blocker is Q4 (AUTH_HELPED). **Elevates to VALID upon:** two-account interactive test on v4.38.386.14 demonstrating joiner observes token-bearing query strings, h
+  - | Q6 | Not on rejected list? | YES — XSS is valid |
+  - | Q6 | Not on rejected list? | YES — SOP bypass is valid |
+  - | **VALID** | 0 | — |
+  - **VALID count: 0** — No lead passes all 7 gates.
