@@ -508,3 +508,5 @@
 - 2026-08-11 ACCEPTED @ NVD services endpoint: recovered HTTP 200 this cycle — confirms 0 CVEs in 2026 (28 total whale CVEs, latest CVE-2025-69235 @2025-12-30, 8-month disclosure gap static for v4.35.352–v4.38.386.14)
 - 2026-08-11 REJECTED @ /tmp/opencode/whale_binary/: still MISSING — binary-dependent verification permanently HUMAN-gated.
 - 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235; API surface live (sample extension 5 files HTTP 200, wiki docs HTTP 200, 0 sender.origin/sender.url matches confirmed) but no novel variant or binary exploitability proof for v4.38.386.14 — parked.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant proven; sample extension confirms API surface but NOT exploitability in current binary.
+- 2026-08-11 ACCEPTED @ NVD services endpoint: recovered HTTP 200 @06:13 UTC — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
