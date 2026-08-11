@@ -498,3 +498,9 @@
 - 2026-08-11 REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, pstatic 404) — binary requires HUMAN with unrestricted internet.
 - 2026-08-11 CHANGED @ NVD: both endpoints dead (nvd.nist.gov/rest 403 Cloudflare, services.nvd.nist.gov/rest 404) — CVE-gap verification frozen at 0-in-2026 (last known: 28 total, latest CVE-2025-69235 @2025-12-30).
 - 2026-08-11 ACCEPTED @ wiki page inventory: 5 total wiki pages confirmed via atom feed — whale.sidebarAction, How-to-test-and-debug-my-extension, Client-side-vs-Server-side, How-to-avoid-changing-urls, Home.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235; API surface live (sample extension 5 files HTTP 200, wiki docs HTTP 200, 0 sender.origin/sender.url matches confirmed) but no novel variant or binary exploitability proof for v4.38.386.14 — parked.
+- 2026-08-11 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path — parked permanently.
+- 2026-08-11 ACCEPTED @ NVD services endpoint: HTTP 200 — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-11 ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — surface unchanged, `background.js` 0 `sender.origin`/`sender.url` matches confirmed.
+- 2026-08-11 CONFIRMED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` resolve `No answer` (127.0.0.53) — desktop `.deb` path permanently dead in-sandbox, general to all cloudfront domains.
+- 2026-08-11 REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-dependent verification permanently HUMAN-gated.
