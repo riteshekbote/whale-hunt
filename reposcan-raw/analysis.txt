@@ -1,8 +1,67 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-There's a mismatch: the task asks to triage **gladiaio/** repos and **@gladiaio/sdk** npm package, but the provided knowledge base (RAG) contains only **Whale browser (naver/whale-browser-developers)** data — 200+ entries about Whale CVEs, sidebar APIs, binary acquisition, NVD queries, etc. Zero Gladia content.
+[0m$ [0mls -la
+total 796
+drwxr-xr-x 11 runner runner   4096 Aug 11 06:14 .
+drwxr-xr-x  3 runner runner   4096 Aug 11 06:14 ..
+drwxr-xr-x  7 runner runner   4096 Aug 11 06:14 .git
+drwxr-xr-x  3 runner runner   4096 Aug 11 06:14 .github
+-rw-r--r--  1 runner runner   1057 Aug 11 06:14 README.md
+-rw-r--r--  1 runner runner      0 Aug 11 06:14 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 11 06:14 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 11 06:14 knowledge
+drwxr-xr-x  2 runner runner  12288 Aug 11 06:14 leads
+-rw-r--r--  1 runner runner   3937 Aug 11 06:14 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 11 06:14 reports
+-rw-r--r--  1 runner runner 598138 Aug 11 06:14 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 11 06:14 reposcan-raw
+-rw-r--r--  1 runner runner 126005 Aug 11 06:14 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 11 06:14 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 11 06:14 scripts
+-rw-r--r--  1 runner runner     34 Aug 11 06:14 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 11 06:14 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 11 06:14 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 11 06:14 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 11 06:14 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Aug 11 06:14 triage
+[0m
+[0m$ [0mls -la inventory/ reposcan-raw/
+inventory/:
+total 96
+drwxr-xr-x  2 runner runner  4096 Aug 11 06:14 .
+drwxr-xr-x 11 runner runner  4096 Aug 11 06:14 ..
+-rw-r--r--  1 runner runner 86848 Aug 11 06:14 whale.md
 
-Which target should I triage?
-- **Gladia** (per task description) — need Gladia repos/npm scan data
-- **Whale** (per knowledge base) — already extensively documented above
+reposcan-raw/:
+total 152
+drwxr-xr-x  3 runner runner   4096 Aug 11 06:14 .
+drwxr-xr-x 11 runner runner   4096 Aug 11 06:14 ..
+-rw-r--r--  1 runner runner   1393 Aug 11 06:14 analysis.txt
+-rw-r--r--  1 runner runner     40 Aug 11 06:14 grep-delta.txt
+-rw-r--r--  1 runner runner     50 Aug 11 06:14 grep-hits.prev.txt
+-rw-r--r--  1 runner runner     50 Aug 11 06:14 grep-hits.txt
+drwxr-xr-x  2 runner runner   4096 Aug 11 06:14 naver
+-rw-r--r--  1 runner runner 124776 Aug 11 06:14 rag.txt
+[0m
+[0m✗ [0mRead reposcan-raw/naver/analysis.txt failed
+[91m[1mError: [0mFile not found: /home/runner/work/whale-hunt/whale-hunt/reposcan-raw/naver/analysis.txt
+[0m→ [0mRead probe-results.md
+[0m
+[0m$ [0mls -la reposcan-raw/naver/
+total 8
+drwxr-xr-x 2 runner runner 4096 Aug 11 06:14 .
+drwxr-xr-x 3 runner runner 4096 Aug 11 06:14 ..
+[0m
+[0m→ [0mRead reposcan-raw/grep-hits.txt
+[0m→ [0mRead reposcan-raw/grep-delta.txt
+[0m→ [0mRead scope.yml
+**Triage Result: No findings to classify**
+
+The static scan covered 0 code/config files and produced 0 hits (grep-hits.txt: "SCAN SUMMARY: 0 code/config files scanned, 0 hits").
+
+This aligns with the knowledge base: the only public Whale repo (`naver/whale-browser-developers`) is documentation-only — no browser source, sync implementation, or bundled library manifests exist publicly for static analysis. All binary acquisition paths are blocked in-sandbox (CloudFront DNS `No answer`, APKMirror 403, Uptodown 404/410, pstatic 404).
+
+No secrets, endpoints, or interesting patterns were found because no scannable source code exists in the public surface.
+
+**Verdict:** No reportable candidates.
