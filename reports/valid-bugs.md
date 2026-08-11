@@ -432,3 +432,9 @@
 
 - 1 lead(s) marked VALID at 2026-08-11 16:49:53 UTC
   - | **VALID** | **0** | — |
+
+- 4 lead(s) marked VALID at 2026-08-11 18:44:21 UTC
+  - | Q6 | **YES** — not on always-rejected list (real crypto weakness is a valid finding) |
+  - **Verdict: HOLD** — in-scope, high-impact, potentially novel; blocked on binary acquisition (Q4). Cannot be upgraded to VALID until KDF constants/iteration counts are extracted from binary.
+  - | Q6 | **YES** — injection via push is a valid class |
+  - | Q6 | **YES** — DLL hijack is a valid class |
