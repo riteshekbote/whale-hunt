@@ -695,3 +695,5 @@
 - CHANGED NVD `keywordSearch=naver+whale` confirmed returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 total) remains correct surface
 
 ## 2026-08-11 00:39:33 UTC
+
+## 2026-08-11 02:54:09 UTC
