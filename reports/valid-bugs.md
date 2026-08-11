@@ -403,3 +403,15 @@
   - - **VERDICT: HOLD** — passes Q1, Q2, Q3, Q6. Blocker is Q4 (AUTH_HELPED). Binary confirms server-fetched exclusion list `whale.tweak.multiplay_login_pages` (OAuth/SSO consent pages likely unlisted). *
   - - **VERDICT: HOLD** — passes Q1, Q2, Q3, Q6. Blocked purely on Q4 (evidential). Whale-only prefs deviation confirmed real. **Elevates to VALID upon:** binary delivery showing `sync.encryption_bootstra
   - | **VALID** | **0** | — |
+
+- 5 lead(s) triaged at 2026-08-11 13:47 UTC — **0 VALID / 2 HOLD / 3 INVALID**
+  - Full 7Q analysis per lead; Q4 (passive proof) is the universal blocker for all 5 leads
+  - 5 models de-duplicated to 5 distinct lead categories
+  - 2 HOLD: Lead 01 (desktop sync KDF, binary required), Lead 02 (Android sync KDF, APK required)
+  - 3 INVALID: Lead 03 (sidebar SOP bypass — duplicate of 6 fixed CVEs, Q5/Q7), Lead 04 (socket.io — below threshold, Q7), Lead 05 (NVD gap — Q6 always-rejected, not a vuln)
+  - All binary-acquisition channels remain 100% blocked; reposcan pipeline REGRESSED (0 code/config files scanned)
+  - See `triage/run-2026-08-11-13-47.md` for full analysis
+
+- 2 lead(s) marked VALID at 2026-08-11 13:53:01 UTC
+  - - - **VERDICT: HOLD** — passes Q2, Q3, Q6. Blocked on Q1 (scope ambiguous) and Q4 (AUTH_HELPED). **Elevates to VALID with:** scope confirmation + interactive test demonstrating joiner observes host's 
+  - - - **VERDICT: HOLD** — passes Q1, Q2, Q3, Q6. Blocked purely on Q4 (evidential). Whale-only prefs deviation confirmed real. **Elevates to VALID upon:** binary delivery showing `sync.encryption_bootst
