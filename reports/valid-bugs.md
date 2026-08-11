@@ -380,3 +380,14 @@
   - | Q6 | Not on rejected list? | YES — SOP bypass is valid |
   - | **VALID** | 0 | — |
   - **VALID count: 0** — No lead passes all 7 gates.
+
+- 13 lead(s) triaged at 2026-08-11 06:41 UTC — **0 VALID / 5 HOLD / 8 INVALID**
+  - Full 7Q analysis per lead; Q4 (passive proof) is the universal blocker for all 13 leads
+  - 5 models de-duplicated to 13 distinct lead categories
+  - 8 INVALID: Lead 01/02/03/12 (dupes fixed CVE classes, Q4/Q5/Q7), Lead 07 (attacker reach unclear + OOS sync server), Lead 08 (OOS Naver web service), Lead 11 (no specific vuln, best-practice), Lead 13 (reposcan pipeline regression — not a vuln)
+  - 5 HOLD: Lead 04 (desktop sync KDF, binary required), Lead 05 (bootstrap-token OSCrypt, binary required), Lead 06 (Android sync KDF, APK required), Lead 09 (Multiplay URL disclosure, AUTH_HELPED), Lead 10 (Scrapbook authz, scope ambiguous + AUTH_HELPED)
+  - All binary-acquisition channels remain 100% blocked; reposcan pipeline still REGRESSED (scanning gladiaio/ not whale/)
+  - See `triage/run-2026-08-11-06-41.md` for full analysis
+
+- 1 lead(s) marked VALID at 2026-08-11 06:46:21 UTC
+  - | VALID | 0 | — |
