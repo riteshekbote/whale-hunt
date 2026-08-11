@@ -6715,3 +6715,24 @@ testability: AUTH_HELPED
 [RISK] sync: 65 — Whale-only sync prefs (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`), forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic confirmed present in prior binary recon; KDF iteration + master-key storage path unextracted (binary absent `/tmp/opencode/whale_binary/`); 8-month CVE disclosure gap (NVD: 28 total "whale" CVEs, 0 in 2026, latest CVE-2025-69235 @2025-12-30); platform-agnostic CPE covers Linux — high uncertainty, gated behind HUMAN binary delivery.
 [RISK] browser: 60 — SOP-bypass surface (CVE-2025-69235/69234 class) documented live in sample extension + wiki docs (5 files HTTP 200, 0 sender validation, ALL-origin content_scripts, arbitrary-URL sidebar loading via `show({details:{url}})`); 8-month disclosure gap; known variants patched (v4.35.351.12/v4.33.325.17 fixes) but regression on v4.38.386.14 unproven — HUMAN_ONLY class rejected as duplicate.
 [RISK] libs: 20 — `socket.io.slim.js` (CWE-79 event-handler injection) confidence 38 < 40; handler runtime-fetched; binary absent; no public library version manifest; class parked permanently.
+## 2026-08-11 05:22:41 UTC [browser] (model laguna)
+[PRIO] asset: Sample extension source (translate branch, 5 files HTTP 200) — score: 6.25 | attack_surface: 7, business: 5, tech: 3, gate: 10, cloud: 5, fresh: 8
+[PRIO] asset: Whale desktop v4.38.386.14 sync/OSCrypt module (libwhale.so + Local State/Preferences, binary absent) — score: 6.25 | attack_surface: 10, business: 10, tech: 5, gate: 0, cloud: 5, fresh: 0
+[PRIO] asset: NVD services endpoint (services.nvd.nist.gov, HTTP 200) — score: 3.80 | attack_surface: 1, business: 5, tech: 0, gate: 10, cloud: 5, fresh: 8
+[PRIO] asset: GitHub repo `naver/whale-browser-developers` (documentation-only, all 4 branches enumerated) — score: 1.55 | attack_surface: 0, business: 5, tech: 2, gate: 10, cloud: 5, fresh: 2
+[HYP] Sidebar SOP bypass via unvalidated sender origin in official sample extension + wiki-documented API
+class: OTHER
+asset: `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js` + wiki `whale.sidebarAction.md`
+confidence: 54
+reasoning: CVE-2025-69235 (CWE-346, CVSS 9.1) fixed in v4.35.351.12. Live `background.js` grep confirms ZERO `sender.origin`/`sender.url` inspection (0 matches). `contentscript.js` dispatches `sidebarAction.show`/`show2` from any-web-page context. Wiki confirms `show({details:{url}})` loads arbitrary URL in sidebar panel.
+evidence_needed: Proof that v4.38.386.14 binary re-introduces the sidebar SOP bypass; exploit chain from any web origin to privileged sidebar panel.
+verify_steps: AUTH_HELPED: Install Whale v4.38.386.14 → load sample extension → visit http://evil.test → `sidebarAction.show` fires from contentscript.js → sidebar loads arbitrary URL in privileged context → verify cross-origin resource access. No Naver domains except browser startup.
+impact: Any web page gains privileged sidebar panel context → SOP bypass → CVSS 9.1. Critical.
+testability: AUTH_HELPED
+[HYP] Whale sync passphrase KDF weak iteration or recoverable master-key storage in os_crypt_whale fork (Linux)
+class: OTHER
+asset: Whale desktop v4.38.386.14 `libwhale.so` + profile `Local State`/`Preferences` (binary absent at `/tmp/opencode/whale_binary/`)
+confidence: 62
+reasoning: NVD confirms 0 CVEs in 2026 (8-month gap, latest CVE-2025-69235 @2025-12-30, totalResults=28). Prior binary recon confirms Whale-only prefs `sync.encryption_bootstrap_token_per_account`, forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic + `whale_need_encryption_key_forced_time` downgrade flag. KDF iteration + Linux master-key storage path unextracted (binary absent).
+evidence_needed: PBKDF2/scrypt/argon2 iteration constant in `.rodata`; master-key storage path on Linux keyring/GNOME Keyring; weak KDF parameters; downgrade flag exploitability.
+verify_steps: AUTH_HELPED: HUMAN delivers official Whale desktop v4.38.386.14 `.deb`
