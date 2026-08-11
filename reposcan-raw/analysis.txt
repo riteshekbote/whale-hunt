@@ -1,10 +1,22 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-There's a clear mismatch: the knowledge base you provided is entirely about **Naver Whale browser** (naver/whale-browser-developers, Whale CVEs, Whale binary acquisition, Whale sidebar/dual-tab SOP bypasses), but you're asking me to triage **gladiaio/ GitHub org + @gladiaio/sdk npm package**.
+The knowledge base you provided is for **Naver Whale browser** (naver/whale-browser-developers), but you're asking me to triage **gladiaio/** repos and **@gladiaio/sdk** npm package. These are completely different targets.
 
-The `=== INVENTORY gladia ===` section at the bottom is labeled "Inventory: whale" and contains only Whale browser recon data.
+Let me check the actual workspace for gladiaio-related content to scan:
+[0m✱ [0mGlob "**/*"[90m 100 matches[0m
+[0m→ [0mRead README.md
+[0m→ [0mRead scope.yml
+**Mismatch detected.** This workspace (`whale-hunt`) and the provided knowledge base are for **Naver Whale Browser** (scope.yml confirms: `naver` org, Whale browser assets), not `gladiaio/` or `@gladiaio/sdk`.
 
-**I cannot triage Gladia with Whale knowledge.** Please provide:
-1. The actual Gladia knowledge base (repos, npm metadata, scan hits), OR
-2. Clarification if this is a test with the wrong KB pasted
+The knowledge base contains 1000+ lines of triage history for Naver Whale — covering:
+- Documentation-only GitHub repo (`naver/whale-browser-developers`, last code commit 2019-09-23)
+- 8-month CVE disclosure gap (0 CVEs in 2026, latest CVE-2025-69235 fixed v4.35.351.12)
+- All binary acquisition channels blocked in-sandbox (CloudFront DNS, APKMirror 403, Uptodown 404, pstatic 404)
+- Sidebar SOP bypass surface (CVE-2025-69234/69235) confirmed fixed, no novel variant proven
+- Sync KDF/OSCrypt surface: binary-only, unextracted, HUMAN-gated
+- Static analysis path: **permanently dead** (no Whale source in any public branch)
+
+There are **no gladiaio repos, no @gladiaio/sdk npm metadata, and no gladiaio-related files** in this workspace.
+
+If you meant to triage the **Naver Whale** scan (which this workspace is for), the current verdict is: **0 reportable candidates** — all leads are either rejected (duplicates of fixed CVEs, out-of-scope, or no passive proof path) or HUMAN-gated (binary-dependent sync/socket.io surfaces).
