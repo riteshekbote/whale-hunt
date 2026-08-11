@@ -6783,3 +6783,4 @@ testability: AUTH_HELPED
 [RISK] browser: 60 — SOP-bypass surface (CVE-2025-69235/69234 class) documented live in sample extension + wiki docs (5 files HTTP 200, 0 sender validation, ALL-origin content_scripts, arbitrary-URL sidebar loading via `show({details:{url}})`); 8-month disclosure gap; known variants patched (v4.35.351.12/v4.33.325.17 fixes) but regression on v4.38.386.14 unproven — HUMAN_ONLY class rejected as duplicate.
 [RISK] libs: 20 — `socket.io.slim.js` (CWE-79 event-handler injection) confidence 38 < 40; handler runtime-fetched; binary absent; no public library version manifest; class parked permanently.
 ## 2026-08-11 07:40:31 UTC [browser] (model laguna)
+## 2026-08-11 08:38:15 UTC [browser] (model laguna)

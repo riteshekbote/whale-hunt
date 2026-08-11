@@ -1002,3 +1002,16 @@ testability: HUMAN_ONLY
 [RISK] sync: 72 | Whale-only OSCrypt fork + xv10 bootstrap-token envelope confirmed in binary, KDF constants unextracted, sync is high-value cross-device data channel, 8-month CVE gap, binary acquisition blocked
 [RISK] browser: 45 | All live CVEs are fixed+duplicate classes; no novel variant proven; sample extension API surface doesn't demonstrate current-binary exploitability
 [RISK] libs: 55 | socket.io.slim.js confirmed Whale-only in binary but handler runtime-fetched and version unknown; no specific vuln proven; confidence below actionability threshold
+## 2026-08-11 08:37:21 UTC [libs] (model longcat)
+[PRIO] Whale desktop binary v4.38.386.14 (sync/OSCrypt module) | 5.9 | attack=9 business=9 tech=4 gate=0 cloud=2 fresh=6
+[PRIO] resources.pak bundled socket.io.slim.js + /whalesync push channel | 4.95 | attack=6 business=8 tech=5 gate=0 cloud=3 fresh=4
+[PRIO] Sample extension sidebarAction.show attack surface | 4.1 | attack=5 business=6 tech=3 gate=2 cloud=1 fresh=5
+[HYP] Sync passphrase KDF weak iteration count or recoverable master-key storage in Whale OSCrypt fork on Linux
+class: OTHER
+asset: Whale desktop binary (v4.38.386.14) sync/OSCrypt module
+confidence: 62
+reasoning: Prior binary recon confirms Whale-only `sync.encryption_bootstrap_token_per_account` pref, forked `os_crypt_whale.cc` + `wbc_wrapper_apis.cc` with `xv10` magic header, and `/whalesync` endpoint with NEO_SES cookie auth. Whale deviates from Chromium's OSCrypt — deviation surface is historically where weak crypto hides.
+evidence_needed: Extract KDF iteration count + salt mechanism from binary; identify master-key storage path on Linux (keyring vs plaintext file)
+verify_steps: HUMAN_ONLY: Requires live Whale desktop binary (.deb from `d1vdt4q2qgdbji.cloudfront.net` — cloudfront DNS `No answer` in-sandbox — or WhaleSetup.exe) — extract strings for `xv10`/`pbkdf2`/`scrypt`/`argon2` patterns, trace `os_crypt_whale.cc` logic for encryption key derivation path
+impact: Attacker with local access recovers sync passphrase → decrypts all synced data (passwords, history, bookmarks) across all user devices
+testability: H

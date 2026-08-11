@@ -2154,3 +2154,8 @@
 - LEARN: ACCEPTED @ NVD services endpoint: recovered HTTP 200 @06:13 UTC — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30;
 - LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KD
 - LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, ps
+
+## RANKED HYPOTHESES 2026-08-11 08:40:25 UTC
+- [62] Whale: Sync passphrase KDF weak iteration count or recoverable master-key storage in Whale OSCrypt fork on Linux (from reports/hypotheses-longcat.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` via unrestricted internet from `d1vdt4q2qgdbji.cloudfront.net`, or `WhaleSetup.exe` from Naver
