@@ -504,3 +504,7 @@
 - 2026-08-11 ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — surface unchanged, `background.js` 0 `sender.origin`/`sender.url` matches confirmed.
 - 2026-08-11 CONFIRMED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` resolve `No answer` (127.0.0.53) — desktop `.deb` path permanently dead in-sandbox, general to all cloudfront domains.
 - 2026-08-11 REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-11 REJECTED @ public repo static analysis: all 4 branches + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch
+- 2026-08-11 ACCEPTED @ NVD services endpoint: recovered HTTP 200 this cycle — confirms 0 CVEs in 2026 (28 total whale CVEs, latest CVE-2025-69235 @2025-12-30, 8-month disclosure gap static for v4.35.352–v4.38.386.14)
+- 2026-08-11 REJECTED @ /tmp/opencode/whale_binary/: still MISSING — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235; API surface live (sample extension 5 files HTTP 200, wiki docs HTTP 200, 0 sender.origin/sender.url matches confirmed) but no novel variant or binary exploitability proof for v4.38.386.14 — parked.
