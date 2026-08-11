@@ -6599,3 +6599,31 @@ testability: AUTH_HELPED
 [RISK] sync: 65 — Whale-only sync prefs (`sync.encryption_bootstrap_token_per_account` sha256=`053ffa4b...`), forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic, NEO_SES cookie on `/whalesync`, `whale_need_encryption_key_forced_time` downgrade flag confirmed present in prior binary recon; KDF iteration + master-key storage path unextracted (binary absent `/tmp/opencode/whale_binary/`); 8-month CVE disclosure gap (NVD: 28 total "whale" CVEs, 0 in 2026, latest CVE-2025-69235 @2025-12-30); platform-agnostic CPE covers Linux — high uncertainty, gated behind HUMAN binary delivery.
 [RISK] browser: 60 — SOP-bypass surface (CVE-2025-69235/69234 class) documented live in sample extension + wiki docs with zero sender validation (confirmed: `background.js` 0 grep matches, `manifest.json` ALL-origin content_scripts, `contentscript.js` fires from any-web-page context); 8-month disclosure gap; known variants patched (v4.35.351.12/v4.33.325.17 fixes) but regression on v4.38.386.14 unproven — HUMAN_ONLY class rejected as duplicate.
 [RISK] libs: 20 — `socket.io.slim.js` (CWE-89/79 event-handler injection) confidence 38 < 40; handler runtime-fetched degrading passive evidence; binary absent; no public library version manifest; class parked permanently.
+## 2026-08-11 00:38:47 UTC [browser] (model laguna)
+[PRIO] asset: Sample extension source (translate branch, 5 files HTTP 200) + 3 wiki docs — score: 6.25 | attack_surface: 7, business: 5, tech: 3, gate: 10, cloud: 5, fresh: 8
+[PRIO] asset: Whale desktop v4.38.386.14 sync/OSCrypt module (libwhale.so + Local State/Preferences, binary absent) — score: 6.25 | attack_surface: 10, business: 10, tech: 5, gate: 0, cloud: 5, fresh: 0
+[PRIO] asset: NVD services endpoint (services.nvd.nist.gov, HTTP 200 this cycle) — score: 3.80 | attack_surface: 1, business: 5, tech: 0, gate: 10, cloud: 5, fresh: 3
+[HYP] Whale sync KDF weak iteration / recoverable master-key in os_crypt_whale fork (Linux)
+class: OTHER
+asset: Whale desktop v4.38.386.14 `/tmp/opencode/whale_binary/` (libwhale.so + profile `Local State`/`Preferences`)
+confidence: 62
+reasoning: NVD confirms 0 CVEs in 2026 (8-month gap, latest CVE-2025-69235 @2025-12-30). Prior binary recon confirms Whale-only prefs `sync.encryption_bootstrap_token_per_account` + forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic + `whale_need_encryption_key_forced_time` downgrade flag all present in v4.38.386.14. KDF iteration constant + Linux master-key storage path unextracted (binary absent).
+evidence_needed: PBKDF2/scrypt/argon2 iteration constant in `.rodata`; master-key storage path in Linux keyring/GNOME Keyring; weak KDF parameters; downgrade flag exploitability.
+verify_steps: AUTH_HELPED: HUMAN delivers official Whale desktop v4.38.386.14 `.deb` to `/tmp/opencode/whale_binary/` → `strings -n8 libwhale.so | grep -iE 'xv10|pbkdf2|scrypt|argon2|whale_need_encryption_key'` → `nm -D libwhale.so | grep -iE 'os_crypt|sync_encryption_bootstrap'` → authorized Linux login snapshot of keyring + `Preferences`/`Local State` pre/post enabling encrypted sync. Zero requests to Naver `/whalesync` endpoint or any `*.naver.com`.
+impact: Local attacker/infostealer with profile access decrypts locally-stored synced passwords + cookies + autofill + bookmarks; weak KDF or plaintext master-key = offline recovery → cross-device sync account takeover → full credential cascade. High–Critical.
+testability: AUTH_HELPED
+[HYP] Whale sync passphrase KDF weak iteration or recoverable master-key storage in os_crypt_whale fork
+class: OTHER
+asset: Whale desktop v4.38.386.14 `libwhale.so` + profile `Local State`/`Preferences` (binary absent at `/tmp/opencode/whale_binary/`)
+confidence: 62
+reasoning: NVD confirms 0 CVEs in 2026 (8-month gap). Prior binary recon confirms Whale-only pref `sync.encryption_bootstrap_token_per_account` + forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic, `whale_need_encryption_key_forced_time` downgrade flag. All present in v4.38.386.14 per prior bigpickle/laguna runs. KDF iteration constant + master-key storage path unextracted (binary absent).
+evidence_needed: PBKDF2/scrypt/argon2 iteration constant in `.rodata`; master-key storage path on Linux; weak KDF parameters.
+verify_steps: AUTH_HELPED: HUMAN delivers official Whale desktop v4.38.386.14 (`.deb` from cloudfront — DNS No-answer in-sandbox, so unrestricted internet required) to `/tmp/opencode/whale_binary/` → `strings -n8 libwhale.so | grep -iE 'xv10|pbkdf2|scrypt|argon2'` → `nm -D libwhale.so | grep -iE 'os_crypt|whale_need_encryption_key|sync_encryption_bootstrap'` → authorized Linux login snapshot of keyring + `Preferences`/`Local State` pre/post enabling encrypted sync. Zero requests to Naver `/whalesync` or any `*.naver.com`.
+impact: Local attacker/infostealer with profile access decrypts locally-stored synced passwords + cookies + autofill + bookmarks; weak KDF or plaintext master-key = offline recovery → cross-device sync account takeover → full credential cascade. High–Critical.
+testability: AUTH_HELPED
+[HYP] Sidebar SOP bypass via unvalidated sender origin in official sample extension + wiki-documented API
+class: OTHER
+asset: `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js` + wiki `whale.sidebarAction.md`
+confidence: 54
+reasoning: CVE-2025-69235 (CWE-346, CVSS 9.1) fixed in v4.35.351.12. Live `background.js` grep confirms ZERO `sender.origin`/`sender.url` inspection across all 3 JS files. `contentscript.js` dispatches `sidebarAction.show`/`show2`/etc. from `userAgent.includes('sidebar')===false` branch (any web page → privileged background). Wiki confirms `show({details:{url}})` loads arbitrary URL in sidebar panel.
+evidence_needed: Proof that v4.3
