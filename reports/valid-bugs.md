@@ -394,3 +394,12 @@
 
 - 1 lead(s) marked VALID at 2026-08-11 09:25:18 UTC
   - | **VALID** | 0 | — |
+
+- 7 lead(s) marked VALID at 2026-08-11 10:23:22 UTC
+  - - **VERDICT: HOLD** — passes Q1, Q2, Q3, Q6; blocked purely on Q4 (evidential). Whale-only OSCrypt fork (`xv10` magic, `os_crypt_whale.cc`, custom prefs keys `sync.encryption_bootstrap_token_per_accou
+  - - **VERDICT: HOLD** — passes Q1, Q2, Q3, Q6. Android sync encryption added only 2025-04 (late, possibly custom mobile impl). **Elevates to VALID upon:** APK delivery → decompilation showing `Encrypted
+  - - **VERDICT: HOLD** — strongest sync-surface lead. Whale-only OSCrypt deviation is confirmed real and historically where weak crypto hides. **Elevates to VALID upon:** binary delivery showing `sync.en
+  - - **VERDICT: HOLD** — passes Q2, Q3, Q6. Blocked on Q1 (scope ambiguous) and Q4 (AUTH_HELPED). **Elevates to VALID with:** scope confirmation + interactive test demonstrating joiner observes host's ot
+  - - **VERDICT: HOLD** — passes Q1, Q2, Q3, Q6. Blocker is Q4 (AUTH_HELPED). Binary confirms server-fetched exclusion list `whale.tweak.multiplay_login_pages` (OAuth/SSO consent pages likely unlisted). *
+  - - **VERDICT: HOLD** — passes Q1, Q2, Q3, Q6. Blocked purely on Q4 (evidential). Whale-only prefs deviation confirmed real. **Elevates to VALID upon:** binary delivery showing `sync.encryption_bootstra
+  - | **VALID** | **0** | — |
