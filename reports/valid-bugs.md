@@ -438,3 +438,8 @@
   - **Verdict: HOLD** — in-scope, high-impact, potentially novel; blocked on binary acquisition (Q4). Cannot be upgraded to VALID until KDF constants/iteration counts are extracted from binary.
   - | Q6 | **YES** — injection via push is a valid class |
   - | Q6 | **YES** — DLL hijack is a valid class |
+
+- 3 lead(s) marked VALID at 2026-08-11 19:52:35 UTC
+  - | Q6 | YES — real crypto weakness is valid |
+  - | Q6 | YES — injection via push is valid class |
+  - | Q6 | YES — DLL hijack is valid class |
