@@ -1190,3 +1190,47 @@ testability: HUMAN_ONLY
 [RISK] sync: 72 | Whale-only OSCrypt fork + xv10 bootstrap-token envelope confirmed in binary, KDF constants unextracted, sync is high-value cross-device data channel, 8-month CVE gap, binary acquisition blocked
 [RISK] browser: 45 | All live CVEs are fixed+duplicate classes; no novel variant proven; sample extension API surface doesn't demonstrate current-binary exploitability
 [RISK] libs: 55 | socket.io.slim.js confirmed Whale-only in binary but handler runtime-fetched and version unknown; no specific vuln proven; confidence below actionability threshold
+## 2026-08-11 14:45:55 UTC [libs] (model longcat)
+[PRIO] Whale desktop binary v4.38.386.14 (sync/OSCrypt module — KDF constants, master-key storage) | 5.9 | attack=9 business=9 tech=4 gate=0 cloud=2 fresh=6
+[PRIO] resources.pak bundled socket.io.slim.js + /whalesync push channel (Whale-only lib, version unconfirmed) | 4.95 | attack=6 business=8 tech=5 gate=0 cloud=3 fresh=4
+[PRIO] Sample extension sidebarAction.show attack surface (API origin-validation gap, current-binary exploitability unproven) | 4.1 | attack=5 business=6 tech=3 gate=2 cloud=1 fresh=5
+[HYP] Sync passphrase KDF weak iteration count or recoverable master-key storage in Whale OSCrypt fork on Linux
+class: OTHER
+asset: Whale desktop binary (v4.38.386.14) sync/OSCrypt module
+confidence: 62
+reasoning: Prior binary recon confirms Whale-only `sync.encryption_bootstrap_token_per_account` pref, forked `os_crypt_whale.cc` + `wbc_wrapper_apis.cc` with `xv10` magic header, and `/whalesync` endpoint with NEO_SES cookie auth. Whale deviates from upstream Chromium OSCrypt — deviation surface is historically where weak crypto hides.
+evidence_needed: Extract KDF iteration count + salt mechanism from binary; identify master-key storage path on Linux (keyring vs plaintext file)
+verify_steps: HUMAN_ONLY: Requires live Whale desktop binary (.deb from `d1vdt4q2qgdbji.cloudfront.net` — cloudfront DNS `No answer` in-sandbox — or WhaleSetup.exe) — extract strings for `xv10`/`pbkdf2`/`scrypt`/`argon2` patterns, trace `os_crypt_whale.cc` logic for encryption key derivation path
+impact: Attacker with local access recovers sync passphrase → decrypts all synced data (passwords, history, bookmarks) across all user devices
+testability: HUMAN_ONLY
+[HYP] Built-in extension socket.io.slim.js event-handler injection via /whalesync push channel
+class: XSS
+asset: resources.pak bundled socket.io.slim.js + /whalesync push
+confidence: 38
+reasoning: Prior recon confirms socket.io.slim.js (Whale-specific bundle) present in resources.pak. Socket.io historically has prototype pollution + event-handler injection vectors. However handler may be runtime-fetched, degrading passive evidence.
+evidence_needed: Extract socket.io version from binary; identify event-handler registration path; craft malicious event payload
+verify_steps: HUMAN_ONLY: Binary extraction required; then AUTH_HELPED: authenticated sync account to receive push messages
+impact: XSS or RCE in browser process via crafted push message from sync server
+testability: HUMAN_ONLY
+[HYP] Sidebar iframe sandbox escape via CVE-2025-69234 variant regression on Whale Linux
+class: OTHER
+asset: sidebarAction.show URL-loading path on Whale Linux
+confidence: 58
+reasoning: CVE-2025-69234 fixed in v4.35.351.12 (Dec 2025) with platform-agnostic CPE. Latest v4.38.386.14 is 3 minor bumps ahead with 0 CVEs published. Sample extension confirms content_scripts fire sidebarAction.show from arbitrary web origins without sender validation.
+evidence_needed: Binary diff of sidebar process isolation between v4.35.351.12 and v4.38.386.14 on Linux; or live reproduction
+verify_steps: HUMAN_ONLY: Requires Whale Linux binary + live browser install with two-account sync to test cross-origin sidebar navigation against a controlled iframe
+impact: Attacker-controlled iframe in sidebar escapes sandbox → same-origin access to sidebar content/credentials
+testability: HUMAN_ONLY
+[PARKED] Built-in extension socket.io.slim.js event-handler injection via /whalesync push channel: confidence 38 < 40 threshold; handler runtime-fetched degrading passive evidence; no passive proof path exists; stale lead from prior cycles.
+[PARKED] Sidebar iframe sandbox escape via CVE-2025-69234 variant regression on Whale Linux: class on REJECTED list (sidebar/dual-tab/web-panel SOP-CSP bypass duplicates CVE-2025-69234/69235/53600/62583/62584/62585; no novel variant proven; sample extension confirms API surface but NOT current-binary exploitability).
+[FINAL] Only 1 hypothesis survives: Sync passphrase KDF weak iteration count or recoverable master-key storage in Whale OSCrypt fork on Linux (confidence 62, HUMAN_ONLY).
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe` from Naver CDN) to `/tmp/opencode/whale_binary/` via unrestricted internet. This is the ONLY remaining verification path — all public surfaces (4 branches, 5 sample extension files, 5 wiki pages, README.ko.md) are exhausted with zero sync/crypto/library-manifest content. Binary extraction unblocks the #1 hypothesis (KDF/envelope constants).
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked.
+[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant proven; sample extension confirms API surface but NOT exploitability in current binary.
+[LEARN] ACCEPTED @ NVD services endpoint: HTTP 200 confirmed this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+[LEARN] ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch.
+[LEARN] REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, pstatic 404) — binary requires HUMAN with unrestricted internet.
+[LEARN] REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-gated verification permanently HUMAN-gated.
+[RISK] sync: 72 | Whale-only OSCrypt fork + xv10 bootstrap-token envelope confirmed in binary, KDF constants unextracted, sync is high-value cross-device data channel, 8-month CVE gap, binary acquisition blocked
+[RISK] browser: 45 | All live CVEs are fixed+duplicate classes; no novel variant proven; sample extension API surface doesn't demonstrate current-binary exploitability
+[RISK] libs: 55 | socket.io.slim.js confirmed Whale-only in binary but handler runtime-fetched and version unknown; no specific vuln proven; confidence below actionability threshold
