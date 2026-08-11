@@ -734,3 +734,6 @@
 ## 2026-08-11 16:56:50 UTC
 - NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was 404 in prior cycle) — passive CVE-gap verification path live again; `keywordSearch=whale` returns totalResults=28, 0 published in
 - CHANGED `/tmp/opencode/whale_binary/` still missing (re-verified this cycle) — binary-dependent verification permanently HUMAN-gated
+
+## 2026-08-11 17:41:53 UTC
+- CHANGED GitHub API rate-limited this cycle (was HTTP 200 with `pushed_at`/`updated_at` metadata; now `API rate limit exceeded for 172.212.163.229`) — transient, repo content unchanged, only blocks automated r
