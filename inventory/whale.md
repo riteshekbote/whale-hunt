@@ -726,3 +726,7 @@
 ## 2026-08-11 13:50:44 UTC
 
 ## 2026-08-11 14:48:16 UTC
+
+## 2026-08-11 15:48:08 UTC
+- NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was 404 in prior cycle) — passive CVE-gap verification path live again; `keywordSearch=whale` returns totalResults=28, 0 published in
+- CHANGED `/tmp/opencode/whale_binary/` still missing (re-verified this cycle) — binary-dependent verification permanently HUMAN-gated

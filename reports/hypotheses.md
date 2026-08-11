@@ -2277,3 +2277,23 @@
 - LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KD
 - LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, ps
 - LEARN: REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-gated verification permanently HUMAN-gated.
+
+## RANKED HYPOTHESES 2026-08-11 15:48:08 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Whale sync passphrase KDF weak iteration / recoverable master-key storage in os_crypt_whale fork on Linux (from reports/hypotheses-laguna.txt)
+- [62] Whale: Sync passphrase KDF weak iteration count or recoverable master-key storage in Whale OSCrypt fork on Linux (from reports/hypotheses-longcat.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet — cloudfront DNS resolves `No a
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe` from Naver
+- NEXT(hypotheses-longcat.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` or `WhaleSetup.exe` from Naver CDN) to `/tmp/opencode/wha
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; sample extension API surface li
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: CONFIRMED no-delta: all passive surfaces (NVD services endpoint HTTP 200, GitHub repo documentation-only pushed 2019-09-23, sample extension 5 files HTTP 200, w
+- LEARN: CONFIRMED @ sample extension (translate branch): `background.js` onMessage accepts `sender` param but grep confirms ZERO `sender.origin`/`sender.url` matches ac
+- LEARN: CONFIRMED @ GitHub wiki docs (HTTP 200): `whale.sidebarAction.md` documents `show({details:{url}})` loads arbitrary URL in sidebar panel; `How-to-avoid-my-exten
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked.
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant proven; sampl
+- LEARN: ACCEPTED @ NVD services endpoint: HTTP 200 confirmed — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month di
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or librar
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, ps
+- LEARN: REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-gated verification permanently HUMAN-gated.
