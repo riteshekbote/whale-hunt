@@ -2360,3 +2360,33 @@
 - LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; sample extension API surface li
 - LEARN: ACCEPTED @ NVD services endpoint: recovered HTTP 200 — `keywordSearch=whale` totalResults=28, 23 navercorp CPE matches, 0 published in 2026, latest CVE-2025-692
 - LEARN: REJECTED passive binary acquisition: all channels remain 100% blocked (cloudfront DNS No-answer general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, psta
+
+## RANKED HYPOTHESES 2026-08-11 19:44:40 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Whale sync passphrase KDF weak iteration / recoverable master-key storage in os_crypt_whale fork on Linux (from reports/hypotheses-laguna.txt)
+- [62] Whale: Sync passphrase KDF weak iteration count or recoverable master-key storage in Whale OSCrypt fork on Linux (from reports/hypotheses-longcat.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe` from Naver
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inte
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 to `/tmp/opencode/whale_binary/` — `.deb` from cloudfront (`d1vdt4q2qgdbji.cloudfront.net`, requires u
+- NEXT(hypotheses-longcat.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 to `/tmp/opencode/whale_binary/` via unrestricted internet — either `WhaleSetup.exe` from Naver CDN (c
+- LEARN: ACCEPTED @ NVD services endpoint: HTTP 200 confirmed this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30;
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, ps
+- LEARN: REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-gated verification permanently HUMAN-gated
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KD
+- LEARN: ACCEPTED sync @ binary surface: re-confirmed this cycle that binary static analysis remains the ONLY viable sync vector (public repo + wiki + README.ko.md fully
+- LEARN: ACCEPTED OTHER @ NVD gap monitor: `keywordSearch=whale` (28 total, 0 in 2026) is the correct and only working passive gap surface; date-filtered queries still 4
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: surface re-confirmed live (5 ext files + wiki 200) but remains duplicate of fixed CVEs, no novel var
+- LEARN: ACCEPTED @ NVD services endpoint: recovered HTTP 200 — `keywordSearch=whale` totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure g
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — sample extension API surface l
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-dependent verification permanently HUMAN-gated.
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KD
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked this cycle (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptod
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; sample extension API surface li
+- LEARN: ACCEPTED @ NVD services endpoint: recovered HTTP 200 — `keywordSearch=whale` totalResults=28, 23 navercorp CPE matches, 0 published in 2026, latest CVE-2025-692
+- LEARN: REJECTED passive binary acquisition: all channels remain 100% blocked (cloudfront DNS No-answer general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, psta
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KD
