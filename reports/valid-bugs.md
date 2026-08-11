@@ -421,3 +421,14 @@
 
 - 1 lead(s) marked VALID at 2026-08-11 15:50:34 UTC
   - | **VALID** | 0 | — |
+
+- 13 lead(s) triaged at 2026-08-11 16:41 UTC — **0 VALID / 5 HOLD / 8 INVALID**
+  - Full 7Q analysis per lead; Q4 (passive proof) is the universal blocker for all 5 HOLD leads
+  - 5 models de-duplicated to 13 distinct lead categories
+  - 8 INVALID: Lead 03/04/05/13 (dupes fixed CVE classes, Q4/Q5/Q7), Lead 06 (conf < 40, Q7), Lead 08 (best-practice, Q6), Lead 09 (OOS Naver web service + no_doom, Q1/Q6), Lead 11 (intelligence observation, Q3/Q6)
+  - 5 HOLD: Lead 01 (desktop sync KDF, binary required), Lead 02 (Android sync KDF, APK required), Lead 07 (bootstrap-token envelope, binary required), Lead 10 (Multiplay, AUTH_HELPED + scope ambiguous), Lead 12 (Scrapbook, AUTH_HELPED + scope ambiguous)
+  - All binary-acquisition channels remain 100% blocked; reposcan pipeline still REGRESSED (gladiaio/ not whale/)
+  - See `triage/run-2026-08-11-16-41.md` for full analysis
+
+- 1 lead(s) marked VALID at 2026-08-11 16:49:53 UTC
+  - | **VALID** | **0** | — |
