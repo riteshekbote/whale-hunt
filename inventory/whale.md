@@ -737,3 +737,7 @@
 
 ## 2026-08-11 17:41:53 UTC
 - CHANGED GitHub API rate-limited this cycle (was HTTP 200 with `pushed_at`/`updated_at` metadata; now `API rate limit exceeded for 172.212.163.229`) — transient, repo content unchanged, only blocks automated r
+
+## 2026-08-11 18:38:19 UTC
+- CHANGED NVD `services.nvd.nist.gov/rest/json/cves/2.0`: recovered HTTP 200 from transient 404 — `keywordSearch=whale` returns totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month d
+- CHANGED GitHub API `api.github.com/repos/naver/whale-browser-developers`: recovered HTTP 200 from transient HTTP 403 rate-limit — `pushed_at`=2019-09-23T08:03:26Z, `updated_at`=2025-10-22T03:15:17Z unchanged 
