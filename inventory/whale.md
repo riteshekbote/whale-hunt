@@ -749,3 +749,9 @@
 ## 2026-08-11 20:28:05 UTC
 
 ## 2026-08-11 21:28:19 UTC
+
+## 2026-08-11 22:17:01 UTC
+- NEW NVD `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was 404 in prior cycle) — passive CVE-gap verification path LIVE again; `keywordSearch=whale` totalResults=28, 0 in 2026
+- NEW GitHub API `api.github.com/repos/naver/whale-browser-developers` recovered HTTP 200 from transient HTTP 403 rate-limit — repo metadata unchanged (pushed 2019-09-23, documentation-only)
+- CHANGED `/tmp/opencode/whale_binary/` still missing (re-verified this cycle) — binary-dependent verification permanently HUMAN-gated
+- CHANGED Sample extension (translate branch): all 5 files HTTP 200 — surface unchanged (background.js 0 sender.origin/sender.url matches, contentscript.js dispatches from any-web-page context, manifest content
