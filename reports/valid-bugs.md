@@ -415,3 +415,6 @@
 - 2 lead(s) marked VALID at 2026-08-11 13:53:01 UTC
   - - - **VERDICT: HOLD** — passes Q2, Q3, Q6. Blocked on Q1 (scope ambiguous) and Q4 (AUTH_HELPED). **Elevates to VALID with:** scope confirmation + interactive test demonstrating joiner observes host's 
   - - - **VERDICT: HOLD** — passes Q1, Q2, Q3, Q6. Blocked purely on Q4 (evidential). Whale-only prefs deviation confirmed real. **Elevates to VALID upon:** binary delivery showing `sync.encryption_bootst
+
+- 1 lead(s) marked VALID at 2026-08-11 14:51:53 UTC
+  - | VALID | 0 | No new hypothesis survives Q4/Q5/Q7 |
