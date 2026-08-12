@@ -1,18 +1,61 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base you've provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), but your task mentions **gladiaio/ GitHub org** and **@gladiaio/sdk** npm package. These are completely different targets.
+The knowledge base and working directory (`/home/runner/work/whale-hunt/whale-hunt`) are entirely about **Naver Whale browser**, not Gladia. There's no Gladia-related content in the provided knowledge base or inventory.
 
-The knowledge base contains:
-- Whale browser CVEs, sidebar/dual-tab SOP bypasses
-- Binary acquisition channels (cloudfront, APKMirror, Uptodown)
-- Whale GitHub repo enumeration (documentation-only)
-- NVD CVE data for Whale (28 total, 0 in 2026)
+Let me check the actual workspace contents to confirm what we're triaging:
+[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt
+total 856
+drwxr-xr-x 11 runner runner   4096 Aug 12 20:29 .
+drwxr-xr-x  3 runner runner   4096 Aug 12 20:29 ..
+drwxr-xr-x  7 runner runner   4096 Aug 12 20:29 .git
+drwxr-xr-x  3 runner runner   4096 Aug 12 20:29 .github
+-rw-r--r--  1 runner runner   1057 Aug 12 20:29 README.md
+-rw-r--r--  1 runner runner      0 Aug 12 20:29 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 12 20:29 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 12 20:29 knowledge
+drwxr-xr-x  2 runner runner  20480 Aug 12 20:29 leads
+-rw-r--r--  1 runner runner   5330 Aug 12 20:29 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 12 20:29 reports
+-rw-r--r--  1 runner runner 598138 Aug 12 20:29 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 12 20:29 reposcan-raw
+-rw-r--r--  1 runner runner 165195 Aug 12 20:29 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 12 20:29 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 12 20:29 scripts
+-rw-r--r--  1 runner runner     34 Aug 12 20:29 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 12 20:29 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 12 20:29 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 12 20:29 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 12 20:29 state_nemotron3.json
+drwxr-xr-x  2 runner runner  12288 Aug 12 20:29 triage
+[0m
+[0m→ [0mRead scope.yml
+[0m✱ [0mGlob "**/*"[90m in inventory · 1 match[0m
+[0m✱ [0mGlob "**/*"[90m in triage · 100 matches[0m
+[0m→ [0mRead inventory/whale.md
+[0m→ [0mRead triage/run-2026-08-12-19-31.md
+[0m→ [0mRead triage/run-2026-08-12-18-10.md
+[0m→ [0mRead triage/run-2026-08-12-16-14.md
+[0m→ [0mRead triage/run-2026-08-12-14-09.md
+[0m→ [0mRead triage/run-2026-08-12-11-35.md
+[0m→ [0mRead triage/run-2026-08-11-23-28.md
+**Critical mismatch detected:** Your prompt asks to triage `gladiaio/` GitHub org + `@gladiaio/sdk` npm package, but this workspace (`whale-hunt`) and the entire knowledge base are for **Naver Whale Browser** — confirmed by:
 
-But **nothing about gladiaio/ org or @gladiaio/sdk**.
+- `scope.yml`: Program = "Naver Whale Browser", GitHub org = `naver`
+- `inventory/whale.md`: Only asset is `naver/whale-browser-developers` (documentation-only repo)
+- 1000+ lines of triage history covering Whale CVEs, binary acquisition, sidebar SOP bypass, sync KDF — **zero Gladia content**
+- Latest triage (2026-08-11) explicitly flagged this: *"This workspace and the provided knowledge base are for Naver Whale browser... There are no gladiaio repos, no @gladiaio/sdk npm metadata"*
 
-Which target should I triage?
-1. **Whale browser** (per the knowledge base provided)
-2. **gladiaio/ SDK repos** (per your task description) — would need me to scan those repos
+**Current Whale triage verdict (per knowledge base):**
+- **0 reportable candidates** — all leads REJECTED (duplicates of fixed CVEs, out-of-scope, no passive proof) or HUMAN-gated (binary-dependent sync/socket.io)
+- Static analysis path: **permanently dead** (no Whale source in any public branch)
+- Binary acquisition: **100% blocked in-sandbox** (CloudFront DNS, APKMirror 403, Uptodown 404, pstatic 404)
+- 8-month CVE disclosure gap: 0 CVEs in 2026, latest CVE-2025-69235 fixed v4.35.351.12
 
-Please clarify, or provide the correct knowledge base for gladiaio.
+---
+
+**To proceed, clarify:**
+1. Did you mean to triage the **Naver Whale** scan (this workspace)?
+2. Or do you have a **separate Gladia workspace/scan** you want me to triage? If so, provide the Gladia leads + probe results.
+
+The `LEADS:` section in your prompt is empty — nothing to triage until you supply actual findings.
