@@ -443,3 +443,8 @@
   - | Q6 | YES — real crypto weakness is valid |
   - | Q6 | YES — injection via push is valid class |
   - | Q6 | YES — DLL hijack is valid class |
+
+- 3 lead(s) marked VALID at 2026-08-12 00:46:34 UTC
+  - valid-bugs.md
+  - | 🟩 VALID | 0 | — |
+  - **Valid bugs count remains 0.** (`reports/valid-bugs.md` unchanged.)
