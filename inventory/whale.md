@@ -767,3 +767,8 @@
 - NEW GitHub API `api.github.com/repos/naver/whale-browser-developers` recovered HTTP 200 from transient HTTP 403 rate-limit — repo metadata unchanged (pushed 2019-09-23, documentation-only)
 
 ## 2026-08-12 01:16:52 UTC
+
+## 2026-08-12 03:32:10 UTC
+- NEW /tmp/opencode/whale_binary/ confirmed still missing this cycle (03:30 UTC) — binary-dependent verification permanently HUMAN-gated
+- CHANGED NVD keywordSearch=`whale` year breakdown re-verified this cycle (2003:1, 2009:1, 2018:5, 2020:1, 2021:1, 2022:6, 2023:3, 2024:2, 2025:8) — 0 in 2026 confirmed, totalResults=28, latest CVE-2025-69235 @
+- CHANGED Sample extension contentscript.js re-fetched — still HTTP 200, `navigator.userAgent.includes('sidebar')===false` branch dispatches `sidebarAction.show`/`show2` from ANY web page context, confirmed at 
