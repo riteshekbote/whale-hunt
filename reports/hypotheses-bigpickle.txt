@@ -1,4 +1,7 @@
-## 2026-08-12 06:47:43 UTC [sync] (model bigpickle)
+## 2026-08-12 08:07:11 UTC [sync] (model bigpickle)
+[PRIO] Whale desktop binary v4.38.386.14 `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` (sync KDF/master-key extraction): score 7.0 — attack 8, business 8, tech 7, gate 2 (binary HUMAN-gated), cloud 0, fresh 6
+[PRIO] NVD gap monitor `services.nvd.nist.gov keywordSearch=whale`: score 6.6 — attack 5, business 7, tech 5, gate 10 (zero-auth GET), cloud 0, fresh 7
+[PRIO] com.naver.whale 3.9.14.9 APK sync engine (Android Keystore/SharedPreferences): score 5.6 — attack 6, business 7, tech 6, gate 2 (Play-lh HUMAN-gated), cloud 0, fresh 5
 [HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork
 class: AUTH
 asset: Whale v4.38.386.14 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
@@ -26,3 +29,9 @@ evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key per
 verify_steps: AUTH_HELPED: HUMAN pulls 3.9.14.9 APK via Play-lh on real device → /tmp/opencode/whale_binary/ → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
 impact: local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise; High
 testability: AUTH_HELPED
+[FINAL] 1) Desktop sync KDF (AUTH, 62) 2) NVD gap monitor (OTHER, 55) 3) Android sync KDF (AUTH, 46)
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe` from Naver CDN; record sha256 only (never raw content). Unblocks top sync KDF hypothesis (conf 62). Secondary: com.naver.whale 3.9.14.9 APK via Play-lh on real device.
+[LEARN] ACCEPTED OTHER @ NVD gap monitor: HTTP 200 re-confirmed this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30, 0 sync-class keyword hits; remains the only live zero-auth passive surface.
+[LEARN] REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING (re-verified this cycle) — all passive channels permanently blocked (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404, pstatic 404); binary-dependent verification permanently HUMAN-gated.
+[LEARN] ACCEPTED @ sample extension + repo: 5 extension files HTTP 200 + repo `pushed_at` 2019-09-23 unchanged — sidebar surface and doc-only repo frozen; no new static-analysis surface.
+[RISK] sync: 72 — Whale-only OSCrypt fork (xv10, bootstrap-token prefs) real but KDF/master-key unextractable without binary; 0 CVEs in 8 months over 3 minor versions keeps genuine unknown; delivery dependency is the sole blocker. | browser: 58 — sidebar/web-panel surface documented and live (5 files + wiki 200) but every known SOP/CSP variant fixed; no novel variant proven. | libs: 35 — only socket.io.slim.js (conf 38, parked) identified as Whale-only; no manifest, no version strings, handler runtime-fetched.
