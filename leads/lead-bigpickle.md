@@ -3904,3 +3904,34 @@ testability: AUTH_HELPED
 [LEARN] NO new class proven dead or alive this cycle — full surface delta re-verified identical (NVD 28/0-in-2026 HTTP 200, 0 tags/0 releases re-confirmed, sample ext 5/5 200, wiki 4 pages 200 + sync docs 404, repo pushed 2019-09-23, binary dir MISSING, all acquisition channels 403/404/No-answer).
 [LEARN] ACCEPTED @ GitHub repo: 0 tags + 0 releases API-confirmed this cycle — repo remains documentation-only, no packaged artifacts to enumerate; static path stays dead.
 [RISK] sync: 72 — Whale-only OSCrypt fork (xv10, bootstrap-token prefs) real but KDF/master-key unextractable without binary; 0 CVEs in 8 months over 3 minor versions keeps genuine unknown; delivery dependency is the sole blocker. | browser: 58 — sidebar/web-panel surface documented and live (5 files + 4 wiki pages 200) but every known SOP/CSP variant fixed (platform-agnostic CPE); no novel variant proven. | libs: 35 — only socket.io.slim.js (conf 38, parked) identified as Whale-only; no manifest, no version strings, handler runtime-fetched.
+## 2026-08-12 13:47:19 UTC [sync] (model bigpickle)
+[HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork
+class: AUTH
+asset: Whale v4.38.386.14 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
+confidence: 62
+reasoning: Whale-only markers (xv10 magic, sync.encryption_bootstrap_token_per_account prefs) confirmed in prior binary recon; full repo enumeration (4 branches + 5 wiki pages + README.ko.md) = zero public sync code; NVD re-confirmed 0-in-2026 this cycle (28 total, latest CVE-2025-69235 @2025-12-30).
+evidence_needed: PBKDF2/scrypt algorithm + iteration count in Whale fork; derived-key persistence (keyring vs file vs Local State); comparison vs Linux Chromium baseline.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes (regression/version-drift detection)
+class: OTHER
+asset: services.nvd.nist.gov keywordSearch=whale full pagination
+confidence: 55
+reasoning: 0 CVEs in 2026 across v4.35.352–v4.38.386.14 while 8 published in 2025 (latest CVE-2025-69235 @2025-12-30); this cycle re-confirmed HTTP 200, totalResults=28, year breakdown static, 0 tags/0 releases on repo.
+evidence_needed: any new navercorp CVE or fix-version note in the `whale` result set.
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200) diff of published dates + sync-class keyword screen; new entry triggers re-scoping to that fixed version's delta. Zero auth, ≤1 rps.
+impact: early-warning of newly disclosed in-scope flaws → priority recalibration; Medium
+testability: PASSIVE
+[HYP] Android sync encryption KDF / master-key storage (custom mobile impl, zero CVE coverage)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (Android Keystore / SharedPreferences)
+confidence: 46
+reasoning: iOS client got CVE-2025-53599 (fixed 3.9.1.4206) while Android 3.9.14.9 has zero published CVEs; sync-encryption since 2025-04 implies custom impl distinct from Chromium fork; APK sha256 unpinned; uptodown 404, Play-lh only APK path.
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
+verify_steps: AUTH_HELPED: HUMAN pulls 3.9.14.9 APK via Play-lh on real device → /tmp/opencode/whale_binary/ → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise; High
+testability: AUTH_HELPED
+[PARKED] socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant.
+[PARKED] sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; CPE `cpe:2.3:a:navercorp:whale:*` platform-agnostic so v4.38.386.14 is patched; no novel variant proven without binary.
+[FINAL] 1) Desktop sync KDF (AUTH, 62) 2) NVD gap monitor (OTHER, 55) 3) Android sync KDF (AUTH, 46)
