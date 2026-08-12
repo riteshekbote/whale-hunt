@@ -2629,3 +2629,17 @@
 - LEARN: ACCEPTED OTHER @ NVD gap monitor: HTTP 200 + totalResults=28 re-confirmed this cycle — `keywordSearch=whale` remains the only live zero-auth passive surface; 0 
 - LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING (re-verified this cycle) — all passive channels permanently blocked (cloudfront DNS `
 - LEARN: ACCEPTED @ sample extension + repo: 5 extension files HTTP 200 + README.ko.md HTTP 200 — sidebar surface and doc-only repo frozen; no new static-analysis surfac
+
+## RANKED HYPOTHESES 2026-08-12 10:51:29 UTC
+- [62] whalesync: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [55] services.nvd.nist.gov: NVD 8-month gap hides undisclosed sync-class fixes (regression/version-drift detection) (from reports/hypotheses-bigpickle.txt)
+- [38] Whale: socket.io.slim.js event-handler injection in Whale-only push channel (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe` from Naver
+- LEARN: ACCEPTED @ NVD services endpoint: HTTP 200 confirmed this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30;
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, ps
+- LEARN: REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-gated verification permanently HUMAN-gated
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KD
+- LEARN: ACCEPTED @ sample extension + wiki docs: manifest.json + whale.sidebarAction.md HTTP 200 — sidebar surface live and unchanged; class remains REJECTED (duplicate
+- LEARN: ACCEPTED OTHER @ NVD gap monitor: HTTP 200 + totalResults=28 re-confirmed this cycle — `keywordSearch=whale` remains the only live zero-auth passive surface; 0 

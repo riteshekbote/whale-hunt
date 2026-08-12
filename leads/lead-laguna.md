@@ -7470,3 +7470,12 @@ class: XSS
 asset: Whale browser resources.pak (bundled socket.io.slim.js + NEO_SES cookie push channel)
 confidence: 38
 reasoning: socket.io.slim.js confirmed Whale-only in resources.pak via prior binary recon strings. Handler invoked at runtime from remote socket.io push channel (NEO_SES cookie auth). Version string unknown, no public library manifest, no binary for static version check, handler
+## 2026-08-12 10:51:19 UTC [browser] (model laguna)
+verify_steps: AUTH_HELPED — Install current Whale v4.38.386.14 on test machine, load translate-branch sample extension, navigate to attacker.com, fire whale.runtime.sendMessage('sidebarAction.show2') via content_script, observe whether cross-origin URL loads in sidebar panel with extension API access. Compare against CVE-2025-69234/69235 fix behavior.
+impact: Cross-origin content injection in privileged sidebar context → session hijack, credential theft from Naver services. High
+testability: AUTH_HELPED
+[HYP] socket.io.slim.js event-handler injection in Whale-only push channel
+class: XSS
+asset: Whale browser resources.pak (bundled socket.io.slim.js + NEO_SES cookie push channel)
+confidence: 38
+reasoning: socket.io.slim.js confirmed Whale-only in resources.pak via prior binary recon strings. Handler invoked at runtime from remote socket.io push channel (NEO_SES cookie auth). Version string unknown, no public library manifest, no binary for static version check, handler
