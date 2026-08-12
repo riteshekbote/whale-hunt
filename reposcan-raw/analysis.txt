@@ -1,10 +1,430 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base you've provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), not Gladia. There's no Gladia-related content, gladiaio repos, or @gladiaio/sdk npm metadata in what you've shared.
+[0m$ [0mls -la
+total 844
+drwxr-xr-x 11 runner runner   4096 Aug 12 13:59 .
+drwxr-xr-x  3 runner runner   4096 Aug 12 13:59 ..
+drwxr-xr-x  7 runner runner   4096 Aug 12 13:59 .git
+drwxr-xr-x  3 runner runner   4096 Aug 12 13:59 .github
+-rw-r--r--  1 runner runner   1057 Aug 12 13:59 README.md
+-rw-r--r--  1 runner runner      0 Aug 12 13:59 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 12 13:59 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 12 13:59 knowledge
+drwxr-xr-x  2 runner runner  16384 Aug 12 13:59 leads
+-rw-r--r--  1 runner runner   4749 Aug 12 13:59 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 12 13:59 reports
+-rw-r--r--  1 runner runner 598138 Aug 12 13:59 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 12 13:59 reposcan-raw
+-rw-r--r--  1 runner runner 156775 Aug 12 13:59 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 12 13:59 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 12 13:59 scripts
+-rw-r--r--  1 runner runner     34 Aug 12 13:59 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 12 13:59 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 12 13:59 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 12 13:59 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 12 13:59 state_nemotron3.json
+drwxr-xr-x  2 runner runner  12288 Aug 12 13:59 triage
+[0m
+[0m$ [0mcat scan-prompt.txt
+...output truncated...
 
-To triage a Gladia scan, I'd need:
-1. **Actual scan results** (grep hits, file contents, secret findings from the Gladia repos)
-2. **Gladia-specific knowledge base** (not Whale browser)
+Full output saved to: /home/runner/.local/share/opencode/tool-output/tool_ff647e844001fEFC4ZFEQfiPxO
 
-Could you provide the actual scan output from the gladiaio/ GitHub org repos and @gladiaio/sdk npm metadata? The current knowledge base appears to be for a different target.
+- 2026-08-10 REJECTED class @ uptodown Android channel: page HTTP 404 @19:10 UTC (was 200 @16:10) — channel is flip-floppy, no monotonic status; treat each cycle independently, APK remains HUMAN-gated
+- 2026-08-10 REJECTED @ NVD `keywordSearch=naver+whale`: returns totalResults=0 (keyword-matching quirk); broad `whale` query (28 total, 0 in 2026) is correct surface — route future CVE checks via `keywordSearch=whale` with `resultsPerPage=200` on `services.nvd.nist.gov/rest/json/cves/2.0`.
+- 2026-08-10 CONFIRMED @ sample extension source (translate branch): all 5 files HTTP 200 — `background.js` accepts `sender` param in `onMessage` but grep confirms ZERO `sender.origin`/`sender.url` inspection across all 3 JS files (background.js line 8, index.js line 11 only reference param name); `contentscript.js` dispatches `sidebarAction.show`/`show2`/etc. from `navigator.userAgent.includes('sidebar')===false` branch (any web page → privileged background) — attack surface live, unchanged (12:15 UTC).
+- 2026-08-10 CONFIRMED @ sample extension manifest.json (translate branch): `content_scripts` matching `http://*/*` + `https://*/*` (ALL origins) + `permissions: ["tabs"]` — content script fires on every web page, can invoke privileged `whale.*` APIs via unvalidated `sendMessage` → `sidebarAction.show`/`show2` dispatch; surface unchanged.
+- 2026-08-10 REJECTED @ cloudfront CDN: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` still resolve `No answer` (127.0.0.53) — general resolver block, not domain-specific; google.com/github.com/nvd.nist.gov all resolve normally — binary acquisition via cloudfront permanently dead in-sandbox.
+- 2026-08-10 ACCEPTED @ NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: recovered HTTP 200 — passive CVE-gap verification path live; `keywordSearch=whale` (28 total) is correct surface, 0 CVEs in 2026 confirmed
+- 2026-08-10 ACCEPTED @ GitHub wiki raw path: `raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md` → HTTP 200 — wiki sidebarAction API documentation IS live; earlier "404" rejections were due to wrong filename
+- 2026-08-10 ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch.
+- 2026-08-10 REJECTED @ public repo static analysis: all 4 branches + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist; static analysis path permanently dead.
+- 2026-08-10 CHANGED @ NVD: services endpoint recovered HTTP 200 this cycle — passive CVE-gap verification path live again; keywordSearch=whale (28 total) is correct surface, 0 CVEs in 2026 confirmed.
+- 2026-08-10 ACCEPTED @ wiki page inventory: 5 total wiki pages confirmed via atom feed — whale.sidebarAction, How-to-test-and-debug-my-extension, Client-side-vs-Server-side, How-to-avoid-changing-urls, Home. The two new-to-this-scan pages (How-to-test-and-debug, Home) contain only dev-tooling instructions and a welcome message — zero attack surface.
+- 2026-08-10 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235; API surface present (sample extension + wiki docs) but no novel variant or binary exploitability proof for v4.38.386.14 — parked.
+- 2026-08-10 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path — parked permanently.
+- 2026-08-10 REJECTED @ passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net` at resolver 127.0.0.53, APKMirror 403, Uptodown 404 both pages, pstatic 404) — binary-dependent verification HUMAN_ONLY.
+- 2026-08-10 REJECTED @ /tmp/opencode/whale_binary/: still missing — binary-gated verification permanently HUMAN-gated.
+- 2026-08-10 ACCEPTED @ NVD services endpoint (services.nvd.nist.gov): HTTP 200 confirmed this cycle — keywordSearch=whale returns totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-10 ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — manifest.json content_scripts match ALL origins + permissions ["tabs"]; background.js onMessage zero sender.origin/sender.url (0 grep matches); contentscript.js dispatches from userAgent.includes('sidebar')===false (any web page); index.js onMessage does only console.log. Surface unchanged, confirmed live (2026-08-10 T20:55 UTC).
+- 2026-08-10 ACCEPTED @ GitHub wiki docs: all 5 wiki pages HTTP 200 — whale.sidebarAction.md documents show({details:{url}}) loads arbitrary URL in sidebar panel + use_navigation_bar=false drag-nav risk; How-to-avoid...urls.md covers drag-drop mitigation ONLY, explicitly does NOT mitigate show({url}); Client-side-vs-Server-side...md documents server-side apps redirect to remote URLs in sidebar with extension API access. Attack surface documented and live.
+- 2026-08-10 REJECTED @ GitHub repo naver/whale-browser-developers: pushed_at=2019-09-23, updated_at=2025-10-22, 4 branches (master 3 blobs, v2 2, translate 57, jdkim 39), 0 releases, size=5043 KB — documentation-only surface permanently dead for static analysis; binary acquisition is only vector.
+- 2026-08-10 ACCEPTED @ wiki page inventory: 5 pages confirmed via atom feed (whale.sidebarAction, How-to-test-and-debug, Client-side-vs-Server-side, How-to-avoid-changing-urls, Home) — no new pages.
+- 2026-08-10 ACCEPTED @ NVD: `keywordSearch=whale` re-confirmed HTTP 200 + totalResults=28 this cycle (21:10 UTC) — 0-in-2026 gap knowledge refreshed; latest CVE-2025-69235 @2025-12-30, 8-month disclosure gap static
+- 2026-08-10 ACCEPTED @ NVD: full-pagination `keywordSearch=whale` (resultsPerPage=200) remains the only working NVD query surface — date-filtered queries 404; do not use pubStartDate/pubEndDate
+- 2026-08-10 REJECTED class @ binary acquisition: all channels still 100% blocked (cloudfront DNS No-answer, APKMirror 403, Uptodown 404 Win+Android, pstatic 404) — binary-dependent verification permanently HUMAN-gated
+- 2026-08-10 ACCEPTED @ NVD services endpoint: recovered HTTP 200 this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-10 ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — ALL-origin content_scripts + zero sender.origin/sender.url validation in onMessage confirmed live, unchanged.
+- 2026-08-10 REJECTED @ GitHub repo `naver/whale-browser-developers`: documentation-only (pushed 2019-09-23, updated 2025-10-22, 0 releases) — static analysis path permanently dead; binary acquisition is only vector.
+- 2026-08-10 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235; API surface present (sample extension + wiki docs, all HTTP 200, zero sender validation confirmed live) but no novel variant or binary exploitability proof for v4.38.386.14 — parked.
+- 2026-08-10 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-10 ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — `background.js` 0 `sender.origin`/`sender.url` matches; `contentscript.js` dispatches `sidebarAction.show`/`show2` from non-sidebar (any-web-page) context; `manifest.json` content_scripts match ALL origins; surface unchanged.
+- 2026-08-10 ACCEPTED @ GitHub wiki docs: `whale.sidebarAction.md` + `How-to-avoid-my-extension-from-changing-urls.md` + `Client-side-application-vs-Server-side-application.md` all HTTP 200 — documents `show({details:{url}})` arbitrary-URL loading + drag-nav risk + server-side app redirect via `location.replace`; attack surface live, no wiki `sync.md`/`whale.sync.md` exists (HTTP 404) — sync design undocumented publicly.
+- 2026-08-10 REJECTED @ passive binary acquisition: all channels 100% blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404 Win+Android, pstatic 404) — binary-dependent verification HUMAN_ONLY.
+- 2026-08-10 REJECTED @ GitHub repo `naver/whale-browser-developers`: pushed_at=2019-09-23, updated_at=2025-10-22, 0 releases, size=5043 KB — documentation-only surface permanently dead; static analysis path only via binary extraction.
+- 2026-08-10 REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, pstatic 404) — binary requires HUMAN with unrestricted internet.
+- 2026-08-10 ACCEPTED @ NVD: `keywordSearch=whale` re-confirmed HTTP 200 + totalResults=28 — 0-in-2026 gap knowledge refreshed; latest CVE-2025-69235 @2025-12-30.
+- 2026-08-10 REJECTED @ passive binary acquisition: all channels 100% blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404 both pages, pstatic 404) — binary-dependent verification HUMAN_ONLY.
+- 2026-08-10 ACCEPTED @ GitHub wiki docs: `whale.sidebarAction.md` + `How-to-avoid-my-extension-from-changing-urls.md` + `Client-side-vs-Server-side-application.md` all HTTP 200 — documents `show({details:{url}})` arbitrary-URL loading + drag-nav risk + server-side app redirect via `location.replace`; attack surface live, no wiki `sync.md`/`whale.sync.md` exists (HTTP 404) — sync design undocumented publicly.
+- 2026-08-11 ACCEPTED @ NVD services endpoint: recovered HTTP 200 this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension confirms API surface present but NOT exploitability in current binary
+- 2026-08-11 REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstatic 404) — binary static analysis requires HUMAN intervention
+- 2026-08-11 REJECTED @ public repo static analysis: all 4 branches + all wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch
+- 2026-08-11 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; stale lead — parked permanently
+- 2026-08-11 REJECTED @ class socket.io.slim.js XSS: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parked.
+- 2026-08-11 REJECTED @ class sidebar SOP bypass: duplicates CVE-2025-69234/69235; API surface present (sample extension + wiki docs, 5 files HTTP 200, 0 sender.origin/sender.url matches confirmed) but no novel variant or binary exploitability proof for v4.38.386.14 — parked.
+- 2026-08-11 ACCEPTED @ sample extension (translate branch): all 5 files HTTP 200 confirmed this cycle — `background.js` 0 grep matches for `sender.origin`/`sender.url`; `contentscript.js` dispatches `sidebarAction.show`/`show2` from `userAgent.includes('sidebar')===false` branch (any web page); `manifest.json` content_scripts match ALL origins (`http://*/*` + `https://*/*`).
+- 2026-08-11 ACCEPTED @ GitHub wiki docs: `whale.sidebarAction.md` + `How-to-avoid-my-extension-from-changing-urls.md` + `Client-side-vs-Server-side-application.md` all HTTP 200 — documents `show({details:{url}})` arbitrary-URL loading + drag-nav risk + server-side app redirect via `location.replace`.
+- 2026-08-11 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-11 REJECTED @ `/tmp/opencode/whale_binary/`: still missing — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension confirms API surface present but NOT exploitability in current binary.
+- 2026-08-11 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked.
+- 2026-08-11 ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch.
+- 2026-08-11 REJECTED @ public repo static analysis: all 4 branches + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist; static analysis path permanently dead.
+- 2026-08-11 REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, pstatic 404) — binary requires HUMAN with unrestricted internet.
+- 2026-08-11 CHANGED @ NVD: both endpoints dead (nvd.nist.gov/rest 403 Cloudflare, services.nvd.nist.gov/rest 404) — CVE-gap verification frozen at 0-in-2026 (last known: 28 total, latest CVE-2025-69235 @2025-12-30).
+- 2026-08-11 ACCEPTED @ wiki page inventory: 5 total wiki pages confirmed via atom feed — whale.sidebarAction, How-to-test-and-debug-my-extension, Client-side-vs-Server-side, How-to-avoid-changing-urls, Home.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235; API surface live (sample extension 5 files HTTP 200, wiki docs HTTP 200, 0 sender.origin/sender.url matches confirmed) but no novel variant or binary exploitability proof for v4.38.386.14 — parked.
+- 2026-08-11 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path — parked permanently.
+- 2026-08-11 ACCEPTED @ NVD services endpoint: HTTP 200 — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-11 ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — surface unchanged, `background.js` 0 `sender.origin`/`sender.url` matches confirmed.
+- 2026-08-11 CONFIRMED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net` + `*.cloudfront.net` resolve `No answer` (127.0.0.53) — desktop `.deb` path permanently dead in-sandbox, general to all cloudfront domains.
+- 2026-08-11 REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-11 REJECTED @ public repo static analysis: all 4 branches + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch
+- 2026-08-11 ACCEPTED @ NVD services endpoint: recovered HTTP 200 this cycle — confirms 0 CVEs in 2026 (28 total whale CVEs, latest CVE-2025-69235 @2025-12-30, 8-month disclosure gap static for v4.35.352–v4.38.386.14)
+- 2026-08-11 REJECTED @ /tmp/opencode/whale_binary/: still MISSING — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235; API surface live (sample extension 5 files HTTP 200, wiki docs HTTP 200, 0 sender.origin/sender.url matches confirmed) but no novel variant or binary exploitability proof for v4.38.386.14 — parked.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant proven; sample extension confirms API surface but NOT exploitability in current binary.
+- 2026-08-11 ACCEPTED @ NVD services endpoint: recovered HTTP 200 @06:13 UTC — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-11 ACCEPTED @ NVD services endpoint: HTTP 200 this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, 19 navercorp CPE matches, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14
+- 2026-08-11 ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — `background.js` 0 grep matches for `sender.origin`/`sender.url` (verified 2026-08-11 10:23 UTC); `contentscript.js` dispatches `sidebarAction.show`/`show2` from `navigator.userAgent.includes('sidebar')===false` branch (any web page); `manifest.json` content_scripts match ALL origins + `permissions: ["tabs"]` — attack surface live, unchanged
+- 2026-08-11 ACCEPTED @ GitHub wiki docs: whale.sidebarAction.md + How-to-avoid-my-extension-from-changing-urls.md + Client-side-vs-Server-side-application.md all HTTP 200 — confirms `show({details:{url}})` arbitrary-URL loading + drag-nav risk + server-side app redirect via `location.replace`; wiki `whale.sync.md`/`sync.md` HTTP 404 — NO sync design docs exist publicly
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension API surface live but NOT exploitability in current binary proven
+- 2026-08-11 REJECTED passive binary acquisition: all channels 100% blocked (cloudfront DNS `No answer` general to `*.cloudfront.net` at resolver 127.0.0.53, APKMirror 403, Uptodown 404 both Win+Android, pstatic WhaleSetup.exe 404) — binary-dependent verification permanently HUMAN-gated
+- 2026-08-11 REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-gated verification permanently HUMAN-gated
+- 2026-08-11 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; sample extension confirms API surface live (5 files HTTP 200, 0 sender.origin/sender.url) but no novel variant or binary exploitability for v4.38.386.14 — permanently parked.
+- 2026-08-11 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parked.
+- 2026-08-11 ACCEPTED @ sync AUTH surface: Whale-only prefs (sync.encryption_bootstrap_token_per_account, whale_need_encryption_key_forced_time) + forked os_crypt_whale.cc/wbc_wrapper_apis.cc with xv10 magic confirmed present in v4.38.386.14 via prior binary recon but KDF constants/master-key storage unextracted; binary delivery (blocked) is required; strongest open surface, HUMAN-gated.
+- 2026-08-11 REJECTED @ public repo static analysis: all 4 branches (master 3 blobs, v2 2, translate 57, jdkim 39) + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch — static analysis path permanently dead.
+- 2026-08-11 ACCEPTED @ GitHub wiki docs: whale.sidebarAction.md + How-to-avoid-my-extension-from-changing-urls.md + Client-side-vs-Server-side-application.md all HTTP 200 — documents show({details:{url}}) arbitrary-URL loading + drag-nav risk + server-side app redirect via location.replace; but class parked as duplicate of fixed CVEs, no binary to prove regression.
+- 2026-08-11 REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-gated verification permanently HUMAN-gated.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; sample extension API surface live (5 files HTTP 200, 0 sender.origin/sender.url confirmed via grep) but no novel variant or binary exploitability proven for v4.38.386.14; all known variants fixed; HUMAN_ONLY with no passive proof path.
+- 2026-08-11 CONFIRMED no-delta: all passive surfaces (NVD services endpoint HTTP 200, GitHub repo documentation-only pushed 2019-09-23, sample extension 5 files HTTP 200, wiki docs 5 pages HTTP 200, binary dir missing, cloudfront DNS No-answer, APKMirror 403, Uptodown 404, pstatic 404) unchanged since 2026-08-11 14:48 UTC.
+- 2026-08-11 CONFIRMED @ sample extension (translate branch): `background.js` onMessage accepts `sender` param but grep confirms ZERO `sender.origin`/`sender.url` matches across all 3 JS files (background.js line 8, index.js line 11 only reference param name); `contentscript.js` dispatches sidebarAction.show/show2 from `navigator.userAgent.includes('sidebar')===false` branch (any web page context → privileged background).
+- 2026-08-11 CONFIRMED @ GitHub wiki docs (HTTP 200): `whale.sidebarAction.md` documents `show({details:{url}})` loads arbitrary URL in sidebar panel; `How-to-avoid-my-extension-from-changing-urls.md` covers drag-drop mitigation ONLY (does NOT mitigate show({url}) path); `Client-side-application-vs-Server-side-application.md` documents server-side apps redirect via `location.replace('https://...')` in sidebar with extension API access; no `whale.sync.md`/`sync.md` exists (HTTP 404) — NO public sync design docs.
+- 2026-08-11 ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch.
+- 2026-08-11 REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, pstatic 404) — binary static analysis requires HUMAN intervention
+- 2026-08-11 REJECTED class @ public repo static analysis: all 4 branches + all 5 wiki pages + README.ko.md fully enumerated (re-verified HTTP 200/404 this cycle) — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests in any public branch; static analysis path permanently dead.
+- 2026-08-11 REJECTED passive binary acquisition: all channels permanently blocked this cycle (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404 Win+Android, pstatic 404, `/tmp/opencode/whale_binary/` still MISSING) — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-11 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed this cycle (re-verified 17:39 UTC) — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30 — 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; sample extension API surface live (5 files HTTP 200, 0 sender.origin/sender.url matches) but no novel variant or current-binary exploitability proven; permanently parked
+- 2026-08-11 CHANGED GitHub API rate-limited this cycle (HTTP 403 rate limit) — transient, doesn't alter repo content, blocks automated re-enumeration only
+- 2026-08-11 ACCEPTED @ NVD services endpoint: recovered HTTP 200 — `keywordSearch=whale` totalResults=28, 23 navercorp CPE matches, 0 published in 2026, latest CVE-2025-69234/69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14
+- 2026-08-11 REJECTED passive binary acquisition: all channels remain 100% blocked (cloudfront DNS No-answer general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, pstatic 404) — binary static analysis requires HUMAN intervention
+- 2026-08-11 REJECTED class @ public repo static analysis: all 4 branches + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests in any public branch; static analysis path permanently dead
+- 2026-08-11 ACCEPTED @ NVD services endpoint: recovered HTTP 200 — `keywordSearch=whale` returns totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static.
+- 2026-08-11 ACCEPTED @ sample extension + wiki docs: all 8 live artifacts (5 ext files + 3 wiki pages) HTTP 200 — sidebarAction.show SOP bypass API surface is live and documented, but class remains REJECTED as duplicate of fixed CVEs, no binary exploitability proof.
+- 2026-08-11 REJECTED @ GitHub API rate-limit: was transient HTTP 403 (2026-08-11 17:30 UTC), recovered HTTP 200 (2026-08-11 18:36 UTC) — repo content unchanged (pushed 2019-09-23, documentation-only).
+- 2026-08-11 ACCEPTED sync @ binary surface: re-confirmed this cycle that binary static analysis remains the ONLY viable sync vector (public repo + wiki + README.ko.md fully enumerated, 0 sync code) and is 100% HUMAN-gated on binary delivery.
+- 2026-08-11 ACCEPTED OTHER @ NVD gap monitor: `keywordSearch=whale` (28 total, 0 in 2026) is the correct and only working passive gap surface; date-filtered queries still 404; monitor remains viable with zero auth.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: surface re-confirmed live (5 ext files + wiki 200) but remains duplicate of fixed CVEs, no novel variant, no binary exploitability proof — parked.
+- 2026-08-11 ACCEPTED @ NVD services endpoint: recovered HTTP 200 — `keywordSearch=whale` totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — sample extension API surface live (5 files HTTP 200, 0 sender.origin/sender.url confirmed via grep) but no novel variant or binary exploitability proof for v4.38.386.14; permanently parked.
+- 2026-08-11 ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch — static analysis path permanently dead.
+- 2026-08-11 REJECTED passive binary acquisition: all channels permanently blocked this cycle (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404 Win+Android, pstatic 404) — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension API surface live (5 files HTTP 200, 0 sender.origin/sender.url confirmed via grep) but no binary exploitability proof for v4.38.386.14; permanently parked.
+- 2026-08-11 REJECTED @ public repo static analysis: all 4 branches + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch — static analysis path permanently dead.
+- 2026-08-11 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed — `keywordSearch=whale` totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-11 ACCEPTED OTHER @ NVD gap monitor: re-confirmed this cycle (HTTP 200, 28 total, 0 in 2026, 0 sync-class keywords) — remains the only live zero-auth passive surface; date-filtered queries still 404.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: surface re-confirmed live (5 ext files HTTP 200) but remains duplicate of fixed CVEs, no novel variant, no binary exploitability proof — parked.
+- 2026-08-11 ACCEPTED OTHER @ NVD gap monitor: re-confirmed this cycle (HTTP 200, 28 total, 0 in 2026, 0 sync-class keywords, latest CVE-2025-69235 @2025-12-30) — remains the only live zero-auth passive surface; date-filtered queries still 404.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: surface re-confirmed live (5 ext files HTTP 200, 0 sender.origin/sender.url via grep) but remains duplicate of fixed CVEs, no novel variant, no binary exploitability proof — parked.
+- 2026-08-11 REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING (re-verified 22:09 UTC) — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-11 REJECTED class @ socket.io CVE link: CVE-2023-35780 is a WordPress plugin CSRF (Andy Whalen Galleria <=1.0.3), not socket.io — no passive CVE evidence for bundled socket.io.slim.js version line; class remains speculative without binary extraction.
+- 2026-08-11 REJECTED @ whale.naver.com/whalesync: HTTP 200 but `*.naver.com` explicitly excluded per scope.yml out_of_scope rules (Naver web services); no further server probing per client-side software rule.
+- 2026-08-11 ACCEPTED @ sample extension + wiki docs: all 8 live artifacts (5 extension files + 3 wiki docs) HTTP 200 — sidebarAction.show SOP bypass API surface documented and live (show({details:{url}}) loads arbitrary URL; onMessage handler accepts sender param with zero origin validation; content_scripts match ALL origins with tabs permission); but class REJECTED as duplicate of CVE-2025-69234/69235 (both fixed v4.35.351.12, platform-agnostic CPE, current v4.38.386.14 is patched) — no novel variant or regression proven without binary.
+- 2026-08-11 REJECTED @ public repo static analysis: all 4 branches (master 3 blobs, v2 2, translate 57, jdkim 39) + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch — static analysis path permanently dead; binary extraction is the only vector.
+- 2026-08-11 CONFIRMED @ NVD: 0 Whale CVEs published in 2026 — keywordSearch=whale returns totalResults=28 (2003:1, 2007:1, 2017:1, 2018:4, 2020:2, 2021:1, 2022:5, 2023:3, 2024:3, 2025:7), latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-11 REJECTED class @ public repo static analysis: all 4 branches + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch; static analysis path permanently dead
+- 2026-08-11 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed — `keywordSearch=whale` totalResults=28, 23 navercorp CPE matches, 0 published in 2026, latest CVE-2025-69234/69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension + wiki docs confirm API surface live (5 files + 3 docs HTTP 200, 0 sender.origin/sender.url validation confirmed via grep) but no binary exploitability proof for v4.38.386.14; platform-agnostic CPE covers all platforms so current version is patched; permanently parked.
+- 2026-08-11 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked.
+- 2026-08-11 REJECTED @ public repo static analysis: all 4 branches (master 3 blobs, v2 2, translate 57, jdkim 39) + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch; static analysis path permanently dead; binary extraction is the only vector.
+- 2026-08-11 REJECTED class @ binary acquisition: all channels 100% blocked in-sandbox — cloudfront DNS `No answer` (general to `*.cloudfront.net` at resolver 127.0.0.53), APKMirror 403, Uptodown 404 (Win + Android), pstatic 404, /tmp/opencode/whale_binary/ MISSING — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-11 REJECTED @ binary acquisition: all channels 100% blocked in-sandbox — cloudfront DNS `No answer` (general to `*.cloudfront.net` at resolver 127.0.0.53), APKMirror 403, Uptodown 404 (Win+Android), pstatic 404, `/tmp/opencode/whale_binary/` MISSING — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-11 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — sample extension + wiki docs confirm API surface live (5 files + 3 docs HTTP 200, 0 sender.origin/sender.url validation via grep) but no novel variant or binary exploitability proof for v4.38.386.14; CPE `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` is platform-agnostic so current version is patched; permanently parked.
+- 2026-08-11 ACCEPTED @ NVD gap monitor: `keywordSearch=whale` (services.nvd.nist.gov, HTTP 200) returns totalResults=28, 0 published in 2026 (year breakdown: 2003:1, 2009:1, 2018:5, 2020:1, 2021:1, 2022:6, 2023:3, 2024:2, 2025:8), latest CVE-2025-69235 @2025-12-30 — remains the only live zero-auth passive surface; date-filtered queries still 404.
+- 2026-08-11 ACCEPTED OTHER @ NVD gap monitor: re-confirmed this cycle (HTTP 200, 28 total, 0 in 2026, latest CVE-2025-69235 @2025-12-30) — remains the only live zero-auth passive surface; date-filtered queries still 404
+- 2026-08-12 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14
+- 2026-08-12 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension confirms API surface present but NOT exploitability in current binary
+- 2026-08-12 REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS `No answer` general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, pstatic 404) — binary static analysis requires HUMAN intervention
+- 2026-08-12 REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING — binary-gated verification permanently HUMAN-gated
+- 2026-08-12 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked
+- 2026-08-12 ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch
+- 2026-08-12 ACCEPTED @ NVD services endpoint: HTTP 200 — keywordSearch=whale totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-12 ACCEPTED @ sample extension source (translate branch): all 5 files HTTP 200 — ALL-origin content_scripts + 0 sender.origin/sender.url validation in onMessage confirmed live; class REJECTED as duplicate of fixed CVEs (CVE-2025-69234/69235/53600/62583/62584/62585, platform-agnostic CPE).
+- 2026-08-12 REJECTED @ binary acquisition: all channels 100% blocked in-sandbox — cloudfront DNS No-answer (general to *.cloudfront.net), APKMirror 403, Uptodown 404 (Win+Android), pstatic 404, /tmp/opencode/whale_binary/ MISSING.
+- 2026-08-12 REJECTED @ public repo static analysis: all 4 branches + 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist; static analysis path permanently dead; binary extraction is the only vector.
+- 2026-08-12 REJECTED @ whale.naver.com/whalesync: HTTP 200 but *.naver.com explicitly excluded per scope.yml out_of_scope rules; no server probing per client-side software rule.
+- 2026-08-12 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-12 ACCEPTED @ sample extension + wiki docs: manifest.json + whale.sidebarAction.md both HTTP 200 — sidebar surface live and unchanged.
+- 2026-08-12 REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING (re-verified 01:14 UTC) — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-12 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parked
+- 2026-08-12 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; sample extension API surface live (5 files HTTP 200, 0 sender.origin/sender.url matches) but no novel variant or current-binary exploitability proven; permanently parked
+- 2026-08-12 REJECTED class @ public repo static analysis: all 4 branches + all 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch; static analysis path permanently dead
+- 2026-08-12 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed — `keywordSearch=whale` totalResults=28, 23 navercorp CPE matches, 0 published in 2026, latest CVE-2025-69234/69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14
+- 2026-08-12 REJECTED passive binary acquisition: all channels remain 100% blocked (cloudfront DNS No-answer general to `*.cloudfront.net`, APKMirror 403, Uptodown 404, pstatic 404) — binary static analysis requires HUMAN intervention
+- 2026-08-12 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed this cycle (03:30 UTC) — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-12 REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING (re-verified 03:30 UTC) — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-12 ACCEPTED @ sample extension + GitHub API: manifest.json + repo metadata both HTTP 200 — sidebar surface and doc-only repo unchanged.
+- 2026-08-12 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; permanently parked — no change this cycle.
+- 2026-08-12 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant or binary exploitability proof for v4.38.386.14; CPE cpe:2.3:a:navercorp:whale:* is platform-agnostic so latest version is patched; permanently parked.
+- 2026-08-12 REJECTED class @ public repo static analysis: all 4 branches + 5 wiki pages + README.ko.md fully enumerated — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch; static analysis path permanently dead; binary extraction is the only vector.
+- 2026-08-12 REJECTED @ binary acquisition: all channels 100% blocked in-sandbox — cloudfront DNS No-answer (general to *.cloudfront.net at resolver 127.0.0.53), APKMirror 403, Uptodown 404 (Win+Android), pstatic 404, /tmp/opencode/whale_binary/ MISSING — binary-dependent verification permanently HUMAN-gated.
+- 2026-08-12 REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path — permanently parked.
+- 2026-08-12 ACCEPTED OTHER @ NVD gap monitor: HTTP 200 re-confirmed this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14; remains the only live zero-auth passive surface.
+- 2026-08-12 REJECTED class @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING (re-verified 03:32 UTC) — all passive channels permanently blocked (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404, pstatic 404); binary-dependent verification permanently HUMAN-gated.
+- 2026-08-12 ACCEPTED @ sample extension + wiki docs: manifest.json + whale.sidebarAction.md HTTP 200 — sidebar surface live and unchanged; class remains REJECTED (duplicate of fixed CVEs, no novel variant proven).
+- 2026-08-12 ACCEPTED OTHER @ NVD gap monitor: HTTP 200 re-confirmed this cycle — `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30, 0 sync-class keyword hits; remains the only live zero-auth passive surface.
+- 2026-08-12 REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING (re-verified this cycle) — all passive channels permanently blocked (cloudfront DNS `No answer`, APKMirror 403, Uptodown 404, pstatic 404); binary-dependent verification permanently HUMAN-gated.
+- 2026-08-12 ACCEPTED @ sample extension + repo: 5 extension files HTTP 200 + repo `pushed_at` 2019-09-23 unchanged — sidebar surface and doc-only repo frozen; no new static-analysis surface.
+- 2026-08-12 ACCEPTED @ NVD services endpoint: HTTP 200 confirmed `keywordSearch=whale` totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static for v4.35.352–v4.38.386.14.
+- 2026-08-12 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; permanently parked.
+- 2026-08-12 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant or binary exploitability proof for v4.38.386.14; CPE platform-agnostic so latest version patched; permanently parked.
+- 2026-08-12 ACCEPTED OTHER @ NVD gap monitor: HTTP 200 + totalResults=28 re-confirmed this cycle — `keywordSearch=whale` remains the only live zero-auth passive surface; 0 CVEs in 2026, latest CVE-2025-69235 @2025-12-30.
+- 2026-08-12 ACCEPTED @ sample extension + repo: 5 extension files HTTP 200 + README.ko.md HTTP 200 — sidebar surface and doc-only repo frozen; no new static-analysis surface.
+- 2026-08-12 NO new class proven dead or alive this cycle — full surface delta re-verified identical (NVD 28/0-in-2026 HTTP 200, sample ext 200, wiki 3 pages 200, repo pushed 2019-09-23, binary dir MISSING, all acquisition channels 403/404/No-answer).
+- 2026-08-12 ACCEPTED @ sample extension (translate branch): all 5 files HTTP 200 — manifest.json content_scripts match ALL origins + 0 sender.origin/sender.url matches in background.js confirmed live; class REJECTED as duplicate of fixed CVEs (no novel variant, no binary exploitability proof for v4.38.386.14).
+- 2026-08-12 REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels permanently blocked (cloudfront DNS No-answer, APKMirror 403, Uptodown 404, pstatic 404); binary-dependent verification permanently HUMAN-gated.
+- 2026-08-12 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; CPE `cpe:2.3:a:navercorp:whale:*` platform-agnostic so v4.38.386.14 is patched; no novel variant proven without binary — permanently parked.
+- 2026-08-12 NO new class proven dead or alive this cycle — full surface delta re-verified identical (NVD 28/0-in-2026 HTTP 200, 0 tags/0 releases re-confirmed, sample ext 5/5 200, wiki 4 pages 200 + sync docs 404, repo pushed 2019-09-23, binary dir MISSING, all acquisition channels 403/404/No-answer).
+- 2026-08-12 ACCEPTED @ GitHub repo: 0 tags + 0 releases API-confirmed this cycle — repo remains documentation-only, no packaged artifacts to enumerate; static path stays dead.
+- 2026-08-12 REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels permanently blocked (cloudfront DNS No-answer general to `*.cloudfront.net` at resolver 127.0.0.53; nslookup confirmed `No answer`); binary-dependent verification permanently HUMAN-gated.
+- 2026-08-12 ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches via recursive tree API + 5 wiki pages + README.ko.md) confirms 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests; binary extraction is the ONLY vector.
+- 2026-08-12 ACCEPTED class @ sample extension surface: All 5 files (manifest.json, background.js, contentscript.js, index.html, index.js) HTTP 200 confirmed this cycle — manifest.json content_scripts match ALL origins + 0 sender.origin/sender.url validation in onMessage; attack surface live but REJECTED as duplicate of fixed CVE-2025-69234/69235 (platform-agnostic CPE, v4.38.386.14 patched).
+- 2026-08-12 ACCEPTED OTHER @ NVD gap monitor: HTTP 200 re-confirmed — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; remains the only live zero-auth passive surface; date-filtered queries still 404.
+- 2026-08-12 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; no passive proof path; permanently parked.
+- 2026-08-12 ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md) confirms 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests; binary extraction is the ONLY vector.
+- 2026-08-12 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — sample extension API surface live (5 files HTTP 200, 0 sender.origin/sender.url confirmed via grep) but no novel variant or binary exploitability proof for v4.38.386.14; CPE cpe:2.3:a:navercorp:whale:* platform-agnostic so current version is patched; permanently parked.
+- 2026-08-12 REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels permanently blocked (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstatic 404); binary-dependent verification permanently HUMAN-gated.
+- 2026-08-12 ACCEPTED @ NVD gap monitor: HTTP 200 confirmed — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; remains the only live zero-auth passive surface; date-filtered queries still 404.
+=== INVENTORY gladia ===
+# Inventory: whale
+
+## Seed 2026-08-07 (passive recon)
+
+### Code surface
+- github.com/naver/whale-browser-developers — official developer repo (only confirmed whale repo so far)
+- More whale repos exist inside naver org (reposcan filters by 'whale' in name)
+
+### Eligible focus areas
+- Sync flow (Whale account sync: how it authenticates, stores, encrypts data)
+- Whale-only third-party libraries (bundled, not part of Chromium)
+- Browser core on latest version: crash/UXSS/URL handling in Whale-specific code
+
+### Open questions
+- Latest Whale version number (determine at report time)
+- Which third-party libs are bundled ONLY in Whale (vs stock Chromium)
+- Sync endpoint/host (expect naver infra — do NOT probe; static analysis only)
+
+## 2026-08-07 18:43:32 UTC
+- NEW Only 1 whale-named repo in entire `naver` GitHub org: `naver/whale-browser-developers` (seed assumed "more exist")
+- NEW Repo is documentation-only — no browser source code, sync implementation, or bundled library manifests publicly available
+- NEW 4 branches: `master` (Chromium cc docs only), `translate` (extension API docs + sample), `v2` (devcenter pointer), `jdkim/update_documents` (Chromium LUCI/Mojo docs)
+- NEW Extension API surface documented: `whale.runtime`, `whale.storage`, `whale.sidebarAction`, `whale.windows`, `whale.tabs`, `whale.bookmarks`, `whale.browserAction` (from `translate` branch README.ko.md
+- NEW Sample sidebar extension (`translate/src/sidebar-sample/`) uses `navigator.userAgent.includes('sidebar')` for context detection; content_scripts match ALL origins (`http://*/*`, `https://*/*`)
+- NEW Issue #23 (open, 2025-03-30): "Ignore valid BCP47 Language tags in the Naver Whale Extensions store" → maps to `store.whale.naver.com`
+- NEW NVD query reveals 21 known Whale CVEs; 6 CVEs in 2025 target sidebar + dual-tab environment (SOP bypass, iframe sandbox escape, CSP bypass)
+- NEW Latest known affected version from CVEs: 4.35.351.12 (CVE-2025-69234/69235, Dec 2025); no 2026 CVEs published yet
+- NEW `v2` branch README references `developers.whale.naver.com` and `lab.whale.naver.com` (Naver web services)
+- CHANGED Repo metadata last updated 2025-10-22
+
+## 2026-08-07 18:58:13 UTC
+- NEW No new surface items since last aggregated hypotheses (2026-08-07 18:43:32 UTC) — inventory, knowledge, and leads unchanged
+- NEW Latest stable Whale desktop version: v4.38.386.14 (June 25 2026) per Wikipedia infobox — 3 minor version bumps ahead of last CVE-fix version v4.35.351.12 (Dec 30 2025), ~6 months of undisclosed change
+- NEW Wiki `whale.sidebarAction` docs reveal `show()` accepts a `url` parameter: "url to load in extension panel, if not defined loads the default page"
+- NEW Wiki `whale.sidebarAction` docs warn: `use_navigation_bar` defaults true; when false "your extension page may be navigated to other websites from drag events"
+- NEW Wiki page "How to avoid my extension from changing urls" confirms drag-drop navigation exposure is a documented security concern for sidebar extensions, provides mitigation code
+- NEW NVD 2026 CVE query (pubStartDate=2026-01-01) returns zero results — no public CVEs exist for versions 4.35.352 through 4.38.386
+- CHANGED Repo activity confirmed: last commit 2019-09-23 on both master and jdkim/update_documents; "updated" 2025-10-22 is metadata-only, no new code pushed
+
+## 2026-08-07 19:17:01 UTC
+Above knowledge lists REJECTED classes (do NOT re-report these as
+candidates), KNOWN DUPLICATES (skip them), and alive surfaces.
+
+NEW HITS SINCE LAST SCAN (delta - focus here first):
+DELTA: 0 new hit lines vs previous scan
+FULL GREP HITS (for context):
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+For EACH hit classify:
+- REAL_SECRET: hardcoded credential/API key/token with signs of life
+  (reportable via the program's disclosure channel after triage)
+- TEST_OR_EXAMPLE: sample/test/fixture data (not reportable)
+- ENDPOINT_LEAK: internal/dev/staging URLs, API endpoints
+- INTERESTING: anything unusual (debug flags, keys, cloud configs,
+  references to non-*.gladia.io services, outdated/misleading SDK
+  packages pointing at personal repos)
+NEVER print a full secret value - only the file, line, and a sha256 of
+the secret material.
+Output: a table per category, then a SHORT verdict list with
+"REPORT_CANDIDATE: yes/no" per real candidate.
+[0m
+[0m$ [0mls -la triage/
+total 2168
+drwxr-xr-x  2 runner runner 12288 Aug 12 13:59 .
+drwxr-xr-x 11 runner runner  4096 Aug 12 13:59 ..
+-rw-r--r--  1 runner runner  8463 Aug 12 13:59 run-2026-08-07-19-23.md
+-rw-r--r--  1 runner runner 14983 Aug 12 13:59 run-2026-08-07-21-01.md
+-rw-r--r--  1 runner runner  7882 Aug 12 13:59 run-2026-08-07-21-04.md
+-rw-r--r--  1 runner runner 20203 Aug 12 13:59 run-2026-08-07-21-57.md
+-rw-r--r--  1 runner runner 14629 Aug 12 13:59 run-2026-08-07-22-02.md
+-rw-r--r--  1 runner runner 21701 Aug 12 13:59 run-2026-08-07-22-57.md
+-rw-r--r--  1 runner runner 25767 Aug 12 13:59 run-2026-08-07-23-03.md
+-rw-r--r--  1 runner runner 23210 Aug 12 13:59 run-2026-08-07-23-53.md
+-rw-r--r--  1 runner runner   596 Aug 12 13:59 run-2026-08-08-02-34.md
+-rw-r--r--  1 runner runner 23521 Aug 12 13:59 run-2026-08-08-04-30.md
+-rw-r--r--  1 runner runner 23484 Aug 12 13:59 run-2026-08-08-04-39.md
+-rw-r--r--  1 runner runner 14903 Aug 12 13:59 run-2026-08-08-06-09.md
+-rw-r--r--  1 runner runner   838 Aug 12 13:59 run-2026-08-08-07-30.md
+-rw-r--r--  1 runner runner 19293 Aug 12 13:59 run-2026-08-08-09-06.md
+-rw-r--r--  1 runner runner 16293 Aug 12 13:59 run-2026-08-08-10-02.md
+-rw-r--r--  1 runner runner 11886 Aug 12 13:59 run-2026-08-08-10-56.md
+-rw-r--r--  1 runner runner 18726 Aug 12 13:59 run-2026-08-08-11-50.md
+-rw-r--r--  1 runner runner 10851 Aug 12 13:59 run-2026-08-08-13-00.md
+-rw-r--r--  1 runner runner  5433 Aug 12 13:59 run-2026-08-08-13-16.md
+-rw-r--r--  1 runner runner 10854 Aug 12 13:59 run-2026-08-08-14-00.md
+-rw-r--r--  1 runner runner 13226 Aug 12 13:59 run-2026-08-08-14-06.md
+-rw-r--r--  1 runner runner 11660 Aug 12 13:59 run-2026-08-08-14-38.md
+-rw-r--r--  1 runner runner  4157 Aug 12 13:59 run-2026-08-08-14-55.md
+-rw-r--r--  1 runner runner 16792 Aug 12 13:59 run-2026-08-08-15-52.md
+-rw-r--r--  1 runner runner 13137 Aug 12 13:59 run-2026-08-08-17-00.md
+-rw-r--r--  1 runner runner  5896 Aug 12 13:59 run-2026-08-08-17-58.md
+-rw-r--r--  1 runner runner 11282 Aug 12 13:59 run-2026-08-08-18-00.md
+-rw-r--r--  1 runner runner  1109 Aug 12 13:59 run-2026-08-08-18-17.md
+-rw-r--r--  1 runner runner 14869 Aug 12 13:59 run-2026-08-08-18-30.md
+-rw-r--r--  1 runner runner  5231 Aug 12 13:59 run-2026-08-08-19-06.md
+-rw-r--r--  1 runner runner   236 Aug 12 13:59 run-2026-08-08-19-48.md
+-rw-r--r--  1 runner runner 19156 Aug 12 13:59 run-2026-08-08-20-15.md
+-rw-r--r--  1 runner runner 15573 Aug 12 13:59 run-2026-08-08-20-55.md
+-rw-r--r--  1 runner runner 20472 Aug 12 13:59 run-2026-08-08-21-18.md
+-rw-r--r--  1 runner runner 17869 Aug 12 13:59 run-2026-08-08-21-22.md
+-rw-r--r--  1 runner runner  1799 Aug 12 13:59 run-2026-08-08-21-51.md
+-rw-r--r--  1 runner runner 17745 Aug 12 13:59 run-2026-08-08-22-13.md
+-rw-r--r--  1 runner runner 16548 Aug 12 13:59 run-2026-08-08-22-20.md
+-rw-r--r--  1 runner runner  1718 Aug 12 13:59 run-2026-08-08-22-51.md
+-rw-r--r--  1 runner runner  9353 Aug 12 13:59 run-2026-08-08-22-53.md
+-rw-r--r--  1 runner runner 19579 Aug 12 13:59 run-2026-08-08-23-16.md
+-rw-r--r--  1 runner runner 24325 Aug 12 13:59 run-2026-08-08-23-48.md
+-rw-r--r--  1 runner runner  9601 Aug 12 13:59 run-2026-08-08-23-56.md
+-rw-r--r--  1 runner runner  9347 Aug 12 13:59 run-2026-08-09-00-39.md
+-rw-r--r--  1 runner runner 74370 Aug 12 13:59 run-2026-08-09-02-55.md
+-rw-r--r--  1 runner runner  1654 Aug 12 13:59 run-2026-08-09-04-10.md
+-rw-r--r--  1 runner runner  6090 Aug 12 13:59 run-2026-08-09-04-11.md
+-rw-r--r--  1 runner runner 12144 Aug 12 13:59 run-2026-08-09-05-28.md
+-rw-r--r--  1 runner runner 11460 Aug 12 13:59 run-2026-08-09-06-36.md
+-rw-r--r--  1 runner runner   233 Aug 12 13:59 run-2026-08-09-07-41.md
+-rw-r--r--  1 runner runner   285 Aug 12 13:59 run-2026-08-09-08-40.md
+-rw-r--r--  1 runner runner 13175 Aug 12 13:59 run-2026-08-09-09-32.md
+-rw-r--r--  1 runner runner   264 Aug 12 13:59 run-2026-08-09-10-18.md
+-rw-r--r--  1 runner runner 16575 Aug 12 13:59 run-2026-08-09-11-00.md
+-rw-r--r--  1 runner runner 20833 Aug 12 13:59 run-2026-08-09-11-06.md
+-rw-r--r--  1 runner runner 38277 Aug 12 13:59 run-2026-08-09-11-52.md
+-rw-r--r--  1 runner runner   149 Aug 12 13:59 run-2026-08-09-12-34.md
+-rw-r--r--  1 runner runner 13278 Aug 12 13:59 run-2026-08-09-13-28.md
+-rw-r--r--  1 runner runner 30638 Aug 12 13:59 run-2026-08-09-14-22.md
+-rw-r--r--  1 runner runner 34392 Aug 12 13:59 run-2026-08-09-14-33.md
+-rw-r--r--  1 runner runner   285 Aug 12 13:59 run-2026-08-09-14-57.md
+-rw-r--r--  1 runner runner 11588 Aug 12 13:59 run-2026-08-09-15-54.md
+-rw-r--r--  1 runner runner 11519 Aug 12 13:59 run-2026-08-09-16-22.md
+-rw-r--r--  1 runner runner 21417 Aug 12 13:59 run-2026-08-09-17-02.md
+-rw-r--r--  1 runner runner 28436 Aug 12 13:59 run-2026-08-09-17-55.md
+-rw-r--r--  1 runner runner   325 Aug 12 13:59 run-2026-08-09-18-20.md
+-rw-r--r--  1 runner runner   407 Aug 12 13:59 run-2026-08-09-19-09.md
+-rw-r--r--  1 runner runner 10468 Aug 12 13:59 run-2026-08-09-19-52.md
+-rw-r--r--  1 runner runner 32645 Aug 12 13:59 run-2026-08-09-19-56.md
+-rw-r--r--  1 runner runner 12593 Aug 12 13:59 run-2026-08-09-20-20.md
+-rw-r--r--  1 runner runner  6931 Aug 12 13:59 run-2026-08-09-20-57.md
+-rw-r--r--  1 runner runner 13430 Aug 12 13:59 run-2026-08-09-21-54.md
+-rw-r--r--  1 runner runner 15843 Aug 12 13:59 run-2026-08-09-22-21.md
+-rw-r--r--  1 runner runner   441 Aug 12 13:59 run-2026-08-09-22-54.md
+-rw-r--r--  1 runner runner 29002 Aug 12 13:59 run-2026-08-09-23-54.md
+-rw-r--r--  1 runner runner   256 Aug 12 13:59 run-2026-08-10-00-54.md
+-rw-r--r--  1 runner runner  9202 Aug 12 13:59 run-2026-08-10-03-04.md
+-rw-r--r--  1 runner runner  1405 Aug 12 13:59 run-2026-08-10-05-01.md
+-rw-r--r--  1 runner runner 21706 Aug 12 13:59 run-2026-08-10-06-48.md
+-rw-r--r--  1 runner runner 15341 Aug 12 13:59 run-2026-08-10-08-18.md
+-rw-r--r--  1 runner runner 17826 Aug 12 13:59 run-2026-08-10-08-23.md
+-rw-r--r--  1 runner runner   548 Aug 12 13:59 run-2026-08-10-09-55.md
+-rw-r--r--  1 runner runner   339 Aug 12 13:59 run-2026-08-10-10-55.md
+-rw-r--r--  1 runner runner 33589 Aug 12 13:59 run-2026-08-10-12-06.md
+-rw-r--r--  1 runner runner 16356 Aug 12 13:59 run-2026-08-10-13-55.md
+-rw-r--r--  1 runner runner 21582 Aug 12 13:59 run-2026-08-10-14-53.md
+-rw-r--r--  1 runner runner 33224 Aug 12 13:59 run-2026-08-10-15-47.md
+-rw-r--r--  1 runner runner 14497 Aug 12 13:59 run-2026-08-10-16-43.md
+-rw-r--r--  1 runner runner 12582 Aug 12 13:59 run-2026-08-10-17-45.md
+-rw-r--r--  1 runner runner  2893 Aug 12 13:59 run-2026-08-10-18-38.md
+-rw-r--r--  1 runner runner 38502 Aug 12 13:59 run-2026-08-10-19-48.md
+-rw-r--r--  1 runner runner 16275 Aug 12 13:59 run-2026-08-10-20-26.md
+-rw-r--r--  1 runner runner 16367 Aug 12 13:59 run-2026-08-10-20-33.md
+-rw-r--r--  1 runner runner  5294 Aug 12 13:59 run-2026-08-10-21-31.md
+-rw-r--r--  1 runner runner  6566 Aug 12 13:59 run-2026-08-10-22-21.md
+-rw-r--r--  1 runner runner 19461 Aug 12 13:59 run-2026-08-10-22-26.md
+-rw-r--r--  1 runner runner 34133 Aug 12 13:59 run-2026-08-10-23-03.md
+-rw-r--r--  1 runner runner  1036 Aug 12 13:59 run-2026-08-10-23-54.md
+-rw-r--r--  1 runner runner  1070 Aug 12 13:59 run-2026-08-11-02-32.md
+-rw-r--r--  1 runner runner 28502 Aug 12 13:59 run-2026-08-11-04-13.md
+-rw-r--r--  1 runner runner   441 Aug 12 13:59 run-2026-08-11-05-32.md
+-rw-r--r--  1 runner runner 15032 Aug 12 13:59 run-2026-08-11-06-41.md
+-rw-r--r--  1 runner runner 29496 Aug 12 13:59 run-2026-08-11-06-46.md
+-rw-r--r--  1 runner runner 27654 Aug 12 13:59 run-2026-08-11-08-01.md
+-rw-r--r--  1 runner runner 25624 Aug 12 13:59 run-2026-08-11-09-25.md
+-rw-r--r--  1 runner runner 50023 Aug 12 13:59 run-2026-08-11-10-23.md
+-rw-r--r--  1 runner runner  1419 Aug 12 13:59 run-2026-08-11-11-13.md
+-rw-r--r--  1 runner runner 25673 Aug 12 13:59 run-2026-08-11-12-03.md
+-rw-r--r--  1 runner runner 10909 Aug 12 13:59 run-2026-08-11-13-47.md
+-rw-r--r--  1 runner runner 84411 Aug 12 13:59 run-2026-08-11-13-53.md
+-rw-r--r--  1 runner runner 23773 Aug 12 13:59 run-2026-08-11-14-51.md
+-rw-r--r--  1 runner runner  8757 Aug 12 13:59 run-2026-08-11-15-50.md
+-rw-r--r--  1 runner runner 24512 Aug 12 13:59 run-2026-08-11-16-41.md
+-rw-r--r--  1 runner runner 47113 Aug 12 13:59 run-2026-08-11-16-49.md
+-rw-r--r--  1 runner runner   352 Aug 12 13:59 run-2026-08-11-17-44.md
+-rw-r--r--  1 runner runner 12110 Aug 12 13:59 run-2026-08-11-18-44.md
+-rw-r--r--  1 runner runner 26450 Aug 12 13:59 run-2026-08-11-19-52.md
+-rw-r--r--  1 runner runner  1309 Aug 12 13:59 run-2026-08-11-20-32.md
+-rw-r--r--  1 runner runner 16826 Aug 12 13:59 run-2026-08-11-21-35.md
+-rw-r--r--  1 runner runner   791 Aug 12 13:59 run-2026-08-11-22-27.md
+-rw-r--r--  1 runner runner 24648 Aug 12 13:59 run-2026-08-11-23-28.md
+-rw-r--r--  1 runner runner 21508 Aug 12 13:59 run-2026-08-12-00-46.md
+-rw-r--r--  1 runner runner   210 Aug 12 13:59 run-2026-08-12-03-14.md
+-rw-r--r--  1 runner runner   210 Aug 12 13:59 run-2026-08-12-05-09.md
+-rw-r--r--  1 runner runner   210 Aug 12 13:59 run-2026-08-12-06-47.md
+-rw-r--r--  1 runner runner   210 Aug 12 13:59 run-2026-08-12-08-06.md
+-rw-r--r--  1 runner runner   210 Aug 12 13:59 run-2026-08-12-09-34.md
+-rw-r--r--  1 runner runner   210 Aug 12 13:59 run-2026-08-12-10-45.md
+-rw-r--r--  1 runner runner   210 Aug 12 13:59 run-2026-08-12-11-35.md
+-rw-r--r--  1 runner runner   210 Aug 12 13:59 run-2026-08-12-12-35.md
+[0m
+The workspace is for **Naver Whale browser** triage (not Gladia). The scan-prompt.txt at the end shows:
+
+```
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+DELTA: 0 new hit lines vs previous scan
+FULL GREP HITS (for context): (empty)
+```
+
+There are **no hits to classify** — the static scan found zero secrets, endpoints, or interesting patterns in the scanned surface.
+
+---
+
+### Triage Result
+
+| Category | Count | Details |
+|----------|-------|---------|
+| REAL_SECRET | 0 | — |
+| TEST_OR_EXAMPLE | 0 | — |
+| ENDPOINT_LEAK | 0 | — |
+| INTERESTING | 0 | — |
+
+**Verdict:** No reportable candidates. The scan produced zero findings.
