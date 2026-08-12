@@ -1,1 +1,33 @@
-## 2026-08-12 16:56:28 UTC [browser] (model laguna)
+## 2026-08-12 17:42:02 UTC [browser] (model laguna)
+[HYP] Whale desktop sync passphrase KDF weakness / recoverable master-key storage in os_crypt_whale fork
+class: AUTH
+asset: Whale desktop v4.38.386.14 libos_crypt.so + Preferences/Local State (Linux)
+confidence: 62
+reasoning: Whale-only prefs (sync.encryption_bootstrap_token_per_account sha256=053ffa4b…) + forked os_crypt_whale.cc with xv10 magic + /whalesync endpoint confirmed via prior binary recon. Public repo fully enumerated (4 branches + wiki + README.ko.md) — 0 sync/crypto source files exist; static analysis path dead. KDF iteration constant + master-key storage location unextracted.
+evidence_needed: PBKDF2/scrypt/argon2 iteration constant; master-key storage location (keyring vs plaintext); whale_need_encryption_key_forced_time downgrade logic
+verify_steps: HUMAN_ONLY — Deliver official Whale desktop binary v4.38.386.14 to `/tmp/opencode/whale_binary/` (.deb via unrestricted internet, cloudfront DNS resolves No-answer at 127.0.0.53 in-sandbox). Then: (1) strings -n8 libos_crypt.so | grep -iE 'xv10|pbkdf2|scrypt|argon2|whale_need_encryption_key'; (2) nm -D libos_crypt.so | grep -iE 'os_crypt|sync_encryption'; (3) authorized Linux login snapshot of keyring + Preferences/Local State pre/post enabling encrypted sync. No requests to /whalesync or *.naver.com per scope.yml.
+impact: Local attacker decrypts synced passwords + cookies + autofill + bookmarks offline → full Naver account compromise. Critical.
+testability: HUMAN_ONLY
+[HYP] Sidebar SOP bypass via unvalidated sendMessage dispatch from arbitrary web origin
+class: OTHER
+asset: Whale browser sidebar extension API (contentscript.js → background.js → sidebarAction.show/show2)
+confidence: 55
+reasoning: Sample extension (translate branch, 5 files HTTP 200) confirms content_scripts match ALL origins with tabs permission; background.js onMessage accepts sender param with ZERO inspection of sender.origin/sender.url (grep=0 matches); wiki whale.sidebarAction.md (HTTP 200) confirms show({details:{url}}) loads arbitrary URL in sidebar. CVE-2025-69234/69235 are fixed per NVD using platform-agnostic CPE covering v4.38.386.14 — no novel variant proven.
+evidence_needed: Live runtime proof arbitary web page triggers sidebarAction.show with cross-origin URL load bypassing SOP in v4.38.386.14
+verify_steps: AUTH_HELPED — Install current Whale v4.38.386.14 on test machine, load translate-branch sample extension, navigate to attacker.com, fire whale.runtime.sendMessage('sidebarAction.show2') via content_script, observe whether cross-origin URL loads in sidebar with extension API access.
+impact: Cross-origin content injection in privileged sidebar context → session hijack, credential theft. High.
+testability: AUTH_HELPED
+[HYP] Naver Whale 2026 CVE disclosure anomaly (0 CVEs in 2026 vs 8 in 2025)
+class: OTHER
+asset: NVD services endpoint (services.nvd.nist.gov/rest/json/cves/2.0, keywordSearch=whale)
+confidence: 40
+reasoning: NVD HTTP 200 this cycle, totalResults=28, year breakdown {2003:1, 2009:1, 2018:5, 2020:1, 2021:1, 2022:6, 2023:3, 2024:2, 2025:8}, 0 published in 2026. Last CVE-2025-69235 @2025-12-30 for v4.35.351.12; latest stable v4.38.386.14 is 8 months ahead. Passive monitoring surface.
+evidence_needed: New CVE appearing in 2026 for navercorp:whale CPE; indicates either vuln quietly patched without disclosure, or new vuln in v4.38.x lineage
+verify_steps: PASSIVE — Daily keywordSearch=whale pagination via services.nvd.nist.gov (≤1 rps, GET); alert on any CVE with published year >= 2026; do NOT use date-filtered queries (404).
+impact: Newly disclosed vuln in v4.38.386.14 indicates active bug bounty window open. Low direct impact, informational.
+testability: PASSIVE
+[FINAL] [62] Whale desktop sync passphrase KDF weakness / recoverable master-key storage in os_crypt_whale fork
+[FINAL] [55] Sidebar SOP bypass via unvalidated sendMessage dispatch from arbitrary web origin
+[FINAL] [40] Naver Whale 2026 CVE disclosure anomaly (0 CVEs in 2026 vs 8 in 2025)
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 to `/tmp/opencode/whale_binary/` — `.deb` from unrestricted internet (cloudfront DNS resolves `No answer` at 127.0.0.53 in-sandbox, general block on all `*.cloudfront.net`; google.com/github.com resolve normally). Upon delivery run: (1) `strings -n8 libos_crypt.so | grep -iE 'xv10|pbkdf2|scrypt|argon2|whale_need_encryption_key'` → KDF constant; (2) `nm -D libos_crypt.so | grep -iE 'os_crypt|sync_encryption'` → symbol map; (3) authorized Linux login snapshot of keyring + Preferences/Local State pre/post enabling encrypted sync. No requests to /whalesync or *.naver.com per scope.yml client-side rule.
+[RISK] sync: 72 — Whale-only OSCrypt fork (xv10) + Whale-only prefs + /whalesync endpoint confirmed via prior binary recon; KDF iteration + master-key storage path unextracted (binary absent in-sandbox); strongest open surface, HUMAN-only gated. | browser: 55 — sidebar API surface live (5 files + 3 wiki docs HTTP 200, zero sender validation confirmed) but REJECTED as duplicate of fixed CVEs-2025-69234/69235 (platform-agnostic CPE, v4.38.386.14 patched); no novel variant proven. | libs: 30 — socket.io.slim.js confirmed Whale-only in resources.pak (prior binary recon) but confidence 38 < 40; handler runtime-fetched, version unknown, no public manifest, binary inaccessible; permanently parked.
