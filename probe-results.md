@@ -312,3 +312,6 @@ https://naver-whale-browser.en.uptodown.com/android/download` -> HTTP 400
 
 ## 2026-08-12 17:43:13 UTC
 
+
+## 2026-08-12 18:39:27 UTC
+https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 -> 200 len=65680 type=application/json
