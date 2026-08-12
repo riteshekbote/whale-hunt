@@ -37762,3 +37762,146 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK SCORE
 [RISK] sync: 72 — Whale-only OSCrypt fork (xv10, bootstrap-token prefs) is real but KDF/master-key unextractable without binary; 0 CVEs in 8 months over 3 minor versions creates genuine unknown; delivery dependency is the sole blocker. | browser: 58 — sidebar/web-panel surface documented and live but every known SOP/CSP variant is fixed; no novel variant proven. | libs: 35 — only socket.io.slim.js (conf 38, parked) identified as Whale-only; no manifest, no version strings, handler runtime-fetched.
+===== ANALYST bigpickle 2026-08-12 06:52:38 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; ls /tmp/opencode/ 2>&1
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+[0m
+[0m$ [0mcurl -s -o /tmp/opencode/nvd.json -w "%{http_code}\n" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200" --max-time 30
+200
+[0m
+[0m$ [0mcurl -s -w "\n%{http_code}\n" "https://api.github.com/repos/naver/whale-browser-developers" --max-time 20 -o /tmp/opencode/gh.json; echo "---"; curl -s -o /dev/null -w "%{http_code}\n" "https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json" --max-time 20
+200
+---
+200
+[0m
+[0m$ [0mpython3 -c "
+import json
+d = json.load(open('/tmp/opencode/nvd.json'))
+vs = d.get('vulnerabilities', [])
+total = d.get('totalResults')
+years = {}
+for v in vs:
+    cve = v['cve']
+    pub = cve['published'][:4]
+    years[pub] = years.get(pub, 0) + 1
+    refs = [r.get('source') for r in cve.get('references', [])]
+print('totalResults:', total)
+print('years:', dict(sorted(years.items())))
+latest = max(vs, key=lambda v: v['cve']['published'])
+print('latest:', latest['cve']['id'], latest['cve']['published'])
+for v in sorted(vs, key=lambda x: x['cve']['published'])[-3:]:
+    c = v['cve']
+    desc = next((d for d in c['descriptions'] if d['lang']=='en'), {})
+    print('---', c['id'], c['published'])
+    print(desc.get('value','')[:150])
+"
+totalResults: 28
+years: {'2003': 1, '2009': 1, '2018': 5, '2020': 1, '2021': 1, '2022': 6, '2023': 3, '2024': 2, '2025': 8}
+latest: CVE-2025-69235 2025-12-30T02:16:16.930
+--- CVE-2025-62585 2025-10-16T07:15:33.963
+Whale browser before 4.33.325.17 allows an attacker to bypass the Content Security Policy via a specific scheme in a dual-tab environment.
+--- CVE-2025-69234 2025-12-30T02:16:16.810
+Whale browser before 4.35.351.12 allows an attacker to escape the iframe sandbox in a sidebar environment.
+--- CVE-2025-69235 2025-12-30T02:16:16.930
+Whale browser before 4.35.351.12 allows an attacker to bypass the Same-Origin Policy in a sidebar environment.
+[0m
+[0m$ [0mpython3 -c "
+import json
+d = json.load(open('/tmp/opencode/gh.json'))
+print('pushed_at:', d.get('pushed_at'))
+print('updated_at:', d.get('updated_at'))
+print('releases:', d.get('releases', {}).get('total_count') if isinstance(d.get('releases'), dict) else d.get('releases'))
+print('has_wiki:', d.get('has_wiki'))
+print('size:', d.get('size'))
+print('message:', d.get('message'))
+"
+pushed_at: 2019-09-23T08:03:26Z
+updated_at: 2025-10-22T03:15:17Z
+releases: None
+has_wiki: True
+size: 5043
+message: None
+[0m
+[0m$ [0mpython3 -c "
+import json, re
+d = json.load(open('/tmp/opencode/nvd.json'))
+sync_kw = re.compile(r'sync|bootstrap|os_crypt|oskey|password.?store|credential|encrypt|KDF|scrypt|pbkdf2|keyring|vault', re.I)
+hits = []
+for v in d.get('vulnerabilities', []):
+    c = v['cve']
+    blob = ' '.join(x.get('value','') for x in c['descriptions'])
+    if sync_kw.search(blob):
+        hits.append(c['id'])
+print('sync-class keyword hits in whale set:', hits if hits else 'NONE')
+ids = [v['cve']['id'] for v in d['vulnerabilities']]
+print('count:', len(ids))
+"
+sync-class keyword hits in whale set: NONE
+count: 28
+[0m
+STEP 1 — DELTA
+- NO_DELTA — NVD `services.nvd.nist.gov/rest/json/cves/2.0` HTTP 200, `keywordSearch=whale` totalResults=28, year breakdown unchanged (2003:1, 2009:1, 2018:5, 2020:1, 2021:1, 2022:6, 2023:3, 2024:2, 2025:8), latest CVE-2025-69235 @2025-12-30, 0 published in 2026
+- NO_DELTA — `api.github.com/repos/naver/whale-browser-developers` HTTP 200, pushed 2019-09-23, updated 2025-10-22, size=5043, has_wiki=true — doc-only repo unchanged
+- NO_DELTA — sample extension `manifest.json` (translate branch) HTTP 200 — sidebar surface live, unchanged
+- NO_DELTA — `/tmp/opencode/whale_binary/` still MISSING — binary delivery dependency persists
+- NEW — sync-class keyword screen re-run on 28-result set: 0 hits for sync/bootstrap/os_crypt/scrypt/pbkdf2/keyring/vault — gap monitor evidence_needed still unsatisfied, no newly disclosed sync-class flaw
+
+STEP 2 — PRIORITIZE
+- [PRIO] Whale v4.38.386.14 `os_crypt_whale` fork + Local State/keyring (sync KDF): score 5.70 | attack 5, business 9, tech 7, gate 3, cloud 1, fresh 6
+- [PRIO] NVD gap monitor (`services.nvd.nist.gov keywordSearch=whale` full pagination): score 5.35 | attack 3, business 6, tech 4, gate 10, cloud 0, fresh 10
+- [PRIO] com.naver.whale 3.9.14.9 sync engine (Android Keystore/SharedPreferences): score 5.25 | attack 5, business 8, tech 6, gate 2, cloud 1, fresh 7
+
+STEP 3 — HYPOTHESES
+[HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork
+class: AUTH
+asset: Whale v4.38.386.14 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
+confidence: 62
+reasoning: Whale-only markers (xv10 magic, sync.encryption_bootstrap_token_per_account) confirmed in prior binary recon; all 4 branches + 5 wiki pages + README.ko.md enumerated = zero public sync code; NVD re-confirmed 0-in-2026 this cycle with 0 sync-class keyword hits.
+evidence_needed: PBKDF2/scrypt algorithm + iteration count in Whale fork; derived-key persistence (keyring vs file vs Local State); comparison vs Linux Chromium v11 1-iteration baseline.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes (regression/version-drift detection)
+class: OTHER
+asset: services.nvd.nist.gov keywordSearch=whale full pagination
+confidence: 55
+reasoning: 0 CVEs in 2026 across v4.35.352–v4.38.386.14 while 8 published in 2025 (latest 2025-12-30); this cycle re-confirmed HTTP 200, totalResults=28, 0 sync-class regex hits.
+evidence_needed: any new navercorp CVE or fix-version note in the `whale` result set.
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200) diff of published dates + sync-class keyword screen; new entry triggers re-scoping to that fixed version's delta. Zero auth, ≤1 rps.
+impact: early-warning of newly disclosed in-scope flaws → priority recalibration; Medium
+testability: PASSIVE
+
+[HYP] Android sync encryption KDF / master-key storage (custom mobile impl, zero CVE coverage)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (Android Keystore / SharedPreferences)
+confidence: 46
+reasoning: iOS client got CVE-2025-53599 (fixed 3.9.1.4206) while Android 3.9.14.9 has zero published CVEs; sync-encryption since 2025-04 implies custom impl distinct from Chromium fork; APK sha256 still unpinned; uptodown 404, Play-lh only APK path.
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
+verify_steps: AUTH_HELPED: HUMAN pulls 3.9.14.9 APK via Play-lh on real device → /tmp/opencode/whale_binary/ → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise; High
+testability: AUTH_HELPED
+
+STEP 4 — SELF-CRITIQUE
+- Desktop sync KDF (62): survives — no class on REJECTED list, concrete verify_steps, only blocker is binary delivery (unchanged).
+- NVD gap monitor (55): survives — the only live zero-auth passive surface; verified again this cycle.
+- Android sync KDF (46): survives — ≥40, AUTH_HELPED verify path defined, Play-lh reachable by HUMAN.
+- [PARKED] sidebar/web-panel API surface: duplicate of CVE-2025-69234/69235/53600/62583/62584/62585, no novel variant, no binary exploitability proof (confidence < 40 after CPE correction).
+- [PARKED] socket.io.slim.js event-handler injection: confidence 38 < 40, handler runtime-fetched, binary absent.
+- [PARKED] installer DLL search-order regression: confidence 50 < 60, no passive proof path, all binary channels dead.
+- [FINAL] 1) Desktop sync KDF (AUTH, 62) 2) NVD gap monitor (OTHER, 55) 3) Android sync KDF (AUTH, 46)
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe` from Naver CDN; record sha256 only (never raw content). Unblocks top sync KDF hypothesis (conf 62). Secondary: com.naver.whale 3.9.14.9 APK via Play-lh on real device.
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED OTHER @ NVD gap monitor: HTTP 200 re-confirmed this cycle (28 total, 0 in 2026, 0 sync-class keyword hits, latest CVE-2025-69235 @2025-12-30) — remains the only live zero-auth passive surface.
+- [LEARN] REJECTED @ `/tmp/opencode/whale_binary/`: still MISSING (re-verified this cycle) — binary-dependent verification permanently HUMAN-gated.
+- [LEARN] ACCEPTED @ sample extension + GitHub API: manifest.json + repo metadata both HTTP 200 — sidebar surface and doc-only repo unchanged; NO_DELTA across all monitored passive surfaces.
+
+STEP 7 — RISK SCORE
+- [RISK] sync: 72 — Whale-only OSCrypt fork (xv10, bootstrap-token prefs) is real but KDF/master-key unextractable without binary; 0 CVEs in 8 months over 3 minor versions + 0 sync-class NVD hits this cycle creates genuine unknown; delivery dependency is the sole blocker. | browser: 58 — sidebar/web-panel surface documented and live (manifest + 3 wiki docs HTTP 200) but every known SOP/CSP variant is fixed; no novel variant proven. | libs: 35 — only socket.io.slim.js (conf 38, parked) identified as Whale-only; no manifest, no version strings, handler runtime-fetched.

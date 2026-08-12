@@ -774,3 +774,5 @@
 - CHANGED Sample extension contentscript.js re-fetched — still HTTP 200, `navigator.userAgent.includes('sidebar')===false` branch dispatches `sidebarAction.show`/`show2` from ANY web page context, confirmed at 
 
 ## 2026-08-12 05:19:22 UTC
+
+## 2026-08-12 06:52:38 UTC
