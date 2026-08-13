@@ -1,14 +1,72 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-**Scan Result: 0 hits** — no code/config files scanned, no findings to classify.
+The knowledge base you've provided is entirely about **Whale browser (naver/whale-browser-developers)**, but your task mentions **gladiaio** org and **@gladiaio/sdk**. These are completely different targets.
 
-**Verdict:**
-| Category | Count | Report Candidate |
-|----------|-------|------------------|
-| REAL_SECRET | 0 | no |
-| TEST_OR_EXAMPLE | 0 | no |
-| ENDPOINT_LEAK | 0 | no |
-| INTERESTING | 0 | no |
+Let me check what's actually in the workspace to understand the real scan target.
+[0m$ [0mls -la
+total 888
+drwxr-xr-x 11 runner runner   4096 Aug 13 23:57 .
+drwxr-xr-x  3 runner runner   4096 Aug 13 23:57 ..
+drwxr-xr-x  7 runner runner   4096 Aug 13 23:57 .git
+drwxr-xr-x  3 runner runner   4096 Aug 13 23:57 .github
+-rw-r--r--  1 runner runner   1057 Aug 13 23:57 README.md
+-rw-r--r--  1 runner runner      0 Aug 13 23:57 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 13 23:57 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 13 23:57 knowledge
+drwxr-xr-x  2 runner runner  20480 Aug 13 23:57 leads
+-rw-r--r--  1 runner runner   8672 Aug 13 23:57 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 13 23:57 reports
+-rw-r--r--  1 runner runner 598138 Aug 13 23:57 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 13 23:57 reposcan-raw
+-rw-r--r--  1 runner runner 193354 Aug 13 23:57 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 13 23:57 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 13 23:57 scripts
+-rw-r--r--  1 runner runner     34 Aug 13 23:57 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 13 23:57 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 13 23:57 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 13 23:57 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 13 23:57 state_nemotron3.json
+drwxr-xr-x  2 runner runner  12288 Aug 13 23:57 triage
+[0m
+[0m→ [0mRead scope.yml
+[0m→ [0mRead scan-prompt.txt
+[0m
+[0m$ [0mls -la reposcan-raw/ 2>/dev/null | head -30
+total 216
+drwxr-xr-x  3 runner runner   4096 Aug 13 23:57 .
+drwxr-xr-x 11 runner runner   4096 Aug 13 23:57 ..
+-rw-r--r--  1 runner runner   1744 Aug 13 23:57 analysis.txt
+-rw-r--r--  1 runner runner     40 Aug 13 23:57 grep-delta.txt
+-rw-r--r--  1 runner runner     50 Aug 13 23:57 grep-hits.prev.txt
+-rw-r--r--  1 runner runner     50 Aug 13 23:57 grep-hits.txt
+drwxr-xr-x  2 runner runner   4096 Aug 13 23:57 naver
+-rw-r--r--  1 runner runner 192125 Aug 13 23:57 rag.txt
+[0m
+[0m→ [0mRead reposcan-raw/grep-hits.txt
+[0m→ [0mRead reposcan-raw/grep-delta.txt
+[0m→ [0mRead reposcan-raw/analysis.txt
+[0m
+[0m$ [0mls -la reposcan-raw/naver/
+total 8
+drwxr-xr-x 2 runner runner 4096 Aug 13 23:57 .
+drwxr-xr-x 3 runner runner 4096 Aug 13 23:57 ..
+[0m
+[0m→ [0mRead reposcan-raw/rag.txt[90m [limit=50][0m
+The workspace, scope.yml, and knowledge base are all for **Naver Whale Browser** — the "gladiaio" mention in your prompt appears to be a template error. The actual scan target is `naver/whale-browser-developers`.
 
-**Note:** The provided knowledge base and inventory cover **Naver Whale** (`naver/whale-browser-developers`), not `gladiaio/` or `@gladiaio/sdk`. If you intended to scan Gladia repos, the knowledge base appears mismatched.
+**Scan Results:**
+- **0 code/config files scanned** (repo is documentation-only, last real commit 2019-09-23)
+- **0 grep hits** — no secrets, endpoints, or interesting patterns found
+- **0 delta** vs previous scan
+
+**Triage Verdict:**
+
+| Category | Count | Verdict |
+|----------|-------|---------|
+| REAL_SECRET | 0 | — |
+| TEST_OR_EXAMPLE | 0 | — |
+| ENDPOINT_LEAK | 0 | — |
+| INTERESTING | 0 | — |
+
+**REPORT_CANDIDATE: no** — The static scan of the public GitHub repo yields no reportable findings. The repo contains only documentation (Chromium docs translations + extension API samples), no browser source code, sync implementation, or bundled library manifests. All binary acquisition paths remain blocked in-sandbox (CloudFront DNS no-answer, APKMirror 403, Uptodown 404, pstatic 404). The only live attack surface is the documented extension API (sidebarAction.show SOP bypass, CVE-2025-69234/69235 already fixed in v4.35.351.12, platform-agnostic CPE covers v4.38.386.14).
