@@ -3177,3 +3177,13 @@
 - LEARN: REJECTED passive binary acquisition: all channels permanently blocked this cycle (cloudfront DNS No-answer via 8.8.8.8 general to *.cloudfront.net, APKMirror 40
 - LEARN: ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confir
 - LEARN: CONFIRMED @ NVD gap monitor: keywordSearch=whale HTTP 200 (totalResults=28, 0 in 2026, latest published 2025-12-30) — remains the only live zero-auth passive su
+
+## RANKED HYPOTHESES 2026-08-13 18:18:14 UTC
+- [62] Whale: Whale desktop sync passphrase KDF weakness / recoverable master-key storage in os_crypt_whale fork (from reports/hypotheses-laguna.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from unrestricted internet — NOT cloudfront CDN, APKMirror, Uptodown, or pstatic which are all 1
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inte
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension API sur
+- LEARN: ACCEPTED class @ sync KDF: no static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confir
+- LEARN: CONFIRMED @ NVD gap monitor: keywordSearch=whale HTTP 200 (totalResults=28, 0 in 2026, latest 2025-12-30) — remains the only live zero-auth passive surface; dat
+- LEARN: REJECTED passive binary acquisition: /tmp/opencode/whale_binary/ still MISSING — all passive channels (cloudfront DNS No-answer, APKMirror 403, Uptodown 404, ps
