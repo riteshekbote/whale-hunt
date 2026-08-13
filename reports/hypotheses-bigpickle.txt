@@ -1,9 +1,12 @@
-## 2026-08-13 16:06:55 UTC [sync] (model bigpickle)
+## 2026-08-13 17:10:20 UTC [sync] (model bigpickle)
+[PRIO] sync KDF binary analysis (v4.38.386.14 os_crypt_whale fork): score 7.0 = attack_surface 8 (local infostealer/attacker reachable via keyring+Prefs), business_value 9 (synced passwords/bookmarks = account-level compromise), tech_exposure 6 (custom OSCrypt fork, xv10 magic, bootstrap-token prefs — nonstandard stack), gate_ease 2 (needs HUMAN binary delivery; zero passive path), cloud_surface 3 (sync backend = whalesync OOS), freshness 7 (0 CVEs in 8 months, undisclosed sync fixes suspected).
+[PRIO] NVD gap monitor (services.nvd.nist.gov keywordSearch=whale): score 5.9 = attack_surface 5 (early-warning only), business_value 6 (recalibrates priority on new disclosure), tech_exposure 4, gate_ease 10 (no auth, GET, ≤1 rps), cloud_surface 2, freshness 9 (only live zero-auth passive surface).
+[PRIO] Android sync KDF (com.naver.whale 3.9.14.9 APK): score 5.4 = attack_surface 6, business_value 9 (mobile sync encryption, zero CVE coverage), tech_exposure 5, gate_ease 1 (HUMAN-gated), cloud_surface 3, freshness 6.
 [HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork
 class: AUTH
 asset: Whale v4.38.386.14 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
 confidence: 62
-reasoning: Whale-only markers (xv10 magic, sync.encryption_bootstrap_token_per_account prefs) confirmed in prior binary recon; full repo enumeration = zero public sync code; NVD re-probed this cycle (28 total, 0 sync-class keyword hits, 0 in 2026).
+reasoning: Whale-only markers (xv10 magic, sync.encryption_bootstrap_token_per_account prefs) confirmed in prior binary recon; full repo enumeration = zero public sync code; NVD re-probed HTTP 200 this cycle (28 total, 0 sync-class keyword hits, 0 in 2026).
 evidence_needed: PBKDF2/scrypt algorithm + iteration count in Whale fork; derived-key persistence (keyring vs file vs Local State); delta vs Linux Chromium baseline.
 verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
 impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
@@ -26,7 +29,8 @@ evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key per
 verify_steps: AUTH_HELPED: HUMAN pulls 3.9.14.9 APK via Play-lh on real device → /tmp/opencode/whale_binary/ → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
 impact: local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise; High
 testability: AUTH_HELPED
-[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe` from Naver CDN; record sha256 only (never raw content). Sole unblock for top sync KDF hypothesis (conf 62); all passive acquisition channels re-confirmed dead this cycle.
+[FINAL] 1) Desktop sync KDF (AUTH, 62) 2) NVD gap monitor (OTHER, 55) 3) Android sync KDF (AUTH, 43)
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe` from Naver CDN; record sha256 only (never raw content). Sole unblock for top sync KDF hypothesis (conf 62); all passive acquisition channels re-confirmed dead this cycle (cloudfront DNS No-answer via 8.8.8.8, APKMirror 403, Uptodown 404 Win+Android, static-whale.pstatic.net 404).
 [LEARN] ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle — `keywordSearch=whale` totalResults=28, year breakdown static, 0 in 2026, latest CVE-2025-69235 @2025-12-30, 0 sync-class keyword hits; remains the only live zero-auth passive surface; date-filtered queries still 404.
 [LEARN] REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels (cloudfront DNS No-answer general to *.cloudfront.net, APKMirror 403, Uptodown 404 Win+Android, static-whale.pstatic.net 404) remain 100% blocked in-sandbox; binary-dependent sync-KDF verification permanently HUMAN-gated.
 [LEARN] NO_DELTA @ all passive surfaces: NVD totalResults + year breakdown + repo pushed_at + sample ext 5/5 200 + wiki 200 all unchanged; no new static-analysis surface this cycle.

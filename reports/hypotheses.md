@@ -3164,3 +3164,16 @@
 - LEARN: ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle — `keywordSearch=whale` totalResults=28, year breakdown static, 0 in 2026, latest CVE-2025-69235 @20
 - LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels (cloudfront DNS No-answer general to *.cloudfront.net, APKMirr
 - LEARN: NO_DELTA @ all passive surfaces: NVD totalResults + year breakdown + repo pushed_at + sample ext 5/5 200 + wiki 200 all unchanged; no new static-analysis surfac
+
+## RANKED HYPOTHESES 2026-08-13 17:17:19 UTC
+- [62] Whale: Whale desktop sync passphrase KDF weakness / recoverable master-key storage in os_crypt_whale fork (from reports/hypotheses-laguna.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inte
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from unrestricted internet) to `/tmp/opencode/whale_binary/`. Then run: (1) `strings -n8 libos_c
+- LEARN: ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle — `keywordSearch=whale` totalResults=28, year breakdown static, 0 in 2026, latest CVE-2025-69235 @20
+- LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels (cloudfront DNS No-answer general to *.cloudfront.net, APKMirr
+- LEARN: NO_DELTA @ all passive surfaces: NVD totalResults + year breakdown + repo pushed_at + sample ext 5/5 200 + wiki 200 all unchanged; no new static-analysis surfac
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: duplicates CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample extension API sur
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked this cycle (cloudfront DNS No-answer via 8.8.8.8 general to *.cloudfront.net, APKMirror 40
+- LEARN: ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confir
+- LEARN: CONFIRMED @ NVD gap monitor: keywordSearch=whale HTTP 200 (totalResults=28, 0 in 2026, latest published 2025-12-30) — remains the only live zero-auth passive su
