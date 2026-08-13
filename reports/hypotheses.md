@@ -2920,3 +2920,18 @@
 - LEARN: REJECTED class @ sidebar SOP bypass: duplicates CVE-2025-69234/69235 (platform-agnostic CPE cpe:2.3:a:navercorp:whale:* covers v4.38.386.14= patched); sample ex
 - LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40 threshold; handler runtime-fetched; no passive version string; CVE-2023-35780 irr
 - LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60 threshold; all passive binary channels dead; no passive proof path; permanently parke
+
+## RANKED HYPOTHESES 2026-08-13 00:48:30 UTC
+- [62] Whale: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork (from reports/hypotheses-bigpickle.txt)
+- [40] services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale: Naver Whale 2026 CVE disclosure anomaly — 8 months of undisclosed fixes (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inte
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet) to `/tmp/opencode/whale_binary/`
+- LEARN: NO new class proven dead or alive this cycle — full surface delta re-verified identical (NVD 28/0-in-2026 HTTP 200, year breakdown static, repo pushed 2019-09-2
+- LEARN: ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle (23:55 UTC) — `keywordSearch=whale` totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30, 0
+- LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels (cloudfront DNS No-answer general to *.cloudfront.net, APKMirr
+- LEARN: NO new class proven dead or alive this cycle — full surface delta re-verified identical (NVD 28/0-in-2026 HTTP 200, repo pushed 2019-09-23, sample ext manifest 
+- LEARN: NO_DELTA @ all passive surfaces: NVD services endpoint HTTP 200 (totalResults=28, 0 in 2026, year breakdown unchanged), GitHub repo pushed_at=2019-09-23 / updat
+- LEARN: REJECTED @ binary acquisition: /tmp/opencode/whale_binary/ still MISSING — all passive channels (cloudfront DNS No-answer even via 8.8.8.8, APKMirror 403, Uptod
+- LEARN: REJECTED class @ sidebar SOP bypass: duplicates CVE-2025-69234/69235 (platform-agnostic CPE cpe:2.3:a:navercorp:whale:* covers v4.38.386.14 = patched); sample e
