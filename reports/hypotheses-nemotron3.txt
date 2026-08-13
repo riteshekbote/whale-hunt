@@ -1,4 +1,4 @@
-## 2026-08-13 09:34:27 UTC [browser] (model nemotron3)
+## 2026-08-13 10:46:55 UTC [browser] (model nemotron3)
 [PRIO] Whale desktop sync implementation (os_crypt_whale fork + bootstrap-token envelope + KDF in v4.38.386.14 binary), 7.85, atk=9 biz=9 tech=8 gate=2 cloud=3 fresh=8
 [PRIO] Whale Android 3.9.14.9 sync surface (com.naver.whale + whalesync prefs + keystore), 6.20, atk=7 biz=8 tech=7 gate=3 cloud=4 fresh=4
 [PRIO] NVD 8-month disclosure gap monitor (services.nvd.nist.gov), 5.35, atk=6 biz=7 tech=5 gate=10 cloud=2 fresh=6
@@ -11,7 +11,7 @@ evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences
 verify_steps: HUMAN_ONLY: Deliver Whale v4.38.386.14 .deb → objdump/strings on os_crypt_whale.so + whale_sync_util call sites for bootstrap-token envelope and /whalesync/reset request shape; diff pref set vs upstream Chromium; zero network
 impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
 testability: HUMAN_ONLY
-[HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork
+[HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork
 class: AUTH
 asset: Whale v4.38.386.14 desktop binary (os_crypt_whale.so)
 confidence: 62
@@ -32,7 +32,7 @@ testability: HUMAN_ONLY
 [PARKED] Whale Android sync surface — keystore-backed bootstrap token storage deviation: confidence 50 but HUMAN_ONLY APK delivery blocked (uptodown session-token dw flow not curl-able); no passive path
 [PARKED] Whale-only bundled library version drift (socket.io.slim.js): confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; no passive proof path; permanently parked
 [FINAL] 1) Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (confidence 62)
-[FINAL] 2) Desktop sync passphrase KDF weak iteration / device-recoverable master key in `os_crypt_whale` fork (confidence 62)
+[FINAL] 2) Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (confidence 62)
 [FINAL] 3) NVD 8-month gap hides undisclosed sync-class fixes — regression/version-drift detection (confidence 55)
 [NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) to /tmp/opencode/whale_binary/ — all passive download paths confirmed dead (cloudfront DNS No answer, APKMirror 403, Uptodown 404 both pages, pstatic 404)
 [LEARN] NO new class proven dead or alive this cycle — full surface delta re-verified identical (NVD 28/0-in-2026 HTTP 200, year breakdown static, repo pushed 2019-09-23, sample ext 5/5 200, binary dir MISSING, all acquisition channels 403/404/No-answer)
@@ -43,4 +43,5 @@ testability: HUMAN_ONLY
 [LEARN] ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch
 [LEARN] ACCEPTED @ sample extension + wiki docs: manifest.json + whale.sidebarAction.md HTTP 200 — sidebar surface live and unchanged; class remains REJECTED (duplicate of fixed CVEs, no novel variant proven)
 [LEARN] ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md) confirms 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests; binary extraction is the ONLY vector
+[LEARN] ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; remains the only live zero-auth passive surface; date-filtered queries still 404
 [RISK] sync: 65 reason: custom /whalesync + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 82 reason: sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; CPE Linux gap resolved; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show() message handling — high-priority regression window unchanged | libs: 35 reason: Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk
