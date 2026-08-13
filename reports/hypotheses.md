@@ -3072,3 +3072,28 @@
 - LEARN: ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle (11:05 UTC) — `keywordSearch=whale` totalResults=28, year breakdown static, 0 in 2026, latest CVE-20
 - LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels (cloudfront DNS No-answer general to *.cloudfront.net, APKMirr
 - LEARN: NO_DELTA @ all passive surfaces: NVD year breakdown + repo pushed_at + sample ext 5/5 200 + wiki 200 all unchanged; no new static-analysis surface this cycle.
+
+## RANKED HYPOTHESES 2026-08-13 12:29:28 UTC
+- [62] Whale: Whale desktop sync passphrase KDF weakness / recoverable master-key storage in os_crypt_whale fork (from reports/hypotheses-laguna.txt)
+- [62] Whale: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inte
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet) to `/tmp/opencode/whale_binary/`
+- LEARN: NO new class proven dead or alive this cycle — full surface delta re-verified identical (NVD 28/0-in-2026 HTTP 200, year breakdown static, repo pushed 2019-09-2
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
+- LEARN: REJECTED @ /tmp/opencode/whale_binary/: still MISSING — binary-gated verification permanently HUMAN-gated
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KD
+- LEARN: ACCEPTED @ sample extension + wiki docs: manifest.json + whale.sidebarAction.md HTTP 200 — sidebar surface live and unchanged; class remains REJECTED (duplicate
+- LEARN: ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md) confirms 0 Whale-specific source fi
+- LEARN: ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; remains the onl
+- LEARN: ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle (12:26 UTC) — `keywordSearch=whale` totalResults=28, year breakdown static, 0 in 2026, latest CVE-20
+- LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels (cloudfront DNS No-answer general to *.cloudfront.net, APKMirr
+- LEARN: NO_DELTA @ all passive surfaces: NVD totalResults + repo pushed_at + sample ext manifest + wiki all unchanged; no new static-analysis surface this cycle.
+- LEARN: NO_DELTA @ all passive surfaces: NVD HTTP 200 (28/0-in-2026), GitHub repo pushed 2019-09-23 (unchanged), sample extension 5 files HTTP 200 (confirmed this cycle
+- LEARN: REJECTED @ cloudfront CDN: d1vdt4q2qgdbji.cloudfront.net + *.cloudfront.net resolve No-answer via 8.8.8.8 — hard sandbox network block, general to all cloudfron
+- LEARN: ACCEPTED class @ sync KDF: no static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confir
+- LEARN: REJECTED class @ sidebar SOP bypass: duplicates CVE-2025-69234/69235 (platform-agnostic CPE covers v4.38.386.14 = patched); sample extension proves API surface 
+- LEARN: CONFIRMED @ NVD gap monitor: keywordSearch=whale HTTP 200 (totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30) — remains the only live zero-auth pass
