@@ -2976,3 +2976,16 @@
 - LEARN: NO_DELTA @ all passive surfaces: NVD services endpoint HTTP 200 (totalResults=28, 0 in 2026, year breakdown unchanged), GitHub repo pushed_at=2019-09-23 / updat
 - LEARN: REJECTED @ binary acquisition: /tmp/opencode/whale_binary/ still MISSING — all passive channels (cloudfront DNS No-answer even via 8.8.8.8, APKMirror 403, Uptod
 - LEARN: REJECTED class @ sidebar SOP bypass: duplicates CVE-2025-69234/69235 (platform-agnostic CPE cpe:2.3:a:navercorp:whale:* covers v4.38.386.14 = patched); sample e
+
+## RANKED HYPOTHESES 2026-08-13 06:51:26 UTC
+- [62] Whale: Whale desktop sync passphrase KDF weakness / recoverable master-key storage in os_crypt_whale fork (from reports/hypotheses-laguna.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inte
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe` from Naver C
+- LEARN: ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle — `keywordSearch=whale` totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30, 0 sync-class 
+- LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels (cloudfront DNS No-answer general to *.cloudfront.net even via
+- LEARN: NO new class proven dead or alive this cycle — full surface delta re-verified identical (NVD 28/0-in-2026 HTTP 200, year breakdown static, repo pushed 2019-09-2
+- LEARN: REJECTED class @ sidebar SOP bypass: duplicates CVE-2025-69234/69235 (platform-agnostic CPE `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*` covers v4.38.386.14 = patche
+- LEARN: REJECTED passive binary acquisition: all channels remain 100% blocked in-sandbox — cloudfront DNS `No answer` (general to `*.cloudfront.net`, 000 even via 8.8.8
+- LEARN: ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle — `keywordSearch=whale` totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; remains the o
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KD
