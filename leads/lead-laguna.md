@@ -8878,3 +8878,28 @@ testability: HUMAN_ONLY
 [RISK] sync: 72 — Whale-only OSCrypt fork (xv10 magic) + Whale-only prefs (sync.encryption_bootstrap_token_per_account, whale_need_encryption_key_forced_time) confirmed present in v4.38.386.14 via prior binary recon; KDF iteration count + master-key/envelope storage path unextracted (binary absent in-sandbox, HUMAN-gated); strongest open surface, Critical impact if weak.
 [RISK] browser: 45 — sidebar/dual-tab SOP-CSP class REJECTED as duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 (platform-agnostic CPE covers v4.38.386.14 = patched); API surface live (5 sample-ext files + 1 wiki doc HTTP 200, 0 sender origin validation confirmed via grep this cycle) but no novel variant or current-binary exploitability proven; repo documentation-only since 2019-09-23, binary unacquired.
 [RISK] libs: 30 — socket.io.slim.js confirmed Whale-only in resources.pak (prior binary recon) but confidence 38 < 40; handler runtime-fetched, version unknown, no public library manifest, binary inaccessible, CVE-2023-35780 irrelevant (CSRF not injection); permanently parked; no other lib leads.
+## 2026-08-14 05:57:33 UTC [browser] (model laguna)
+class: AUTH
+asset: Whale desktop v4.38.386.14 libos_crypt.so + Preferences "Local State" (pending binary delivery)
+confidence: 62
+reasoning: Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, whale_need_encryption_key_forced_time) + Whale-forked os_crypt_whale.cc with xv10 magic confirmed present in v4.38.386.14 via prior binary recon. Full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confirms binary extraction is the ONLY vector; no static analysis path exists.
+evidence_needed: PBKDF2/scrypt/argon2 iteration constant; master-key storage path (login keyring vs plaintext Local State); whale_need_encryption_key_forced_time downgrade logic; bootstrap-token envelope encryption
+verify_steps: HUMAN_ONLY — deliver official Whale desktop v4.38.386.14 .deb (from unrestricted internet — NOT cloudfront CDN `d1vdt4q2qgdbji.cloudfront.net` which DNS-resolves `No answer` at 127.0.0.53 even via 8.8.8.8; NOT APKMirror which returns Cloudflare 403; NOT Uptodown which returns HTTP 404 with app page removed; NOT `static-whale.pstatic.net/WhaleSetup.exe` which returns 404 and is excluded per scope.yml) to `/tmp/opencode/whale_binary/`. Then run: (1) `strings -n8 libos_crypt.so | grep -iE 'xv10|pbkdf2|scrypt|argon2|whale_need_encryption_key'` (2) `nm -D libos_crypt.so | grep -iE 'os_crypt|sync_encryption'` (3) `grep -aiE 'bootstrap_token|envelope|NEO_SES' "Preferences" "Local State"` in pre/post encrypted-sync states. No requests to /whalesync or *.naver.com per scope.yml.
+impact: Local attacker decrypts synced passwords + cookies + autofill + bookmarks offline → full Naver account compromise. Critical.
+testability: HUMAN_ONLY
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0 (keywordSearch=whale, resultsPerPage=200)
+confidence: 40
+reasoning: keywordSearch=whale HTTP 200: totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30. Year breakdown {2003:1, 2009:1, 2018:5, 2020:1, 2021:1, 2022:6, 2023:3, 2024:2, 2025:8}. Disclosure gap spans v4.35.352–v4.38.386.14 (8+ months since last fix); naver+whale returns totalResults=0 (keyword quirk).
+evidence_needed: Any new CVE appearing in 2026 for navercorp:whale CPE, or sync/crypto keyword match in existing CVE descriptions
+verify_steps: PASSIVE — at ≤1 rps, GET `https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200`; alert on pubDate year >= 2026 or sync/crypto keywords in vulnerability descriptions; use `whale` keyword (not `naver+whale` which returns 0)
+impact: Informational — indicates undisclosed vulnerability window in latest v4.38.386.14. Low.
+testability: PASSIVE
+class: XSS
+asset: raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js
+confidence: 55
+reasoning: Sample extension background.js onMessage accepts sender param but grep confirms ZERO sender.origin/sender.url/sender.tab matches; contentscript.js dispatches sidebarAction.show/show2 from userAgent.includes('sidebar')===false branch (any web page). manifest.json content_scripts match ALL origins.
+evidence_needed: Reproduced SOP bypass on live v4.38.386.14 binary proving arbitrary URL loaded in privileged sidebar context from attacker-controlled web origin
+verify_steps: HUMAN_ONLY — load sample extension from arbitrary web origin, dispatch sidebarAction.show with attacker URL, observe cross-origin sidebar panel access
+impact: Cross-site data theft via sidebar privilege escalation. High if reproducible on patched version.
+testability: HUMAN_ONLY
