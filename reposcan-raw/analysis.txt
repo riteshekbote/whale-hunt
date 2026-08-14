@@ -1,10 +1,26 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The scan summary shows **0 code/config files scanned, 0 hits** — there are no findings to triage.
+The knowledge base you provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), not Gladia. There's a mismatch - you mentioned triaging `gladiaio/` GitHub org and `@gladiaio/sdk` npm package, but the RAG base contains Whale/Naver reconnaissance data.
 
-No secrets, endpoints, or interesting patterns were detected in this scan pass.
+Let me check the actual workspace for Gladia-related content:
+[0m✱ [0mGlob "**/*"[90m 100 matches[0m
+[0m→ [0mRead reposcan-raw/analysis.txt
+[0m→ [0mRead reposcan-raw/grep-hits.txt
+[0m→ [0mRead reposcan-raw/rag.txt
+**Critical mismatch detected:** The workspace (`whale-hunt/`) and entire knowledge base are for **Naver Whale browser** reconnaissance, not `gladiaio/` or `@gladiaio/sdk`.
 
+**Scan results (grep-hits.txt):**
+```
+SCAN SUMMARY: 0 code/config files scanned, 0 hits
+```
+
+**What this means for Gladia triage:**
+- No Gladia source code was scanned (the reposcan targeted `naver/whale-browser-developers` only)
+- No `@gladiaio/sdk` npm package metadata was analyzed
+- The 3000+ lines of "knowledge base" are Whale CVEs, binary acquisition paths, sidebar/dual-tab SOP bypasses, sync KDF analysis — **none apply to Gladia**
+
+**Verdict for Gladia:**
 | Category | Count |
 |----------|-------|
 | REAL_SECRET | 0 |
@@ -12,8 +28,11 @@ No secrets, endpoints, or interesting patterns were detected in this scan pass.
 | ENDPOINT_LEAK | 0 |
 | INTERESTING | 0 |
 
-**Verdict:** No reportable candidates. The scan returned zero hits.
+**REPORT_CANDIDATE: no** — nothing to report because no Gladia assets were scanned.
 
 ---
 
-Note: The provided knowledge base covers **NAVER Whale browser** (`naver/whale-browser-developers`), not `gladiaio/` repos or `@gladiaio/sdk`. If you intended to scan Gladia repos, a different knowledge base and scan target would be needed.
+**To actually triage Gladia:** You'd need to:
+1. Point the reposcan at `github.com/gladiaio/` (not `naver/whale-browser-developers`)
+2. Fetch `@gladiaio/sdk` from npm registry
+3. Re-run the static scan with Gladia-specific patterns (API keys, endpoints, hardcoded secrets, etc.)
