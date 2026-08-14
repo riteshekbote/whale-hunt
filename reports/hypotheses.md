@@ -3557,3 +3557,12 @@
 - LEARN: ACCEPTED @ NVD gap monitor: keywordSearch=whale HTTP 200 re-verified this cycle (totalResults=28, year breakdown static, 0 in 2026, latest CVE-2025-69235 @2025-
 - LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING (re-verified this cycle) — all passive channels remain 100% blocked in-sandbox; binar
 - LEARN: NO_DELTA @ all passive surfaces: NVD totalResults/year breakdown + repo pushed_at + sample ext manifest 200 + repo API 200 all unchanged; no new static-analysis
+
+## RANKED HYPOTHESES 2026-08-14 15:54:34 UTC
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- [62] /tmp/opencode/whale_binary/libos_crypt.so: Whale sync passphrase KDF weakness / recoverable master-key storage in os_crypt_whale fork (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Naver Whale desktop binary v4.38.386.14 (Linux x64 .deb) to `/tmp/opencode/whale_binary/` — download via unrestricted-internet host from
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inte
+- LEARN: ACCEPTED @ NVD gap monitor: keywordSearch=whale HTTP 200 re-verified this cycle (totalResults=28, year breakdown static, 0 in 2026, latest CVE-2025-69235 @2025-
+- LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING (re-verified 15:36 UTC) — all passive channels remain 100% blocked in-sandbox; binary
+- LEARN: NO_DELTA @ all passive surfaces: NVD totalResults/year breakdown + repo pushed_at + sample ext manifest 200 all unchanged; no new static-analysis surface this c
