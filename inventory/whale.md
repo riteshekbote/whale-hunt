@@ -903,3 +903,5 @@
 - CHANGED `whale.naver.com` (root, without `www`) returns HTTP 200 — prior probes only checked `www.whale.naver.com` (DNS error). However, `*.naver.com` is explicitly OOS per scope.yml out_of_scope rules; downl
 
 ## 2026-08-14 22:23:17 UTC
+
+## 2026-08-14 22:49:06 UTC
