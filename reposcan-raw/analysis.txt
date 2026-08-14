@@ -1,13 +1,48 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base you provided is entirely about **Naver Whale browser** (`naver/whale-browser-developers`), not Gladia. The scan summary also shows **0 code/config files scanned, 0 hits** for Gladia.
+[0m$ [0mls -la
+total 916
+drwxr-xr-x 11 runner runner   4096 Aug 14 22:23 .
+drwxr-xr-x  3 runner runner   4096 Aug 14 22:23 ..
+drwxr-xr-x  7 runner runner   4096 Aug 14 22:23 .git
+drwxr-xr-x  3 runner runner   4096 Aug 14 22:23 .github
+-rw-r--r--  1 runner runner   1057 Aug 14 22:23 README.md
+-rw-r--r--  1 runner runner      0 Aug 14 22:23 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 14 22:23 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 14 22:23 knowledge
+drwxr-xr-x  2 runner runner  20480 Aug 14 22:23 leads
+-rw-r--r--  1 runner runner  12737 Aug 14 22:23 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 14 22:23 reports
+-rw-r--r--  1 runner runner 598138 Aug 14 22:23 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 14 22:23 reposcan-raw
+-rw-r--r--  1 runner runner 219539 Aug 14 22:23 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 14 22:23 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 14 22:23 scripts
+-rw-r--r--  1 runner runner     34 Aug 14 22:23 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 14 22:23 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 14 22:23 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 14 22:23 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 14 22:23 state_nemotron3.json
+drwxr-xr-x  2 runner runner  12288 Aug 14 22:23 triage
+[0m
+[0m→ [0mRead README.md
+This project is for **NAVER Whale Browser** (naver/whale-browser-developers), not Gladia. The knowledge base and workspace are entirely about Whale vulnerability research.
 
-**Verdict:** No Gladia repos or npm packages were scanned in this run. The knowledge base appears to be from a different target (Whale browser vulnerability research).
+The user query mentions `gladiaio/` org and `@gladiaio/sdk` npm package, but:
+- The repo is `whale-hunt` for NAVER Whale
+- The knowledge base covers Whale CVEs, sync KDF, sidebar SOP bypasses, binary acquisition channels
+- Scope.yml references Whale/Naver assets
 
-To triage Gladia:
-1. Run the static scan against `gladiaio/` GitHub org repos
-2. Fetch npm metadata for `@gladiaio/sdk`
-3. Then classify any findings
+**There's a mismatch** — the prompt appears to have Gladia text copied in but the actual task is Whale triage.
 
-Would you like me to scan the actual Gladia repos?
+For the **actual Whale work** (per knowledge base):
+- **Static analysis path is dead**: `naver/whale-browser-developers` is documentation-only (last commit 2019-09-23)
+- **All binary acquisition channels blocked**: CloudFront DNS `No answer`, APKMirror 403, Uptodown 404, pstatic 404
+- **Only live surface**: Sample extension (translate branch) + GitHub wiki docs — but these duplicate fixed CVEs (CVE-2025-69234/69235, platform-agnostic CPE covers v4.38.386.14)
+- **Sync KDF/OSCrypt**: Strongest lead (confidence 62) but **HUMAN-gated** — requires binary extraction
+- **NVD gap monitor**: 0 CVEs in 2026 (28 total, latest 2025-12-30) — only live zero-auth passive surface
+
+**Verdict**: No reportable findings from passive scan. All viable paths (sync KDF, binary analysis) require HUMAN with unrestricted internet for binary acquisition.
+
+Should I proceed with Whale triage per the actual knowledge base, or did you mean to provide a Gladia codebase/scan?
