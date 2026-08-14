@@ -1,12 +1,64 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base you provided is entirely about **Naver Whale browser** (naver/whale-browser-developers, CVEs, sync KDF, sidebar SOP bypasses, binary acquisition channels) — not about **gladiaio/** repos or `@gladiaio/sdk` npm package.
+The knowledge base you provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), not Gladia. There's a mismatch — the task mentions `gladiaio/` GitHub org and `@gladiaio/sdk` npm package, but the RAG base covers Whale.
 
-There's a mismatch: the task asks to triage gladiaio/ GitHub org + npm metadata, but the RAG knowledge base contains only Whale browser vulnerability research.
+Let me check the actual workspace to see what we're working with:
+[0m$ [0mls -la
+total 900
+drwxr-xr-x 11 runner runner   4096 Aug 14 13:59 .
+drwxr-xr-x  3 runner runner   4096 Aug 14 13:59 ..
+drwxr-xr-x  7 runner runner   4096 Aug 14 13:59 .git
+drwxr-xr-x  3 runner runner   4096 Aug 14 13:59 .github
+-rw-r--r--  1 runner runner   1057 Aug 14 13:59 README.md
+-rw-r--r--  1 runner runner      0 Aug 14 13:59 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 14 13:59 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 14 13:59 knowledge
+drwxr-xr-x  2 runner runner  20480 Aug 14 13:59 leads
+-rw-r--r--  1 runner runner  10299 Aug 14 13:59 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 14 13:59 reports
+-rw-r--r--  1 runner runner 598138 Aug 14 13:59 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 14 13:59 reposcan-raw
+-rw-r--r--  1 runner runner 208081 Aug 14 13:59 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 14 13:59 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 14 13:59 scripts
+-rw-r--r--  1 runner runner     34 Aug 14 13:59 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 14 13:59 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 14 13:59 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 14 13:59 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 14 13:59 state_nemotron3.json
+drwxr-xr-x  2 runner runner  12288 Aug 14 13:59 triage
+[0m
+[0m→ [0mRead scope.yml
+[0m→ [0mRead scan-prompt.txt[90m [limit=100][0m
+[0m→ [0mRead probe-results.md
+[0m✱ [0mGlob "**/*"[90m in inventory · 1 match[0m
+[0m→ [0mRead inventory/whale.md
+**Triage Summary: Naver Whale Browser (not Gladia — scan-prompt.txt header is incorrect)**
 
-To proceed, I need either:
-1. The correct knowledge base for gladiaio/ (repos, SDK code, npm package contents)
-2. Or clarification on which target you actually want triaged
+### Current State (2026-08-14, NO_DELTA across all passive surfaces)
 
-Which should I use?
+| Surface | Status | Evidence |
+|---------|--------|----------|
+| **Public GitHub repo** (`naver/whale-browser-developers`) | Documentation-only, permanently dead for static analysis | Last commit 2019-09-23, 4 branches enumerated (0 Whale-specific source files, 0 sync/crypto/OSCrypt/library manifests), 0 releases |
+| **Binary acquisition** | 100% blocked in-sandbox | CloudFront DNS `No answer` (general `*.cloudfront.net`), APKMirror 403, Uptodown 404 (Win+Android), pstatic 404, `/tmp/opencode/whale_binary/` MISSING |
+| **NVD CVE gap monitor** | Live, 0 CVEs in 2026 | `keywordSearch=whale` → 28 total, 0 in 2026, latest CVE-2025-69235 @2025-12-30, 19 `navercorp` CPE matches; date-filtered queries 404 |
+| **Sample extension** (translate branch) | Live, attack surface confirmed | 5 files HTTP 200: `manifest.json` (ALL-origin content_scripts + `permissions:["tabs"]`), `background.js` (0 `sender.origin`/`sender.url`/`sender.tab` grep matches), `contentscript.js` (dispatches `sidebarAction.show/show2` from ANY web page context) |
+| **GitHub wiki docs** | 5 pages live | `whale.sidebarAction.md` (arbitrary URL loading via `show({details:{url}})`), `How-to-avoid...urls.md` (drag-drop mitigation ONLY, NOT `show({url})`), `Client-side-vs-Server-side...md` (server-side redirect via `location.replace`) |
+
+### Lead Classification (per knowledge base)
+
+| Lead | Classification | Confidence | Rationale |
+|------|----------------|------------|-----------|
+| **Sidebar/dual-tab/web-panel SOP-CSP bypass** | **REJECTED** (permanently parked) | 32 (<40) | Duplicates CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE `cpe:2.3:a:navercorp:whale:*` covers v4.38.386.14 (patched); API surface live but NO binary exploitability proof |
+| **socket.io.slim.js event-handler injection** | **REJECTED** (permanently parked) | 38 (<40) | Handler runtime-fetched, binary absent, no passive version string; CVE-2023-35780 irrelevant (WordPress plugin CSRF) |
+| **Installer DLL search-order regression** | **REJECTED** (permanently parked) | 50 (<60) | All passive binary channels dead; requires live elevated Windows install |
+| **Sync KDF / bootstrap-token / OSCrypt / refresh-token** | **ACCEPTED / HOLD** | 62 | **Strongest open surface** — Whale-only prefs keys (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`), forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic confirmed in v4.38.386.14 via prior binary recon; **but binary extraction required** (HUMAN-gated); no static analysis path exists (full repo enumeration confirms 0 sync/crypto source files) |
+| **Socket.io push-channel / Android keystore** | **HOLD** | — | Binary/APK absent, handler runtime-fetched |
+| **Scrapbook / Multiplay / devTools-installer / whaleonPrivate** | **HOLD** | — | Requires AUTH_HELPED two-account + live browser |
+
+### Verdict
+
+**No new reportable candidates this cycle.** All passive surfaces are static (NO_DELTA since 2026-08-11). The only viable path for the highest-confidence lead (Sync KDF) is **HUMAN-delivered binary extraction** — all automated acquisition channels are permanently blocked in-sandbox.
+
+**REPORT_CANDIDATE: no** (for any new finding this cycle)
