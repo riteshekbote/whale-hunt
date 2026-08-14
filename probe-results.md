@@ -426,3 +426,7 @@ https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerP
 
 ## 2026-08-14 13:59:15 UTC
 https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 -> 200 len=65680 type=application/json
+
+## 2026-08-14 14:46:47 UTC
+https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 -> 200 len=65680 type=application/json
+https://www.whale.naver.com` -> ERR <urlopen error [Errno -2] Name or service not know
