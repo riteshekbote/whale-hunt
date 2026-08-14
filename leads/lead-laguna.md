@@ -9478,3 +9478,40 @@ testability: AUTH_HELPED
 [RISK] sync: 72 — Whale-only OSCrypt fork (xv10 magic) + Whale-only prefs confirmed present in v4.38.386.14 via prior binary recon; KDF iteration count + master-key/envelope storage path remain unextracted (binary HUMAN-gated at `/tmp/opencode/whale_binary/`); repo enumeration confirms ZERO sync source files publicly; Critical impact if weak; confidence 62; no public CVEs touch sync/crypto keywords across 28 total Whale CVEs.
 [RISK] browser: 30 — sidebar/dual-tab SOP-CSP bypass duplicates CVE-2025-69234/69235/53600/62583/62584/62585 (platform-agnostic CPE cpe:2.3:a:navercorp:whale:* covers v4.38.386.14 = patched); sample extension + wiki docs confirm API surface live (0 sender.origin/sender.url validation confirmed via grep) but no novel variant or current-binary exploitability proven; repo documentation-only since 2019-09-23 (pushed_at unchanged).
 [RISK] libs: 30 — socket.io.slim.js confirmed Whale-only in resources.pak (prior recon strings) but confidence 38 < 40 threshold; handler runtime-fetched degrading passive evidence; no public library manifest in repo; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); no passive version string extractable without binary; permanently parked.
+## 2026-08-14 21:37:09 UTC [browser] (model laguna)
+[PRIO] `/tmp/opencode/whale_binary/libos_crypt.so` + `Preferences`/`Local State`: score=60, attack_surface=8, business=10, tech_exposure=9, gate_ease=3, cloud=0, freshness=7
+[PRIO] `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200`: score=55, attack_surface=0, business=8, tech_exposure=3, gate_ease=10, cloud=0, freshness=8
+[PRIO] `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/` + wiki: score=32, attack_surface=4, business=5, tech_exposure=6, gate_ease=10, cloud=0, freshness=5
+[HYP] Whale sync passphrase KDF weakness / recoverable master-key storage in os_crypt_whale fork
+class: AUTH
+asset: /tmp/opencode/whale_binary/libos_crypt.so + Preferences/Local State
+confidence: 62
+reasoning: Full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files) confirms binary extraction is the ONLY static vector. Prior binary recon confirms Whale-only prefs (sync.encryption_bootstrap_token, whale_need_encryption_key_forced_time) + forked os_crypt_whale.cc with xv10 magic present in v4.38.386.14, but KDF iteration count + master-key/envelope storage path remain unextracted.
+evidence_needed: PBKDF2/scrypt/argon2 iteration constant in libos_crypt.so; master-key storage path in Preferences/Local State; bootstrap-token envelope format; NEO_SES cookie usage.
+verify_steps: HUMAN_ONLY — Deliver official Naver Whale desktop binary v4.38.386.14 (Linux x64 .deb) to `/tmp/opencode/whale_binary/` from `https://www.whale.naver.com` download page (NOT cloudfront CDN `d1vdt4qgdbji.cloudfront.net`=No-answer; NOT APKMirror=403; NOT Uptodown=404; NOT `static-whale.pstatic.net`=scope-excluded). Record sha256 ONLY (never raw binary content in logs). Then: `strings -n8 libos_crypt.so | grep -iE 'xv10|pbkdf2|scrypt|argon2|whale_need_encryption_key'`, `nm -D libos_crypt.so | grep -iE 'os_crypt|sync_encryption'`, `grep -aiE 'bootstrap_token|envelope|NEO_SES' "Preferences" "Local State"`.
+impact: Offline decrypt of synced passwords/cookies/autofill/bookmarks → full Naver account compromise. Critical.
+testability: HUMAN_ONLY
+[HYP] Naver Whale 2026 CVE disclosure anomaly / undisclosed vulnerability window
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200
+confidence: 55
+reasoning: PROBE confirmed HTTP 200 this cycle — `keywordSearch=whale` returns totalResults=28, 0 published in 2026, latest CVE-2025-69235 @2025-12-30. Disclosure gap spans v4.35.352–v4.38.386.14 (8+ months, 3 minor versions). `naver+whale` keyword returns 0 (quirk; bare `whale` correct). Date-filtered queries (pubStartDate/pubEndDate) return 404. 0 sync/crypto keyword hits across all 28 descriptions.
+evidence_needed: Any new CVE appearing in 2026 for navercorp:whale CPE, or sync/crypto keyword match in existing CVE descriptions.
+verify_steps: PASSIVE — `GET https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` at ≤1 rps with retry on 503/transient; weekly full-pagination diff of published dates + sync-class keyword screen (sync|crypt|encrypt|kdf|bootstrap|token|os_crypt|keyring|passphrase); alert on any 2026 entry.
+impact: Early-warning of newly disclosed in-scope flaws → priority recalibration. Medium.
+testability: PASSIVE
+[HYP] Whale sync bootstrap-token envelope storage in os_crypt_whale fork
+class: AUTH
+asset: /tmp/opencode/whale_binary/libos_crypt.so + Preferences/Local State
+confidence: 62
+reasoning: Repo enumeration confirms ZERO sync source files publicly. Prior binary recon confirms Whale-only prefs (sync.encryption_bootstrap_token_per_account) + forked os_crypt_whale.cc with xv10 magic present in v4.38.386.14; bootstrap-token envelope format + master-key storage path unextracted. Same binary, same vector as KDF hypothesis — consolidated for binary access.
+evidence_needed: xv10 magic usage context in os_crypt_whale.cc disassembly; bootstrap_token envelope AES-wrapping scheme; master-key path in Local State file.
+verify_steps: HUMAN_ONLY — same binary delivery + extraction as sync KDF hypothesis (sha256-only).
+impact: Offline decrypt of synced data → full Naver account compromise. Critical.
+testability: HUMAN_ONLY
+[PARKED] Sidebar/dual-tab SOP-CSP bypass variant: confidence 32 < 40 AND maps to knowledge REJECTED class (duplicate CVE-2025-69234/69235/53600/62583/62584/62585); platform-agnostic CPE `cpe:2.3:a:navercorp:whale:*` covers v4.38.386.14 (patched); no novel variant or binary exploitability proven.
+[PARKED] socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked, no change.
+[FINAL] [62] Whale sync passphrase KDF weakness / recoverable master-key storage in os_crypt_whale fork (AUTH, HUMAN_ONLY, Critical)
+[FINAL] [62] Whale sync bootstrap-token envelope storage in os_crypt_whale fork (AUTH, HUMAN_ONLY, Critical)
+[FINAL] [55] Naver Whale 2026 CVE disclosure anomaly / undisclosed vulnerability window (OTHER, PASSIVE, Medium)
+[NEXT] HUMAN: Deliver official Naver Whale desktop binary v4.38.386.14 (Linux x64 .deb) to `/tmp/opencode/whale_binary/` from `https://www.whale.naver.com` download page. Record sha256 only (never raw binary content in logs). Gating step for Critical sync-KDF/bootstrap-token hypotheses — all passive channels confirmed permanently blocked.
