@@ -901,3 +901,5 @@
 ## 2026-08-14 22:03:49 UTC
 - CHANGED APKPure landing page (`https://apkpure.com/naver-whale-browser/com.naver.whale`) returns HTTP 200 — was 403 in prior cycles. However, download CDN (`download.apkpure.com`) **still returns 403** on all
 - CHANGED `whale.naver.com` (root, without `www`) returns HTTP 200 — prior probes only checked `www.whale.naver.com` (DNS error). However, `*.naver.com` is explicitly OOS per scope.yml out_of_scope rules; downl
+
+## 2026-08-14 22:23:17 UTC
