@@ -1,36 +1,19 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-[0m$ [0mcurl -s "https://api.github.com/orgs/gladiaio/repos?per_page=100" | jq -r '.[] | "\(.name)\t\(.html_url)\t\(.description // "no description")\t\(.language // "none")\t\(.updated_at)"'
-gladia-cli	https://github.com/gladiaio/gladia-cli	no description	Go	2026-07-27T03:25:24Z
-gladia-samples	https://github.com/gladiaio/gladia-samples	no description	Python	2026-07-28T14:02:30Z
-triton-inference-memory-allocation	https://github.com/gladiaio/triton-inference-memory-allocation	no description	Python	2026-05-04T10:31:55Z
-gunicorn-fix-sigabort	https://github.com/gladiaio/gunicorn-fix-sigabort	gunicorn 'Green Unicorn' is a WSGI HTTP Server for UNIX, fast clients and sleepy applications.	Python	2025-08-12T07:11:26Z
-uvicorn-fix-sigabort	https://github.com/gladiaio/uvicorn-fix-sigabort	An ASGI web server, for Python. 🦄	Python	2025-09-03T19:38:24Z
-docs	https://github.com/gladiaio/docs	no description	MDX	2026-08-13T14:54:04Z
-1password-scim	https://github.com/gladiaio/1password-scim	1Password SCIM Bridge deployment examples	HCL	2024-02-01T14:16:13Z
-sdk	https://github.com/gladiaio/sdk	no description	Python	2026-07-23T20:34:01Z
-gladia-quiz-app	https://github.com/gladiaio/gladia-quiz-app	no description	TypeScript	2025-11-28T16:04:27Z
-normalization	https://github.com/gladiaio/normalization	A lightweight library for normalizing speech transcripts before computing WER	Python	2026-07-22T04:16:54Z
-vllm_backend	https://github.com/gladiaio/vllm_backend	no description	Python	2026-03-04T13:15:26Z
-transformers	https://github.com/gladiaio/transformers	🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. 	none	2026-03-11T14:38:15Z
-compare-stt	https://github.com/gladiaio/compare-stt	Blind comparison of speech-to-text providers.	TypeScript	2026-08-04T12:20:14Z
-n8n-nodes-gladia	https://github.com/gladiaio/n8n-nodes-gladia	no description	TypeScript	2026-07-23T15:57:27Z
-cloudnative-pg	https://github.com/gladiaio/cloudnative-pg	CloudNativePG is a comprehensive platform designed to seamlessly manage PostgreSQL databases within Kubernetes environments, covering the entire operational lifecycle from initial deployment to ongoing maintenance	none	2026-04-23T15:06:27Z
-skills	https://github.com/gladiaio/skills	Official AI agent skills from Gladia for integrating speech-to-text transcription into your applications	none	2026-08-07T06:45:59Z
-realtime-multilingual-asr-router	https://github.com/gladiaio/realtime-multilingual-asr-router	no description	Python	2026-07-29T22:42:30Z
-vercel-ai	https://github.com/gladiaio/vercel-ai	The AI Toolkit for TypeScript. From the creators of Next.js, the AI SDK is a free open-source library for building AI-powered applications and agents 	none	2026-06-12T06:46:36Z
-gladiaflow	https://github.com/gladiaio/gladiaflow	A desktop app for real-time voice dictation powered by Gladia's realtime transcription	Rust	2026-08-14T13:30:17Z
-[0m
-I'll triage the gladiaio GitHub org and @gladiaio/sdk npm package. Let me start by gathering the actual scan data.
-[0m$ [0mcurl -s "https://registry.npmjs.org/@gladiaio/sdk" | jq -r '{version: .["dist-tags"].latest, versions: keys(.versions), repo: .repository?.url, homepage: .homepage, bugs: .bugs?.url, license: .license, dependencies: (.versions[.["dist-tags"].latest].dependencies // {} | keys), devDependencies: (.versions[.["dist-tags"].latest].devDependencies // {} | keys)}'
-jq: error: keys/1 is not defined at <top-level>, line 1:
-{version: .["dist-tags"].latest, versions: keys(.versions), repo: .repository?.url, homepage: .homepage, bugs: .bugs?.url, license: .license, dependencies: (.versions[.["dist-tags"].latest].dependencies // {} | keys), devDependencies: (.versions[.["dist-tags"].latest].devDependencies // {} | keys)}                                           
-jq: 1 compile error
-[0m
-[0m$ [0mcurl -s "https://registry.npmjs.org/@gladiaio/sdk" | jq -r '.["dist-tags"].latest as $v | "\($v)\t\(.repository.url // "none")\t\(.homepage // "none")\t\(.bugs.url // "none")\t\(.license // "none")\t\(.versions[$v].dependencies // {} | keys | join(","))\t\(.versions[$v].devDependencies // {} | keys | join(","))"'
-1.1.0	git+https://github.com/gladiaio/sdk.git	https://github.com/gladiaio/sdk#readme	https://github.com/gladiaio/sdk/issues	MIT		@tsconfig/node20,@types/node,@types/ws,tsdown
-[0m
-[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
-[0m✗ [0mmkdir -p /tmp/gladia-scan && cd /tmp/gladia-scan && for repo in sdk gladia-cli gladia-samples realtime-multilingual-asr-router compare-stt n8n-nodes-gladia gladiaflow; do git clone --depth=1 "https://github.com/gladiaio/$repo" 2>/dev/null || echo "Failed: $repo"; done failed
-[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+[0m✱ [0mGlob "**/*"[90m 100 matches[0m
+[0m→ [0mRead reposcan-raw/analysis.txt
+[0m→ [0mRead reposcan-raw/grep-hits.txt
+The workspace contains **Whale browser (naver/whale-browser-developers)** triage data — not gladiaio. The scan results confirm:
+
+- **0 code/config files scanned**
+- **0 grep hits**
+
+There's no gladiaio source code, SDK repos, or npm package metadata in this workspace to triage. The knowledge base and all leads are exclusively about Whale browser vulnerabilities (CVE-2025-69235, sidebar SOP bypass, sync KDF, etc.).
+
+If you want to triage gladiaio, you'll need to:
+1. Clone gladiaio repos (e.g., `gladiaio/sdk`, `gladiaio/*`)
+2. Run the static scan against those repos
+3. Feed those results into this triage workflow
+
+Current verdict: **No gladiaio candidates exist in this scan — nothing to report.**
