@@ -4834,3 +4834,27 @@
 - LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
 - LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
 - LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer general to *.cloudfront.net even via 8.8.8.8, APKMirror 403, Uptod
+
+## RANKED HYPOTHESES 2026-08-15 22:53:23 UTC
+- [62] Whale: Sync bootstrap-token envelope storage — Whale OSCrypt v10 deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- [55] services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200: NVD 2026 disclosure gap — sync-class silent regression detector (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe` from Naver C
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inte
+- LEARN: ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confir
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30, 0 sy
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer general to *.cloudfront.net even via 8.8.8.8, APKMirror 403, Uptod
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: surface re-confirmed live (5 ext files + wiki whale.sidebarAction.md HTTP 200, background.js 0 sende
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto/OSCrypt source files) confirms binary extraction is the ONL
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-3578
+- LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels 100% blocked this cycle (cloudfront DNS No-answer general to `
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 confirmed this cycle (totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30, 0 sync/crypto ke
+- LEARN: CONFIRMED @ public repo static analysis: documentation-only (pushed 2019-09-23, updated 2025-10-22, size=5043, has_wiki=true, 0 releases, 4 branches = master 3 
+- LEARN: ACCEPTED @ sample extension + wiki surface: all 6 live artifacts HTTP 200 (manifest.json ALL-origin content_scripts + permissions ["tabs"]; background.js 0 send
+- LEARN: REJECTED @ naver/whale-browser-developers GitHub repo: documentation-only (pushed 2019-09-23, updated 2025-10-22, 0 releases, size=5043, fork=false, archived=fa
+- LEARN: ACCEPTED @ NVD gap monitor: keywordSearch=whale HTTP 200 re-verified this cycle (totalResults=28, year breakdown static, newest CVE-2025-69235 @2025-12-30, 0 sy
+- LEARN: REJECTED passive binary acquisition: `/tmp/opencode/whale_binary/` still MISSING (re-verified 22:50 UTC) — all passive channels remain 100% blocked in-sandbox (
+- LEARN: NO_DELTA @ all passive surfaces: NVD totalResults/year breakdown/newest 2025-12-30/0 sync-class hits + repo pushed 2019-09-23/size=5043 + sample ext manifest 20
