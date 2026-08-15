@@ -1,14 +1,48 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-There's a mismatch: the knowledge base provided is entirely about **Naver Whale browser** (`naver/whale-browser-developers`, Whale CVEs, Whale sync/sidebar/extension APIs), but your task is triaging **Gladia SDK repos** (`gladiaio/` GitHub org, `@gladiaio/sdk` npm package).
+[0m$ [0mls -la
+total 992
+drwxr-xr-x 11 runner runner   4096 Aug 15 22:53 .
+drwxr-xr-x  3 runner runner   4096 Aug 15 22:53 ..
+drwxr-xr-x  7 runner runner   4096 Aug 15 22:53 .git
+drwxr-xr-x  3 runner runner   4096 Aug 15 22:53 .github
+-rw-r--r--  1 runner runner   1057 Aug 15 22:53 README.md
+-rw-r--r--  1 runner runner      0 Aug 15 22:53 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 15 22:53 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 15 22:53 knowledge
+drwxr-xr-x  2 runner runner  20480 Aug 15 22:53 leads
+-rw-r--r--  1 runner runner  19686 Aug 15 22:53 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 15 22:53 reports
+-rw-r--r--  1 runner runner 598198 Aug 15 22:53 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 15 22:53 reposcan-raw
+-rw-r--r--  1 runner runner 292436 Aug 15 22:53 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 15 22:53 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 15 22:53 scripts
+-rw-r--r--  1 runner runner     34 Aug 15 22:53 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 15 22:53 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 15 22:53 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 15 22:53 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 15 22:53 state_nemotron3.json
+drwxr-xr-x  2 runner runner  12288 Aug 15 22:53 triage
+[0m
+[0m→ [0mRead scope.yml
+[0m✱ [0mGlob "**/*gladia*"[90m 0 matches[0m
+This workspace is for **Naver Whale Browser** hunting (scope.yml confirms: `programs.whale.name: "Naver Whale Browser"`), not Gladia. The knowledge base, inventory, and all scan data are exclusively about `naver/whale-browser-developers` and Whale CVEs.
 
-The Whale knowledge base contains:
-- 200+ entries about Whale browser CVEs, sync KDF, sidebar SOP bypass, binary acquisition failures
-- Zero information about Gladia, their SDK, or any gladiaio/ repos
+There's no Gladia content in this workspace — no `gladiaio` repos, no `@gladiaio/sdk` npm metadata, no Gladia-related files.
 
-**I cannot triage Gladia with Whale data.** Please provide:
-1. The correct Gladia knowledge base (RAG seed for gladiaio/ repos)
-2. Or the actual scan results/hits you want classified
+**What this workspace contains:**
+- Target: Naver Whale Browser (latest v4.38.386.14)
+- Public code surface: `naver/whale-browser-developers` (documentation-only, last code commit 2019-09-23)
+- 8-month CVE disclosure gap (0 CVEs in 2026, latest CVE-2025-69235 @ Dec 2025)
+- Sample extension (`translate` branch) confirming SOP bypass API surface (sidebarAction.show/show2 dispatched from any web origin via unvalidated `onMessage`)
+- All binary acquisition channels blocked in-sandbox (CloudFront DNS, APKMirror 403, Uptodown 404, pstatic 404)
+- Static analysis path permanently dead — binary extraction is the only vector (HUMAN-gated)
 
-What would you like to do?
+**Current triage state (from knowledge base):**
+- 0 VALID bugs reportable
+- All leads either REJECTED (duplicates of fixed CVEs, confidence <40) or HOLD (HUMAN-gated binary dependency)
+- Strongest open surface: Sync KDF/bootstrap-token/OSCrypt — requires binary extraction
+
+If you intended to triage Gladia, you'll need to provide the correct workspace/knowledge base. For Whale, the triage is complete: no reportable findings without binary access.
