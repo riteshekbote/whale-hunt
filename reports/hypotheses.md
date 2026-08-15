@@ -4237,3 +4237,23 @@
 - LEARN: ACCEPTED @ NVD gap monitor: keywordSearch=whale HTTP 200 re-verified this cycle (totalResults=28, year breakdown static {2003:1,2009:1,2018:5,2020:1,2021:1,2022
 - LEARN: REJECTED passive binary acquisition: `/tmp/opencode/whale_binary/` still MISSING (re-verified this cycle) — all passive channels remain 100% blocked in-sandbox 
 - LEARN: NO_DELTA @ all passive surfaces: NVD totalResults=28/year breakdown static/latest 2025-12-30/0 sync-class hits + repo pushed 2019-09-23/size=5043 + sample ext m
+
+## RANKED HYPOTHESES 2026-08-15 11:36:29 UTC
+- [62] Whale: Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Naver Whale desktop binary v4.38.386.14 (Linux x64 .deb, sha256 recorded ONLY) to `/tmp/opencode/whale_binary/` from official Naver down
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inte
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confirmed duplicate of CVE-2025-69234/69235/53600/62583/62584/62585 — no novel variant; sample exten
+- LEARN: REJECTED passive binary acquisition: all channels permanently blocked (cloudfront DNS No answer general to *.cloudfront.net, APKMirror 403, Uptodown 404, pstati
+- LEARN: REJECTED @ /tmp/opencode/whale_binary/: still MISSING — binary-gated verification permanently HUMAN-gated
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive proof path; permanently parked
+- LEARN: ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KD
+- LEARN: ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md) confirms 0 Whale-specific source fi
+- LEARN: ACCEPTED @ NVD gap monitor: HTTP 200 re-verified this cycle — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; remains the onl
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; maps to knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/6
+- LEARN: ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files) confirms bin
+- LEARN: REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING — all passive channels 100% blocked, sync-KDF verification permanently HUMAN-gated.
+- LEARN: ACCEPTED @ NVD gap monitor: keywordSearch=whale HTTP 200 re-verified this cycle (totalResults=28, year breakdown static {2003:1,2009:1,2018:5,2020:1,2021:1,2022
+- LEARN: REJECTED passive binary acquisition: `/tmp/opencode/whale_binary/` still MISSING (re-verified 11:34 UTC) — all passive channels remain 100% blocked in-sandbox (
+- LEARN: NO_DELTA @ all passive surfaces: NVD totalResults=28/year breakdown static/latest 2025-12-30/0 sync-class hits + repo pushed 2019-09-23/size=5043 + sample ext m
