@@ -9892,3 +9892,46 @@ testability: AUTH_HELPED
 [PARKED] Sidebar SOP bypass via unvalidated extension messaging API: confidence 32 < 40 threshold AND maps to knowledge REJECTED class list (duplicate of CVE-2025-69234/69235/53600/62583/62584/62585); platform-agnostic CPE cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:* covers v4.38.386.14 (patched); sample extension confirms API surface only, not current-binary exploitability.
 [FINAL]
 [NEXT] HUMAN: Deliver official Naver Whale desktop binary v4.38.386.14 (Linux x64 .deb) to `/tmp/opencode/whale_binary/` from official Naver download source (d1vdt4q2qgdbji.cloudfront.net via unrestricted internet). Record sha256 ONLY (never raw binary content in logs). This is the gating step for the [62] Critical sync-KDF hypothesis — all passive acquisition channels confirmed permanently blocked (cloudfront DNS No-answer via 8.8.8.8, APKMirror 403, Uptodown 404 Win+Android, static-whale.pstatic.net 404 scope-excluded). Once delivered, run: `strings -n8 libos_crypt.so | grep -iE 'xv10|pbkdf2|scrypt|argon2'`; `nm -D libos_crypt.so | grep -iE 'os_crypt|sync_encryption'`; `grep -aiE 'bootstrap_token|envelope|NEO_SES' "Preferences" "Local State"`.
+## 2026-08-15 04:54:11 UTC [browser] (model laguna)
+[PRIO] /tmp/opencode/whale_binary/ (sync KDF): score=8.0, attack=10, business=10, tech=10, gate=1, cloud=3, fresh=10
+[PRIO] services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale: score=5.0, attack=1, business=7, tech=2, gate=10, cloud=2, fresh=6
+[PRIO] raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/: score=4.0, attack=5, business=3, tech=6, gate=3, cloud=1, fresh=4
+[HYP] Whale sync passphrase KDF weakness / device-recoverable master-key storage in os_crypt_whale fork
+class: AUTH
+asset: /tmp/opencode/whale_binary/libos_crypt.so + Whale Preferences/Local State
+confidence: 62
+reasoning: Full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confirms binary extraction is the ONLY static vector. Prior binary recon confirms Whale-only prefs (sync.encryption_bootstrap_token, whale_need_encryption_key_forced_time) + forked os_crypt_whale.cc with xv10 magic present in v4.38.386.14, but KDF iteration count + master-key/envelope storage path remain unextracted.
+evidence_needed: PBKDF2/scrypt/argon2 iteration constant in libos_crypt.so; master-key storage path in Preferences/Local State; bootstrap-token envelope AES-wrapping scheme; NEO_SES cookie usage.
+verify_steps: HUMAN_ONLY — Deliver official Naver Whale desktop binary v4.38.386.14 (Linux x64 .deb) to /tmp/opencode/whale_binary/ from official Naver source via unrestricted internet. Record sha256 ONLY. Then: `strings -n8 libos_crypt.so | grep -iE 'xv10|pbkdf2|scrypt|argon2'`; `nm -D libos_crypt.so | grep -iE 'os_crypt|sync_encryption'`; `grep -aiE 'bootstrap_token|envelope|NEO_SES' "Preferences" "Local State"`.
+impact: Offline decrypt of synced passwords/cookies/autofill/bookmarks → full Naver account compromise. Critical.
+testability: HUMAN_ONLY
+[HYP] Naver Whale 2026 CVE disclosure anomaly / undisclosed vulnerability window
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200
+confidence: 55
+reasoning: NVD services endpoint HTTP 200 confirmed this cycle — keywordSearch=whale returns totalResults=28, 0 published in 2026 (year breakdown: 2003:1, 2009:1, 2018:5, 2020:1, 2021:1, 2022:6, 2023:3, 2024:2, 2025:8), latest CVE-2025-69235 @2025-12-30. Zero sync/crypto keyword hits across all 28 CVE descriptions. 8-month disclosure gap for v4.35.352–v4.38.386.14.
+evidence_needed: Any new 2026 CVE for navercorp:whale CPE, or sync/crypto keyword match in existing CVE descriptions, or CVE published after 2025-12-30.
+verify_steps: PASSIVE — GET https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 at ≤1 rps with retry on 503; weekly full-pagination diff.
+impact: Early-warning of newly disclosed in-scope flaws → priority recalibration. Medium.
+testability: PASSIVE
+[HYP] Sidebar SOP bypass via unvalidated extension messaging API
+class: OTHER
+asset: raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js + wiki docs
+confidence: 32
+reasoning: All 5 sample extension files + wiki whale.sidebarAction.md confirmed HTTP 200. manifest.json content_scripts match ALL origins with permissions ["tabs"]; background.js onMessage accepts sender param but grep confirms ZERO sender.origin/sender.url/sender.tab matches.
+evidence_needed: Live reproduction on current Whale browser binary showing cross-origin SOP bypass via sidebarAction.show from arbitrary origin, not covered by CVE-2025-69234/69235.
+verify_steps: AUTH_HELPED — install latest Whale on real desktop, load sidebar-sample extension, trigger sidebarAction.show from arbitrary origin via content script, observe cross-origin data access in sidebar context.
+impact: Cross-origin data theft from sidebar context. Medium.
+testability: AUTH_HELPED
+[PARKED] Sidebar SOP bypass via unvalidated extension messaging API: confidence 32 < 40 threshold AND maps to knowledge REJECTED class list (duplicate of CVE-2025-69234/69235/53600/62583/62584/62585); platform-agnostic CPE cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:* covers v4.38.386.14 (patched); sample extension confirms API surface only, not current-binary exploitability.
+[FINAL]
+[NEXT] HUMAN: Deliver official Naver Whale desktop binary v4.38.386.14 (Linux x64 .deb) to `/tmp/opencode/whale_binary/` from official Naver download source (d1vdt4q2qgdbji.cloudfront.net via unrestricted internet). Record sha256 ONLY (never raw binary content in logs). This is the gating step for the [62] Critical sync-KDF hypothesis — all passive acquisition channels confirmed permanently blocked (cloudfront DNS No-answer via 8.8.8.8, APKMirror 403, Uptodown 404 Win+Android, static-whale.pstatic.net 404 scope-excluded). Once delivered, run: `strings -n8 libos_crypt.so | grep -iE 'xv10|pbkdf2|scrypt|argon2'`; `nm -D libos_crypt.so | grep -iE 'os_crypt|sync_encryption'`; `grep -aiE 'bootstrap_token|envelope|NEO_SES' "Preferences" "Local State"`.
+[LEARN] REJECTED @ sample extension sidebar SOP surface: confidence 32 < 40 threshold, maps to knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/62584/62585); platform-agnostic CPE cpe:2.3:a:navercorp:whale:* covers v4.38.386.14 (patched); 5 files HTTP 200 + 0 sender.origin/sender.url/sender.tab grep matches confirmed this cycle but no novel variant or current-binary exploitability proven — permanently parked.
+[LEARN] REJECTED @ binary acquisition: /tmp/opencode/whale_binary/ still MISSING — all passive channels permanently blocked (cloudfront DNS No-answer via 8.8.8.8, APKMirror 403, Uptodown 404 Win+Android, pstatic 404 scope-excluded) — binary-dependent sync-KDF verification permanently HUMAN-gated.
+[LEARN] ACCEPTED @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confirms binary extraction is the ONLY vector; confidence 62 retained, HUMAN-gated.
+[LEARN] ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 confirmed this cycle — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30; remains the only live zero-auth passive surface; date-filtered queries still 404.
+[LEARN] ACCEPTED @ GitHub complete branch inventory: All 4 branches fully enumerated via recursive tree API — 0 Whale-specific source files, sync code, OSCrypt code, KDF parameters, or library manifests exist in any public branch; static analysis path permanently dead; binary extraction is the only sync/crypto vector.
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked.
+[RISK] sync: 72 — Whale-only OSCrypt fork (xv10 magic) + Whale-only prefs keys (sync.encryption_bootstrap_token, whale_need_encryption_key_forced_time) confirmed present in v4.38.386.14 via prior binary recon; KDF iteration count + master-key/envelope storage path remain unextracted (binary HUMAN-gated); repo confirms ZERO sync source files publicly; no public CVEs touch sync/crypto keywords across 28 total Whale CVEs; strongest open surface, Critical impact if weak, confidence 62.
+[RISK] browser: 30 — sidebar/dual-tab SOP-CSP bypass duplicates CVE-2025-69234/69235/53600/62583/62584/62585 (platform-agnostic CPE covers v4.38.386.14 = patched); sample extension + wiki docs confirm API surface live (8 artifacts HTTP 200, 0 sender.origin/sender.url/sender.tab grep matches confirmed) but no novel variant or current-binary exploitability proven; confidence 32 < 40, dropped.
+[RISK] libs: 30 — socket.io.slim.js confirmed Whale-only in resources.pak via prior recon strings but confidence 38 < 40 (handler runtime-fetched, no static-analysis path, binary inaccessible for version string extraction); CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); no public library manifest in repo; permanently parked.
