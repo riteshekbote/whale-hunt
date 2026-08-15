@@ -1,18 +1,18 @@
-## 2026-08-15 19:11:04 UTC [browser] (model laguna)
+## 2026-08-15 19:34:51 UTC [browser] (model laguna)
 [HYP] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux
 class: AUTH
 asset: `/tmp/opencode/whale_binary/` (Whale desktop v4.38.386.14: `os_crypt_whale.so` + `Preferences` JSON sync prefs)
 confidence: 62
-reasoning: Prior bigpickle/laguna binary recon confirmed Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`) + Whale-forked OSCrypt (`os_crypt_whale.cc`, `wbc_wrapper_apis.cc`, `xv10` magic) in v4.38.386.14; master-key storage path + KDF constants unextracted; 8-month disclosure gap (0 CVEs in 2026 over 3 minor versions v4.35.352→v4.38.386.14) permits silent KDF regression undetected via CVE.
-evidence_needed: Per-account bootstrap token stored as plaintext vs Whale-OSCrypt-v10 envelope in `Preferences`; master-key storage path on Linux (`/home/*/.config/whale` or keyring); `whale_need_encryption_key_forced_time` downgrade path; PBKDF2 iteration count + AES-GCM nonce reuse in `os_crypt_whale.so`
+reasoning: Prior binary recon confirmed Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`) + Whale-forked OSCrypt (`os_crypt_whale.cc`, `xv10` magic) in v4.38.386.14; master-key storage path + KDF constants unextracted; 8-month disclosure gap (0 CVEs in 2026 over 3 minor versions v4.35.352→v4.38.386.14) permits silent KDF regression undetected via CVE.
+evidence_needed: Bootstrap token stored as plaintext vs Whale-OSCrypt-v10 envelope in `Preferences`; master-key storage path on Linux (`/home/*/.config/whale` or keyring); `whale_need_encryption_key_forced_time` downgrade path; PBKDF2 iteration count + AES-GCM nonce reuse in `os_crypt_whale.so`
 verify_steps: HUMAN_ONLY — Deliver official Whale desktop binary v4.38.386.14 `.deb` (sha256 only, never raw) into `/tmp/opencode/whale_binary/`, then: (1) `readelf -d libos_crypt_whale.so | grep NEEDED`; (2) `strings <binary> | grep -i 'sync.encryption_bootstrap_token'`; (3) `gdb -batch -ex 'info functions OsCrypt' libos_crypt`; (4) inspect `Preferences` JSON for envelope vs plaintext bootstrap token; (5) `grep -c pbkdf2` in `os_crypt_whale.so`
 impact: Local attacker/infostealer with profile file access decrypts synced passwords/cookies/autofill → full Whale account compromise across synced devices (High)
 testability: HUMAN_ONLY
-[HYP] NVD keywordSearch=whale disclosure-gap monitor
+[HYP] NVD disclosure-gap monitor as sync-crypto blind spot
 class: MISCONFIG
 asset: `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale`
 confidence: 55
-reasoning: `keywordSearch=whale` returns `totalResults=28` (0 in 2026, latest CVE-2025-69235 @2025-12-30); 0 sync/crypto keyword hits across all 28 descriptions; dual-binary diff (v4.35.351.12→v4.38.386.14) of `os_crypt_whale` call sites needed to detect silent KDF change undetectable via CVE.
+reasoning: `keywordSearch=whale` returns `totalResults=28` (0 in 2026, latest CVE-2025-69235 @2025-12-30); 0 sync/crypto keyword hits across all 28 CVE descriptions; dual-binary diff (v4.35.351.12→v4.38.386.14) of `os_crypt_whale` call sites needed to detect silent KDF change undetectable via CVE.
 evidence_needed: Zero `sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring` keyword hits confirmed across all 28 CVE descriptions; `pubStartDate`/`pubEndDate` date-filter queries return 404 — must use full pagination
 verify_steps: PASSIVE — `curl -s 'https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200'` and grep all 28 descriptions for `sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring|cookie` — 0 hits confirms blind spot; `naver+whale` keyword quirk returns 0, use bare `whale`
 impact: Undisclosed sync-KDF regression hidden behind 8-month disclosure gap → silent downgrade enabling mass credential decryption (Critical if confirmed in binary)
@@ -21,12 +21,8 @@ testability: PASSIVE
 class: AUTH
 asset: `com.naver.whale` 3.9.14.9 APK (whalesync prefs + DEX — Play Store pull required)
 confidence: 43
-reasoning: Android syncs same Whale-only prefs + forked OSCrypt with xv10 magic; master-key storage path (Android Keystore vs SharedPreferences vs file) + KDF constants unextracted; APK delivery blocked (APKMirror 403, Uptodown 404, APKPure CDN 403, APKPure landing HTTP 200 misleading)
+reasoning: Android syncs same Whale-only prefs + forked OSCrypt with `xv10` magic; master-key storage path (Android Keystore vs SharedPreferences vs file) + KDF constants unextracted; APK delivery blocked (APKMirror 403, Uptodown 404, APKPure CDN 403, landing HTTP 200 misleading)
 evidence_needed: DEX strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence path; APK sha256 pin; cross-check against Linux os_crypt_whale fork for KDF consistency
 verify_steps: HUMAN_ONLY — Pull 3.9.14.9 via authenticated Play Store device → `/tmp/opencache/whale_binary/whale.apk` → `apktool d` → `grep -ri 'pbkdf\|scrypt\|keystore\|master.*key'` in smali + `strings.xml` → sha256 only
 impact: Local attacker with device/storage access decrypts synced passwords/cookies/autofill → cross-device sync account compromise (High)
 testability: HUMAN_ONLY
-[FINAL] [62] Sync bootstrap-token envelope storage — Whale OSCrypt deviation on Linux (HUMAN_ONLY — binary gated, top priority, strongest open surface)
-[FINAL] [55] NVD keywordSearch=whale disclosure-gap monitor (PASSIVE but monitor-only, no direct exploit; confirms no public disclosure path masks silent regression)
-[FINAL] [43] Android sync KDF — com.naver.whale 3.9.14.9 master-key persistence (HUMAN_ONLY, APK pull + decompile required; cross-platform parity with desktop sync KDF unconfirmed)
-[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 `.deb` into `/tmp/opencode/whale_binary/` (from unrestricted internet; `d1vdt4q2qgdbji.cloudfront.net` cloudfront DNS returns `No answer` even via 8.8.8.8 in-sandbox — HUMAN must source binary externally) — provide sha256 only (never raw). **This is the sole unblock** for the top sync-KDF hypothesis (conf 62). Without the binary, all sync-KDF hypotheses remain HUMAN_ONLY-gated with zero passive exploitability path.
