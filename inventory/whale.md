@@ -917,3 +917,5 @@
 - CHANGED `whale.naver.com` (root without `www`) returns HTTP 200 — but `*.naver.com` excluded per scope.yml out_of_scope
 
 ## 2026-08-15 02:15:50 UTC
+
+## 2026-08-15 03:09:01 UTC
