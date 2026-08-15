@@ -1016,3 +1016,5 @@
 - NEW `whale.naver.com` (root, without `www`) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
 
 ## 2026-08-15 19:52:32 UTC
+
+## 2026-08-15 20:10:08 UTC
