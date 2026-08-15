@@ -915,3 +915,5 @@
 ## 2026-08-15 00:59:22 UTC
 - CHANGED `https://apkpure.com/naver-whale-browser/com.naver.whale` landing returns HTTP 200 (was 403) but download CDN `download.apkpure.com` still 403 — no curl-able APK path
 - CHANGED `whale.naver.com` (root without `www`) returns HTTP 200 — but `*.naver.com` excluded per scope.yml out_of_scope
+
+## 2026-08-15 02:15:50 UTC
