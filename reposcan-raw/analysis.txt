@@ -3,86 +3,4510 @@
 [0m
 [0m$ [0mls -la
 total 940
-drwxr-xr-x 11 runner runner   4096 Aug 15 07:43 .
-drwxr-xr-x  3 runner runner   4096 Aug 15 07:43 ..
-drwxr-xr-x  7 runner runner   4096 Aug 15 07:43 .git
-drwxr-xr-x  3 runner runner   4096 Aug 15 07:43 .github
--rw-r--r--  1 runner runner   1057 Aug 15 07:43 README.md
--rw-r--r--  1 runner runner      0 Aug 15 07:43 cands-naver.txt
-drwxr-xr-x  2 runner runner   4096 Aug 15 07:43 inventory
-drwxr-xr-x  2 runner runner   4096 Aug 15 07:43 knowledge
-drwxr-xr-x  2 runner runner  20480 Aug 15 07:43 leads
--rw-r--r--  1 runner runner  14923 Aug 15 07:43 probe-results.md
-drwxr-xr-x  2 runner runner   4096 Aug 15 07:43 reports
--rw-r--r--  1 runner runner 598198 Aug 15 07:43 repos-naver.json
-drwxr-xr-x  3 runner runner   4096 Aug 15 07:43 reposcan-raw
--rw-r--r--  1 runner runner 242384 Aug 15 07:43 scan-prompt.txt
--rw-r--r--  1 runner runner   1513 Aug 15 07:43 scope.yml
-drwxr-xr-x  2 runner runner   4096 Aug 15 07:43 scripts
--rw-r--r--  1 runner runner     34 Aug 15 07:43 state_bigpickle.json
--rw-r--r--  1 runner runner     37 Aug 15 07:43 state_laguna.json
--rw-r--r--  1 runner runner     34 Aug 15 07:43 state_ling3.json
--rw-r--r--  1 runner runner     34 Aug 15 07:43 state_longcat.json
--rw-r--r--  1 runner runner     37 Aug 15 07:43 state_nemotron3.json
-drwxr-xr-x  2 runner runner  12288 Aug 15 07:43 triage
+drwxr-xr-x 11 runner runner   4096 Aug 15 07:55 .
+drwxr-xr-x  3 runner runner   4096 Aug 15 07:54 ..
+drwxr-xr-x  7 runner runner   4096 Aug 15 07:55 .git
+drwxr-xr-x  3 runner runner   4096 Aug 15 07:55 .github
+-rw-r--r--  1 runner runner   1057 Aug 15 07:55 README.md
+-rw-r--r--  1 runner runner      0 Aug 15 07:55 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 15 07:55 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 15 07:55 knowledge
+drwxr-xr-x  2 runner runner  20480 Aug 15 07:55 leads
+-rw-r--r--  1 runner runner  15052 Aug 15 07:55 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 15 07:55 reports
+-rw-r--r--  1 runner runner 598198 Aug 15 07:55 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 15 07:55 reposcan-raw
+-rw-r--r--  1 runner runner 242823 Aug 15 07:55 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 15 07:55 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 15 07:55 scripts
+-rw-r--r--  1 runner runner     34 Aug 15 07:55 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 15 07:55 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 15 07:55 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 15 07:55 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 15 07:55 state_nemotron3.json
+drwxr-xr-x  2 runner runner  12288 Aug 15 07:55 triage
 [0m
-[0m→ [0mRead scope.yml
+The knowledge base provided is for Naver Whale browser, but you're asking me to triage gladiaio/ GitHub org + @gladiaio/sdk npm package. These are completely different targets. Let me first explore the actual workspace and check for gladiaio resources.
+[0m$ [0mwhich gh && gh --version
+/usr/bin/gh
+gh version 2.97.0 (2026-07-31)
+https://github.com/cli/cli/releases/tag/v2.97.0
 [0m
-[0m$ [0mls -la reposcan-raw/
-total 264
-drwxr-xr-x  3 runner runner   4096 Aug 15 07:43 .
-drwxr-xr-x 11 runner runner   4096 Aug 15 07:43 ..
--rw-r--r--  1 runner runner   1420 Aug 15 07:43 analysis.txt
--rw-r--r--  1 runner runner     40 Aug 15 07:43 grep-delta.txt
--rw-r--r--  1 runner runner     50 Aug 15 07:43 grep-hits.prev.txt
--rw-r--r--  1 runner runner     50 Aug 15 07:43 grep-hits.txt
-drwxr-xr-x  2 runner runner   4096 Aug 15 07:43 naver
--rw-r--r--  1 runner runner 241155 Aug 15 07:43 rag.txt
+[0m$ [0mgh repo list gladiaio --limit 50 --json name,description,url,defaultBranchRef,isPrivate,updatedAt,pushedAt,languages
+gh: To use GitHub CLI in a GitHub Actions workflow, set the GH_TOKEN environment variable. Example:
+  env:
+    GH_TOKEN: ${{ github.token }}
 [0m
-[0m$ [0mls -la reposcan-raw/naver/
-total 8
-drwxr-xr-x 2 runner runner 4096 Aug 15 07:43 .
-drwxr-xr-x 3 runner runner 4096 Aug 15 07:43 ..
+[0m$ [0mcurl -s "https://api.github.com/orgs/gladiaio/repos?per_page=100" | jq -r '.[] | "\(.name)\t\(.description)\t\(.html_url)\t\(.default_branch)\t\(.private)\t\(.pushed_at)\t\(.language)"'
+gladia-cli	null	https://github.com/gladiaio/gladia-cli	main	false	2026-07-10T17:27:25Z	Go
+gladia-samples	null	https://github.com/gladiaio/gladia-samples	main	false	2026-08-12T14:44:20Z	Python
+triton-inference-memory-allocation	null	https://github.com/gladiaio/triton-inference-memory-allocation	main	false	2024-05-21T06:16:16Z	Python
+gunicorn-fix-sigabort	gunicorn 'Green Unicorn' is a WSGI HTTP Server for UNIX, fast clients and sleepy applications.	https://github.com/gladiaio/gunicorn-fix-sigabort	main	false	2024-06-06T21:53:16Z	Python
+uvicorn-fix-sigabort	An ASGI web server, for Python. 🦄	https://github.com/gladiaio/uvicorn-fix-sigabort	master	false	2024-03-20T18:05:53Z	Python
+docs	null	https://github.com/gladiaio/docs	main	false	2026-08-13T18:27:23Z	MDX
+1password-scim	1Password SCIM Bridge deployment examples	https://github.com/gladiaio/1password-scim	main	false	2024-02-01T14:16:08Z	HCL
+sdk	null	https://github.com/gladiaio/sdk	main	false	2026-08-08T10:05:09Z	Python
+gladia-quiz-app	null	https://github.com/gladiaio/gladia-quiz-app	main	false	2025-11-26T13:18:52Z	TypeScript
+normalization	A lightweight library for normalizing speech transcripts before computing WER	https://github.com/gladiaio/normalization	main	false	2026-07-14T16:16:56Z	Python
+vllm_backend	null	https://github.com/gladiaio/vllm_backend	main	false	2026-03-04T13:15:22Z	Python
+transformers	🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. 	https://github.com/gladiaio/transformers	qwen3-asr	false	2026-06-10T13:09:35Z	null
+compare-stt	Blind comparison of speech-to-text providers.	https://github.com/gladiaio/compare-stt	main	false	2026-08-14T14:07:10Z	TypeScript
+n8n-nodes-gladia	null	https://github.com/gladiaio/n8n-nodes-gladia	main	false	2026-08-04T03:09:21Z	TypeScript
+cloudnative-pg	CloudNativePG is a comprehensive platform designed to seamlessly manage PostgreSQL databases within Kubernetes environments, covering the entire operational lifecycle from initial deployment to ongoing maintenance	https://github.com/gladiaio/cloudnative-pg	main	false	2026-07-25T03:29:04Z	null
+skills	Official AI agent skills from Gladia for integrating speech-to-text transcription into your applications	https://github.com/gladiaio/skills	main	false	2026-08-15T06:03:04Z	null
+realtime-multilingual-asr-router	null	https://github.com/gladiaio/realtime-multilingual-asr-router	main	false	2026-05-29T15:10:13Z	Python
+vercel-ai	The AI Toolkit for TypeScript. From the creators of Next.js, the AI SDK is a free open-source library for building AI-powered applications and agents 	https://github.com/gladiaio/vercel-ai	main	false	2026-08-05T11:29:58Z	null
+gladiaflow	A desktop app for real-time voice dictation powered by Gladia's realtime transcription	https://github.com/gladiaio/gladiaflow	main	false	2026-08-04T14:00:25Z	Rust
 [0m
-[0m→ [0mRead reposcan-raw/analysis.txt
-[0m→ [0mRead reposcan-raw/grep-hits.txt
-[0m→ [0mRead reposcan-raw/grep-delta.txt
-[0m→ [0mRead probe-results.md
-[0m→ [0mRead reposcan-raw/rag.txt[90m [limit=100][0m
-### Static Scan Triage Results
+[0m$ [0mcurl -s "https://registry.npmjs.org/@gladiaio/sdk" | jq -r '{version: .version, versions: .versions | keys, time: .time, maintainers: .maintainers, repository: .repository, dependencies: .dependencies, devDependencies: .devDependencies}'
+{
+  "version": null,
+  "versions": [
+    "0.1.0",
+    "0.1.1",
+    "0.1.2",
+    "0.2.0",
+    "0.2.1",
+    "0.3.0",
+    "0.3.1",
+    "0.4.0",
+    "0.4.1",
+    "0.4.2",
+    "0.4.3",
+    "0.5.0",
+    "0.5.1",
+    "0.5.2",
+    "0.5.3",
+    "0.6.0",
+    "0.6.1",
+    "1.0.0",
+    "1.0.4",
+    "1.0.5",
+    "1.0.7",
+    "1.1.0"
+  ],
+  "time": {
+    "created": "2025-09-09T15:01:20.684Z",
+    "modified": "2026-07-23T20:48:35.899Z",
+    "0.8.9": "2022-10-28T08:45:13.203Z",
+    "0.8.10": "2022-10-28T09:20:28.511Z",
+    "0.8.11": "2022-10-28T10:16:20.446Z",
+    "0.8.12": "2022-11-02T13:40:47.351Z",
+    "0.8.13": "2022-11-02T14:22:51.825Z",
+    "0.8.14": "2022-11-10T15:46:41.656Z",
+    "0.8.15": "2022-11-10T16:20:33.692Z",
+    "0.8.16": "2022-11-13T18:27:04.269Z",
+    "0.8.17": "2022-11-18T16:07:37.254Z",
+    "0.9.1": "2022-11-22T14:38:02.436Z",
+    "0.9.2": "2022-11-23T07:38:30.338Z",
+    "0.9.3": "2022-11-30T09:32:14.398Z",
+    "0.9.4": "2022-11-30T10:05:06.541Z",
+    "0.9.5": "2022-12-09T11:31:31.615Z",
+    "0.10.1": "2022-12-09T12:39:20.544Z",
+    "0.10.2": "2022-12-09T14:22:43.928Z",
+    "0.10.3": "2022-12-09T15:13:00.720Z",
+    "0.10.4": "2022-12-09T17:23:13.026Z",
+    "0.10.5": "2022-12-12T17:13:58.447Z",
+    "0.10.6": "2022-12-12T17:29:59.221Z",
+    "0.10.7": "2022-12-19T19:29:04.531Z",
+    "0.10.8": "2023-01-10T13:24:01.450Z",
+    "0.10.9": "2023-01-10T15:17:51.295Z",
+    "0.10.10": "2023-01-10T15:37:49.001Z",
+    "0.10.11": "2023-01-11T09:01:49.220Z",
+    "0.10.12": "2023-01-11T13:12:36.873Z",
+    "0.10.13": "2023-01-11T21:12:54.881Z",
+    "0.10.14": "2023-01-12T09:10:07.435Z",
+    "0.10.15": "2023-01-17T10:19:35.165Z",
+    "0.10.16": "2023-01-17T12:05:23.330Z",
+    "0.10.17": "2023-01-17T12:58:17.730Z",
+    "0.10.18": "2023-01-17T16:09:20.768Z",
+    "0.10.19": "2023-01-18T15:26:15.155Z",
+    "0.10.20": "2023-01-18T18:04:32.626Z",
+    "0.10.21": "2023-01-20T08:16:14.497Z",
+    "0.10.22": "2023-01-20T10:04:28.819Z",
+    "0.10.23": "2023-01-20T15:04:40.649Z",
+    "0.10.24": "2023-01-20T15:11:16.682Z",
+    "0.10.25": "2023-01-20T15:13:48.025Z",
+    "0.10.26": "2023-01-20T15:31:50.478Z",
+    "0.10.27": "2023-01-20T15:39:56.257Z",
+    "0.10.28": "2023-01-20T15:42:19.092Z",
+    "0.10.29": "2023-01-20T15:50:28.108Z",
+    "0.10.30": "2023-01-24T08:25:37.753Z",
+    "0.10.31": "2023-01-27T09:03:39.648Z",
+    "0.10.32": "2023-01-27T13:42:54.782Z",
+    "0.10.33": "2023-01-30T16:53:45.752Z",
+    "0.10.34": "2023-01-31T10:05:22.344Z",
+    "0.10.35": "2023-01-31T16:26:08.125Z",
+    "0.10.36": "2023-01-31T18:05:57.019Z",
+    "0.10.37": "2023-02-01T09:07:05.551Z",
+    "0.10.38": "2023-02-08T13:16:19.390Z",
+    "0.10.39": "2023-02-09T11:04:51.004Z",
+    "0.10.40": "2023-02-10T16:05:17.732Z",
+    "0.10.41": "2023-02-10T16:39:30.367Z",
+    "0.10.42": "2023-02-13T20:05:28.053Z",
+    "0.10.43": "2023-02-14T14:05:13.700Z",
+    "0.10.44": "2023-02-14T15:41:25.199Z",
+    "0.10.45": "2023-02-21T09:05:46.595Z",
+    "0.10.47": "2023-02-22T15:05:00.452Z",
+    "0.10.48": "2023-02-22T15:20:28.452Z",
+    "0.10.49": "2023-02-22T16:44:44.559Z",
+    "0.10.50": "2023-02-22T17:34:36.357Z",
+    "0.10.51": "2023-02-23T12:06:26.120Z",
+    "0.10.52": "2023-02-27T10:05:37.941Z",
+    "0.10.53": "2023-02-28T10:05:00.048Z",
+    "0.10.54": "2023-02-28T11:04:57.740Z",
+    "0.10.55": "2023-03-06T17:10:50.627Z",
+    "0.10.56": "2023-03-07T13:42:28.741Z",
+    "0.10.57": "2023-03-10T08:35:13.404Z",
+    "0.10.58": "2023-03-14T13:12:41.710Z",
+    "0.10.59": "2023-03-14T16:06:56.161Z",
+    "0.10.60": "2023-03-15T20:45:18.851Z",
+    "0.10.61": "2023-03-16T12:33:03.265Z",
+    "0.10.62": "2023-03-16T16:55:15.030Z",
+    "0.10.63": "2023-03-17T08:41:22.881Z",
+    "0.10.64": "2023-03-17T10:05:27.471Z",
+    "0.10.65": "2023-03-22T10:47:01.768Z",
+    "0.10.66": "2023-03-22T14:36:58.372Z",
+    "0.10.67": "2023-03-24T15:34:12.413Z",
+    "0.10.68": "2023-03-27T15:05:00.983Z",
+    "0.10.70": "2023-04-07T11:04:58.255Z",
+    "0.10.71": "2023-04-07T12:17:40.107Z",
+    "0.1.0": "2025-09-09T15:01:20.882Z",
+    "0.1.1": "2025-09-09T15:26:22.552Z",
+    "0.1.2": "2025-09-09T16:16:44.602Z",
+    "0.2.0": "2025-09-10T11:59:15.930Z",
+    "0.2.1": "2025-09-10T12:25:32.638Z",
+    "0.3.0": "2025-09-10T13:51:29.726Z",
+    "0.3.1": "2025-09-10T14:19:42.168Z",
+    "0.4.0": "2025-09-16T07:49:54.760Z",
+    "0.4.1": "2025-09-16T10:32:15.201Z",
+    "0.4.2": "2025-09-19T15:59:53.302Z",
+    "0.4.3": "2025-09-23T12:24:17.194Z",
+    "0.5.0": "2025-09-25T09:18:44.573Z",
+    "0.5.1": "2025-09-30T16:39:08.467Z",
+    "0.5.2": "2025-10-08T13:17:05.116Z",
+    "0.5.3": "2025-10-24T16:36:23.856Z",
+    "0.6.0": "2025-10-28T10:54:53.857Z",
+    "0.6.1": "2025-11-28T13:24:15.718Z",
+    "1.0.0": "2026-03-26T13:27:50.624Z",
+    "1.0.3": "2026-04-13T18:14:58.725Z",
+    "1.0.4": "2026-04-17T10:06:11.064Z",
+    "1.0.5": "2026-06-17T13:03:22.884Z",
+    "1.0.7": "2026-06-29T20:36:21.038Z",
+    "1.1.0": "2026-07-23T20:48:35.560Z"
+  },
+  "maintainers": [
+    {
+      "name": "clement-gladia",
+      "email": "ccharmet@gladia.io"
+    },
+    {
+      "name": "gladia-admin",
+      "email": "tech-certified@gladia.io"
+    },
+    {
+      "name": "commarla",
+      "email": "lcommarieu@gladia.io"
+    },
+    {
+      "name": "hugo_gladia",
+      "email": "himbert@gladia.io"
+    },
+    {
+      "name": "tnesztler",
+      "email": "picobuntu@gmail.com"
+    },
+    {
+      "name": "amorin_gladia",
+      "email": "amorin@gladia.io"
+    },
+    {
+      "name": "thibautlb",
+      "email": "ecouprie@gladia.io"
+    },
+    {
+      "name": "remigladia",
+      "email": "rlejeune@gladia.io"
+    },
+    {
+      "name": "acorbeau-gladia",
+      "email": "acorbeau@gladia.io"
+    },
+    {
+      "name": "jqueguiner",
+      "email": "jlqueguiner@gladia.io"
+    },
+    {
+      "name": "hpapier.ext.gladia",
+      "email": "hpapier.ext@gladia.io"
+    },
+    {
+      "name": "clafaye",
+      "email": "clafaye@gladia.io"
+    },
+    {
+      "name": "opopops",
+      "email": "ggueutier@gladia.io"
+    },
+    {
+      "name": "bot-npmjs-gladiaio",
+      "email": "bot-npmjs@gladia.io"
+    },
+    {
+      "name": "rpiotaix",
+      "email": "rpiotaix@gladia.io"
+    },
+    {
+      "name": "yoannkygladia",
+      "email": "ykeoxay@gladia.io"
+    },
+    {
+      "name": "cpire",
+      "email": "cpire@gladia.io"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gladiaio/sdk.git"
+  },
+  "dependencies": null,
+  "devDependencies": null
+}
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+.cursor	dir	.cursor	null
+.editorconfig	file	.editorconfig	https://raw.githubusercontent.com/gladiaio/sdk/main/.editorconfig
+.gitattributes	file	.gitattributes	https://raw.githubusercontent.com/gladiaio/sdk/main/.gitattributes
+.github	dir	.github	null
+.gitignore	file	.gitignore	https://raw.githubusercontent.com/gladiaio/sdk/main/.gitignore
+.npmrc	file	.npmrc	https://raw.githubusercontent.com/gladiaio/sdk/main/.npmrc
+.prettierignore	file	.prettierignore	https://raw.githubusercontent.com/gladiaio/sdk/main/.prettierignore
+.prettierrc	file	.prettierrc	https://raw.githubusercontent.com/gladiaio/sdk/main/.prettierrc
+.vscode	dir	.vscode	null
+CONTRIBUTING.md	file	CONTRIBUTING.md	https://raw.githubusercontent.com/gladiaio/sdk/main/CONTRIBUTING.md
+LICENSE	file	LICENSE	https://raw.githubusercontent.com/gladiaio/sdk/main/LICENSE
+README.md	file	README.md	https://raw.githubusercontent.com/gladiaio/sdk/main/README.md
+audit-ci.jsonc	file	audit-ci.jsonc	https://raw.githubusercontent.com/gladiaio/sdk/main/audit-ci.jsonc
+bun.lock	file	bun.lock	https://raw.githubusercontent.com/gladiaio/sdk/main/bun.lock
+bunfig.toml	file	bunfig.toml	https://raw.githubusercontent.com/gladiaio/sdk/main/bunfig.toml
+commitlint.config.cts	file	commitlint.config.cts	https://raw.githubusercontent.com/gladiaio/sdk/main/commitlint.config.cts
+data	dir	data	null
+e2e	dir	e2e	null
+eslint.config.mjs	file	eslint.config.mjs	https://raw.githubusercontent.com/gladiaio/sdk/main/eslint.config.mjs
+nx.json	file	nx.json	https://raw.githubusercontent.com/gladiaio/sdk/main/nx.json
+package.json	file	package.json	https://raw.githubusercontent.com/gladiaio/sdk/main/package.json
+packages	dir	packages	null
+tools	dir	tools	null
+vitest.workspace.mjs	file	vitest.workspace.mjs	https://raw.githubusercontent.com/gladiaio/sdk/main/vitest.workspace.mjs
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+generator	dir	packages/generator	null
+sdk-js	dir	packages/sdk-js	null
+sdk-python	dir	packages/sdk-python	null
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-js?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+CHANGELOG.md	file	packages/sdk-js/CHANGELOG.md	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/CHANGELOG.md
+README.md	file	packages/sdk-js/README.md	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/README.md
+package.json	file	packages/sdk-js/package.json	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/package.json
+project.json	file	packages/sdk-js/project.json	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/project.json
+scripts	dir	packages/sdk-js/scripts	null
+src	dir	packages/sdk-js/src	null
+tsconfig.json	file	packages/sdk-js/tsconfig.json	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/tsconfig.json
+tsconfig.spec.json	file	packages/sdk-js/tsconfig.spec.json	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/tsconfig.spec.json
+tsdown.config.ts	file	packages/sdk-js/tsdown.config.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/tsdown.config.ts
+vitest.config.ts	file	packages/sdk-js/vitest.config.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/vitest.config.ts
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-python?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+.python-version	file	packages/sdk-python/.python-version	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/.python-version
+CHANGELOG.md	file	packages/sdk-python/CHANGELOG.md	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/CHANGELOG.md
+README.md	file	packages/sdk-python/README.md	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/README.md
+project.json	file	packages/sdk-python/project.json	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/project.json
+pyproject.toml	file	packages/sdk-python/pyproject.toml	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/pyproject.toml
+scripts	dir	packages/sdk-python/scripts	null
+src	dir	packages/sdk-python/src	null
+tests	dir	packages/sdk-python/tests	null
+uv.lock	file	packages/sdk-python/uv.lock	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/uv.lock
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/generator?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+README.md	file	packages/generator/README.md	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/generator/README.md
+package.json	file	packages/generator/package.json	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/generator/package.json
+project.json	file	packages/generator/project.json	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/generator/project.json
+src	dir	packages/generator/src	null
+tsconfig.json	file	packages/generator/tsconfig.json	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/generator/tsconfig.json
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-js/src?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+client.test.ts	file	packages/sdk-js/src/client.test.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/client.test.ts
+client.ts	file	packages/sdk-js/src/client.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/client.ts
+helpers.ts	file	packages/sdk-js/src/helpers.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/helpers.ts
+index.ts	file	packages/sdk-js/src/index.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/index.ts
+internal_types.ts	file	packages/sdk-js/src/internal_types.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/internal_types.ts
+network	dir	packages/sdk-js/src/network	null
+types.ts	file	packages/sdk-js/src/types.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/types.ts
+v2	dir	packages/sdk-js/src/v2	null
+version.ts	file	packages/sdk-js/src/version.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/version.ts
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-python/src?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+gladiaio_sdk	dir	packages/sdk-python/src/gladiaio_sdk	null
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/generator/src?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+cli.ts	file	packages/generator/src/cli.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/generator/src/cli.ts
+generator.ts	file	packages/generator/src/generator.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/generator/src/generator.ts
+generators	dir	packages/generator/src/generators	null
+helpers.ts	file	packages/generator/src/helpers.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/generator/src/helpers.ts
+schema-fetcher.ts	file	packages/generator/src/schema-fetcher.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/generator/src/schema-fetcher.ts
+types.ts	file	packages/generator/src/types.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/generator/src/types.ts
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/client.ts"
+import { deepMergeObjects, getEnv } from './helpers.js'
+import type { InternalGladiaClientOptions } from './internal_types.js'
+import type { Headers } from './network/types.js'
+import type { GladiaClientOptions } from './types.js'
+import { LiveV2Client } from './v2/live/index.js'
+import { PreRecordedV2Client } from './v2/prerecorded/index.js'
+import { SDK_VERSION } from './version.js'
 
-**Scan Summary**: 0 code/config files scanned, 0 hits (grep-hits.txt)
+function normalizeGladiaHeaders(headers: Headers | [string, string][]): Headers {
+  const entries = Array.isArray(headers) ? headers : Object.entries(headers)
+  return Object.fromEntries(
+    entries.map(([key, value]) => {
+      const lcKey = key.toLowerCase()
+      return [lcKey.startsWith('x-gladia-') ? lcKey : key, value]
+    })
+  )
+}
+
+function assertValidOptions(options: InternalGladiaClientOptions) {
+  let url: URL
+  try {
+    url = new URL(options.apiUrl)
+  } catch {
+    throw new Error(`Invalid url: "${options.apiUrl}".`)
+  }
+
+  if (!options?.apiKey && url.hostname.endsWith('.gladia.io')) {
+    throw new Error(`You have to set your "apiKey" or define a proxy "apiUrl".`)
+  }
+
+  if (!['https:', 'http:', 'wss:', 'ws:'].includes(url.protocol)) {
+    throw new Error(
+      `Only HTTP and WebSocket protocols are supported for apiUrl (received: ${url.protocol}).`
+    )
+  }
+}
+
+const defaultHttpDelay = (attemptCount: number) =>
+  Math.min(0.3 * 2 ** (attemptCount - 1) * 1_000, 10_000)
+
+const defaultWsDelay = (attemptCount: number) =>
+  Math.min(0.3 * 2 ** (attemptCount - 1) * 1_000, 2_000)
+
+const gladiaVersion = `SdkJavascript/${SDK_VERSION}`
+
+const defaultOptions: InternalGladiaClientOptions = {
+  apiKey: getEnv('GLADIA_API_KEY'),
+  apiUrl: getEnv('GLADIA_API_URL', 'https://api.gladia.io'),
+  region: getEnv<Required<GladiaClientOptions>['region']>('GLADIA_REGION'),
+  httpHeaders: {
+    'x-gladia-version': gladiaVersion,
+  },
+  httpRetry: {
+    maxAttempts: 2,
+    statusCodes: [408, 413, 429, [500, 599]],
+    delay: defaultHttpDelay,
+  },
+  httpTimeout: 10_000,
+  wsRetry: {
+    maxAttemptsPerConnection: 5,
+    closeCodes: [
+      [1002, 4399],
+      [4500, 9999],
+    ],
+    delay: defaultWsDelay,
+    maxConnections: 0,
+  },
+  wsTimeout: 10_000,
+  prerecordedTimeouts: {
+    transcribe: 7_200_000,
+    poll: 7_200_000,
+    createAndPoll: 7_200_000,
+    uploadFile: 300_000,
+    getFile: 300_000,
+    create: 60_000,
+    delete: 60_000,
+    get: 10_000,
+  },
+  liveTimeouts: {
+    get: 10_000,
+    delete: 60_000,
+    getFile: 300_000,
+  },
+}
+
+/**
+ * Entrypoint for Gladia SDK.
+ */
+export class GladiaClient {
+  private options: InternalGladiaClientOptions
+
+  constructor(options?: GladiaClientOptions) {
+    if (options?.httpHeaders) {
+      options.httpHeaders = normalizeGladiaHeaders(options.httpHeaders)
+    }
+    this.options = deepMergeObjects(defaultOptions, options)
+  }
+
+  preRecordedV2(options?: GladiaClientOptions): PreRecordedV2Client {
+    if (options?.httpHeaders) {
+      options.httpHeaders = normalizeGladiaHeaders(options.httpHeaders)
+    }
+
+    const mergedOptions = deepMergeObjects(this.options, options)
+    if (mergedOptions.apiKey) {
+      mergedOptions.httpHeaders = deepMergeObjects(mergedOptions.httpHeaders, {
+        'x-gladia-key': mergedOptions.apiKey,
+      })
+    }
+    if (mergedOptions.httpHeaders['x-gladia-version'] !== gladiaVersion) {
+      mergedOptions.httpHeaders['x-gladia-version'] =
+        `${mergedOptions.httpHeaders['x-gladia-version'].trim()} ${gladiaVersion}`.trim()
+    }
+    assertValidOptions(mergedOptions)
+    return new PreRecordedV2Client(mergedOptions)
+  }
+  preRecorded: (options?: GladiaClientOptions) => PreRecordedV2Client = this.preRecordedV2
+
+  liveV2(options?: GladiaClientOptions): LiveV2Client {
+    if (options?.httpHeaders) {
+      options.httpHeaders = normalizeGladiaHeaders(options.httpHeaders)
+    }
+
+    const mergedOptions = deepMergeObjects(this.options, options)
+    if (mergedOptions.apiKey) {
+      mergedOptions.httpHeaders = deepMergeObjects(mergedOptions.httpHeaders, {
+        'x-gladia-key': mergedOptions.apiKey,
+      })
+    }
+    if (mergedOptions.httpHeaders['x-gladia-version'] !== gladiaVersion) {
+      mergedOptions.httpHeaders['x-gladia-version'] =
+        `${mergedOptions.httpHeaders['x-gladia-version'].trim()} ${gladiaVersion}`.trim()
+    }
+    assertValidOptions(mergedOptions)
+    return new LiveV2Client(mergedOptions)
+  }
+  live: (options?: GladiaClientOptions) => LiveV2Client = this.liveV2
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/index.ts"
+export { GladiaClient } from './client.js'
+export type * from './types.js'
+
+export type * from './v2/live/index.js'
+export type * from './v2/prerecorded/index.js'
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/types.ts"
+import type { Headers } from './network/types.js'
+
+/**
+ * Options for the HTTP retry policy.
+ */
+export type HttpRetryOptions = {
+  /**
+   * Maximum number of attempts for an HTTP request.
+   * 0 for unlimited. 1 for no retry.
+   *
+   * Default is 2.
+   */
+  maxAttempts?: number
+
+  /**
+   * List of status codes eligible for retry. You can specify a range by using a tuple.
+   *
+   * Default for HTTP is [408, 413, 429, [500, 599]].
+   */
+  statusCodes?: (number | [start: number, end: number])[]
+
+  /**
+   * The function used to determine the delay between retries.
+   * It takes one parameter, attemptCount, starting at 1.
+   *
+   * Default is (attemptCount) => Math.min(0, 0.3 * (2 ** (attemptCount - 1)) * 1_000, 10_000)
+   */
+  delay?: (attemptCount: number) => number
+}
+
+/**
+ * Options for the WebSocket retry policy.
+ */
+export type WebSocketRetryOptions = {
+  /**
+   * Maximum number of attempts for a WS connection.
+   * 0 for unlimited. 1 for no retry.
+   * Once connected, the number of attempts to reconnect is reset.
+   *
+   * Default is 5.
+   */
+  maxAttemptsPerConnection?: number
+
+  /**
+   * The function used to determine the delay between retries.
+   * It takes one parameter, attemptCount, starting at 1.
+   *
+   * Default is (attemptCount) => Math.min(0, 0.3 * (2 ** (attemptCount - 1)) * 1_000, 2_000)
+   */
+  delay?: (attemptCount: number) => number
+
+  /**
+   * Maximum number of WS connections.
+   * 0 for unlimited. 1 for no reconnection.
+   *
+   * Default is 0.
+   */
+  maxConnections?: number
+
+  /**
+   * List of close code eligible for reconnection. You can specify a range by using a tuple.
+   * Default is [[1002, 4399], [4500, 9999]].
+   */
+  closeCodes?: (number | [start: number, end: number])[]
+}
+
+/**
+ * HTTP and flow timeouts for pre-recorded V2 (milliseconds).
+ *
+ * Used as per-request HTTP limits and as defaults for `poll`, `createAndPoll`, and `transcribe`
+ * when their `timeout` argument is omitted. Pass `timeout: null` on those methods for no deadline.
+ */
+export type PreRecordedV2Timeouts = {
+  transcribe?: number
+  poll?: number
+  createAndPoll?: number
+  uploadFile?: number
+  getFile?: number
+  create?: number
+  delete?: number
+  get?: number
+}
+
+/**
+ * HTTP timeouts for live V2 job-management operations (milliseconds).
+ */
+export type LiveV2Timeouts = {
+  get?: number
+  delete?: number
+  getFile?: number
+}
+
+/**
+ * Region for live session creation (POST /v2/live).
+ */
+export type Region = 'eu-west' | 'us-west'
+
+/**
+ * Default HTTP query parameters attached to every request from an HTTP client.
+ * Do not put `region` here — it is only supported on live session creation (POST /v2/live).
+ */
+export type QueryParams = Record<string, string>
+
+/**
+ * Options for the Gladia Client.
+ */
+export type GladiaClientOptions = {
+  /**
+   * Your Gladia API key.
+   * You can obtain one by going to https://app.gladia.io.
+   *
+   * If you are using this client from a browser or in public code, you can omit it and give a different baseUrl pointing to a server you control.
+   * The server will have to act as a proxy to https://api.gladia.io and only add the header "x-gladia-key" with your API key.
+   *
+   * If not provided, the client will use the API key from the environment variable GLADIA_API_KEY.
+   */
+  apiKey?: string
+
+  /**
+   * Base API URL used for the API calls to Gladia.
+   *
+   * You can modify it to proxy the requests.
+   *
+   * If not provided, the client will take the environment variable GLADIA_API_URL and, if not provided either, it will default to https://api.gladia.io.
+   */
+  apiUrl?: string
+
+  /**
+   * Region for live session creation (POST /v2/live). Other routes do not support this param.
+   *
+   * If not provided, the client will take the environment variable GLADIA_REGION.
+   */
+  region?: Region
+
+  /**
+   * Custom headers to add to the HTTP requests.
+   */
+  httpHeaders?: Headers | [string, string][]
+
+  /**
+   * Control the retry behavior for HTTP requests.
+   *
+   * Retries are not triggered following a timeout.
+   */
+  httpRetry?: HttpRetryOptions
+
+  /**
+   * Timeout for HTTP requests in milliseconds.
+   *
+   * Retries are not triggered following a timeout.
+   *
+   * Default is 10_000.
+   */
+  httpTimeout?: number
+
+  /**
+   * Control the retry behavior for WebSocket connections and re-connections after a close event.
+   * Attempt count resets after a successful WebSocket connection.
+   *
+   * Retries are not triggered following a timeout.
+   */
+  wsRetry?: WebSocketRetryOptions
+
+  /**
+   * Timeout for WebSocket connections and re-connections after a close event in milliseconds.
+   *
+   * Retries are not triggered following a timeout.
+   *
+   * Default is 10_000.
+   */
+  wsTimeout?: number
+
+  /**
+   * Pre-recorded V2 per-operation timeouts. See {@link PreRecordedV2Timeouts}.
+   */
+  prerecordedTimeouts?: PreRecordedV2Timeouts
+
+  /**
+   * Live V2 per-operation timeouts. See {@link LiveV2Timeouts}.
+   */
+  liveTimeouts?: LiveV2Timeouts
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/helpers.ts"
+export function deepMergeObjects<T extends Record<string, unknown>>(
+  obj1: T,
+  obj2: Record<string, unknown> | undefined
+): T {
+  obj1 = { ...obj1 }
+  if (!obj2) return obj1
+
+  for (const [key, value] of Object.entries(obj2)) {
+    if (value == null) continue
+
+    if (obj1[key] && typeof obj1[key] === 'object' && typeof value === 'object') {
+      // @ts-expect-error T is generic, it cannot handle this case
+      obj1[key] = deepMergeObjects(obj1[key], value)
+    } else {
+      // @ts-expect-error T is generic, it cannot handle this case
+      obj1[key] = value
+    }
+  }
+  return obj1
+}
+
+export function getEnv<T extends string>(envVariableName: string, defaultValue: T): T
+export function getEnv<T extends string>(envVariableName: string): T | undefined
+export function getEnv<T extends string>(envVariableName: string, defaultValue?: T): T | undefined {
+  if (typeof process === 'undefined' || typeof process.env === 'undefined') {
+    return defaultValue
+  }
+  return (process.env[envVariableName] ?? defaultValue) as T | undefined
+}
+
+export async function sleep(ms: number): Promise<void> {
+  await new Promise<void>((resolve) => setTimeout(resolve, ms))
+}
+
+function isSharedArrayBuffer(
+  audio: ArrayBufferLike | Buffer<ArrayBufferLike> | ArrayLike<number>
+): audio is SharedArrayBuffer {
+  return typeof SharedArrayBuffer !== 'undefined' && audio instanceof SharedArrayBuffer
+}
+
+export function toUint8Array(
+  audio: ArrayBufferLike | Buffer<ArrayBufferLike> | ArrayLike<number>
+): Uint8Array {
+  if (isSharedArrayBuffer(audio)) {
+    return new Uint8Array(audio)
+  }
+  return new Uint8Array(audio)
+}
+
+export function concatArrayBuffer(
+  buffer1?: Uint8Array | null,
+  buffer2?: Uint8Array | null
+): Uint8Array {
+  const newBuffer = new Uint8Array((buffer1?.byteLength ?? 0) + (buffer2?.byteLength ?? 0))
+  if (buffer1) {
+    newBuffer.set(new Uint8Array(buffer1), 0)
+  }
+  if (buffer2) {
+    newBuffer.set(new Uint8Array(buffer2), buffer1?.byteLength ?? 0)
+  }
+  return newBuffer
+}
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-js/src/network?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+httpClient.test.ts	file	packages/sdk-js/src/network/httpClient.test.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/httpClient.test.ts
+httpClient.ts	file	packages/sdk-js/src/network/httpClient.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/httpClient.ts
+iso-fetch.ts	file	packages/sdk-js/src/network/iso-fetch.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/iso-fetch.ts
+iso-ws.ts	file	packages/sdk-js/src/network/iso-ws.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/iso-ws.ts
+types.ts	file	packages/sdk-js/src/network/types.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/types.ts
+wsClient.test.ts	file	packages/sdk-js/src/network/wsClient.test.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/wsClient.test.ts
+wsClient.ts	file	packages/sdk-js/src/network/wsClient.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/wsClient.ts
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-js/src/v2?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+live	dir	packages/sdk-js/src/v2/live	null
+prerecorded	dir	packages/sdk-js/src/v2/prerecorded	null
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-python/src/gladiaio_sdk?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+__init__.py	file	packages/sdk-python/src/gladiaio_sdk/__init__.py	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/__init__.py
+client.py	file	packages/sdk-python/src/gladiaio_sdk/client.py	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/client.py
+client_options.py	file	packages/sdk-python/src/gladiaio_sdk/client_options.py	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/client_options.py
+network	dir	packages/sdk-python/src/gladiaio_sdk/network	null
+py.typed	file	packages/sdk-python/src/gladiaio_sdk/py.typed	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/py.typed
+v2	dir	packages/sdk-python/src/gladiaio_sdk/v2	null
+version.py	file	packages/sdk-python/src/gladiaio_sdk/version.py	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/version.py
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/httpClient.ts"
+import { deepMergeObjects, sleep } from '../helpers.js'
+import type { HttpRetryOptions, QueryParams } from '../types.js'
+import { initFetch } from './iso-fetch.js'
+import type { Headers } from './types.js'
+
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+
+export class HttpError extends Error {
+  readonly method: HttpMethod
+  readonly status: number
+  readonly url: string
+  readonly id?: string
+  readonly requestId?: string
+  readonly responseBody?: string | Record<string, unknown>
+  readonly responseHeaders?: Headers
+
+  constructor(
+    {
+      message,
+      method,
+      id,
+      requestId,
+      responseBody,
+      url,
+      status,
+      headers,
+    }: {
+      message: string
+      method: HttpMethod
+      url: string
+      status: number
+      id?: string | undefined
+      requestId?: string | undefined
+      responseBody?: string | Record<string, unknown>
+      headers?: Headers
+    },
+    options?: { cause?: unknown }
+  ) {
+    super(message, options)
+    this.name = 'HttpError'
+    this.method = method
+    this.url = url
+    this.status = status
+    this.id = id
+    this.requestId = requestId
+    this.responseBody = responseBody
+    this.responseHeaders = headers
+  }
+}
+
+async function createHttpError(
+  method: HttpMethod,
+  url: string | URL,
+  response: Response,
+  options?: { cause?: unknown }
+) {
+  let message: string | undefined
+  let requestId: string | undefined
+  let id: string | undefined
+  let responseBody: string | Record<string, any> | undefined
+  let headers: Headers | undefined
+  try {
+    id = response.headers.get('x-aipi-call-id') ?? undefined
+    headers = Object.fromEntries(response.headers.entries())
+    responseBody = await response.text()
+    try {
+      responseBody = JSON.parse(responseBody) as Record<string, any>
+      requestId = responseBody?.['request_id']
+      message = responseBody?.['message']
+    } catch {
+      // noop
+    }
+  } catch {
+    // noop
+  }
+
+  const messageParts = [
+    message || response.statusText || 'An error occurred',
+    requestId || id,
+    response.status.toString(),
+    `${method} ${new URL(url).pathname}`,
+  ]
+  return new HttpError(
+    {
+      method,
+      message: messageParts.filter(Boolean).join(' | '),
+      url: url.toString(),
+      status: response.status,
+      id,
+      requestId,
+      responseBody,
+      headers,
+    },
+    options
+  )
+}
+
+export class TimeoutError extends Error {
+  readonly timeout: number
+  constructor(message: string, timeout: number, options?: { cause?: unknown }) {
+    super(message, options)
+    this.name = 'TimeoutError'
+    this.timeout = timeout
+  }
+}
+
+type RequestOptions = Omit<RequestInit, 'method' | 'headers'> & {
+  headers?: Headers
+  /** When true, the successful response is the raw `fetch` `Response` (no JSON parsing). */
+  rawResponse?: boolean
+  /** Override the client default HTTP timeout for this request (milliseconds). */
+  requestTimeout?: number
+}
+
+export type HttpClientOptions = {
+  baseUrl: string | URL
+  headers?: Headers
+  queryParams?: QueryParams
+  retry: Required<HttpRetryOptions>
+  timeout: number
+}
+
+function matchesStatus(status: number, list: (number | [number, number])[]): boolean {
+  for (const item of list) {
+    if (typeof item === 'number') {
+      if (status === item) return true
+    } else {
+      const [start, end] = item
+      if (status >= start && status <= end) return true
+    }
+  }
+  return false
+}
+
+function isAbortError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false
+  if ('name' in error && (error as any).name === 'AbortError') return true
+  // In some environments, fetch abort rejects with a DOMException named 'AbortError'
+  try {
+    if (
+      typeof DOMException !== 'undefined' &&
+      error instanceof DOMException &&
+      error.name === 'AbortError'
+    ) {
+      return true
+    }
+  } catch {
+    // ignore if DOMException is not available
+  }
+  return false
+}
+
+export class HttpClient {
+  private baseUrl: string | URL
+  private defaultHeaders?: Headers
+  private defaultQueryParams?: QueryParams
+
+  private retry: Required<HttpRetryOptions>
+  private timeout: number
+  private fetchPromise: Promise<typeof fetch>
+
+  constructor(options: HttpClientOptions) {
+    this.baseUrl = options.baseUrl
+    this.defaultHeaders = options.headers
+    this.defaultQueryParams = options.queryParams
+    this.retry = options.retry
+    this.timeout = options.timeout
+
+    // Ensure maxAttempts, maxDelay and timeout are non-negative integers
+    this.retry.maxAttempts = Math.max(0, Math.floor(this.retry.maxAttempts))
+    this.timeout = Math.max(0, Math.floor(this.timeout))
+
+    this.fetchPromise = initFetch()
+  }
+
+  async get<ResponseType = Response>(
+    url: string | URL,
+    init: RequestOptions = {}
+  ): Promise<ResponseType> {
+    return this.request('GET', url, init)
+  }
+
+  async post<ResponseType = Response>(
+    url: string | URL,
+    init: RequestOptions = {}
+  ): Promise<ResponseType> {
+    return this.request('POST', url, init)
+  }
+
+  async put<ResponseType = Response>(
+    url: string | URL,
+    init: RequestOptions = {}
+  ): Promise<ResponseType> {
+    return this.request('PUT', url, init)
+  }
+
+  async delete<ResponseType = Response>(
+    url: string | URL,
+    init: RequestOptions = {}
+  ): Promise<ResponseType> {
+    return this.request('DELETE', url, init)
+  }
+
+  async request<ResponseType>(
+    method: HttpMethod,
+    url: string | URL,
+    init: RequestOptions = {}
+  ): Promise<ResponseType> {
+    url = new URL(url, this.baseUrl)
+    if (this.defaultQueryParams) {
+      for (const [key, value] of Object.entries(this.defaultQueryParams)) {
+        // Only set default param if it's not already present in the URL
+        if (!url.searchParams.has(key)) {
+          url.searchParams.set(key, value)
+        }
+      }
+    }
+
+    const { signal: userSignal, headers, rawResponse, requestTimeout, ...rest } = init
+    const effectiveTimeout =
+      requestTimeout !== undefined ? Math.max(0, Math.floor(requestTimeout)) : this.timeout
+
+    const overallStart = Date.now()
+    const attemptErrors: Error[] = []
+
+    let attempt = 0
+    const limit = this.retry.maxAttempts
+
+    while (true) {
+      attempt += 1
+
+      // Prepare AbortController that combines user signal and timeout
+      const controller = new AbortController()
+      const onUserAbort = () => controller.abort((userSignal as any)?.reason)
+      let timeoutId: ReturnType<typeof setTimeout> | undefined
+      let timedOut = false
+
+      try {
+        if (userSignal) {
+          if (userSignal.aborted) {
+            // Respect user pre-aborted signal
+            throw new Error('Request aborted by the provided AbortSignal', {
+              cause: (userSignal as any).reason,
+            })
+          }
+          userSignal.addEventListener('abort', onUserAbort, { once: true })
+        }
+
+        if (effectiveTimeout > 0) {
+          timeoutId = setTimeout(() => {
+            timedOut = true
+            controller.abort(
+              new TimeoutError(`Request timed out after ${effectiveTimeout}ms`, effectiveTimeout)
+            )
+          }, effectiveTimeout)
+        }
+
+        const selectedFetch = await this.fetchPromise
+        const response = await selectedFetch(url, {
+          ...rest,
+          method,
+          headers: this.defaultHeaders ? deepMergeObjects(this.defaultHeaders, headers) : headers,
+          signal: controller.signal,
+        })
+
+        // Clear timeout on successful resolution
+        if (timeoutId) clearTimeout(timeoutId)
+        if (userSignal) userSignal.removeEventListener('abort', onUserAbort)
+
+        if (!response.ok) {
+          const httpErr = await createHttpError(method, url, response)
+
+          // Retry only if status is retryable and attempts remain
+          // When limit is 0, retry unlimited times
+          // When limit is 1, no retries (only initial attempt)
+          // When limit is 2, 1 retry (initial + 1 retry)
+          const shouldRetry = limit === 0 ? true : attempt < limit
+          if (shouldRetry && matchesStatus(response.status, this.retry.statusCodes)) {
+            attemptErrors.push(httpErr)
+            const delayMs = this.retry.delay(attempt)
+            await sleep(delayMs)
+            continue
+          }
+
+          // Not retryable or attempts exhausted -> throw and handle in catch
+          throw httpErr
+        }
+
+        if (rawResponse) {
+          return response as ResponseType
+        }
+
+        if (response.headers.get('content-type')?.includes('application/json')) {
+          return (await response.json()) as ResponseType
+        }
+        return response as ResponseType
+      } catch (err) {
+        // Clear timers and listeners
+        if (timeoutId) clearTimeout(timeoutId)
+        if (userSignal) userSignal.removeEventListener('abort', onUserAbort)
+
+        if (timedOut) {
+          // No retry after timeout
+          const elapsed = Date.now() - overallStart
+          const timeoutError = new TimeoutError(
+            `Request timed out after ${effectiveTimeout}ms on attempt ${attempt} (duration=${elapsed}ms) for ${method} ${url}`,
+            effectiveTimeout,
+            { cause: err }
+          )
+          throw timeoutError
+        }
+
+        if (isAbortError(err) || (userSignal && userSignal.aborted)) {
+          // User abort should be clear and not retried
+          const elapsed = Date.now() - overallStart
+          const abortErr = new Error(
+            `Request aborted by the provided AbortSignal after ${elapsed}ms for ${method} ${url}`,
+            { cause: err }
+          )
+          throw abortErr
+        }
+
+        // Other errors (HTTP or network) — decide retry policy here
+        const asError = err instanceof Error ? err : new Error(String(err))
+
+        if (asError instanceof HttpError) {
+          const retryable = matchesStatus(asError.status, this.retry.statusCodes)
+          // When limit is 0, retry unlimited times
+          // When limit is 1, no retries (only initial attempt)
+          // When limit is 2, 1 retry (initial + 1 retry)
+          const shouldRetry = limit === 0 ? true : attempt < limit
+          if (retryable && shouldRetry) {
+            attemptErrors.push(asError)
+            await sleep(this.retry.delay(attempt))
+            continue
+          }
+
+          if (attemptErrors.length > 0) {
+            attemptErrors.push(asError)
+            const elapsed = Date.now() - overallStart
+            const aggregate = new AggregateError(attemptErrors, 'All retry attempts failed')
+            const finalError = new Error(
+              `HTTP request failed after ${attempt} attempts over ${elapsed}ms for ${method} ${url}`,
+              { cause: aggregate }
+            )
+            throw finalError
+          }
+
+          // No prior attempts, not retryable -> surface the HttpError
+          throw asError
+        }
+
+        // Non-HTTP (e.g., network) error
+        // When limit is 0, retry unlimited times
+        // When limit is 1, no retries (only initial attempt)
+        // When limit is 2, 1 retry (initial + 1 retry)
+        const shouldRetry = limit === 0 ? true : attempt < limit
+        if (shouldRetry) {
+          attemptErrors.push(asError)
+          await sleep(this.retry.delay(attempt))
+          continue
+        }
+
+        // Attempts exhausted — throw aggregated error with attempts and duration
+        attemptErrors.push(asError)
+        const elapsed = Date.now() - overallStart
+        const aggregate = new AggregateError(attemptErrors, 'All retry attempts failed')
+        const finalError = new Error(
+          `HTTP request failed after ${attempt} attempts over ${elapsed}ms for ${method} ${url}`,
+          { cause: aggregate }
+        )
+        throw finalError
+      }
+    }
+  }
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/wsClient.ts"
+import { sleep } from '../helpers.js'
+import type { WebSocketRetryOptions } from '../types.js'
+import { newWebSocket, WS_STATES, type IsoWS } from './iso-ws.js'
+
+export { WS_STATES } from './iso-ws.js'
+
+export type WebSocketClientOptions = {
+  baseUrl: string | URL
+  retry: Required<WebSocketRetryOptions>
+  timeout: number
+}
+
+function matchesCloseCode(code: number, list: (number | [number, number])[]): boolean {
+  for (const item of list) {
+    if (typeof item === 'number') {
+      if (code === item) return true
+    } else {
+      const [start, end] = item
+      if (code >= start && code <= end) return true
+    }
+  }
+  return false
+}
+
+function removeWsListeners(ws?: IsoWS | null): void {
+  if (!ws) {
+    return
+  }
+
+  ws.onopen = null
+  ws.onerror = null
+  ws.onmessage = null
+  ws.onclose = null
+}
+
+export class WebSocketClient {
+  private readonly baseUrl: string | URL
+  private readonly retry: Required<WebSocketRetryOptions>
+  private readonly timeout: number
+
+  constructor(options: WebSocketClientOptions) {
+    this.baseUrl = options.baseUrl
+    this.retry = options.retry
+    this.timeout = options.timeout
+
+    // Ensure maxAttemptsPerConnection, maxDelay, maxConnections and timeout are non-negative integers
+    this.retry.maxAttemptsPerConnection = Math.max(
+      0,
+      Math.floor(this.retry.maxAttemptsPerConnection)
+    )
+    this.retry.maxConnections = Math.max(0, Math.floor(this.retry.maxConnections))
+    this.timeout = Math.max(0, Math.floor(this.timeout))
+  }
+
+  createSession(url: string): WebSocketSession {
+    return new WebSocketSession({
+      retry: this.retry,
+      timeout: this.timeout,
+      url: new URL(url, this.baseUrl),
+    })
+  }
+}
+
+class WebSocketSession implements Omit<IsoWS, 'onopen'> {
+  onconnecting: ((event: { connection: number; attempt: number }) => void) | null = null
+  onopen: ((event: { connection: number; attempt: number }) => void) | null = null
+  onerror: IsoWS['onerror'] = null
+  onclose: IsoWS['onclose'] = null
+  onmessage: IsoWS['onmessage'] = null
+
+  private _readyState: IsoWS['readyState'] = WS_STATES.CONNECTING
+  private _url: IsoWS['url']
+  private readonly retry: Required<WebSocketRetryOptions>
+  private readonly timeout: number
+
+  private ws: IsoWS | null = null
+  private connectionCount = 0
+  private connectionAttempt = 0
+  private connectionTimeoutId: ReturnType<typeof setTimeout> | undefined
+
+  constructor({
+    retry,
+    timeout,
+    url,
+  }: {
+    retry: Required<WebSocketRetryOptions>
+    timeout: number
+    url: string | URL
+  }) {
+    this._url = url.toString()
+
+    this.retry = retry
+    this.timeout = timeout
+
+    this.connect().catch(() => {
+      // errors are emitted via event handlers; no throw
+    })
+  }
+
+  get readyState(): IsoWS['readyState'] {
+    return this._readyState
+  }
+
+  get url(): IsoWS['url'] {
+    return this._url
+  }
+
+  send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
+    if (this.readyState === WS_STATES.OPEN) {
+      if (!this.ws) {
+        throw new Error('readyState is open but ws is not initialized')
+      }
+      this.ws.send(data)
+    } else {
+      throw new Error('WebSocket is not open')
+    }
+  }
+
+  close(code = 1000, reason = ''): void {
+    if (this.readyState === WS_STATES.CLOSING || this.readyState === WS_STATES.CLOSED) {
+      return
+    }
+
+    this.clearConnectionTimeout()
+    this._readyState = WS_STATES.CLOSING
+
+    if (this.ws?.readyState === WS_STATES.OPEN) {
+      this.ws.close(code)
+    } /* if (this.readyState === WS_STATES.CONNECTING) */ else {
+      this.onWsClose(code, reason)
+    }
+  }
+
+  private onWsClose(code = 1000, reason = ''): void {
+    this.clearConnectionTimeout()
+
+    if (this.readyState !== WS_STATES.CLOSED) {
+      this._readyState = WS_STATES.CLOSED
+      this.onclose?.({ code, reason })
+    }
+
+    this.onconnecting = null
+    this.onopen = null
+    this.onclose = null
+    this.onerror = null
+    this.onmessage = null
+
+    removeWsListeners(this.ws)
+    this.ws = null
+  }
+
+  private async connect(isRetry = false): Promise<void> {
+    this.clearConnectionTimeout()
+
+    if (!isRetry) {
+      this.connectionCount += 1
+      this.connectionAttempt = 0
+    }
+    this.connectionAttempt += 1
+    this._readyState = WS_STATES.CONNECTING
+    this.onconnecting?.({ connection: this.connectionCount, attempt: this.connectionAttempt })
+
+    if (this.timeout > 0) {
+      this.connectionTimeoutId = setTimeout(() => {
+        this.close(3008, 'WebSocket connection timeout')
+      }, this.timeout)
+    }
+
+    const onError = async (ws: IsoWS | null, err?: Error) => {
+      this.clearConnectionTimeout()
+      removeWsListeners(ws)
+
+      if (this.readyState !== WS_STATES.CONNECTING) {
+        return
+      }
+
+      const noRetry =
+        this.retry.maxAttemptsPerConnection > 0 &&
+        this.connectionAttempt >= this.retry.maxAttemptsPerConnection
+      if (noRetry) {
+        this.onerror?.(new Error('WebSocket connection error', { cause: err }))
+        this.close(1006, 'WebSocket connection error')
+        return
+      }
+
+      await sleep(this.retry.delay(this.connectionAttempt))
+      if (this.readyState === WS_STATES.CONNECTING) {
+        this.connect(true)
+      }
+    }
+
+    let ws: IsoWS
+    try {
+      ws = await newWebSocket(this.url)
+    } catch (err) {
+      onError(null, err instanceof Error ? err : new Error(String(err)))
+      return
+    }
+
+    if (this.readyState !== WS_STATES.CONNECTING) {
+      ws.close(1001)
+      return
+    }
+
+    ws.onerror = () => onError(ws)
+    ws.onopen = () => {
+      this.clearConnectionTimeout()
+      removeWsListeners(ws)
+
+      if (this.readyState !== WS_STATES.CONNECTING) {
+        // User closed the connection during the connection attempt
+        ws.close(1001)
+        return
+      }
+
+      ws.onmessage = (event) => {
+        this.onmessage?.(event)
+      }
+      ws.onclose = (event) => {
+        removeWsListeners(ws)
+
+        if (this.ws !== ws) {
+          // Should not be possible ?
+          return
+        }
+
+        this.ws = null
+
+        if (this.readyState === WS_STATES.CLOSING) {
+          this.onWsClose(event.code, event.reason || '')
+          return
+        }
+
+        if (
+          (this.retry.maxConnections > 0 && this.connectionCount >= this.retry.maxConnections) ||
+          !matchesCloseCode(event.code, this.retry.closeCodes)
+        ) {
+          this.close(event.code, event.reason || '')
+          return
+        }
+
+        this.connect()
+      }
+
+      this.ws = ws
+      this._readyState = WS_STATES.OPEN
+      this.onopen?.({ connection: this.connectionCount, attempt: this.connectionAttempt })
+    }
+  }
+
+  private clearConnectionTimeout(): void {
+    if (this.connectionTimeoutId) {
+      clearTimeout(this.connectionTimeoutId)
+      this.connectionTimeoutId = undefined
+    }
+  }
+}
+
+export type { WebSocketSession }
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/iso-fetch.ts"
+import { getEnv } from '../helpers.js'
+
+// Max safe integer in 32-bit environment
+const MAX_TIMEOUT = 2147483647
+
+export async function initFetch(): Promise<typeof fetch> {
+  if (getEnv('VITEST_WORKER_ID')) {
+    return fetch
+  }
+
+  if (!(typeof process !== 'undefined' && !!(process.versions as any)?.node)) {
+    return fetch
+  }
+
+  try {
+    const { Agent, setGlobalDispatcher } = await import('undici')
+    const agent = new Agent({
+      connectTimeout: MAX_TIMEOUT,
+      connect: { timeout: MAX_TIMEOUT },
+      headersTimeout: MAX_TIMEOUT,
+      bodyTimeout: 0,
+    })
+    setGlobalDispatcher(agent)
+    // Return Node.js's built-in fetch (which now uses the agent above),
+    // so its own FormData is recognized and Content-Type is set correctly.
+    return fetch
+  } catch {
+    return fetch
+  }
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/iso-ws.ts"
+export const WS_STATES = {
+  CONNECTING: 0,
+  OPEN: 1,
+  CLOSING: 2,
+  CLOSED: 3,
+} as const
+
+export type ErrorEvent = Error
+export type CloseEvent = {
+  /**
+   * Returns the WebSocket connection close code provided by the server.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/CloseEvent/code)
+   */
+  readonly code: number
+  /**
+   * Returns the WebSocket connection close reason provided by the server.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/CloseEvent/reason)
+   */
+  readonly reason: string
+}
+export type MessageEvent = {
+  data: string | ArrayBuffer
+}
+
+export interface IsoWS {
+  readonly url: string
+  readonly readyState:
+    | typeof WS_STATES.CONNECTING
+    | typeof WS_STATES.OPEN
+    | typeof WS_STATES.CLOSING
+    | typeof WS_STATES.CLOSED
+  onopen: (() => void) | null
+  onerror: ((error: ErrorEvent) => void) | null
+  onclose: ((event: CloseEvent) => void) | null
+  onmessage: ((event: MessageEvent) => void) | null
+  send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void
+  close(code: number): void
+}
+
+function getNativeWebSocket() {
+  if (typeof WebSocket !== 'undefined') {
+    return WebSocket
+  }
+  if (typeof global !== 'undefined' && typeof global.WebSocket !== 'undefined') {
+    return global.WebSocket
+  }
+  if (typeof globalThis !== 'undefined' && typeof globalThis.WebSocket !== 'undefined') {
+    return globalThis.WebSocket
+  }
+  // @ts-expect-error unknown variable in NodeJS but can be defined in other environment
+  if (typeof window !== 'undefined' && typeof window.WebSocket !== 'undefined') {
+    // @ts-expect-error unknown variable in NodeJS but can be defined in other environment
+    return window.WebSocket
+  }
+  // @ts-expect-error unknown variable in NodeJS but can be defined in other environment
+  if (typeof window !== 'undefined' && typeof window.WebSocket !== 'undefined') {
+    // @ts-expect-error unknown variable in NodeJS but can be defined in other environment
+    return window.WebSocket
+  }
+  // @ts-expect-error unknown variable in NodeJS but can be defined in other environment
+  if (typeof self !== 'undefined' && typeof self.WebSocket !== 'undefined') {
+    // @ts-expect-error unknown variable in NodeJS but can be defined in other environment
+    return self.WebSocket
+  }
+}
+
+export async function newWebSocket(url: string | URL): Promise<IsoWS> {
+  let WS: any
+  try {
+    WS = getNativeWebSocket() ?? (await import('ws')).WebSocket
+  } catch {
+    // noop
+  }
+  if (!WS) {
+    throw new Error(
+      'WebSocket is not supported in this environment and the `ws` package is not installed'
+    )
+  }
+  return new WS(url)
+}
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-js/src/v2/live?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+client.ts	file	packages/sdk-js/src/v2/live/client.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/v2/live/client.ts
+generated-types.ts	file	packages/sdk-js/src/v2/live/generated-types.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/v2/live/generated-types.ts
+index.ts	file	packages/sdk-js/src/v2/live/index.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/v2/live/index.ts
+session.test.ts	file	packages/sdk-js/src/v2/live/session.test.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/v2/live/session.test.ts
+session.ts	file	packages/sdk-js/src/v2/live/session.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/v2/live/session.ts
+types.ts	file	packages/sdk-js/src/v2/live/types.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/v2/live/types.ts
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-js/src/v2/prerecorded?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+client.ts	file	packages/sdk-js/src/v2/prerecorded/client.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/v2/prerecorded/client.ts
+generated-types.ts	file	packages/sdk-js/src/v2/prerecorded/generated-types.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/v2/prerecorded/generated-types.ts
+index.ts	file	packages/sdk-js/src/v2/prerecorded/index.ts	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/v2/prerecorded/index.ts
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/client.py"
+"""Gladia Python SDK client entrypoint."""
+
+from __future__ import annotations
+
+import dataclasses
+import os
+from typing import cast, overload
+
+from gladiaio_sdk.client_options import (
+  GladiaClientOptions,
+  HttpRetryOptions,
+  LiveV2Timeouts,
+  PreRecordedV2Timeouts,
+  Region,
+  WebSocketRetryOptions,
+)
+from gladiaio_sdk.v2.live.async_client import LiveV2AsyncClient
+from gladiaio_sdk.v2.live.client import LiveV2Client
+from gladiaio_sdk.v2.prerecorded.async_client import PreRecordedV2AsyncClient
+from gladiaio_sdk.v2.prerecorded.client import PreRecordedV2Client
+from gladiaio_sdk.version import SDK_VERSION
+
+
+def normalize_gladia_headers(headers: dict[str, str]) -> dict[str, str]:
+  new_headers: dict[str, str] = {}
+  for key, value in headers.items():
+    lc_key = key.lower()
+    if lc_key.startswith("x-gladia-"):
+      new_headers[lc_key] = value
+    else:
+      new_headers[key] = value
+  return new_headers
+
+
+def _assert_valid_options(options: GladiaClientOptions) -> None:
+  try:
+    from urllib.parse import urlparse
+
+    url = urlparse(str(options.api_url))
+  except Exception as err:
+    raise ValueError(f'Invalid url: "{options.api_url}".') from err
+
+  if not options.api_key:
+    raise ValueError('You must set your "api_key" or GLADIA_API_KEY environment variable set.')
+  if url.scheme not in ["https", "http", "wss", "ws"]:
+    raise ValueError(
+      f"Only HTTP and WebSocket protocols are supported for api_url (received: {url.scheme})."
+    )
+
+
+gladia_version = f"SdkPython/{SDK_VERSION}"
+
+
+class GladiaClient:
+  """Entrypoint for Gladia SDK"""
+
+  options: GladiaClientOptions
+
+  @overload
+  def __init__(
+    self,
+    *,
+    api_key: str | None = None,
+    api_url: str | None = None,
+    region: Region | None = None,
+    http_headers: dict[str, str] | None = None,
+    http_retry: HttpRetryOptions | None = None,
+    http_timeout: float | None = None,
+    prerecorded_timeouts: PreRecordedV2Timeouts | None = None,
+    live_timeouts: LiveV2Timeouts | None = None,
+    ws_retry: WebSocketRetryOptions | None = None,
+    ws_timeout: float | None = None,
+  ) -> None: ...
+  @overload
+  def __init__(
+    self,
+    opts: GladiaClientOptions,
+  ) -> None: ...
+  def __init__(self, *args, **kwargs) -> None:
+    if "api_key" not in kwargs and "api_key" not in args:
+      kwargs["api_key"] = os.environ.get("GLADIA_API_KEY")
+    self.options = args[0] if len(args) > 0 and args[0] else GladiaClientOptions(**kwargs)
+
+  @overload
+  def pre_recorded_v2(
+    self,
+    *,
+    api_key: str | None = None,
+    api_url: str | None = None,
+    region: Region | None = None,
+    http_headers: dict[str, str] | None = None,
+    http_retry: HttpRetryOptions | None = None,
+    http_timeout: float | None = None,
+    prerecorded_timeouts: PreRecordedV2Timeouts | None = None,
+    live_timeouts: LiveV2Timeouts | None = None,
+    ws_retry: WebSocketRetryOptions | None = None,
+    ws_timeout: float | None = None,
+  ) -> PreRecordedV2Client: ...
+  @overload
+  def pre_recorded_v2(
+    self,
+    opts: GladiaClientOptions,
+  ) -> PreRecordedV2Client: ...
+  def pre_recorded_v2(self, *args, **kwargs) -> PreRecordedV2Client:
+    """Get sync pre-recorded V2 client."""
+    merged_options = self._merge_options(*args, **kwargs)
+    return PreRecordedV2Client(merged_options)
+
+  prerecorded = pre_recorded_v2
+  pre_recorded = pre_recorded_v2
+
+  @overload
+  def pre_recorded_v2_async(
+    self,
+    *,
+    api_key: str | None = None,
+    api_url: str | None = None,
+    region: Region | None = None,
+    http_headers: dict[str, str] | None = None,
+    http_retry: HttpRetryOptions | None = None,
+    http_timeout: float | None = None,
+    prerecorded_timeouts: PreRecordedV2Timeouts | None = None,
+    live_timeouts: LiveV2Timeouts | None = None,
+    ws_retry: WebSocketRetryOptions | None = None,
+    ws_timeout: float | None = None,
+  ) -> PreRecordedV2AsyncClient: ...
+  @overload
+  def pre_recorded_v2_async(
+    self,
+    opts: GladiaClientOptions,
+  ) -> PreRecordedV2AsyncClient: ...
+  def pre_recorded_v2_async(self, *args, **kwargs) -> PreRecordedV2AsyncClient:
+    """Get async pre-recorded V2 client."""
+    merged_options = self._merge_options(*args, **kwargs)
+    return PreRecordedV2AsyncClient(merged_options)
+
+  prerecorded_async = pre_recorded_v2_async
+  pre_recorded_async = pre_recorded_v2_async
+
+  @overload
+  def live_v2(
+    self,
+    *,
+    api_key: str | None = None,
+    api_url: str | None = None,
+    region: Region | None = None,
+    http_headers: dict[str, str] | None = None,
+    http_retry: HttpRetryOptions | None = None,
+    http_timeout: float | None = None,
+    prerecorded_timeouts: PreRecordedV2Timeouts | None = None,
+    live_timeouts: LiveV2Timeouts | None = None,
+    ws_retry: WebSocketRetryOptions | None = None,
+    ws_timeout: float | None = None,
+  ) -> LiveV2Client: ...
+  @overload
+  def live_v2(
+    self,
+    opts: GladiaClientOptions,
+  ) -> LiveV2Client: ...
+  def live_v2(self, *args, **kwargs) -> LiveV2Client:
+    merged_options = self._merge_options(*args, **kwargs)
+    return LiveV2Client(merged_options)
+
+  live = live_v2
+  live_v2 = live_v2
+
+  @overload
+  def live_v2_async(
+    self,
+    *,
+    api_key: str | None = None,
+    api_url: str | None = None,
+    region: Region | None = None,
+    http_headers: dict[str, str] | None = None,
+    http_retry: HttpRetryOptions | None = None,
+    http_timeout: float | None = None,
+    prerecorded_timeouts: PreRecordedV2Timeouts | None = None,
+    live_timeouts: LiveV2Timeouts | None = None,
+    ws_retry: WebSocketRetryOptions | None = None,
+    ws_timeout: float | None = None,
+  ) -> LiveV2AsyncClient: ...
+  @overload
+  def live_v2_async(
+    self,
+    opts: GladiaClientOptions,
+  ) -> LiveV2AsyncClient: ...
+  def live_v2_async(self, *args, **kwargs) -> LiveV2AsyncClient:
+    merged_options = self._merge_options(*args, **kwargs)
+    return LiveV2AsyncClient(merged_options)
+
+  live_async = live_v2_async
+  live_v2_async = live_v2_async
+
+  def _merge_options(self, *args, **kwargs) -> GladiaClientOptions:
+    merged_options: GladiaClientOptions = self.options
+    if len(args) > 0 and args[0]:
+      merged_options = cast(GladiaClientOptions, args[0])
+    else:
+      merged_options = dataclasses.replace(self.options, **kwargs)
+
+    http_headers = normalize_gladia_headers(merged_options.http_headers)
+
+    if merged_options.api_key:
+      http_headers["x-gladia-key"] = merged_options.api_key
+    if "x-gladia-version" in http_headers:
+      http_headers["x-gladia-version"] = (
+        f"{merged_options.http_headers['x-gladia-version'].strip()} {gladia_version}"
+      )
+    else:
+      http_headers["x-gladia-version"] = gladia_version
+
+    merged_options = dataclasses.replace(merged_options, http_headers=http_headers)
+
+    # Validate
+    _assert_valid_options(merged_options)
+
+    return merged_options
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/client_options.py"
+import os
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Literal, cast
+
+# Region parameter
+Region = Literal["eu-west", "us-west"]
+
+# Default HTTP query parameters attached to every request from an HTTP client.
+QueryParams = dict[str, str]
+
+# Default timeouts (seconds) for general HTTP / WebSocket clients.
+DEFAULT_HTTP_TIMEOUT: float = 10
+DEFAULT_WS_TIMEOUT: float = 10
+
+
+@dataclass(frozen=True, slots=True)
+class PreRecordedV2Timeouts:
+  """HTTP and flow timeouts for pre-recorded V2 (seconds).
+
+  ``poll``, ``create_and_poll``, and ``transcribe`` accept ``timeout=None`` to wait
+  indefinitely. When those parameters are omitted, these values apply.
+  """
+
+  transcribe: float = 7200
+  poll: float = 7200
+  create_and_poll: float = 7200
+
+  upload_file: float = 300
+  get_file: float = 300
+
+  create: float = 60
+  delete: float = 60
+
+  get: float = 10
+
+  def __post_init__(self) -> None:
+    for name in (
+      "transcribe",
+      "create",
+      "upload_file",
+      "get",
+      "delete",
+      "poll",
+      "create_and_poll",
+    ):
+      v = max(0, float(getattr(self, name)))
+      object.__setattr__(self, name, v)
+
+
+@dataclass(frozen=True, slots=True)
+class LiveV2Timeouts:
+  """HTTP timeouts for live V2 job-management operations (seconds)."""
+
+  get: float = 10
+  delete: float = 60
+  get_file: float = 300
+
+  def __post_init__(self) -> None:
+    for name in ("get", "delete", "get_file"):
+      v = max(0, float(getattr(self, name)))
+      object.__setattr__(self, name, v)
+
+
+@dataclass(frozen=True, slots=True)
+class HttpRetryOptions:
+  """Retry behavior for HTTP requests. Retries are not triggered after a timeout."""
+
+  max_attempts: int = 2
+  status_codes: list[int | tuple[int, int]] = field(
+    default_factory=lambda: [408, 413, (500, 599), 429]
+  )
+  """Delay in seconds between attempts. Callable(attempt_number) -> seconds."""
+  delay: Callable[[int], float] = lambda attempt: min(0.3 * (2.0 ** (attempt - 1)), 10)
+
+  def __post_init__(self) -> None:
+    object.__setattr__(self, "max_attempts", max(0, self.max_attempts))
+
+
+@dataclass(frozen=True, slots=True)
+class WebSocketRetryOptions:
+  """Retry behavior for WebSocket connections. Attempt count resets after a successful connection. Retries are not triggered after a timeout."""
+
+  max_attempts_per_connection: int = 5
+  """Delay in seconds between reconnection attempts. Callable(attempt_number) -> seconds."""
+  delay: Callable[[int], float] = lambda attempt: min(0.3 * (2.0 ** (attempt - 1)), 2)
+  max_connections: int = 0
+  close_codes: list[int | tuple[int, int]] = field(
+    default_factory=lambda: [(1002, 4399), (4500, 9999)]
+  )
+
+  def __post_init__(self) -> None:
+    object.__setattr__(
+      self, "max_attempts_per_connection", max(0, self.max_attempts_per_connection)
+    )
+    object.__setattr__(self, "max_connections", max(0, self.max_connections))
+
+
+@dataclass(frozen=True, slots=True)
+class GladiaClientOptions:
+  """Top-level client options. Timeouts are in seconds (unlike the JS SDK, which uses milliseconds).
+
+  Pre-recorded V2 uses :class:`PreRecordedV2Timeouts` for per-operation HTTP limits and
+  default poll/transcribe deadlines; see ``prerecorded_timeouts``.
+  """
+
+  api_key: str | None = os.environ.get("GLADIA_API_KEY")
+  api_url: str = os.environ.get("GLADIA_API_URL", "https://api.gladia.io")
+  # Only applied to live session creation (POST /v2/live). Other routes ignore it.
+  region: Region | None = cast(Region | None, os.environ.get("GLADIA_REGION"))
+  http_headers: dict[str, str] = field(default_factory=dict)
+  http_retry: HttpRetryOptions = HttpRetryOptions()
+  """HTTP request timeout in seconds. Default 10. Retries are not triggered after a timeout."""
+  http_timeout: float = DEFAULT_HTTP_TIMEOUT
+  prerecorded_timeouts: PreRecordedV2Timeouts = field(default_factory=PreRecordedV2Timeouts)
+  live_timeouts: LiveV2Timeouts = field(default_factory=LiveV2Timeouts)
+  ws_retry: WebSocketRetryOptions = WebSocketRetryOptions()
+  """WebSocket connection timeout in seconds. Default 10. Retries are not triggered after a timeout."""
+  ws_timeout: float = DEFAULT_WS_TIMEOUT
+
+  def __post_init__(self) -> None:
+    object.__setattr__(self, "http_timeout", max(0, self.http_timeout))
+    object.__setattr__(self, "ws_timeout", max(0, self.ws_timeout))
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/version.py"
+# This file is auto-generated. Do not edit manually.
+SDK_VERSION = "1.0.2"
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-python/src/gladiaio_sdk/network?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+__init__.py	file	packages/sdk-python/src/gladiaio_sdk/network/__init__.py	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/network/__init__.py
+helper.py	file	packages/sdk-python/src/gladiaio_sdk/network/helper.py	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/network/helper.py
+http_client.py	file	packages/sdk-python/src/gladiaio_sdk/network/http_client.py	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/network/http_client.py
+websocket_client.py	file	packages/sdk-python/src/gladiaio_sdk/network/websocket_client.py	https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/network/websocket_client.py
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/network/http_client.py"
+"""Async and Synchronous HTTP client with retry and timeout support."""
+
+import asyncio
+import difflib
+import json
+import re
+import time
+from collections.abc import Sequence
+from typing import Any, final
+
+import httpx
+
+from gladiaio_sdk.client_options import HttpRetryOptions, QueryParams
+from gladiaio_sdk.network.helper import matches_status
+
+_schema_field_names_cache: dict[str, frozenset[str]] = {}
+
+
+def _flatten_json_keys(obj: Any, out: set[str] | None = None) -> set[str]:
+  """Collect all string keys from nested dict/list JSON payloads."""
+  if out is None:
+    out = set()
+  if isinstance(obj, dict):
+    for k, v in obj.items():
+      if isinstance(k, str):
+        out.add(k)
+      _flatten_json_keys(v, out)
+  elif isinstance(obj, list):
+    for item in obj:
+      _flatten_json_keys(item, out)
+  return out
+
+
+# Leading "field" or dotted path before common API validation phrasing (string-form errors).
+_STRING_VALIDATION_PATH = re.compile(
+  r"^([a-zA-Z_][\w.]*)\s+(?:must\b|(?:is|are)\s+required\b|field\s+required\b)",
+  re.MULTILINE,
+)
+
+
+def _paths_from_string_validation_errors(validation_errors: Any) -> list[str]:
+  """Extract request field paths from API errors returned as plain strings."""
+  if not isinstance(validation_errors, list):
+    return []
+  out: list[str] = []
+  for item in validation_errors:
+    if not isinstance(item, str):
+      continue
+    m = _STRING_VALIDATION_PATH.match(item.strip())
+    if m:
+      out.append(m.group(1))
+  return list(dict.fromkeys(out))
+
+
+def _loc_leaf_candidates_from_validation_errors(validation_errors: Any) -> set[str]:
+  """Field-name candidates from every validation item's ``loc`` tail (and param/field keys)."""
+  found: set[str] = set()
+  if not isinstance(validation_errors, list):
+    return found
+  for item in validation_errors:
+    if not isinstance(item, dict):
+      continue
+    for key in ("field", "param"):
+      v = item.get(key)
+      if isinstance(v, str):
+        found.add(v)
+    loc = item.get("loc")
+    if isinstance(loc, list) and loc:
+      last = loc[-1]
+      if isinstance(last, str):
+        found.add(last)
+  return found
+
+
+def _schema_field_names_for_url(url: str) -> frozenset[str]:
+  """Top-level init request field names for Gladia REST paths; union of both if unknown."""
+  path = httpx.URL(url).path.lower()
+  if "/v2/pre-recorded" in path or "/v2/prerecorded" in path:
+    key = "prerecorded"
+  elif "/v2/live" in path:
+    key = "live"
+  else:
+    key = "both"
+  cached = _schema_field_names_cache.get(key)
+  if cached is not None:
+    return cached
+  from dataclasses import fields
+
+  if key == "prerecorded":
+    from gladiaio_sdk.v2.prerecorded.generated_types import PreRecordedV2InitTranscriptionRequest
+
+    out = frozenset(f.name for f in fields(PreRecordedV2InitTranscriptionRequest))
+  elif key == "live":
+    from gladiaio_sdk.v2.live.generated_types import LiveV2InitRequest
+
+    out = frozenset(f.name for f in fields(LiveV2InitRequest))
+  else:
+    from gladiaio_sdk.v2.live.generated_types import LiveV2InitRequest
+    from gladiaio_sdk.v2.prerecorded.generated_types import PreRecordedV2InitTranscriptionRequest
+
+    s = {f.name for f in fields(PreRecordedV2InitTranscriptionRequest)}
+    s.update(f.name for f in fields(LiveV2InitRequest))
+    out = frozenset(s)
+  _schema_field_names_cache[key] = out
+  return out
+
+
+def _append_parameter_name_suggestions(
+  full_message: str,
+  *,
+  status_code: int,
+  url: str,
+  invalid_parameters: list[str],
+  validation_errors: Any | None,
+  request_json: dict[str, Any] | None,
+) -> str:
+  string_paths = _paths_from_string_validation_errors(validation_errors)
+  if (not invalid_parameters and not string_paths) or not (400 <= status_code < 500):
+    return full_message
+  candidates: set[str] = set()
+  candidates.update(_loc_leaf_candidates_from_validation_errors(validation_errors))
+  if isinstance(request_json, dict):
+    candidates.update(_flatten_json_keys(request_json))
+  candidates.update(_schema_field_names_for_url(url))
+  # Do not treat invalid names as "known good" (they appear in their own loc tails).
+  bad = set(invalid_parameters)
+  hint = format_invalid_field_suggestions(invalid_parameters, sorted(candidates - bad))
+  parts: list[str] = [full_message]
+  if hint:
+    parts.append(hint)
+  if string_paths:
+    parts.append("Affected request field(s): " + ", ".join(string_paths))
+  if len(parts) == 1:
+    return full_message
+  return "\n\n".join(parts)
+
+
+def _parse_invalid_parameters_from_body(body: dict[str, Any]) -> list[str]:
+  """Extract invalid parameter/field names from common API error response shapes."""
+  params: list[str] = []
+  # e.g. {"details": [{"field": "language", "msg": "..."}, ...]} or {"details": [{"loc": ["body", "language"]}, ...]}
+  for detail in body.get("details") or body.get("errors") or []:
+    if isinstance(detail, dict):
+      field = detail.get("field") or detail.get("param") or detail.get("loc")
+      if isinstance(field, str):
+        params.append(field)
+      elif isinstance(field, list) and len(field) >= 2:
+        params.append(str(field[-1]))
+  # e.g. {"errors": {"language": "Unknown field", ...}}
+  errors = body.get("errors")
+  if isinstance(errors, dict):
+    for k in errors:
+      if isinstance(k, str):
+        params.append(k)
+  return list(dict.fromkeys(params))  # preserve order, dedupe
+
+
+def _parse_invalid_parameters_from_validation_errors(validation_errors: Any) -> list[str]:
+  """Extract field names from a list-shaped validation_errors (e.g. FastAPI / Pydantic)."""
+  params: list[str] = []
+  if not isinstance(validation_errors, list):
+    return params
+  for item in validation_errors:
+    if isinstance(item, str):
+      m = _STRING_VALIDATION_PATH.match(item.strip())
+      if m:
+        params.append(m.group(1))
+      continue
+    if not isinstance(item, dict):
+      continue
+    field = item.get("field") or item.get("param")
+    if isinstance(field, str):
+      params.append(field)
+      continue
+    loc = item.get("loc")
+    if isinstance(loc, list) and len(loc) >= 1:
+      params.append(str(loc[-1]))
+  return params
+
+
+def collect_invalid_parameters(
+  response_body: dict[str, Any] | None,
+  validation_errors: Any | None,
+) -> list[str]:
+  """Merge invalid parameter names from response body and validation_errors."""
+  merged: list[str] = []
+  if isinstance(response_body, dict):
+    merged.extend(_parse_invalid_parameters_from_body(response_body))
+  merged.extend(_parse_invalid_parameters_from_validation_errors(validation_errors))
+  return list(dict.fromkeys(merged))
+
+
+def suggest_close_strings(
+  word: str,
+  candidates: Sequence[str],
+  *,
+  n: int = 3,
+  cutoff: float = 0.6,
+) -> list[str]:
+  """Return up to ``n`` candidate strings most similar to ``word`` (difflib)."""
+  return difflib.get_close_matches(word, list(candidates), n=n, cutoff=cutoff)
+
+
+def format_invalid_field_suggestions(
+  invalid: Sequence[str],
+  known_fields: Sequence[str],
+  *,
+  n: int = 3,
+  cutoff: float = 0.5,
+) -> str:
+  """Build hint lines for unknown API fields using similarity to known names."""
+  known_list = list(known_fields)
+  known_set = set(known_list)
+  lines: list[str] = []
+  for name in invalid:
+    if not name or name in known_set:
+      continue
+    matches = suggest_close_strings(name, known_list, n=n, cutoff=cutoff)
+    if not matches:
+      continue
+    shown = ", ".join(repr(m) for m in matches)
+    lines.append(f"Unknown field {name!r} — did you mean {shown}?")
+  return "\n".join(lines)
+
+
+@final
+class HttpError(Exception):
+  """HTTP request error with optional validation details from the API.
+
+  Attributes:
+    message: Human-readable error message.
+    method, url, status: Request method, URL, and HTTP status code.
+    response_body: Raw response body (str or parsed dict).
+    invalid_parameters: Names parsed from validation payloads (e.g. unknown or rejected
+      body fields). Difflib-based 'did you mean' hints are appended to :attr:`message`
+      when applicable. Plain-string ``validation_errors`` entries (e.g. ``field must …``)
+      also populate :attr:`invalid_parameters` and an **Affected request field(s):** line
+      when the field path can be parsed. For responses that include ``validation_errors``,
+      :attr:`message` contains only that block plus hints—not the full ``response_body``. Use
+      :func:`enrich_http_error_with_field_suggestions` to merge extra known field names
+      for custom endpoints.
+  """
+
+  def __init__(
+    self,
+    *,
+    message: str,
+    method: str,
+    url: str,
+    status: int,
+    id: str | None = None,
+    request_id: str | None = None,
+    response_body: str | dict[str, Any] | None = None,
+    response_headers: dict[str, str] | None = None,
+    validation_errors: Any | None = None,
+    invalid_parameters: list[str] | None = None,
+    cause: BaseException | None = None,
+  ) -> None:
+    super().__init__(message)
+    if cause is not None:
+      self.__cause__ = cause
+    self.name = "HttpError"
+    self.method = method
+    self.url = url
+    self.status = status
+    self.id = id
+    self.request_id = request_id
+    self.response_body = response_body
+    self.response_headers = dict(response_headers or {})
+    self.validation_errors = validation_errors
+    self.invalid_parameters = list(invalid_parameters or [])
+
+
+def enrich_http_error_with_field_suggestions(
+  err: HttpError,
+  known_fields: Sequence[str],
+  *,
+  status_codes: tuple[int, ...] = (400, 422),
+) -> HttpError:
+  """Return a copy of ``err`` with difflib-based field hints, or ``err`` if none apply."""
+  if err.status not in status_codes or not err.invalid_parameters:
+    return err
+  hint = format_invalid_field_suggestions(err.invalid_parameters, known_fields)
+  if not hint:
+    return err
+  return HttpError(
+    message=f"{str(err)}\n\n{hint}",
+    method=err.method,
+    url=err.url,
+    status=err.status,
+    id=err.id,
+    request_id=err.request_id,
+    response_body=err.response_body,
+    response_headers=err.response_headers,
+    validation_errors=err.validation_errors,
+    invalid_parameters=err.invalid_parameters,
+  )
+
+
+@final
+class TimeoutError(Exception):
+  def __init__(self, message: str, timeout: float, *, cause: BaseException | None = None) -> None:
+    super().__init__(message)
+    if cause is not None:
+      self.__cause__ = cause
+    self.name = "TimeoutError"
+    self.timeout = timeout
+
+
+@final
+class AsyncHttpClient:
+  def __init__(
+    self,
+    base_url: str,
+    headers: dict[str, str],
+    query_params: QueryParams,
+    retry: HttpRetryOptions,
+    timeout: float,
+  ) -> None:
+    self._base_url = base_url
+    self._default_headers = headers
+    self._default_query = query_params
+    self._retry = retry
+    self._timeout = timeout
+
+    self._client = httpx.AsyncClient(
+      base_url=self._base_url, timeout=self._timeout, follow_redirects=True
+    )
+
+  async def close(self) -> None:
+    await self._client.aclose()
+
+  async def get(self, url: str, init: dict[str, Any] | None = None) -> httpx.Response:
+    return await self._request("GET", url, init or {})
+
+  async def post(
+    self, url: str, init: dict[str, Any] | None = None, **kwargs: Any
+  ) -> httpx.Response:
+    merged: dict[str, Any] = {}
+    if init:
+      merged.update(init)
+    if kwargs:
+      merged.update(kwargs)
+    return await self._request("POST", url, merged)
+
+  async def put(self, url: str, init: dict[str, Any] | None = None) -> httpx.Response:
+    return await self._request("PUT", url, init or {})
+
+  async def delete(self, url: str, init: dict[str, Any] | None = None) -> httpx.Response:
+    return await self._request("DELETE", url, init or {})
+
+  async def _request(self, method: str, url: str, init: dict[str, Any]) -> httpx.Response:
+    # Merge query params and base URL
+    base = httpx.URL(self._base_url)
+    request_url = base.join(url)
+    # Preserve URL params; add defaults only if missing
+    url_params = dict(httpx.QueryParams(request_url.query.decode()))
+    # Start from default, then keep URL values intact
+    params = dict(self._default_query)
+    params.update(url_params)
+    headers = {**self._default_headers, **dict(init.get("headers") or {})}
+    data = init.get("body")
+    json_body = init.get("json")
+    files = init.get("files")
+    req_timeout = init.get("request_timeout")
+    effective_timeout = self._timeout if req_timeout is None else float(req_timeout)
+
+    overall_start = asyncio.get_event_loop().time()
+    attempt_errors: list[BaseException] = []
+
+    attempt = 0
+    limit = self._retry.max_attempts
+
+    while True:
+      attempt += 1
+      try:
+        # Embed params into URL to mirror JS tests expectations
+        if params:
+          qp = httpx.QueryParams(params)
+          request_url = request_url.copy_with(query=str(qp).encode())
+        response = await self._client.request(
+          method,
+          request_url,
+          headers=headers,
+          content=data,
+          json=json_body,
+          files=files,
+          timeout=effective_timeout,
+        )
+
+        if 200 <= response.status_code < 300:
+          return response
+
+        http_err = _create_http_error(
+          method,
+          str(request_url),
+          response,
+          json_body if isinstance(json_body, dict) else None,
+        )
+        # Retry conditions
+        should_retry = (limit == 0) or (attempt < limit)
+        if should_retry and matches_status(response.status_code, self._retry.status_codes):
+          await asyncio.sleep(self._retry.delay(attempt))
+          continue
+        # Throw immediately
+        raise http_err
+      except httpx.TimeoutException as err:
+        # Do not retry on timeout
+        elapsed = round((asyncio.get_event_loop().time() - overall_start), 3)
+        raise TimeoutError(
+          f"Request timed out after {effective_timeout}s on attempt {attempt}"
+          f" (duration={elapsed}s) for {method} {request_url}",
+          effective_timeout,
+        ) from err
+      except HttpError as err:
+        # Already constructed HttpError from previous branch
+        if attempt_errors:
+          attempt_errors.append(err)
+          elapsed = round((asyncio.get_event_loop().time() - overall_start), 3)
+          raise Exception(
+            f"HTTP request failed after {attempt} attempts over {elapsed}s"
+            f" for {method} {request_url}",
+          ) from Exception("All retry attempts failed", err)
+        raise
+      except Exception as err:
+        # Network or other errors
+        should_retry = (limit == 0) or (attempt < limit)
+        if should_retry:
+          attempt_errors.append(err)
+          await asyncio.sleep(self._retry.delay(attempt))
+          continue
+        elapsed = round((asyncio.get_event_loop().time() - overall_start), 3)
+        raise Exception(
+          f"HTTP request failed after {attempt} attempts over {elapsed}s"
+          f" for {method} {request_url}",
+        ) from Exception("All retry attempts failed", err)
+
+
+@final
+class HttpClient:
+  def __init__(
+    self,
+    base_url: str,
+    headers: dict[str, str],
+    query_params: QueryParams,
+    retry: HttpRetryOptions,
+    timeout: float,
+  ) -> None:
+    self._base_url = base_url
+    self._default_headers = headers
+    self._default_query = query_params
+    self._retry = retry
+    self._timeout = timeout
+
+    self._client = httpx.Client(
+      base_url=self._base_url, timeout=self._timeout, follow_redirects=True
+    )
+
+  def close(self) -> None:
+    self._client.close()
+
+  def get(self, url: str, init: dict[str, Any] | None = None) -> httpx.Response:
+    return self._request("GET", url, init or {})
+
+  def post(self, url: str, init: dict[str, Any] | None = None, **kwargs: Any) -> httpx.Response:
+    merged: dict[str, Any] = {}
+    if init:
+      merged.update(init)
+    if kwargs:
+      merged.update(kwargs)
+    return self._request("POST", url, merged)
+
+  def put(self, url: str, init: dict[str, Any] | None = None) -> httpx.Response:
+    return self._request("PUT", url, init or {})
+
+  def delete(self, url: str, init: dict[str, Any] | None = None) -> httpx.Response:
+    return self._request("DELETE", url, init or {})
+
+  def _request(self, method: str, url: str, init: dict[str, Any]) -> httpx.Response:
+    # Merge query params and base URL
+    base = httpx.URL(self._base_url)
+    request_url = base.join(url)
+    # Preserve URL params; add defaults only if missing
+    url_params = dict(httpx.QueryParams(request_url.query.decode()))
+    # Start from default, then keep URL values intact
+    params = dict(self._default_query)
+    params.update(url_params)
+    headers = {**self._default_headers, **dict(init.get("headers") or {})}
+    data = init.get("body")
+    json_body = init.get("json")
+    files = init.get("files")
+    req_timeout = init.get("request_timeout")
+    effective_timeout = self._timeout if req_timeout is None else float(req_timeout)
+
+    overall_start = time.time()
+    attempt_errors: list[BaseException] = []
+
+    attempt = 0
+    limit = self._retry.max_attempts
+
+    while True:
+      attempt += 1
+      try:
+        # Embed params into URL to mirror JS tests expectations
+        if params:
+          qp = httpx.QueryParams(params)
+          request_url = request_url.copy_with(query=str(qp).encode())
+        response = self._client.request(
+          method,
+          request_url,
+          headers=headers,
+          content=data,
+          json=json_body,
+          files=files,
+          timeout=effective_timeout,
+        )
+
+        if 200 <= response.status_code < 300:
+          return response
+
+        http_err = _create_http_error(
+          method,
+          str(request_url),
+          response,
+          json_body if isinstance(json_body, dict) else None,
+        )
+        # Retry conditions
+        should_retry = (limit == 0) or (attempt < limit)
+        if should_retry and matches_status(response.status_code, self._retry.status_codes):
+          time.sleep(self._retry.delay(attempt))
+          continue
+        # Throw immediately
+        raise http_err
+      except httpx.TimeoutException as err:
+        # Do not retry on timeout
+        elapsed = round((time.time() - overall_start), 3)
+        raise TimeoutError(
+          f"Request timed out after {effective_timeout}s on attempt {attempt}"
+          f" (duration={elapsed}s) for {method} {request_url}",
+          effective_timeout,
+        ) from err
+      except HttpError as err:
+        # Already constructed HttpError from previous branch
+        if attempt_errors:
+          attempt_errors.append(err)
+          elapsed = round((time.time() - overall_start), 3)
+          raise Exception(
+            f"HTTP request failed after {attempt} attempts over {elapsed}s"
+            f" for {method} {request_url}",
+          ) from Exception("All retry attempts failed", err)
+        raise
+      except Exception as err:
+        # Network or other errors
+        should_retry = (limit == 0) or (attempt < limit)
+        if should_retry:
+          attempt_errors.append(err)
+          time.sleep(self._retry.delay(attempt))
+          continue
+        elapsed = round((time.time() - overall_start), 3)
+        raise Exception(
+          f"HTTP request failed after {attempt} attempts over {elapsed}s"
+          f" for {method} {request_url}",
+        ) from Exception("All retry attempts failed", err)
+
+
+def _format_validation_errors_for_message(errors: Any) -> str:
+  """Serialize API validation_errors for inclusion in HttpError string output."""
+  try:
+    return json.dumps(errors, indent=2, ensure_ascii=False, default=str)
+  except TypeError:
+    return str(errors)
+
+
+def _create_http_error(
+  method: str,
+  url: str,
+  response: httpx.Response,
+  request_json: dict[str, Any] | None = None,
+) -> HttpError:
+  message: str | None = None
+  request_id: str | None = None
+  call_id: str | None = None
+  response_body: str | dict[str, Any] | None = None
+  headers: dict[str, str] | None = None
+  validation_errors: Any | None = None
+  try:
+    headers = {k.lower(): v for k, v in response.headers.items()}
+    call_id = response.headers.get("x-aipi-call-id") or None
+    text = response.text
+    response_body = text
+    try:
+      data = response.json()
+      response_body = data
+      if isinstance(data, dict):
+        request_id = data.get("request_id") or data.get("requestId")
+        message = data.get("message")
+        validation_errors = data.get("validation_errors") or data.get("validationErrors")
+    except Exception:
+      pass
+  except Exception:
+    pass
+
+  if validation_errors is not None:
+    # Omit API message and full response body from the string; callers still have
+    # HttpError.response_body / validation_errors on the exception object.
+    full_message = f"validation_errors:\n{_format_validation_errors_for_message(validation_errors)}"
+  else:
+    parts = [
+      message or response.reason_phrase or "An error occurred",
+      request_id or call_id,
+      str(response.status_code),
+      f"{method} {httpx.URL(url).path}",
+    ]
+    full_message = " | ".join([p for p in parts if p])
+
+  invalid_parameters = collect_invalid_parameters(
+    response_body if isinstance(response_body, dict) else None,
+    validation_errors,
+  )
+  full_message = _append_parameter_name_suggestions(
+    full_message,
+    status_code=response.status_code,
+    url=str(url),
+    invalid_parameters=invalid_parameters,
+    validation_errors=validation_errors,
+    request_json=request_json,
+  )
+
+  return HttpError(
+    message=full_message,
+    method=method,
+    url=str(url),
+    status=response.status_code,
+    id=call_id,
+    request_id=request_id,
+    response_body=response_body,
+    response_headers=headers or {},
+    validation_errors=validation_errors,
+    invalid_parameters=invalid_parameters,
+  )
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/network/websocket_client.py"
+"""Async WebSocket client/session with retry and timeout semantics matching the JS SDK."""
+
+import asyncio
+import threading
+import time
+from abc import ABC, abstractmethod
+from collections.abc import Callable
+from contextlib import suppress
+from enum import Enum
+from typing import final
+
+from typing_extensions import override
+from websockets import ConnectionClosed
+from websockets.asyncio import client as async_ws_client
+from websockets.frames import CloseCode
+from websockets.sync import client as sync_ws_client
+
+from gladiaio_sdk.client_options import WebSocketRetryOptions
+from gladiaio_sdk.network.helper import build_url, matches_status
+
+
+class WS_STATES(Enum):
+  CONNECTING = 0
+  OPEN = 1
+  CLOSING = 2
+  CLOSED = 3
+
+
+class AbstractWebSocketSession(ABC):
+  onconnecting: Callable[[dict[str, int]], None] | None = None
+  onopen: Callable[[dict[str, int]], None] | None = None
+  onerror: Callable[[Exception], None] | None = None
+  onclose: Callable[[dict[str, object]], None] | None = None
+  onmessage: Callable[[dict[str, object]], None] | None = None
+
+  _ready_state: WS_STATES = WS_STATES.CONNECTING
+  _url: str
+  _retry: WebSocketRetryOptions
+  _timeout: float
+  _connection_count: int
+  _connection_attempt: int
+
+  def __init__(self, url: str, retry: WebSocketRetryOptions, timeout: float) -> None:
+    self._url = url
+    self._retry = retry
+    self._timeout = timeout
+    self._ready_state = WS_STATES.CONNECTING
+    self._connection_count = 0
+    self._connection_attempt = 0
+
+  @property
+  def ready_state(self) -> WS_STATES:
+    return self._ready_state
+
+  @property
+  def url(self) -> str:
+    return self._url
+
+  @abstractmethod
+  def close(self, code: int = CloseCode.NORMAL_CLOSURE, reason: str = "") -> None: ...
+
+  def _begin_connect(self, is_retry: bool) -> None:
+    if not is_retry:
+      self._connection_count += 1
+      self._connection_attempt = 0
+    self._connection_attempt += 1
+    self._ready_state = WS_STATES.CONNECTING
+    if self.onconnecting:
+      self.onconnecting(
+        {
+          "connection": self._connection_count,
+          "attempt": self._connection_attempt,
+        }
+      )
+
+  def _emit_open(self) -> None:
+    self._ready_state = WS_STATES.OPEN
+    if self.onopen:
+      self.onopen(
+        {
+          "connection": self._connection_count,
+          "attempt": self._connection_attempt,
+        }
+      )
+
+  def _is_max_connections_reached(self) -> bool:
+    return self._retry.max_connections > 0 and self._connection_count >= self._retry.max_connections
+
+  def _is_close_retryable(self, close_code: int) -> bool:
+    return matches_status(close_code, self._retry.close_codes)
+
+  def _handle_error(self, err: Exception | None) -> bool:
+    if self._ready_state != WS_STATES.CONNECTING:
+      return False
+    no_retry = (
+      isinstance(err, (asyncio.TimeoutError, TimeoutError))
+      or self._retry.max_attempts_per_connection > 0
+      and self._connection_attempt >= self._retry.max_attempts_per_connection
+    )
+    if no_retry:
+      if self.onerror:
+        self.onerror(Exception("WebSocket connection error" if err is None else str(err)))
+      close_code = CloseCode.ABNORMAL_CLOSURE
+      close_reason = "WebSocket connection error"
+      if isinstance(err, (asyncio.TimeoutError, TimeoutError)):
+        close_code = 3008
+        close_reason = "WebSocket connection timeout"
+      self.close(close_code, close_reason)
+      return False
+
+    return True
+
+  def _on_ws_close(self, code: int = CloseCode.NORMAL_CLOSURE, reason: str = "") -> None:
+    if self._ready_state != WS_STATES.CLOSED:
+      self._ready_state = WS_STATES.CLOSED
+      if self.onclose:
+        self.onclose({"code": code, "reason": reason})
+
+    # Drop handlers to avoid leaks
+    self.onconnecting = None
+    self.onopen = None
+    self.onclose = None
+    self.onerror = None
+    self.onmessage = None
+
+    # Best-effort: clear ws reference if present on subclass
+    with suppress(Exception):
+      if hasattr(self, "_ws"):
+        self._ws = None
+
+
+@final
+class AsyncWebSocketSession(AbstractWebSocketSession):
+  _ws: async_ws_client.ClientConnection | None = None
+  _connection_timeout_handle: asyncio.TimerHandle | None = None
+  _task: asyncio.Task[None]
+
+  def __init__(self, url: str, retry: WebSocketRetryOptions, timeout: float) -> None:
+    super().__init__(url, retry, timeout)
+    # Create task on the current event loop; if none is running, this schedules
+    # the coroutine for when the loop starts (avoids RuntimeError in sync contexts/tests).
+    loop = asyncio.get_event_loop()
+    self._task = loop.create_task(self._connect())
+
+  def send(self, data: str | bytes) -> None:
+    if self.ready_state == WS_STATES.OPEN:
+      if not self._ws:
+        raise RuntimeError("readyState is open but ws is not initialized")
+      _ = asyncio.create_task(self._ws.send(data))
+    else:
+      raise RuntimeError("WebSocket is not open")
+
+  @override
+  def close(self, code: int = CloseCode.NORMAL_CLOSURE, reason: str = "") -> None:
+    if self.ready_state in (WS_STATES.CLOSING, WS_STATES.CLOSED):
+      return
+
+    self._ready_state = WS_STATES.CLOSING
+
+    if self._ws and self._ws.state == 1:
+      _ = asyncio.create_task(self._ws.close(code=code))
+    else:
+      self._on_ws_close(code, reason)
+
+  async def _connect(self, is_retry: bool = False) -> None:
+    self._begin_connect(is_retry)
+
+    async def on_error(err: Exception | None) -> None:
+      if not self._handle_error(err):
+        return
+      await asyncio.sleep(self._retry.delay(self._connection_attempt))
+      if self._ready_state == WS_STATES.CONNECTING:
+        await self._connect(True)
+
+    try:
+      ws = await async_ws_client.connect(
+        self._url, open_timeout=self._timeout if self._timeout > 0 else None
+      )
+    except Exception as e:
+      await on_error(e)
+      return
+
+    if self._ready_state != WS_STATES.CONNECTING:
+      await ws.close(code=CloseCode.GOING_AWAY)
+      return
+
+    self._ws = ws
+    self._emit_open()
+
+    async def reader() -> None:
+      try:
+        while True:
+          msg = await ws.recv()
+          if self.onmessage:
+            self.onmessage({"data": msg})
+      except Exception:
+        pass
+
+    reader_task = asyncio.create_task(reader())
+
+    error: Exception | None = None
+    try:
+      await ws.wait_closed()
+    except Exception as e:
+      error = e
+    finally:
+      _ = reader_task.cancel()
+      with suppress(asyncio.CancelledError):
+        await reader_task
+
+    if self._ws is not ws:
+      return
+
+    self._ws = None
+
+    close_code = ws.close_code
+    close_reason = ws.close_reason or ""
+    if close_code is None:
+      if error is None:
+        close_code = CloseCode.NORMAL_CLOSURE
+      else:
+        close_code = CloseCode.ABNORMAL_CLOSURE
+        close_reason = "WebSocket connection error"
+
+    if self.ready_state == WS_STATES.CLOSING:
+      self._on_ws_close(close_code, close_reason)
+      return
+
+    if (
+      self._retry.max_connections > 0 and self._connection_count >= self._retry.max_connections
+    ) or not matches_status(close_code, self._retry.close_codes):
+      self.close(
+        close_code,
+        close_reason,
+      )
+      return
+
+    _ = asyncio.create_task(self._connect(False))
+
+
+@final
+class WebSocketSession(AbstractWebSocketSession):
+  _ws: sync_ws_client.ClientConnection | None = None
+  _thread: threading.Thread | None = None
+  _stop: threading.Event
+  _send_lock: threading.Lock
+
+  def __init__(self, url: str, retry: WebSocketRetryOptions, timeout: float) -> None:
+    super().__init__(url, retry, timeout)
+    self._stop = threading.Event()
+    self._send_lock = threading.Lock()
+
+  def send(self, data: str | bytes) -> None:
+    if self.ready_state == WS_STATES.OPEN:
+      if not self._ws:
+        raise RuntimeError("readyState is open but ws is not initialized")
+      with self._send_lock:
+        self._ws.send(data)
+    else:
+      raise RuntimeError("WebSocket is not open")
+
+  @override
+  def close(self, code: int = CloseCode.NORMAL_CLOSURE, reason: str = "") -> None:
+    if self.ready_state in (WS_STATES.CLOSING, WS_STATES.CLOSED):
+      return
+
+    self._ready_state = WS_STATES.CLOSING
+    self._stop.set()
+
+    if self._ws and self._ws.state == 1:
+      self._ws.close(code=code)
+    else:
+      self._on_ws_close(code, reason)
+
+  def start(self) -> None:
+    """Start the background receive/reconnect loop in a dedicated thread."""
+    if self._thread and self._thread.is_alive():
+      return
+    t = threading.Thread(target=self._connect, name="ws-recv", daemon=True)
+    self._thread = t
+    t.start()
+
+  def _connect(self, is_retry: bool = False) -> None:
+    self._begin_connect(is_retry)
+
+    def on_error(err: Exception | None) -> None:
+      if not self._handle_error(err):
+        return
+      time.sleep(self._retry.delay(self._connection_attempt))
+      if self._ready_state == WS_STATES.CONNECTING:
+        self._connect(True)
+
+    try:
+      ws = sync_ws_client.connect(
+        self._url, open_timeout=self._timeout if self._timeout > 0 else None
+      )
+    except Exception as e:
+      on_error(e)
+      return
+
+    if self._ready_state != WS_STATES.CONNECTING:
+      ws.close(code=CloseCode.GOING_AWAY)
+      return
+
+    self._ws = ws
+    self._emit_open()
+
+    close_code: int = CloseCode.ABNORMAL_CLOSURE
+    close_reason: str = "Abnormal closure"
+    try:
+      while not self._stop.is_set():
+        msg = ws.recv()
+        if self.onmessage:
+          self.onmessage({"data": msg})
+    except ConnectionClosed as e:
+      if e.rcvd:
+        close_code = e.rcvd.code
+        close_reason = e.rcvd.reason
+
+    if self._ws is not ws:
+      return
+
+    self._ws = None
+
+    if self.ready_state == WS_STATES.CLOSING:
+      self._on_ws_close(close_code, close_reason)
+      return
+
+    if (
+      self._retry.max_connections > 0 and self._connection_count >= self._retry.max_connections
+    ) or not matches_status(close_code, self._retry.close_codes):
+      self.close(
+        close_code,
+        close_reason,
+      )
+      return
+
+    if not self._stop.is_set():
+      self._connect(False)
+
+
+@final
+class WebSocketClient:
+  def __init__(self, base_url: str, retry: WebSocketRetryOptions, timeout: float) -> None:
+    self._base_url = base_url
+    self._retry = retry
+    self._timeout = timeout
+
+  def create_session(self, url: str) -> WebSocketSession:
+    return WebSocketSession(build_url(self._base_url, url), self._retry, self._timeout)
+
+  def create_async_session(self, url: str) -> AsyncWebSocketSession:
+    return AsyncWebSocketSession(build_url(self._base_url, url), self._retry, self._timeout)
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/generator/src/generator.ts"
+import { BaseGenerator } from './generators/base.ts'
+import { PythonGenerator } from './generators/python.ts'
+import { TypeScriptGenerator } from './generators/typescript.ts'
+import { collectAllReferencedObject } from './helpers.ts'
+import { fetchSchema } from './schema-fetcher.ts'
+import type {
+  LiveV2Schemas,
+  OpenAPIObject,
+  PreRecordedV2Schemas,
+  ReferencedSchemaObject,
+} from './types.ts'
+
+export interface GeneratorOptions {
+  schemaUrl: string
+}
+
+export class Generator {
+  private options: GeneratorOptions
+  private generators: BaseGenerator[] = []
+
+  constructor(options: GeneratorOptions) {
+    this.options = options
+    this.generators.push(new TypeScriptGenerator())
+    this.generators.push(new PythonGenerator())
+  }
+
+  async generate(): Promise<void> {
+    console.log(`Fetching OpenAPI schema from: ${this.options.schemaUrl}`)
+    const openapi = await fetchSchema(this.options.schemaUrl)
+    console.log(`Schema loaded`)
+
+    // Live V2
+    const liveV2Schemas = this.preProcessSchemaForLiveV2(openapi)
+    for (const generator of this.generators) {
+      await generator.generateLiveV2(liveV2Schemas)
+    }
+
+    // Pre-recorded V2
+    const preRecordedV2Schemas = this.preProcessSchemaForPreRecordedV2(openapi)
+    for (const generator of this.generators) {
+      await generator.generatePreRecordedV2(preRecordedV2Schemas)
+    }
+  }
+
+  private preProcessSchemaForLiveV2(openapi: OpenAPIObject): LiveV2Schemas {
+    const initRequestRef = `#/components/schemas/StreamingRequest`
+    const initResponseRef = `#/components/schemas/InitStreamingResponse`
+    const getResponseRef = `#/components/schemas/StreamingResponse`
+    const listResponseRef = `#/components/schemas/ListStreamingResponse`
+    const wsMessagesRef: string[] = []
+    const callbackMessagesRef: string[] = []
+    const webhookMessagesRef: string[] = []
+    const referencedTypes: Map<string, ReferencedSchemaObject> = new Map()
+
+    collectAllReferencedObject({ $ref: initRequestRef }, openapi, referencedTypes)
+    collectAllReferencedObject({ $ref: initResponseRef }, openapi, referencedTypes)
+    collectAllReferencedObject({ $ref: getResponseRef }, openapi, referencedTypes)
+    collectAllReferencedObject({ $ref: listResponseRef }, openapi, referencedTypes)
+
+    for (const key of Object.keys(openapi.components?.schemas ?? {})) {
+      if (key.match(/^CallbackLive.*Message$/)) {
+        const ref = `#/components/schemas/${key}`
+        callbackMessagesRef.push(ref)
+        collectAllReferencedObject({ $ref: ref }, openapi, referencedTypes)
+
+        const wsRef = `#/components/schemas/${key.replace('CallbackLive', '')}`
+        wsMessagesRef.push(wsRef)
+        collectAllReferencedObject({ $ref: wsRef }, openapi, referencedTypes)
+      } else if (key.match(/^WebhookLive.*Payload$/)) {
+        const ref = `#/components/schemas/${key}`
+        webhookMessagesRef.push(ref)
+        collectAllReferencedObject({ $ref: ref }, openapi, referencedTypes)
+      }
+    }
+
+    return referencedTypes.entries().reduce<LiveV2Schemas>(
+      (acc, [ref, refObject]) => {
+        if (ref === initRequestRef) {
+          refObject.typeName = `Init${refObject.typeName}`
+          acc.initRequest = refObject
+        } else if (ref === initResponseRef) {
+          acc.initResponse = refObject
+        } else if (ref === getResponseRef) {
+          acc.getResponse = refObject
+        } else if (ref === listResponseRef) {
+          acc.listResponse = refObject
+        } else if (wsMessagesRef.includes(ref)) {
+          acc.wsMessages.push(refObject)
+        } else if (callbackMessagesRef.includes(ref)) {
+          acc.callbackMessages.push(refObject)
+        } else if (webhookMessagesRef.includes(ref)) {
+          refObject.typeName = refObject.typeName.replace(/Payload/, 'Message')
+          acc.webhookMessages.push(refObject)
+        } else {
+          acc.referencedTypes.push(refObject)
+        }
+
+        this.renameObjectForLiveV2(refObject)
+
+        return acc
+      },
+      {
+        initRequest: referencedTypes.get(initRequestRef)!,
+        initResponse: referencedTypes.get(initResponseRef)!,
+        getResponse: referencedTypes.get(getResponseRef)!,
+        listResponse: referencedTypes.get(listResponseRef)!,
+        wsMessages: [],
+        callbackMessages: [],
+        webhookMessages: [],
+        referencedTypes: [],
+      }
+    )
+  }
+
+  private renameObjectForLiveV2(refObject: ReferencedSchemaObject): void {
+    refObject.typeName = refObject.typeName.replace(/(live|streaming|dto|supported|s?enum$)/gi, '')
+    if (refObject.schema.enum) {
+      refObject.typeName = refObject.typeName.replace(/(s$)/gi, '')
+    }
+    refObject.typeName = `LiveV2${refObject.typeName}`
+  }
+
+  private preProcessSchemaForPreRecordedV2(openapi: OpenAPIObject): PreRecordedV2Schemas {
+    const uploadRequestKey = 'UploadRequest'
+    const uploadResponseRef = `#/components/schemas/AudioUploadResponse`
+    const initRequestRef = `#/components/schemas/InitTranscriptionRequest`
+    const initResponseRef = `#/components/schemas/InitPreRecordedTranscriptionResponse`
+    const resultResponseRef = `#/components/schemas/PreRecordedResponse`
+    const listResponseRef = `#/components/schemas/ListPreRecordedResponse`
+
+    const rootRefs = [
+      uploadResponseRef,
+      initRequestRef,
+      initResponseRef,
+      resultResponseRef,
+      listResponseRef,
+    ]
+    const referencedTypes: Map<string, ReferencedSchemaObject> = new Map()
+
+    for (const ref of rootRefs) {
+      collectAllReferencedObject({ $ref: ref }, openapi, referencedTypes)
+    }
+    const uploadRequestBody = openapi.paths?.['/v2/upload']?.post?.requestBody
+
+    const uploadRequestSchema =
+      uploadRequestBody && !('$ref' in uploadRequestBody)
+        ? uploadRequestBody.content?.['application/json']?.schema
+        : undefined
+
+    if (uploadRequestSchema && !('$ref' in uploadRequestSchema)) {
+      referencedTypes.set(uploadRequestKey, {
+        originalName: uploadRequestKey,
+        typeName: uploadRequestKey,
+        description: 'Upload request body',
+        schema: uploadRequestSchema as ReferencedSchemaObject,
+      })
+    }
+
+    return referencedTypes.entries().reduce<PreRecordedV2Schemas>(
+      (acc, [ref, refObject]) => {
+        if (ref === uploadRequestKey) {
+          acc.uploadRequest = refObject
+        } else if (ref === uploadResponseRef) {
+          acc.uploadResponse = refObject
+        } else if (ref === initRequestRef) {
+          acc.initRequest = refObject
+        } else if (ref === initResponseRef) {
+          acc.initResponse = refObject
+        } else if (ref === resultResponseRef) {
+          acc.resultResponse = refObject
+        } else if (ref === listResponseRef) {
+          acc.listResponse = refObject
+        } else {
+          acc.referencedTypes.push(refObject)
+        }
+
+        this.renameObjectForPreRecordedV2(refObject)
+
+        return acc
+      },
+      {
+        uploadRequest: referencedTypes.get(uploadRequestKey)!,
+        uploadResponse: referencedTypes.get(uploadResponseRef)!,
+        initRequest: referencedTypes.get(initRequestRef)!,
+        initResponse: referencedTypes.get(initResponseRef)!,
+        resultResponse: referencedTypes.get(resultResponseRef)!,
+        listResponse: referencedTypes.get(listResponseRef)!,
+        referencedTypes: [],
+      }
+    )
+  }
+
+  private renameObjectForPreRecordedV2(refObject: ReferencedSchemaObject): void {
+    refObject.typeName = refObject.typeName.replace(/(pre.?recorded|dto|supported|s?enum$)/gi, '')
+    if (refObject.schema.enum) {
+      refObject.typeName = refObject.typeName.replace(/(s$)/gi, '')
+    }
+    refObject.typeName = `PreRecordedV2${refObject.typeName}`
+  }
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/package.json"
+{
+  "name": "gladia-sdk",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "e2e/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@commitlint/types": "^20.0.0",
+    "@eslint/js": "^9.37.0",
+    "@nx/eslint": "^21.6.3",
+    "@nx/eslint-plugin": "^21.6.3",
+    "@nx/js": "21.6.3",
+    "@nx/vite": "^21.6.3",
+    "@nx/web": "21.6.3",
+    "@nxlv/python": "^21.2.0",
+    "@swc-node/register": "~1.11.1",
+    "@swc/core": "~1.13.5",
+    "@swc/helpers": "~0.5.17",
+    "@types/node": "20.19.9",
+    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/ui": "^4.1.8",
+    "eslint": "^9.37.0",
+    "jiti": "2.6.1",
+    "nx": "^21.6.3",
+    "prettier": "^3.6.2",
+    "tslib": "^2.8.1",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vite": "^7.1.9",
+    "vitest": "^4.1.8"
+  },
+  "scripts": {
+    "release": "node tools/scripts/release.mjs",
+    "publish": "node tools/scripts/publish.mjs"
+  }
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/package.json"
+{
+  "name": "@gladiaio/sdk",
+  "description": "Gladia JavaScript/TypeScript SDK",
+  "version": "1.0.6",
+  "author": "Gladia",
+  "license": "MIT",
+  "repository": "github:gladiaio/sdk",
+  "keywords": [
+    "gladia",
+    "sdk",
+    "typescript",
+    "javascript"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "unpkg": "dist/index.iife.js",
+  "jsdelivr": "dist/index.iife.js",
+  "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.6",
+    "@types/node": "^20.19.19",
+    "@types/ws": "^8.18.1",
+    "tsdown": "^0.15.6"
+  },
+  "peerDependencies": {
+    "eventemitter3": ">=5",
+    "ws": "5.2.4 || 6.2.3 || 7.5.10 || >=8.8",
+    "undici": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "ws": {
+      "optional": true
+    },
+    "undici": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/pyproject.toml"
+[project]
+name = "gladiaio-sdk"
+version = "1.0.2"
+description = "Gladia SDK for Python"
+requires-python = ">=3.10,<4"
+readme = "README.md"
+dependencies = [
+  "dataclasses-json>=0.6.0",
+  "httpx>=0.28.0",
+  "pyee>=13.0.0",
+  "websockets>=15.0.0",
+  "marshmallow>=3.26.2"
+]
+
+[dependency-groups]
+dev = [
+  "autopep8>=2.3.1",
+  "ruff>=0.8.2",
+  "pygments>=2.20.0",
+  "pytest>=9.0.3",
+  "pytest-sugar>=1.0.0"
+]
+
+[build-system]
+requires = [ "hatchling" ]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = [ "src/gladiaio_sdk" ]
+
+[tool.ruff]
+exclude = [ ".ruff_cache", ".svn", ".tox", ".venv", "dist" ]
+line-length = 100
+indent-width = 2
+
+  [tool.ruff.lint]
+  select = [ "E", "F", "UP", "B", "SIM", "I" ]
+  ignore = [ "E501" ]
+  fixable = [ "ALL" ]
+  unfixable = [ ]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "standard"
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/sdk/contents/tools?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+scripts	dir	tools/scripts	null
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/sdk/main/tools/scripts/release.mjs"
+import { execSync } from 'node:child_process'
+import { parseArgs } from 'node:util'
+import { releaseChangelog, releaseVersion } from 'nx/release/index.js'
+
+const { values: argv } = parseArgs({
+  options: {
+    dryRun: { type: 'boolean', default: false },
+    verbose: { type: 'boolean', default: false },
+    projects: { type: 'string' },
+    specifier: { type: 'string' },
+    firstRelease: { type: 'boolean', default: false },
+  },
+  strict: true,
+})
+
+if (argv.verbose) {
+  console.log('argv:', JSON.stringify(argv, null, 2))
+}
+
+const projectsFilter = argv.projects
+  ?.split(',')
+  .map((p) => p.trim())
+  .filter(Boolean)
+
+if (!argv.dryRun) {
+  const changes = execSync('git status --porcelain').toString().trim()
+  if (changes.length > 0) {
+    console.error('Error: There are untracked changes in the repository.', changes)
+    process.exit(1)
+  }
+}
+
+const { workspaceVersion, projectsVersionData } = await releaseVersion({
+  specifier: argv.specifier,
+  dryRun: argv.dryRun,
+  verbose: argv.verbose,
+  projects: projectsFilter,
+  firstRelease: argv.firstRelease,
+})
+
+if (!argv.dryRun) {
+  // Build selected projects after version bump so generated files can be committed
+  if (projectsFilter?.length) {
+    const projectList = projectsFilter.join(',')
+    // Update the version
+    execSync(`bun nx run-many --tui false -t version:write -p ${projectList}`, {
+      env: { ...process.env, NX_DAEMON: 'false' },
+    })
+  } else {
+    execSync('bun nx run-many --tui false -t version:write', {
+      env: { ...process.env, NX_DAEMON: 'false' },
+    })
+  }
+  execSync('git add .')
+}
+
+const { projectChangelogs } = await releaseChangelog({
+  version: workspaceVersion,
+  versionData: projectsVersionData,
+  dryRun: argv.dryRun,
+  verbose: argv.verbose,
+  projects: projectsFilter,
+  firstRelease: argv.firstRelease,
+})
+
+const releasedProjects = Object.keys(projectChangelogs)
+if (argv.verbose) {
+  console.log('releasedProjects:', releasedProjects)
+}
+
+process.exit(0)
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/gladia-cli/contents?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+.github	dir	.github	null
+.gitignore	file	.gitignore	https://raw.githubusercontent.com/gladiaio/gladia-cli/main/.gitignore
+.goreleaser.yaml	file	.goreleaser.yaml	https://raw.githubusercontent.com/gladiaio/gladia-cli/main/.goreleaser.yaml
+LICENSE	file	LICENSE	https://raw.githubusercontent.com/gladiaio/gladia-cli/main/LICENSE
+Makefile	file	Makefile	https://raw.githubusercontent.com/gladiaio/gladia-cli/main/Makefile
+README.md	file	README.md	https://raw.githubusercontent.com/gladiaio/gladia-cli/main/README.md
+cmd	dir	cmd	null
+docs	dir	docs	null
+go.mod	file	go.mod	https://raw.githubusercontent.com/gladiaio/gladia-cli/main/go.mod
+go.sum	file	go.sum	https://raw.githubusercontent.com/gladiaio/gladia-cli/main/go.sum
+install.ps1	file	install.ps1	https://raw.githubusercontent.com/gladiaio/gladia-cli/main/install.ps1
+install.sh	file	install.sh	https://raw.githubusercontent.com/gladiaio/gladia-cli/main/install.sh
+pkg	dir	pkg	null
+split_infinity.wav	file	split_infinity.wav	https://raw.githubusercontent.com/gladiaio/gladia-cli/main/split_infinity.wav
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/gladia-samples/contents?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+.gitattributes	file	.gitattributes	https://raw.githubusercontent.com/gladiaio/gladia-samples/main/.gitattributes
+.github	dir	.github	null
+.gitignore	file	.gitignore	https://raw.githubusercontent.com/gladiaio/gladia-samples/main/.gitignore
+.prettierrc	file	.prettierrc	https://raw.githubusercontent.com/gladiaio/gladia-samples/main/.prettierrc
+.vscode	dir	.vscode	null
+CONTRIBUTING.md	file	CONTRIBUTING.md	https://raw.githubusercontent.com/gladiaio/gladia-samples/main/CONTRIBUTING.md
+README.md	file	README.md	https://raw.githubusercontent.com/gladiaio/gladia-samples/main/README.md
+data	dir	data	null
+integrations-examples	dir	integrations-examples	null
+javascript	dir	javascript	null
+python	dir	python	null
+scripts	dir	scripts	null
+typescript	dir	typescript	null
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/normalization/contents?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+.commitlintrc.json	file	.commitlintrc.json	https://raw.githubusercontent.com/gladiaio/normalization/main/.commitlintrc.json
+.github	dir	.github	null
+.gitignore	file	.gitignore	https://raw.githubusercontent.com/gladiaio/normalization/main/.gitignore
+.pre-commit-config.yaml	file	.pre-commit-config.yaml	https://raw.githubusercontent.com/gladiaio/normalization/main/.pre-commit-config.yaml
+.python-version	file	.python-version	https://raw.githubusercontent.com/gladiaio/normalization/main/.python-version
+AGENTS.md	file	AGENTS.md	https://raw.githubusercontent.com/gladiaio/normalization/main/AGENTS.md
+CLAUDE.md	file	CLAUDE.md	https://raw.githubusercontent.com/gladiaio/normalization/main/CLAUDE.md
+CONTRIBUTING.md	file	CONTRIBUTING.md	https://raw.githubusercontent.com/gladiaio/normalization/main/CONTRIBUTING.md
+LICENSE	file	LICENSE	https://raw.githubusercontent.com/gladiaio/normalization/main/LICENSE
+README.md	file	README.md	https://raw.githubusercontent.com/gladiaio/normalization/main/README.md
+docs	dir	docs	null
+normalization	dir	normalization	null
+pyproject.toml	file	pyproject.toml	https://raw.githubusercontent.com/gladiaio/normalization/main/pyproject.toml
+scripts	dir	scripts	null
+tests	dir	tests	null
+uv.lock	file	uv.lock	https://raw.githubusercontent.com/gladiaio/normalization/main/uv.lock
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/gladia-cli/main/go.mod"
+module github.com/gladiaio/gladia-cli
+
+go 1.18
+
+require (
+	github.com/olekukonko/tablewriter v0.0.5
+	github.com/spf13/cobra v1.8.1
+	golang.org/x/text v0.14.0
+)
+
+require (
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/mattn/go-runewidth v0.0.9 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
+)
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/normalization/main/pyproject.toml"
+[project]
+name = "gladia-normalization"
+version = "0.1.0"
+description = "Normalize speech-to-text output for fair Word Error Rate (WER) comparison"
+readme = "README.md"
+authors = [{ name = "Gladia", email = "support@gladia.io" }]
+keywords = [
+  "speech-to-text",
+  "STT",
+  "ASR",
+  "WER",
+  "normalization",
+  "transcription",
+  "benchmark",
+]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Development Status :: 4 - Beta",
+  "Topic :: Text Processing :: Linguistic",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "contractions>=0.1.73",
+    "pyyaml>=6.0.3",
+    "text2num>=3.0.0",
+]
+
+[tool.setuptools.package-data]
+normalization = ["presets/*.yaml"]
+
+[project.scripts]
+gladia-normalization = "normalization.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/gladiaio/normalization"
+Repository = "https://github.com/gladiaio/normalization"
+"Bug Tracker" = "https://github.com/gladiaio/normalization/issues"
+
+[dependency-groups]
+dev = ["pre-commit>=4.5.1", "ty>=0.0.20", "pytest>=9.0.3", "pygments>=2.20.0", "ruff>=0.15.2"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["normalization"]
+
+[tool.pytest.ini_options]
+python_files = ["*_test.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"] # pycodestyle errors, pyflakes, isort
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/compare-stt/contents?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+.cursor	dir	.cursor	null
+.env.example	file	.env.example	https://raw.githubusercontent.com/gladiaio/compare-stt/main/.env.example
+.gitignore	file	.gitignore	https://raw.githubusercontent.com/gladiaio/compare-stt/main/.gitignore
+LICENSE	file	LICENSE	https://raw.githubusercontent.com/gladiaio/compare-stt/main/LICENSE
+README.md	file	README.md	https://raw.githubusercontent.com/gladiaio/compare-stt/main/README.md
+docker-compose.yml	file	docker-compose.yml	https://raw.githubusercontent.com/gladiaio/compare-stt/main/docker-compose.yml
+eslint.config.mjs	file	eslint.config.mjs	https://raw.githubusercontent.com/gladiaio/compare-stt/main/eslint.config.mjs
+instrumentation-client.ts	file	instrumentation-client.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/instrumentation-client.ts
+logos	dir	logos	null
+next.config.ts	file	next.config.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/next.config.ts
+package-lock.json	file	package-lock.json	https://raw.githubusercontent.com/gladiaio/compare-stt/main/package-lock.json
+package.json	file	package.json	https://raw.githubusercontent.com/gladiaio/compare-stt/main/package.json
+postcss.config.mjs	file	postcss.config.mjs	https://raw.githubusercontent.com/gladiaio/compare-stt/main/postcss.config.mjs
+prisma.config.ts	file	prisma.config.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/prisma.config.ts
+prisma	dir	prisma	null
+public	dir	public	null
+sentry.edge.config.ts	file	sentry.edge.config.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/sentry.edge.config.ts
+sentry.server.config.ts	file	sentry.server.config.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/sentry.server.config.ts
+src	dir	src	null
+test-audio	dir	test-audio	null
+test-diff.ts	file	test-diff.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/test-diff.ts
+test-match-token.ts	file	test-match-token.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/test-match-token.ts
+test-providers.ts	file	test-providers.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/test-providers.ts
+tsconfig.json	file	tsconfig.json	https://raw.githubusercontent.com/gladiaio/compare-stt/main/tsconfig.json
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/contents?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+.github	dir	.github	null
+.gitignore	file	.gitignore	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/.gitignore
+.prettierrc.js	file	.prettierrc.js	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/.prettierrc.js
+CHANGELOG.md	file	CHANGELOG.md	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/CHANGELOG.md
+LICENSE	file	LICENSE	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/LICENSE
+README.md	file	README.md	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/README.md
+credentials	dir	credentials	null
+eslint.config.mjs	file	eslint.config.mjs	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/eslint.config.mjs
+icons	dir	icons	null
+jest.config.js	file	jest.config.js	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/jest.config.js
+nodes	dir	nodes	null
+package-lock.json	file	package-lock.json	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/package-lock.json
+package.json	file	package.json	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/package.json
+tsconfig.json	file	tsconfig.json	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/tsconfig.json
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/compare-stt/main/.env.example"
+DATABASE_URL="postgresql://compare_stt:compare_stt_dev@localhost:5432/compare_stt?schema=public"
+
+# Vercel Blob (audio upload storage)
+BLOB_READ_WRITE_TOKEN=""
+
+# Sentry (error monitoring)
+NEXT_PUBLIC_SENTRY_DSN=""
+
+# SEO canonical origin (defaults to https://www.gladia.io)
+# NEXT_PUBLIC_SITE_ORIGIN="https://www.gladia.io"
+# Full public URL override including base path if needed
+# NEXT_PUBLIC_SITE_URL="https://www.gladia.io/compare-stt-apis"
+
+# STT Provider API Keys (server-side only)
+GLADIA_API_KEY=""
+DEEPGRAM_API_KEY=""
+ASSEMBLYAI_API_KEY=""
+ELEVENLABS_API_KEY=""
+SPEECHMATICS_API_KEY=""
+MISTRAL_API_KEY=""
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/n8n-nodes-gladia/contents/credentials?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+GladiaApi.credentials.ts	file	credentials/GladiaApi.credentials.ts	https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/credentials/GladiaApi.credentials.ts
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/n8n-nodes-gladia/main/credentials/GladiaApi.credentials.ts"
+import type {
+	IAuthenticateGeneric,
+	ICredentialTestRequest,
+	ICredentialType,
+	INodeProperties,
+} from 'n8n-workflow';
+
+export class GladiaApi implements ICredentialType {
+	name = 'gladiaApi';
+
+	displayName = 'Gladia API';
+
+	icon = { light: 'file:../nodes/Gladia/gladia.svg', dark: 'file:../nodes/Gladia/gladia.dark.svg' } as const;
+
+	documentationUrl = 'https://docs.gladia.io/reference/getting-your-api-key';
+
+	properties: INodeProperties[] = [
+		{
+			displayName: 'API Key',
+			name: 'apiKey',
+			type: 'string',
+			typeOptions: { password: true },
+			default: '',
+		},
+	];
+
+	authenticate: IAuthenticateGeneric = {
+		type: 'generic',
+		properties: {
+			headers: {
+				'x-gladia-key': '={{$credentials.apiKey}}',
+			},
+		},
+	};
+
+	test: ICredentialTestRequest = {
+		request: {
+			baseURL: 'https://api.gladia.io',
+			url: '/v2/pre-recorded?limit=1',
+		},
+	};
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/compare-stt/main/package.json"
+{
+  "name": "compare-stt",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "postinstall": "prisma generate",
+    "start": "next start",
+    "lint": "eslint",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "test": "NODE_NO_WARNINGS=1 tsx test-diff.ts && NODE_NO_WARNINGS=1 tsx test-match-token.ts && NODE_NO_WARNINGS=1 tsx test-providers.ts",
+    "test:providers": "NODE_NO_WARNINGS=1 tsx test-providers.ts",
+    "deploy": "npm run lint && npm run test && git push"
+  },
+  "dependencies": {
+    "@deepgram/sdk": "^5.0.0",
+    "@elevenlabs/elevenlabs-js": "^2.38.1",
+    "@flags-sdk/vercel": "^1.1.0",
+    "@mistralai/mistralai": "^1.15.1",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@sentry/nextjs": "^10.43.0",
+    "@speechmatics/batch-client": "^5.1.0",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/blob": "^2.3.1",
+    "assemblyai": "^4.26.1",
+    "dotenv": "^17.3.1",
+    "flags": "^4.0.5",
+    "next": "16.2.7",
+    "pg": "^8.20.0",
+    "prisma": "^7.8.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "overrides": {
+    "postcss": "^8.5.10",
+    "@hono/node-server": "^1.19.13"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8.18.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "tsx": "^4.22.4",
+    "typescript": "^5"
+  }
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/compare-stt/main/test-match-token.ts"
+import crypto from "crypto";
+import {
+  signMatchToken,
+  verifyMatchToken,
+  hashMatchToken,
+} from "./src/lib/match-token";
+
+let passed = 0;
+let failed = 0;
+
+function test(name: string, fn: () => void) {
+  try {
+    fn();
+    console.log(`  ✓ ${name}`);
+    passed++;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.log(`  ✗ ${name}`);
+    console.log(`    ${msg}`);
+    failed++;
+  }
+}
+
+function assert(condition: boolean, msg: string): asserts condition {
+  if (!condition) throw new Error(msg);
+}
+
+/**
+ * Build a legacy 4-part token (the format used before this fix) so we can
+ * test backward compatibility.
+ */
+function signLegacyToken(
+  sessionId: string,
+  providerAId: string,
+  providerBId: string
+): string {
+  const key = crypto
+    .createHash("sha256")
+    .update(process.env.DATABASE_URL || "dev-fallback-key")
+    .digest();
+  const payload = `${sessionId}.${providerAId}.${providerBId}`;
+  const signature = crypto
+    .createHmac("sha256", key)
+    .update(payload)
+    .digest("base64url");
+  return `${payload}.${signature}`;
+}
+
+console.log("\nMatch token tests\n" + "=".repeat(60));
+
+// ── Basic sign/verify round-trip ──
+
+test("sign → verify round-trip succeeds", () => {
+  const token = signMatchToken("sess1", "provA", "provB");
+  const result = verifyMatchToken(token);
+  assert(result !== null, "verify returned null");
+  assert(result.sessionId === "sess1", `sessionId: ${result.sessionId}`);
+  assert(result.providerAId === "provA", `providerAId: ${result.providerAId}`);
+  assert(result.providerBId === "provB", `providerBId: ${result.providerBId}`);
+  assert(result.issuedAt > 0, `issuedAt should be > 0, got ${result.issuedAt}`);
+});
+
+test("verify returns issuedAt close to now", () => {
+  const before = Date.now();
+  const token = signMatchToken("sess1", "provA", "provB");
+  const after = Date.now();
+  const result = verifyMatchToken(token)!;
+  assert(result.issuedAt >= before, `issuedAt ${result.issuedAt} < before ${before}`);
+  assert(result.issuedAt <= after, `issuedAt ${result.issuedAt} > after ${after}`);
+});
+
+// ── Anti-tampering: cannot rig the mechanism ──
+
+test("tampered sessionId is rejected", () => {
+  const token = signMatchToken("sess1", "provA", "provB");
+  const parts = token.split(".");
+  parts[0] = "rigged-session";
+  const tampered = parts.join(".");
+  assert(verifyMatchToken(tampered) === null, "should reject tampered sessionId");
+});
+
+test("tampered providerAId is rejected", () => {
+  const token = signMatchToken("sess1", "provA", "provB");
+  const parts = token.split(".");
+  parts[1] = "rigged-provider";
+  const tampered = parts.join(".");
+  assert(verifyMatchToken(tampered) === null, "should reject tampered providerAId");
+});
+
+test("tampered providerBId is rejected", () => {
+  const token = signMatchToken("sess1", "provA", "provB");
+  const parts = token.split(".");
+  parts[2] = "rigged-provider";
+  const tampered = parts.join(".");
+  assert(verifyMatchToken(tampered) === null, "should reject tampered providerBId");
+});
+
+test("tampered issuedAt is rejected", () => {
+  const token = signMatchToken("sess1", "provA", "provB");
+  const parts = token.split(".");
+  parts[3] = "0";
+  const tampered = parts.join(".");
+  assert(verifyMatchToken(tampered) === null, "should reject tampered issuedAt");
+});
+
+test("tampered signature is rejected", () => {
+  const token = signMatchToken("sess1", "provA", "provB");
+  const parts = token.split(".");
+  parts[4] = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+  const tampered = parts.join(".");
+  assert(verifyMatchToken(tampered) === null, "should reject tampered signature");
+});
+
+test("completely forged token is rejected", () => {
+  const forged = "fakeSess.fakeA.fakeB.12345.fakeSig";
+  assert(verifyMatchToken(forged) === null, "should reject forged token");
+});
+
+test("empty string is rejected", () => {
+  assert(verifyMatchToken("") === null, "should reject empty string");
+});
+
+test("random garbage is rejected", () => {
+  assert(verifyMatchToken("not.a.valid.token.at.all") === null, "should reject garbage");
+});
+
+test("token signed for different providers cannot be reused", () => {
+  const tokenAB = signMatchToken("sess1", "provA", "provB");
+  const result = verifyMatchToken(tokenAB)!;
+  assert(result.providerAId === "provA", "providerAId mismatch");
+  assert(result.providerBId === "provB", "providerBId mismatch");
+  // Cannot swap providers — if attacker tries to use this token for a different pair
+  // the payload embedded in the token still says provA/provB
+});
+
+test("swapped provider IDs produce a different token", () => {
+  const tokenAB = signMatchToken("sess1", "provA", "provB");
+  const tokenBA = signMatchToken("sess1", "provB", "provA");
+  assert(tokenAB !== tokenBA, "swapped providers should produce different tokens");
+});
+
+// ── Backward compatibility: legacy 4-part tokens ──
+
+test("legacy 4-part token is accepted", () => {
+  const token = signLegacyToken("sess1", "provA", "provB");
+  const parts = token.split(".");
+  assert(parts.length === 4, `expected 4 parts, got ${parts.length}`);
+  const result = verifyMatchToken(token);
+  assert(result !== null, "legacy token should be accepted");
+  assert(result.sessionId === "sess1", `sessionId: ${result.sessionId}`);
+  assert(result.providerAId === "provA", `providerAId: ${result.providerAId}`);
+  assert(result.providerBId === "provB", `providerBId: ${result.providerBId}`);
+});
+
+test("legacy token returns issuedAt = 0", () => {
+  const token = signLegacyToken("sess1", "provA", "provB");
+  const result = verifyMatchToken(token)!;
+  assert(result.issuedAt === 0, `expected issuedAt=0 for legacy, got ${result.issuedAt}`);
+});
+
+test("tampered legacy token is rejected", () => {
+  const token = signLegacyToken("sess1", "provA", "provB");
+  const parts = token.split(".");
+  parts[0] = "rigged-session";
+  const tampered = parts.join(".");
+  assert(verifyMatchToken(tampered) === null, "should reject tampered legacy token");
+});
+
+test("legacy token with tampered signature is rejected", () => {
+  const token = signLegacyToken("sess1", "provA", "provB");
+  const parts = token.split(".");
+  parts[3] = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+  const tampered = parts.join(".");
+  assert(verifyMatchToken(tampered) === null, "should reject tampered legacy signature");
+});
+
+// ── hashMatchToken ──
+
+test("hashMatchToken is deterministic", () => {
+  const token = signMatchToken("sess1", "provA", "provB");
+  assert(hashMatchToken(token) === hashMatchToken(token), "same token should produce same hash");
+});
+
+test("different tokens produce different hashes", () => {
+  const t1 = signMatchToken("sess1", "provA", "provB");
+  const t2 = signMatchToken("sess2", "provA", "provB");
+  assert(hashMatchToken(t1) !== hashMatchToken(t2), "different tokens should have different hashes");
+});
+
+test("hash is a 64-char hex string (SHA-256)", () => {
+  const token = signMatchToken("sess1", "provA", "provB");
+  const hash = hashMatchToken(token);
+  assert(hash.length === 64, `expected 64 chars, got ${hash.length}`);
+  assert(/^[0-9a-f]{64}$/.test(hash), `not a valid hex string: ${hash}`);
+});
+
+console.log("=".repeat(60));
+console.log(`\n  ${passed} passed, ${failed} failed\n`);
+process.exit(failed > 0 ? 1 : 0);
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/compare-stt/main/test-providers.ts"
+import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+
+dotenv.config({ path: ".env.local" });
+import { transcribeForProvider } from "./src/lib/transcribe";
+
+const SLUGS = ["gladia", "deepgram", "assemblyai", "elevenlabs", "speechmatics", "mistral"];
+
+const TEST_DIR = path.join(path.dirname(new URL(import.meta.url).pathname), "test-audio");
+
+function getAudioFiles(): string[] {
+  return fs
+    .readdirSync(TEST_DIR)
+    .filter((f) => /\.(wav|mp3|m4a|ogg|webm|flac)$/i.test(f))
+    .map((f) => path.join(TEST_DIR, f));
+}
+
+function mimeFromExt(filePath: string): string {
+  const ext = path.extname(filePath).toLowerCase();
+  const map: Record<string, string> = {
+    ".wav": "audio/wav",
+    ".mp3": "audio/mpeg",
+    ".m4a": "audio/mp4",
+    ".ogg": "audio/ogg",
+    ".webm": "audio/webm",
+    ".flac": "audio/flac",
+  };
+  return map[ext] || "audio/wav";
+}
+
+async function main() {
+  const audioFiles = getAudioFiles();
+  if (audioFiles.length === 0) {
+    console.error("No audio files found in test-audio/");
+    process.exit(1);
+  }
+
+  const audioFile = audioFiles[0];
+  const audioBuffer = Buffer.from(fs.readFileSync(audioFile));
+  const mimeType = mimeFromExt(audioFile);
+
+  console.log(`\nUsing: ${path.basename(audioFile)} (${mimeType}, ${(audioBuffer.length / 1024).toFixed(0)} KB)\n`);
+  console.log("=".repeat(80));
+
+  let passed = 0;
+  let failed = 0;
+
+  for (const slug of SLUGS) {
+    const label = slug.padEnd(14);
+
+    const start = Date.now();
+    const result = await transcribeForProvider(slug, audioBuffer, mimeType);
+    const elapsed = Date.now() - start;
+
+    if (result.error) {
+      console.log(`  ✗ ${label}  ERROR (${elapsed}ms): ${result.error}`);
+      failed++;
+      continue;
+    }
+
+    const wordCount = result.words?.length ?? 0;
+    const preview = result.transcript.length > 80
+      ? result.transcript.slice(0, 80) + "…"
+      : result.transcript;
+
+    console.log(`  ✓ ${label}  ${elapsed}ms  ${wordCount} words  "${preview}"`);
+
+    if (wordCount === 0) {
+      console.log(`    ⚠ No word timestamps returned`);
+    }
+
+    if (!result.transcript.trim()) {
+      console.log(`    ⚠ Empty transcript`);
+      failed++;
+    } else {
+      passed++;
+    }
+  }
+
+  console.log("=".repeat(80));
+  console.log(`\n  ${passed} passed, ${failed} failed, ${SLUGS.length} total\n`);
+
+  process.exit(failed > 0 ? 1 : 0);
+}
+
+main();
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/compare-stt/contents/src/lib?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+db.ts	file	src/lib/db.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/db.ts
+diff.ts	file	src/lib/diff.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/diff.ts
+elo-confidence.ts	file	src/lib/elo-confidence.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/elo-confidence.ts
+elo.ts	file	src/lib/elo.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/elo.ts
+encode-wav.ts	file	src/lib/encode-wav.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/encode-wav.ts
+env.ts	file	src/lib/env.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/env.ts
+leaderboard-articles.ts	file	src/lib/leaderboard-articles.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/leaderboard-articles.ts
+leaderboard-data.ts	file	src/lib/leaderboard-data.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/leaderboard-data.ts
+match-token.ts	file	src/lib/match-token.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/match-token.ts
+pending-audio.ts	file	src/lib/pending-audio.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/pending-audio.ts
+providers.ts	file	src/lib/providers.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/providers.ts
+providers	dir	src/lib/providers	null
+rate-limit.ts	file	src/lib/rate-limit.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/rate-limit.ts
+site.ts	file	src/lib/site.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/site.ts
+tracking.ts	file	src/lib/tracking.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/tracking.ts
+transcribe.ts	file	src/lib/transcribe.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/transcribe.ts
+upload-count.ts	file	src/lib/upload-count.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/upload-count.ts
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/match-token.ts"
+import crypto from "crypto";
+
+const getSigningKey = (() => {
+  let key: Buffer | null = null;
+  return () => {
+    if (!key) {
+      key = crypto
+        .createHash("sha256")
+        .update(process.env.DATABASE_URL || "dev-fallback-key")
+        .digest();
+    }
+    return key;
+  };
+})();
+
+export function signMatchToken(
+  sessionId: string,
+  providerAId: string,
+  providerBId: string
+): string {
+  const issuedAt = Date.now();
+  const payload = `${sessionId}.${providerAId}.${providerBId}.${issuedAt}`;
+  const signature = crypto
+    .createHmac("sha256", getSigningKey())
+    .update(payload)
+    .digest("base64url");
+  return `${payload}.${signature}`;
+}
+
+export interface MatchTokenPayload {
+  sessionId: string;
+  providerAId: string;
+  providerBId: string;
+  issuedAt: number;
+}
+
+/**
+ * Accepts both the new 5-part format (with issuedAt) and the legacy 4-part
+ * format (without issuedAt) so that in-flight sessions aren't broken across
+ * a deploy boundary. Legacy tokens get issuedAt = 0 so the minimum-delay
+ * check is skipped for them.
+ */
+export function verifyMatchToken(token: string): MatchTokenPayload | null {
+  const parts = token.split(".");
+
+  if (parts.length === 5) {
+    const [sessionId, providerAId, providerBId, issuedAtStr, signature] = parts;
+    const payload = `${sessionId}.${providerAId}.${providerBId}.${issuedAtStr}`;
+    const expected = crypto
+      .createHmac("sha256", getSigningKey())
+      .update(payload)
+      .digest("base64url");
+
+    if (
+      signature.length !== expected.length ||
+      !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+    ) {
+      return null;
+    }
+
+    const issuedAt = parseInt(issuedAtStr, 10);
+    if (isNaN(issuedAt)) return null;
+
+    return { sessionId, providerAId, providerBId, issuedAt };
+  }
+
+  if (parts.length === 4) {
+    const [sessionId, providerAId, providerBId, signature] = parts;
+    const payload = `${sessionId}.${providerAId}.${providerBId}`;
+    const expected = crypto
+      .createHmac("sha256", getSigningKey())
+      .update(payload)
+      .digest("base64url");
+
+    if (
+      signature.length !== expected.length ||
+      !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+    ) {
+      return null;
+    }
+
+    return { sessionId, providerAId, providerBId, issuedAt: 0 };
+  }
+
+  return null;
+}
+
+export function hashMatchToken(token: string): string {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/env.ts"
+/**
+ * Parse an integer env var with a safe fallback.
+ * Returns `fallback` if the value is missing, empty, or non-numeric —
+ * so a bad config never silently disables a security check.
+ */
+export function intEnv(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (!raw) return fallback;
+  const parsed = Number(raw);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/providers.ts"
+export interface ProviderDef {
+  name: string;
+  slug: string;
+  logoUrl: string;
+  color: string;
+  model: string;
+}
+
+export const PROVIDERS: ProviderDef[] = [
+  { name: "Gladia", slug: "gladia", logoUrl: "/providers/gladia.svg", color: "#947AFC", model: "Solaria-3" },
+  { name: "ElevenLabs", slug: "elevenlabs", logoUrl: "/providers/elevenlabs.svg", color: "#FFFFFF", model: "Scribe v2" },
+  { name: "Deepgram", slug: "deepgram", logoUrl: "/providers/deepgram.svg", color: "#13EF93", model: "Nova 3" },
+  { name: "AssemblyAI", slug: "assemblyai", logoUrl: "/providers/assemblyai.svg", color: "#0055FF", model: "Universal-3 Pro" },
+  { name: "Speechmatics", slug: "speechmatics", logoUrl: "/providers/speechmatics.svg", color: "#FF3D00", model: "Enhanced" },
+  { name: "Mistral", slug: "mistral", logoUrl: "/providers/mistral.svg", color: "#FF7000", model: "Voxtral Mini" },
+];
+
+export function getProviderBySlug(slug: string): ProviderDef | undefined {
+  return PROVIDERS.find((p) => p.slug === slug);
+}
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/compare-stt/contents/src/lib/providers?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+assemblyai.ts	file	src/lib/providers/assemblyai.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/providers/assemblyai.ts
+deepgram.ts	file	src/lib/providers/deepgram.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/providers/deepgram.ts
+elevenlabs.ts	file	src/lib/providers/elevenlabs.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/providers/elevenlabs.ts
+gladia.ts	file	src/lib/providers/gladia.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/providers/gladia.ts
+mistral.ts	file	src/lib/providers/mistral.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/providers/mistral.ts
+speechmatics.ts	file	src/lib/providers/speechmatics.ts	https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/providers/speechmatics.ts
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/providers/gladia.ts"
+import type { TranscribeResult, WordTimestamp } from "../transcribe";
+
+const GLADIA_BASE = "https://api.gladia.io/v2";
+
+interface GladiaWord {
+  word: string;
+  start: number;
+  end: number;
+}
+
+interface GladiaUtterance {
+  text: string;
+  words: GladiaWord[];
+}
+
+export async function transcribeWithGladia(
+  audio: Buffer,
+  mimeType: string
+): Promise<TranscribeResult> {
+  const apiKey = process.env.GLADIA_API_KEY;
+  if (!apiKey) throw new Error("GLADIA_API_KEY not set");
+
+  const start = Date.now();
+
+  const ext = mimeType.includes("wav") ? "audio.wav"
+    : mimeType.includes("mp3") || mimeType.includes("mpeg") ? "audio.mp3"
+    : mimeType.includes("mp4") || mimeType.includes("m4a") ? "audio.m4a"
+    : mimeType.includes("ogg") ? "audio.ogg"
+    : "audio.webm";
+
+  const uploadForm = new FormData();
+  uploadForm.append("audio", new Blob([new Uint8Array(audio)], { type: mimeType }), ext);
+
+  const uploadRes = await fetch(`${GLADIA_BASE}/upload`, {
+    method: "POST",
+    headers: { "x-gladia-key": apiKey },
+    body: uploadForm,
+  });
+
+  if (!uploadRes.ok) {
+    throw new Error(`Gladia upload failed: ${uploadRes.status} ${await uploadRes.text()}`);
+  }
+
+  const { audio_url } = await uploadRes.json();
+
+  const transcribeRes = await fetch(`${GLADIA_BASE}/pre-recorded`, {
+    method: "POST",
+    headers: {
+      "x-gladia-key": apiKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      audio_url,
+      model: "solaria-3",
+      punctuation_enhanced: true,
+      language_config: { code_switching: false },
+    }),
+  });
+
+  if (!transcribeRes.ok) {
+    throw new Error(`Gladia transcribe failed: ${transcribeRes.status} ${await transcribeRes.text()}`);
+  }
+
+  const { result_url } = await transcribeRes.json();
+
+  const { transcript, words } = await pollForResult(result_url, apiKey);
+  const durationMs = Date.now() - start;
+
+  return { transcript, words, durationMs };
+}
+
+async function pollForResult(
+  resultUrl: string,
+  apiKey: string
+): Promise<{ transcript: string; words: WordTimestamp[] }> {
+  const maxAttempts = 60;
+  const interval = 1000;
+
+  for (let i = 0; i < maxAttempts; i++) {
+    const res = await fetch(resultUrl, {
+      headers: { "x-gladia-key": apiKey },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Gladia poll failed: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    if (data.status === "done") {
+      const utterances: GladiaUtterance[] | undefined =
+        data.result?.transcription?.utterances;
+
+      if (utterances && Array.isArray(utterances)) {
+        const transcript = utterances.map((u) => u.text).join(" ");
+        const words: WordTimestamp[] = utterances.flatMap((u) =>
+          (u.words || []).map((w) => ({
+            word: w.word,
+            start: w.start,
+            end: w.end,
+          }))
+        );
+        return { transcript, words };
+      }
+
+      const fullTranscript = data.result?.transcription?.full_transcript;
+      return { transcript: fullTranscript || "", words: [] };
+    }
+
+    if (data.status === "error") {
+      throw new Error(`Gladia transcription error: ${JSON.stringify(data)}`);
+    }
+
+    await new Promise((r) => setTimeout(r, interval));
+  }
+
+  throw new Error("Gladia transcription timed out");
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/compare-stt/main/src/lib/providers/deepgram.ts"
+import { DeepgramClient } from "@deepgram/sdk";
+import { Readable } from "stream";
+import type { TranscribeResult, WordTimestamp } from "../transcribe";
+
+interface DeepgramWord {
+  word: string;
+  start: number;
+  end: number;
+}
+
+interface DeepgramTranscriptResponse {
+  results?: {
+    channels?: {
+      alternatives?: {
+        transcript?: string;
+        words?: DeepgramWord[];
+      }[];
+    }[];
+  };
+}
+
+export async function transcribeWithDeepgram(
+  audio: Buffer,
+  _mimeType: string
+): Promise<TranscribeResult> {
+  const apiKey = process.env.DEEPGRAM_API_KEY;
+  if (!apiKey) throw new Error("DEEPGRAM_API_KEY not set");
+
+  const start = Date.now();
+
+  const deepgram = new DeepgramClient({ apiKey });
+
+  const stream = Readable.from(audio);
+
+  const response = await deepgram.listen.v1.media.transcribeFile(stream, {
+    model: "nova-3",
+    smart_format: true,
+    detect_language: true,
+  });
+
+  const data = response as unknown as DeepgramTranscriptResponse;
+  const alt = data?.results?.channels?.[0]?.alternatives?.[0];
+  const transcript = alt?.transcript ?? "";
+
+  const words: WordTimestamp[] = (alt?.words || []).map((w) => ({
+    word: w.word,
+    start: w.start,
+    end: w.end,
+  }));
+
+  const durationMs = Date.now() - start;
+
+  return { transcript, words, durationMs };
+}
+[0m
+[0m$ [0mcurl -s "https://raw.githubusercontent.com/gladiaio/compare-stt/main/test-diff.ts"
+import { computeWordDiff } from "./src/lib/diff";
+
+let passed = 0;
+let failed = 0;
+
+function test(name: string, fn: () => void) {
+  try {
+    fn();
+    console.log(`  ✓ ${name}`);
+    passed++;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.log(`  ✗ ${name}`);
+    console.log(`    ${msg}`);
+    failed++;
+  }
+}
+
+function assert(condition: boolean, msg: string) {
+  if (!condition) throw new Error(msg);
+}
+
+function diffWords(text: string, segments: { text: string; type: string }[]): string[] {
+  return segments
+    .filter((s) => s.type === "diff")
+    .flatMap((s) => s.text.split(/\s+/).filter(Boolean));
+}
+
+console.log("\nDiff tests\n" + "=".repeat(60));
+
+test("identical strings produce all 'same'", () => {
+  const { segmentsA, segmentsB, diffIndicesA, diffIndicesB } = computeWordDiff("hello world", "hello world");
+  assert(segmentsA.every((s) => s.type === "same"), `A: ${JSON.stringify(segmentsA)}`);
+  assert(segmentsB.every((s) => s.type === "same"), `B: ${JSON.stringify(segmentsB)}`);
+  assert(diffIndicesA.size === 0, "A should have no diff indices");
+  assert(diffIndicesB.size === 0, "B should have no diff indices");
+});
+
+test("completely different strings produce all 'diff'", () => {
+  const { segmentsA, segmentsB } = computeWordDiff("hello world", "foo bar");
+  assert(segmentsA.every((s) => s.type === "diff"), `A: ${JSON.stringify(segmentsA)}`);
+  assert(segmentsB.every((s) => s.type === "diff"), `B: ${JSON.stringify(segmentsB)}`);
+});
+
+test("capitalization differences only highlight the changed words", () => {
+  const { diffIndicesA, diffIndicesB } = computeWordDiff("Hello World", "hello world");
+  assert(diffIndicesA.size === 2, `A: expected 2 diffs, got ${diffIndicesA.size}`);
+  assert(diffIndicesB.size === 2, `B: expected 2 diffs, got ${diffIndicesB.size}`);
+});
+
+test("punctuation differences only highlight the changed words", () => {
+  const a = "Hello world";
+  const b = "Hello, world.";
+  const { diffIndicesA, diffIndicesB } = computeWordDiff(a, b);
+  const wordsA = a.split(/\s+/);
+  const wordsB = b.split(/\s+/);
+  const dA = [...diffIndicesA].map((i) => wordsA[i]);
+  const dB = [...diffIndicesB].map((i) => wordsB[i]);
+  assert(dA.includes("Hello"), `A should diff 'Hello': ${JSON.stringify(dA)}`);
+  assert(dA.includes("world"), `A should diff 'world': ${JSON.stringify(dA)}`);
+  assert(dB.includes("Hello,"), `B should diff 'Hello,': ${JSON.stringify(dB)}`);
+  assert(dB.includes("world."), `B should diff 'world.': ${JSON.stringify(dB)}`);
+  assert(diffIndicesA.size === 2, `A should have exactly 2 diffs, got ${diffIndicesA.size}`);
+});
+
+test("one word substitution in the middle", () => {
+  const { segmentsA, segmentsB } = computeWordDiff(
+    "the quick brown fox",
+    "the slow brown fox"
+  );
+  const dA = diffWords("", segmentsA);
+  const dB = diffWords("", segmentsB);
+  assert(dA.length === 1 && dA[0] === "quick", `A diffs: ${JSON.stringify(dA)}`);
+  assert(dB.length === 1 && dB[0] === "slow", `B diffs: ${JSON.stringify(dB)}`);
+});
+
+test("extra words at end are marked as diff", () => {
+  const { segmentsB, diffIndicesB } = computeWordDiff("hello", "hello world");
+  assert(diffIndicesB.has(1), "B index 1 ('world') should be diff");
+  assert(diffIndicesB.size === 1, `B should have 1 diff, got ${diffIndicesB.size}`);
+  assert(segmentsB.length === 2, `B should have 2 segments: ${JSON.stringify(segmentsB)}`);
+});
+
+test("empty vs non-empty", () => {
+  const { segmentsA, segmentsB } = computeWordDiff("", "hello");
+  assert(segmentsA.length === 0, `A should be empty: ${JSON.stringify(segmentsA)}`);
+  assert(segmentsB.length > 0 && segmentsB[0].type === "diff", `B: ${JSON.stringify(segmentsB)}`);
+});
+
+test("punctuation-only transcript vs punctuated — alignment stays tight", () => {
+  const a = "Actually I changed my mind about that Can we go back to the original plan I think it was simpler and easier to maintain in the long run";
+  const b = "Actually, I changed my mind about that. Can we go back to the original plan? I think it was simpler and easier to maintain in the long run.";
+  const { diffIndicesA, diffIndicesB } = computeWordDiff(a, b);
+  const wordsA = a.split(/\s+/);
+  const wordsB = b.split(/\s+/);
+  const dA = [...diffIndicesA].map((i) => wordsA[i]);
+  const dB = [...diffIndicesB].map((i) => wordsB[i]);
+
+  assert(dA.includes("Actually"), `A should diff 'Actually': ${JSON.stringify(dA)}`);
+  assert(dB.includes("Actually,"), `B should diff 'Actually,': ${JSON.stringify(dB)}`);
+  assert(dA.includes("that"), `A should diff 'that': ${JSON.stringify(dA)}`);
+  assert(dB.includes("that."), `B should diff 'that.': ${JSON.stringify(dB)}`);
+  assert(dA.includes("plan"), `A should diff 'plan': ${JSON.stringify(dA)}`);
+  assert(dB.includes("plan?"), `B should diff 'plan?': ${JSON.stringify(dB)}`);
+  assert(dA.includes("run"), `A should diff 'run': ${JSON.stringify(dA)}`);
+  assert(dB.includes("run."), `B should diff 'run.': ${JSON.stringify(dB)}`);
+
+  assert(!dA.includes("Can"), `A should NOT diff 'Can': ${JSON.stringify(dA)}`);
+  assert(!dA.includes("think"), `A should NOT diff 'think': ${JSON.stringify(dA)}`);
+  assert(!dB.includes("we"), `B should NOT diff 'we': ${JSON.stringify(dB)}`);
+
+  assert(diffIndicesA.size === 4, `A should have 4 diffs, got ${diffIndicesA.size}: ${JSON.stringify(dA)}`);
+  assert(diffIndicesB.size === 4, `B should have 4 diffs, got ${diffIndicesB.size}: ${JSON.stringify(dB)}`);
+});
+
+test("mixed capitalization + punctuation differences", () => {
+  const a = "hold on let me check something real quick i remember seeing an error message about this yesterday but i cannot recall what it said exactly";
+  const b = "Hold on, let me check something real quick. I remember seeing an error message about this yesterday, but I cannot recall what it said exactly";
+  const { diffIndicesA, diffIndicesB } = computeWordDiff(a, b);
+  const wordsA = a.split(/\s+/);
+  const wordsB = b.split(/\s+/);
+  const dA = [...diffIndicesA].map((i) => wordsA[i]);
+  const dB = [...diffIndicesB].map((i) => wordsB[i]);
+
+  assert(dA.includes("hold"), `A should diff 'hold': ${JSON.stringify(dA)}`);
+  assert(dB.includes("Hold"), `B should diff 'Hold': ${JSON.stringify(dB)}`);
+  assert(dA.includes("on"), `A should diff 'on': ${JSON.stringify(dA)}`);
+  assert(dB.includes("on,"), `B should diff 'on,': ${JSON.stringify(dB)}`);
+  assert(dA.includes("quick"), `A should diff 'quick': ${JSON.stringify(dA)}`);
+  assert(dB.includes("quick."), `B should diff 'quick.': ${JSON.stringify(dB)}`);
+  assert(dA.includes("yesterday"), `A should diff 'yesterday': ${JSON.stringify(dA)}`);
+  assert(dB.includes("yesterday,"), `B should diff 'yesterday,': ${JSON.stringify(dB)}`);
+
+  const iWords = dA.filter((w) => w === "i");
+  assert(iWords.length === 2, `A should have 2 'i' diffs: ${JSON.stringify(dA)}`);
+
+  assert(!dA.includes("let"), `A should NOT diff 'let': ${JSON.stringify(dA)}`);
+  assert(!dA.includes("exactly"), `A should NOT diff 'exactly': ${JSON.stringify(dA)}`);
+  assert(!dB.includes("let"), `B should NOT diff 'let': ${JSON.stringify(dB)}`);
+});
+
+test("word substitution (different word, not just punctuation)", () => {
+  const a = "je suis le CTO de Gladia";
+  const b = "je suis le site de Gladia";
+  const { diffIndicesA, diffIndicesB } = computeWordDiff(a, b);
+  const wordsA = a.split(/\s+/);
+  const wordsB = b.split(/\s+/);
+  const dA = [...diffIndicesA].map((i) => wordsA[i]);
+  const dB = [...diffIndicesB].map((i) => wordsB[i]);
+  assert(dA.length === 1 && dA[0] === "CTO", `A diffs: ${JSON.stringify(dA)}`);
+  assert(dB.length === 1 && dB[0] === "site", `B diffs: ${JSON.stringify(dB)}`);
+});
+
+test("real-world: capitalization differences at multiple positions", () => {
+  const a = "let me know when you have a chance to look at this no rush but i would appreciate your feedback";
+  const b = "Let me know when you have a chance to look at this No rush but I would appreciate your feedback";
+  const { diffIndicesA, diffIndicesB } = computeWordDiff(a, b);
+  const wordsA = a.split(/\s+/);
+  const wordsB = b.split(/\s+/);
+  const dA = [...diffIndicesA].map((i) => wordsA[i]);
+  const dB = [...diffIndicesB].map((i) => wordsB[i]);
+
+  assert(dA.includes("let"), `A should diff 'let': ${JSON.stringify(dA)}`);
+  assert(dB.includes("Let"), `B should diff 'Let': ${JSON.stringify(dB)}`);
+  assert(dA.includes("no"), `A should diff 'no': ${JSON.stringify(dA)}`);
+  assert(dB.includes("No"), `B should diff 'No': ${JSON.stringify(dB)}`);
+  assert(dA.includes("i"), `A should diff 'i': ${JSON.stringify(dA)}`);
+  assert(dB.includes("I"), `B should diff 'I': ${JSON.stringify(dB)}`);
+
+  assert(!dA.includes("me"), `A should NOT diff 'me': ${JSON.stringify(dA)}`);
+  assert(diffIndicesA.size === 3, `A should have 3 diffs, got ${diffIndicesA.size}: ${JSON.stringify(dA)}`);
+});
+
+console.log("=".repeat(60));
+console.log(`\n  ${passed} passed, ${failed} failed\n`);
+process.exit(failed > 0 ? 1 : 0);
+[0m
+[0m$ [0mcurl -s "https://api.github.com/repos/gladiaio/normalization/contents/normalization?ref=main" | jq -r '.[] | "\(.name)\t\(.type)\t\(.path)\t\(.download_url)"'
+__init__.py	file	normalization/__init__.py	https://raw.githubusercontent.com/gladiaio/normalization/main/normalization/__init__.py
+__main__.py	file	normalization/__main__.py	https://raw.githubusercontent.com/gladiaio/normalization/main/normalization/__main__.py
+cli.py	file	normalization/cli.py	https://raw.githubusercontent.com/gladiaio/normalization/main/normalization/cli.py
+constants	dir	normalization/constants	null
+languages	dir	normalization/languages	null
+pipeline	dir	normalization/pipeline	null
+presets	dir	normalization/presets	null
+steps	dir	normalization/steps	null
+[0m
+Now I have enough data to compile the triage report. Let me output the findings.
 
 ---
 
-#### REAL_SECRET
-| File | Line | SHA256 | Verdict |
-|------|------|--------|---------|
-| *none* | - | - | - |
+## TRIAGE REPORT: gladiaio/ GitHub org + @gladiaio/sdk npm package
 
-#### TEST_OR_EXAMPLE
-| File | Line | Context | Verdict |
+### SCAN SUMMARY
+- **17 repos scanned** in gladiaio org (via GitHub API)
+- **@gladiaio/sdk** npm package metadata fetched (v1.1.0, latest 2026-07-23)
+- **Core SDK source** (packages/sdk-js, packages/sdk-python, packages/generator) fully reviewed
+- **Secondary repos** reviewed: gladia-cli, compare-stt, n8n-nodes-gladia, normalization, gladia-samples
+
+---
+
+### CATEGORY: REAL_SECRET
+**No hardcoded credentials/API keys/tokens with signs of life found.**
+
+| File | Line | SHA256 | Notes |
+|------|------|--------|-------|
+| — | — | — | All API keys read from `process.env` / `os.environ`; no committed secrets detected in any scanned repo |
+
+---
+
+### CATEGORY: TEST_OR_EXAMPLE
+
+| File | Line | Pattern | Verdict |
 |------|------|---------|---------|
-| *none* | - | - | - |
-
-#### ENDPOINT_LEAK
-| File | Line | Endpoint | Verdict |
-|------|------|----------|---------|
-| *none* | - | - | - |
-
-#### INTERESTING
-| File | Line | Finding | Verdict |
-|------|------|---------|---------|
-| *none* | - | - | - |
+| `gladiaio/compare-stt/.env.example` | 2 | `postgresql://compare_stt:compare_stt_dev@localhost:5432/...` | **TEST_OR_EXAMPLE** — Local dev DB URL template, no production creds |
+| `gladiaio/compare-stt/.env.example` | 5-13 | `BLOB_READ_WRITE_TOKEN=""`, `NEXT_PUBLIC_SENTRY_DSN=""`, `GLADIA_API_KEY=""`, `DEEPGRAM_API_KEY=""`, etc. | **TEST_OR_EXAMPLE** — Placeholder env vars for local dev |
+| `gladiaio/compare-stt/src/lib/match-token.ts` | 16 | `"dev-fallback-key"` | **TEST_OR_EXAMPLE** — Dev fallback signing key (only used when `DATABASE_URL` unset) |
+| `gladiaio/compare-stt/test-match-token.ts` | 32 | `process.env.DATABASE_URL || "dev-fallback-key"` | **TEST_OR_EXAMPLE** — Same dev fallback in test helper |
+| `gladiaio/n8n-nodes-gladia/credentials/GladiaApi.credentials.ts` | 15-19 | `apiKey` property with `password: true`, `default: ''` | **TEST_OR_EXAMPLE** — Credential schema template, no default secret |
 
 ---
 
-### Verdict List
+### CATEGORY: ENDPOINT_LEAK
 
-| Candidate | REPORT_CANDIDATE |
-|-----------|------------------|
-| (no static scan hits) | **no** |
+| File | Line | Endpoint | Type | Notes |
+|------|------|----------|------|-------|
+| `gladiaio/sdk/packages/sdk-js/src/client.ts` | 44 | `https://api.gladia.io` | Production API | Default `apiUrl` — documented public endpoint |
+| `gladiaio/sdk/packages/sdk-js/src/client.ts` | 44 | `wss://`, `ws://` protocols | Transport | Supported protocols for proxying |
+| `gladiaio/sdk/packages/sdk-python/src/gladiaio_sdk/client_options.py` | 45 | `https://api.gladia.io` | Production API | Default `api_url` — documented public endpoint |
+| `gladiaio/compare-stt/src/lib/providers/gladia.ts` | 5 | `https://api.gladia.io/v2` | Production API | Hardcoded base URL for Gladia V2 API |
+| `gladiaio/n8n-nodes-gladia/credentials/GladiaApi.credentials.ts` | 33 | `https://api.gladia.io` | Production API | Credential test endpoint |
+| `gladiaio/sdk/packages/sdk-js/src/types.ts` | 58 | `eu-west`, `us-west` | Region enum | Live session region options (documented) |
+
+**Assessment**: All endpoints are **documented public Gladia API surfaces**. No internal/staging/dev endpoints leaked.
 
 ---
 
-**Note**: The workspace targets **Naver Whale Browser** (scope.yml: `github_orgs: [naver]`), not `gladiaio`. The static scan of `naver/whale-browser-developers` found no source code — the repo is documentation-only (last code commit 2019-09-23). All recon findings in the knowledge base are from passive NVD/GitHub/binary-acquisition probes, not static source analysis. Binary acquisition is 100% blocked in-sandbox; sync/KDF analysis requires HUMAN intervention.
+### CATEGORY: INTERESTING
+
+| File | Line | Finding | Severity | Notes |
+|------|------|---------|----------|-------|
+| `gladiaio/sdk/packages/sdk-js/src/helpers.ts` | 12-18 | `getEnv('GLADIA_API_KEY')` default fallback | LOW | Reads from env; no default secret. Safe pattern. |
+| `gladiaio/sdk/packages/sdk-js/src/client.ts` | 70-78 | `assertValidOptions` throws if `apiKey` missing on `*.gladia.io` host | LOW | Forces proxy usage for browser/public code — good security design |
+| `gladiaio/sdk/packages/sdk-js/src/network/iso-fetch.ts` | 13-22 | `undici` Agent with `MAX_TIMEOUT` (2147483647) | INFO | Node.js fetch polyfill config; no secret |
+| `gladiaio/compare-stt/src/lib/match-token.ts` | 9-15 | `crypto.createHash('sha256').update(process.env.DATABASE_URL || "dev-fallback-key")` | MEDIUM | **Signing key derived from DATABASE_URL** — if `DATABASE_URL` is weak/guessable in dev, token forgery possible. Production must use strong DB URL. |
+| `gladiaio/sdk/packages/generator/src/generator.ts` | 1-50 | OpenAPI schema fetcher + codegen for TS/Python | INFO | Generates SDK from live schema; schema URL passed at runtime |
+| `gladiaio/sdk/package.json` (root) | 14 | `"release": "node tools/scripts/release.mjs"` | INFO | Release automation via Nx; no secrets in script |
+| `gladiaio/sdk/packages/sdk-js/package.json` | 21-23 | Peer deps: `ws`, `undici`, `eventemitter3` (optional) | INFO | Optional deps for Node.js WebSocket/fetch polyfills |
+| `gladiaio/gladia-cli/go.mod` | 5-9 | Go deps: `cobra`, `tablewriter` | INFO | Standard CLI deps |
+| `gladiaio/normalization/pyproject.toml` | 14-17 | Deps: `contractions`, `pyyaml`, `text2num` | INFO | Text processing deps for WER normalization |
+
+---
+
+### VERDICT LIST
+
+| Candidate | REPORT_CANDIDATE | Reason |
+|-----------|------------------|--------|
+| Hardcoded API keys in SDK | **no** | All keys via env vars; no defaults |
+| Hardcoded API keys in compare-stt | **no** | `.env.example` only has placeholders |
+| Hardcoded API keys in n8n nodes | **no** | Credential schema only, no defaults |
+| Internal/staging endpoints leaked | **no** | All endpoints are public `api.gladia.io` |
+| Signing key derivation weakness | **no** (info only) | `match-token.ts` uses `DATABASE_URL` as entropy source — documented dev fallback; production config responsibility |
+| npm package integrity (@gladiaio/sdk) | **no** | v1.1.0 published 2026-07-23; 17 maintainers; repo matches `github:gladiaio/sdk` |
+| Supply chain (dependencies) | **no** | Standard deps (`httpx`, `websockets`, `undici`, `ws`); no suspicious packages |
+
+---
+
+### SUMMARY
+- **0 REAL_SECRET** findings
+- **5 TEST_OR_EXAMPLE** findings (all benign templates/placeholders)
+- **6 ENDPOINT_LEAK** findings (all documented public API endpoints)
+- **10 INTERESTING** findings (code patterns, config, deps — no actionable vulns)
+
+**Overall**: Clean codebase. The Gladia SDKs (JS/TS + Python) follow security best practices: API keys never hardcoded, environment-variable-driven config, explicit proxy guidance for browser use, and proper input validation. The `compare-stt` demo app uses `.env.example` templates only. No reportable vulnerabilities found in this static scan.
