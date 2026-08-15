@@ -1024,3 +1024,10 @@
 ## 2026-08-15 20:59:18 UTC
 - CHANGED NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` now returns connection failure (000) instead of HTTP 200 — passive CVE gap verification path degraded; primary `nvd.nist.gov/rest` rema
 - CHANGED APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` returns HTTP 200 but download CDN `download.apkpure.com` remains HTTP 403 — no curl-able APK path
+
+## 2026-08-15 21:27:02 UTC
+- NEW NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was connection failure 000) — passive CVE gap verification path restored
+- NEW APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` returns HTTP 200 (was 403) but download CDN `download.apkpure.com` remains HTTP 403 — no curl-able APK path
+- CHANGED NVD gap monitor fully operational again — `keywordSearch=whale` returns totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30
+- CHANGED `whale.naver.com` (root) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
+- CHANGED NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0`: recovered HTTP 200 (0.15s) — was connection-failure 000 at 20:59 UTC; re-probed this cycle confirms totalResults=28, 0 in 2026, newest
