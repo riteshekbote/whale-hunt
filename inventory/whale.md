@@ -961,3 +961,7 @@
 ## 2026-08-15 11:36:29 UTC
 - NEW APKPure landing page (`https://apkpure.com/naver-whale-browser/com.naver.whale`) returns HTTP 200 (was 403) but download CDN `download.apkpure.com` still returns 403 — no curl-able APK path
 - NEW `whale.naver.com` (root, without `www`) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
+
+## 2026-08-15 11:55:15 UTC
+- NEW APKPure landing page (`https://apkpure.com/naver-whale-browser/com.naver.whale`) returns HTTP 200 (was 403) but download CDN `download.apkpure.com` still returns 403 — no curl-able APK path
+- NEW `whale.naver.com` (root, without `www`) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
