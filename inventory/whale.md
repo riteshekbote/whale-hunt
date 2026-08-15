@@ -1020,3 +1020,7 @@
 ## 2026-08-15 20:10:08 UTC
 
 ## 2026-08-15 20:38:48 UTC
+
+## 2026-08-15 20:59:18 UTC
+- CHANGED NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` now returns connection failure (000) instead of HTTP 200 — passive CVE gap verification path degraded; primary `nvd.nist.gov/rest` rema
+- CHANGED APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` returns HTTP 200 but download CDN `download.apkpure.com` remains HTTP 403 — no curl-able APK path
