@@ -633,3 +633,6 @@ https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerP
 
 ## 2026-08-15 21:45:10 UTC
 
+
+## 2026-08-15 21:59:20 UTC
+https://download.apkpure.com/.../com.naver.whale-3.9.14.9.apk -> HTTP 403

@@ -1036,3 +1036,8 @@
 - CHANGED NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was connection-failure 000 at 20:59 UTC) — `keywordSearch=whale` re-confirmed totalResults=28, 0 in 2026, latest CV
 - CHANGED APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` returns HTTP 200 (was 403) — but download CDN `download.apkpure.com` remains HTTP 403 — no curl-able APK path
 - NEW `whale.naver.com` (root, without `www`) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
+
+## 2026-08-15 21:59:19 UTC
+- NEW NVD services endpoint recovered HTTP 200 — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30 (was connection-failure 000 at 20:59 UTC, recovered @21:27 UTC)
+- NEW APKPure landing page apkpure.com/naver-whale-browser/com.naver.whale returns HTTP 200 (was 403) but download CDN download.apkpure.com remains HTTP 403 — no curl-able APK path
+- NEW whale.naver.com (root) returns HTTP 200 — but *.naver.com explicitly OOS per scope.yml
