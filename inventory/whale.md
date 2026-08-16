@@ -1086,3 +1086,5 @@
 - NEW APKPure landing page `https://apkpure.com/naver-whale-browser/com.naver.whale` returns HTTP 200 (was 403) but download CDN `download.apkpure.com` remains HTTP 403 — no curl-able APK path
 - NEW `whale.naver.com` (root, without `www`) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
 - CHANGED NVD gap monitor fully operational again — `keywordSearch=whale` returns totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30
+
+## 2026-08-16 07:41:36 UTC
