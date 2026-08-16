@@ -1,8 +1,5 @@
-## 2026-08-16 16:32:50 UTC [browser] (model nemotron3)
-[NEW] NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was connection-failure 000 at 2026-08-15 20:59 UTC) — `keywordSearch=whale` re-confirmed totalResults=28, 0 in 2026
-[NEW] APKPure landing page `https://apkpure.com/naver-whale-browser/com.naver.whale` returns HTTP 200 (was 403) but download CDN `download.apkpure.com` remains HTTP 403 — no curl-able APK path
-[NEW] `whale.naver.com` (root, without `www`) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
-[CHANGED] NO_DELTA on all passive attack surfaces — NVD totalResults=28/year breakdown static, GitHub repo pushed 2019-09-23, sample extension 5/5 files HTTP 200, binary dir MISSING, all acquisition channels 403/404/No-answer
+## 2026-08-16 16:56:31 UTC [browser] (model nemotron3)
+[NEW] NO_DELTA — all passive surfaces unchanged since last cycle: NVD services endpoint HTTP 200 (totalResults=28, 0 in 2026), GitHub repo pushed 2019-09-23, sample extension 5/5 files HTTP 200, binary dir MISSING, all acquisition channels 403/404/No-answer
 [PRIO] Whale desktop sync implementation (os_crypt_whale fork + bootstrap-token envelope + KDF in v4.38.386.14 binary), 7.85, atk=9 biz=9 tech=8 gate=2 cloud=3 fresh=8
 [PRIO] Whale Android 3.9.14.9 sync surface (com.naver.whale + whalesync prefs + keystore), 6.20, atk=7 biz=8 tech=7 gate=3 cloud=4 fresh=4
 [PRIO] NVD 8-month disclosure gap monitor (services.nvd.nist.gov — operational), 4.85, atk=6 biz=7 tech=5 gate=8 cloud=2 fresh=4
@@ -20,7 +17,7 @@ class: AUTH
 asset: Whale Android 3.9.14.9 (com.naver.whale APK)
 confidence: 58
 reasoning: Android sync uses same /whalesync endpoint + NEO_SES cookie auth; bootstrap tokens likely stored in Android Keystore or SharedPreferences; Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, whale_need_encryption_key_forced_time) confirmed in desktop binary — Android variant unanalyzed; APK acquisition channels blocked (APKPure CDN 403, Uptodown 410 Gone)
-evidence_needed: APK binary to inspect libos_crypt_whale.so / keystore usage; sync prefs schema in Android SharedPreferences; bootstrap token envelope format parity with desktop
+evidence_needed: APK binary to inspect libos_crypt_whale.so / keystore usage; sync prefs schema in Android SharedPreferences; bootstrap token envelope format parity with desktop xv10 magic
 verify_steps: HUMAN_ONLY: Acquire com.naver.whale 3.9.14.9 APK via unrestricted internet → apktool + grep for sync.encryption_bootstrap_token* + keystore APIs; compare envelope format vs desktop xv10 magic; zero network
 impact: Local attacker with root/backup access extracts bootstrap tokens → decrypts cross-device synced credentials (High)
 testability: HUMAN_ONLY

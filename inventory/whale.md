@@ -1176,3 +1176,6 @@
 - NEW APKPure landing page `https://apkpure.com/naver-whale-browser/com.naver.whale` returns HTTP 200 (was 403) but download CDN `download.apkpure.com` remains HTTP 403 — no curl-able APK path
 - NEW `whale.naver.com` (root, without `www`) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
 - CHANGED NO_DELTA on all passive attack surfaces — NVD totalResults=28/year breakdown static, GitHub repo pushed 2019-09-23, sample extension 5/5 files HTTP 200, binary dir MISSING, all acquisition channels 40
+
+## 2026-08-16 16:56:41 UTC
+- NEW NO_DELTA — all passive surfaces unchanged since last cycle: NVD services endpoint HTTP 200 (totalResults=28, 0 in 2026), GitHub repo pushed 2019-09-23, sample extension 5/5 files HTTP 200, binary dir 
