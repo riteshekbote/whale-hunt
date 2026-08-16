@@ -1214,3 +1214,9 @@
 - CHANGED NO_DELTA on all passive attack surfaces — NVD totalResults=28/year breakdown static, GitHub repo pushed 2019-09-23, sample extension 5/5 files HTTP 200, binary dir MISSING, all acquisition channels 40
 
 ## 2026-08-16 21:02:27 UTC
+
+## 2026-08-16 21:30:24 UTC
+- NEW NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was connection-failure 000 at 2026-08-15 20:59 UTC) — `keywordSearch=whale` re-confirmed totalResults=28, 0 in 2026
+- NEW APKPure landing page `https://apkpure.com/naver-whale-browser/com.naver.whale` returns HTTP 200 (was 403) but download CDN `download.apkpure.com` remains HTTP 403 — no curl-able APK path
+- NEW `whale.naver.com` (root, without `www`) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — confirms hard sandbox network egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)

@@ -5800,3 +5800,19 @@
 - LEARN: REJECTED class @ binary acquisition: all passive channels 100% blocked (cloudfront DNS No-answer via 8.8.8.8, APKMirror 403, Uptodown 410, APKPure CDN 403, psta
 - LEARN: REJECTED class @ sync KDF static path: 0 sync/crypto source files in any public branch; binary extraction is ONLY vector.
 - LEARN: NO new class proven dead or alive this cycle — all surfaces unchanged.
+
+## RANKED HYPOTHESES 2026-08-16 21:30:24 UTC
+- [62] Whale: Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key (from reports/hypotheses-bigpickle.txt)
+- [55] services.nvd.nist.gov/rest/json/cves/2.0: NVD 8-month disclosure gap hides undisclosed sync-class fixes (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from an unrestricted-internet mirror (cloudfront DNS `No a
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` (.deb from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted interne
+- LEARN: NO_DELTA @ all passive surfaces: NVD services.nvd.nist.gov HTTP 200 (totalResults=28, 0 in 2026, year breakdown static, 0 sync-class keyword hits confirmed via 
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/625
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration confirms 0 sync/crypto source files in any public branch; binary extraction remains the ONLY vector; confidence
+- LEARN: ACCEPTED class @ NVD gap monitor: services.nvd.nist.gov HTTP 200 confirmed this cycle — keywordSearch=whale totalResults=28, 0 in 2026, 0 sync-class keyword hit
+- LEARN: REJECTED @ APKPure acquisition: landing page HTTP 200 (was 403 transient) but download CDN download.apkpure.com remains HTTP 403 — no curl-able APK path, cosmet
+- LEARN: ACCEPTED class @ NVD gap monitor: services.nvd.nist.gov HTTP 200, fresh full-pagination parse confirms 28/0-in-2026/0 sync-class hits, newest 2025-12-30 — remai
+- LEARN: REJECTED class @ binary acquisition: all passive channels 100% blocked in-sandbox (cloudfront DNS No-answer via both 127.0.0.53 and 8.8.8.8, APKMirror 403, Upto
+- LEARN: REJECTED class @ sync KDF static path: 0 sync/crypto source files in any public branch; binary extraction is the ONLY vector.
+- LEARN: NO new class proven dead or alive this cycle — all surfaces unchanged.
