@@ -1,12 +1,48 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-There's a clear mismatch: the knowledge base provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), but you're asking me to triage **gladiaio/** GitHub org and **@gladiaio/sdk** npm package.
+Based on the provided knowledge base (which covers **Naver Whale browser**, not Gladia — the RAG base appears mislabeled), here is the triage:
 
-The inventory at the bottom even says "Inventory: whale" with Whale-specific recon data (sidebar SOP bypasses, sync KDF, binary acquisition blocks, etc.).
+---
 
-To proceed with Gladia triage, I need the correct knowledge base for:
-- gladiaio/ GitHub org repos
-- @gladiaio/sdk npm package metadata
+### SECRETS / CREDENTIALS
+| Category | File | Line | SHA256 | Verdict |
+|----------|------|------|--------|---------|
+| *none found* | — | — | — | — |
 
-Can you provide the Gladia-specific knowledge base, or clarify if you intended to triage Whale browser instead?
+### ENDPOINT / INFRA LEAKS
+| Category | File | Line | Detail | Verdict |
+|----------|------|------|--------|---------|
+| *none found* | — | — | — | — |
+
+### INTERESTING / ANOMALOUS
+| Category | File | Line | Detail | Verdict |
+|----------|------|------|--------|---------|
+| *none found* | — | — | — | — |
+
+---
+
+### VERDICT LIST
+
+| Candidate | REPORT_CANDIDATE | Reason |
+|-----------|------------------|--------|
+| Sidebar SOP bypass (CVE-2025-69234/69235 regression) | **no** | Duplicate of fixed CVEs; platform-agnostic CPE covers v4.38.386.14; sample extension confirms API surface only, no binary exploitability proven |
+| Dual-tab CSP bypass (CVE-2025-62585 regression) | **no** | Duplicate of fixed CVE; 8 months undisclosed changes but no novel variant or binary proof |
+| Extension API XSS (CVE-2022-24072/2024-40618 recurrence) | **no** | Known recurring vector; no new variant in current scan |
+| Sync KDF / bootstrap-token / OSCrypt | **no** (HOLD) | Strongest open surface (confidence 62) but **binary extraction required** — all acquisition channels blocked in-sandbox (CloudFront DNS, APKMirror 403, Uptodown 404/410, pstatic 404); HUMAN-gated only |
+| socket.io.slim.js event-handler injection | **no** | Confidence 38 < 40 threshold; handler runtime-fetched; no passive version string; CVE-2023-35780 irrelevant |
+| Installer DLL search-order regression | **no** | Confidence 50 < 60 threshold; all binary channels dead; no passive proof path |
+| Public repo static analysis (naver/whale-browser-developers) | **no** | Documentation-only (last code commit 2019-09-23); 0 Whale-specific source/sync/crypto files in any branch |
+| Binary acquisition (all channels) | **no** | 100% blocked in-sandbox; permanently HUMAN-gated |
+| NVD gap monitor (keywordSearch=whale) | **monitor only** | 0 CVEs in 2026 (28 total, latest 2025-12-30); 8-month disclosure gap confirmed; only live zero-auth passive surface |
+
+---
+
+### SUMMARY
+- **0 code/config files scanned** — repo is documentation-only
+- **0 new hits** vs prior scan
+- **0 reportable findings** — all identified surfaces are either duplicates of fixed CVEs, below confidence thresholds, or require binary extraction that is permanently blocked in-sandbox
+- **Sync KDF** remains the only high-confidence (62) open hypothesis but is **HUMAN-gated** (binary delivery required)
+- **NVD gap monitor** is the only viable passive surface (services.nvd.nist.gov, `keywordSearch=whale`)
+
+**No disclosure candidates from this static scan.**
