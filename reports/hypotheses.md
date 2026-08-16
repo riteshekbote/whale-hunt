@@ -5093,3 +5093,15 @@
 - LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer general to *.cloudfront.net even via 8.8.8.8, APKMirror 403, Uptod
 - LEARN: REJECTED @ APKPure acquisition: landing page HTTP 200 but download CDN download.apkpure.com remains HTTP 403 — no curl-able APK path; channel permanently dead f
 - LEARN: REJECTED @ whale.naver.com root: HTTP 200 but *.naver.com explicitly OOS per scope.yml — no server probing per client-side software rule
+
+## RANKED HYPOTHESES 2026-08-16 08:42:39 UTC
+- [62] Whale: Sync bootstrap-token envelope storage — Whale OSCrypt v10 deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- LEARN: ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confir
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30, 0 sy
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer general to *.cloudfront.net even via 8.8.8.8, APKMirror 403, Uptod
+- LEARN: REJECTED @ APKPure acquisition: landing page HTTP 200 but download CDN download.apkpure.com remains HTTP 403 — no curl-able APK path; channel permanently dead f
+- LEARN: REJECTED @ whale.naver.com root: HTTP 200 but *.naver.com explicitly OOS per scope.yml — no server probing per client-side software rule

@@ -12207,3 +12207,4 @@ testability: AUTH_HELPED
 [RISK] browser: 16 reason: sidebar/dual-tab/web-panel SOP/CSP attack surface documented live (sample extension 5 files HTTP 200 + wiki whale.sidebarAction.md HTTP 200 + background.js 0 sender validation grep confirmed this cycle) but all known variants fixed; platform-agnostic CPE covers v4.38.386.14 (patched); no novel variant proven; static analysis path permanently dead.
 [RISK] libs: 10 reason: only socket.io.slim.js identified as Whale-only (in resources.pak) but confidence 38 < 40; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); no public third-party library manifest; low visibility, low actionable risk.
 ## 2026-08-16 08:02:40 UTC [browser] (model laguna)
+## 2026-08-16 08:41:51 UTC [browser] (model laguna)
