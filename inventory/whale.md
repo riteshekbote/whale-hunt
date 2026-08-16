@@ -1051,3 +1051,8 @@
 ## 2026-08-15 23:37:29 UTC
 
 ## 2026-08-15 23:54:14 UTC
+
+## 2026-08-16 00:45:04 UTC
+- NEW NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` confirmed HTTP 200 this cycle — `keywordSearch=whale` totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30, 0 sync-class keywo
+- NEW `/tmp/opencode/whale_binary/` still MISSING (re-verified) — all passive channels 100% blocked (cloudfront DNS No-answer even via 8.8.8.8, APKMirror 403, Uptodown 404 Win+Android, APKPure CDN 403, psta
+- NEW GitHub repo `naver/whale-browser-developers` documentation-only (pushed 2019-09-23, 0 releases, size=5043, 4 branches, has_wiki=true) — 0 sync/crypto source files in any branch
