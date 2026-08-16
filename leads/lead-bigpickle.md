@@ -9608,3 +9608,24 @@ testability: AUTH_HELPED
 [RISK] sync: 62 — Whale-only OSCrypt xv10/bootstrap-token surface is strongest in-scope class but zero public source + binary HUMAN-gated; 8-month NVD gap masks silent KDF regression.
 [RISK] browser: 28 — all known browser-side classes fixed/duplicated CVEs; sidebar sample surface live but patched (platform-agnostic CPE); no novel variant without binary.
 [RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible, handler runtime-fetched; speculative only.
+## 2026-08-16 22:00:53 UTC [sync] (model bigpickle)
+[PRIO] NVD gap monitor (services.nvd.nist.gov), score 4.75, attack 3, business 6, tech 3, gate 10, cloud 2, fresh 2
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: Fresh full-pagination parse this cycle: totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 IDs+descriptions, newest CVE-2025-69235 @2025-12-30. Gap static for v4.35.352–v4.38.386.14.
+evidence_needed: any new navercorp CVE or fix-version note; any sync/crypto-class keyword hit in future NVD updates.
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/404), diff published dates + sync-class keyword screen.
+impact: early-warning of newly disclosed in-scope flaws enables priority recalibration; Medium
+testability: PASSIVE
+[PARKED] Desktop sync KDF: no binary, no verify_steps possible in-sandbox this cycle.
+[PARKED] Android sync KDF: no APK, no verify_steps possible in-sandbox this cycle.
+[FINAL] 1. NVD gap monitor (55, PASSIVE)
+[NEXT] PASSIVE: Re-probe services.nvd.nist.gov/services.nvd.nist.gov REST endpoint with fresh full-pagination query keywordSearch=whale (resultsPerPage=200) to confirm 28/0-in-2026/0 sync-class hits; diff against last cycle.
+[LEARN] ACCEPTED class @ NVD gap monitor: services.nvd.nist.gov HTTP 200, full-pagination parse confirms 28/0-in-2026/0 sync-class hits, newest 2025-12-30 — only live zero-auth passive surface.
+[LEARN] REJECTED class @ binary acquisition: all channels 100% blocked (cloudfront DNS No-answer via 127.0.0.53+8.8.8.8, APKMirror 403, Uptodown 404/410, APKPure CDN 403, pstatic 404 scope-excluded) — permanently HUMAN-gated.
+[LEARN] REJECTED class @ sync KDF static path: 0 sync/crypto source files in any public branch — binary extraction is the ONLY vector.
+[RISK] sync: 62 — Whale-only OSCrypt xv10/bootstrap-token surface is strongest in-scope class but zero public source + binary HUMAN-gated; 8-month NVD gap masks silent KDF regression
+[RISK] browser: 28 — all known browser-side classes fixed/duplicated CVEs; sidebar sample surface live but patched (platform-agnostic CPE); no novel variant without binary
+[RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible, handler runtime-fetched; speculative only
