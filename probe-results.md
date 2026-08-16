@@ -796,3 +796,7 @@ https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerP
 
 ## 2026-08-16 23:11:36 UTC
 https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200'` -> HTTP 400
+
+## 2026-08-16 23:35:52 UTC
+https://apkpure.com/naver-whale-browser/com.naver.whale` -> HTTP 404
+https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200'` -> HTTP 400
