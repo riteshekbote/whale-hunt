@@ -5030,3 +5030,29 @@
 - LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
 - LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
 - LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer general to *.cloudfront.net even via 8.8.8.8, APKMirror 403, Uptod
+
+## RANKED HYPOTHESES 2026-08-16 07:05:38 UTC
+- [62] Whale: Sync bootstrap-token envelope storage — Whale OSCrypt v10 deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- [55] services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale: NVD 8-month disclosure gap hides undisclosed sync-class regression (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into /tmp/opencode/whale_binary/ — .deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, 
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale binary — desktop v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN
+- LEARN: ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confir
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30, 0 sy
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer general to *.cloudfront.net even via 8.8.8.8, APKMirror 403, Uptod
+- LEARN: REJECTED @ APKPure acquisition: landing page HTTP 200 but download CDN download.apkpure.com remains HTTP 403 — no curl-able APK path; channel permanently dead f
+- LEARN: REJECTED @ whale.naver.com root: HTTP 200 but *.naver.com explicitly OOS per scope.yml — no server probing per client-side software rule
+- LEARN: ACCEPTED @ binary acquisition: APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` returned HTTP 200 this cycle (vs 403 in prior cycles) but 
+- LEARN: REJECTED @ Uptodown Android acquisition: `naver-whale-browser.en.uptodown.com/android` definitively HTTP 410 Gone ("will not be available again and will not be 
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov/rest/json/cves/2.0 recovered HTTP 200 after transient connection-failure 000 @2025-08-15 20:59 UTC — keywordSe
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: surface re-confirmed live (5 ext files + wiki whale.sidebarAction.md HTTP 200, 0 sender.origin/sende
+- LEARN: REJECTED class @ public repo static analysis: documentation-only (pushed 2019-09-23, updated 2025-10-22, 0 releases, size=5043, has_wiki=true) — 0 Whale-specifi
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; CVE-2023-35780 confirmed irrelevant (Wor
+- LEARN: ACCEPTED class @ NVD gap monitor: services.nvd.nist.gov HTTP 200 re-probed this cycle (0.10s, totalResults=28, year breakdown static `{2003:1,2009:1,2018:5,2020
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto/OSCrypt source files) confirms binary extraction is the ONL
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/625
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; CVE-2023-35780 confirmed irrelevant (Wor
+- LEARN: REJECTED @ binary acquisition channels: `/tmp/opencode/whale_binary/` still MISSING (re-verified 07:02 UTC) — all passive channels 100% blocked (cloudfront DNS 
