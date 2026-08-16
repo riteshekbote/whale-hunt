@@ -663,3 +663,6 @@ https://download.apkpure.com/.../com.naver.whale-3.9.14.9.apk -> HTTP 403
 
 ## 2026-08-16 04:02:48 UTC
 
+
+## 2026-08-16 04:45:58 UTC
+https://apkpure.com/naver-whale-browser/com.naver.whale` -> HTTP 404
