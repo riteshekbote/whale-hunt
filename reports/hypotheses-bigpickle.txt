@@ -1,4 +1,4 @@
-## 2026-08-16 02:11:19 UTC [sync] (model bigpickle)
+## 2026-08-16 03:13:48 UTC [sync] (model bigpickle)
 [HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork
 class: AUTH
 asset: Whale v4.38.386.14 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
@@ -8,15 +8,6 @@ evidence_needed: PBKDF2/scrypt algorithm + iteration count in Whale fork; derive
 verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
 impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
 testability: AUTH_HELPED
-[HYP] NVD 8-month gap hides undisclosed sync-class fixes (regression/version-drift detection)
-class: OTHER
-asset: services.nvd.nist.gov/rest/json/cves/2.0 keywordSearch=whale full pagination
-confidence: 55
-reasoning: 0 CVEs in 2026 across v4.35.352–v4.38.386.14 while 8 published in 2025; endpoint HTTP 200 re-probed this cycle (0.54s, totalResults=28, newest CVE-2025-69235 @2025-12-30, year breakdown static, 0 sync-class hits).
-evidence_needed: any new navercorp CVE or fix-version note in the whale result set; any sync/crypto-class keyword hit.
-verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/Cloudflare-challenge/000), diff published dates + sync-class keyword screen; new entry triggers re-scoping to that fixed version's delta. Zero auth, ≤1 rps.
-impact: early-warning of newly disclosed in-scope flaws → priority recalibration; Medium
-testability: PASSIVE
 [HYP] Android sync encryption KDF / master-key storage (custom mobile impl, zero CVE coverage)
 class: AUTH
 asset: com.naver.whale 3.9.14.9 sync engine (Android Keystore / SharedPreferences)
@@ -26,3 +17,12 @@ evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key per
 verify_steps: AUTH_HELPED: HUMAN pulls 3.9.14.9 APK via Play on real device → /tmp/opencode/whale_binary/ → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
 impact: local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise; High
 testability: AUTH_HELPED
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes (regression/version-drift detection)
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0 keywordSearch=whale full pagination
+confidence: 55
+reasoning: 0 CVEs in 2026 across v4.35.352–v4.38.386.14 while 8 published in 2025; endpoint HTTP 200 re-probed this cycle (0.33s, totalResults=28, newest CVE-2025-69235 @2025-12-30, year breakdown static, 0 sync-class hits).
+evidence_needed: any new navercorp CVE or fix-version note in the whale result set; any sync/crypto-class keyword hit.
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/Cloudflare-challenge/000), diff published dates + sync-class keyword screen; new entry triggers re-scoping to that fixed version's delta. Zero auth, ≤1 rps.
+impact: early-warning of newly disclosed in-scope flaws → priority recalibration; Medium
+testability: PASSIVE
