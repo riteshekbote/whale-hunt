@@ -5233,3 +5233,27 @@
 - LEARN: REJECTED @ binary acquisition channels: `/tmp/opencode/whale_binary/` still MISSING (re-verified this cycle) — all passive channels 100% blocked (cloudfront DNS
 - LEARN: CONFIRMED @ GitHub repo: pushed_at=2019-09-23T08:03:26Z, updated_at=2025-10-22T03:15:17Z, size=5043, has_wiki=true, has_pages=false — no new code surface; docum
 - LEARN: CONFIRMED @ sample extension + wiki surface: manifest.json + background.js + whale.sidebarAction.md all HTTP 200 — sidebar SOP API surface live and unchanged; c
+
+## RANKED HYPOTHESES 2026-08-16 11:54:47 UTC
+- [62] Whale: Sync bootstrap-token envelope storage — Whale OSCrypt v10 deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- [55] services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale: 8-month disclosure gap masks undisclosed sync-class regression (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-laguna.txt): PROBE: Full-pagination `keywordSearch=whale` (resultsPerPage=200) via services.nvd.nist.gov/rest/json/cves/2.0 with retry-on-503/000 pattern (≤1 rps) to screen 
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inter
+- LEARN: ACCEPTED class @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30
+- LEARN: REJECTED @ APKPure acquisition: landing page HTTP 200 but download CDN download.apkpure.com remains HTTP 403 — no curl-able APK path; channel permanently dead f
+- LEARN: REJECTED @ whale.naver.com root: HTTP 200 but *.naver.com explicitly OOS per scope.yml — no server probing per client-side software rule
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer general to *.cloudfront.net even via 8.8.8.8, APKMirror 403, Uptod
+- LEARN: ACCEPTED class @ NVD gap monitor: services.nvd.nist.gov recovered HTTP 200 (was connection-failure 000 at 2026-08-15 20:59 UTC) — keywordSearch=whale re-confirm
+- LEARN: REJECTED class @ APKPure acquisition: landing page HTTP 200 (was 403) but download CDN download.apkpure.com remains HTTP 403 — no curl-able APK path, cosmetic n
+- LEARN: REJECTED @ whale.naver.com (root): HTTP 200 but *.naver.com explicitly excluded per scope.yml out_of_scope rules — no server probing per client-side software ru
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/625
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; CVE-2023-35780 confirmed irrelevant (Wor
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no proof path — permanently parked.
+- LEARN: ACCEPTED class @ NVD gap monitor: services.nvd.nist.gov HTTP 200 re-probed this cycle (0.15s, totalResults=28, year breakdown {2003:1,2007:1,2017:1,2018:4,2020:
+- LEARN: REJECTED @ binary acquisition channels: `/tmp/opencode/whale_binary/` still MISSING (re-verified this cycle) — all passive channels 100% blocked (cloudfront DNS
+- LEARN: CONFIRMED @ GitHub repo: pushed_at=2019-09-23T08:03:26Z, updated_at=2025-10-22T03:15:17Z, size=5043, has_wiki=true, has_pages=false — no new code surface; docum
+- LEARN: CONFIRMED @ sample extension + wiki surface: manifest.json + background.js + whale.sidebarAction.md all HTTP 200 — sidebar SOP API surface live and unchanged; c

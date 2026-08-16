@@ -8576,3 +8576,37 @@ testability: AUTH_HELPED
 [LEARN] CONFIRMED @ GitHub repo: pushed_at=2019-09-23T08:03:26Z, updated_at=2025-10-22T03:15:17Z, size=5043, has_wiki=true, has_pages=false — no new code surface; documentation-only surface permanently dead.
 [LEARN] CONFIRMED @ sample extension + wiki surface: manifest.json + background.js + whale.sidebarAction.md all HTTP 200 — sidebar SOP API surface live and unchanged; class remains REJECTED (duplicate of fixed CVE-2025-69234/69235, platform-agnostic CPE covers v4.38.386.14 = patched).
 [RISK] sync: 62 | sync-encryption (bootstrap-token/xv10) is the strongest in-scope surface but zero public source and binary gated behind HUMAN delivery; 8-month NVD gap leaves silent-regression risk undetectable passively. browser: 28 | all known browser-side classes are fixed/duplicated CVEs; sample-extension sidebar surface is live but patched (platform-agnostic CPE covers v4.38.386.14); no novel variant proven. libs: 22 | socket.io.slim.js is Whale-only in resources.pak but binary-inaccessible, handler runtime-fetched, no version line — speculative only.
+## 2026-08-16 11:51:57 UTC [sync] (model bigpickle)
+[PRIO] NVD gap monitor (services.nvd.nist.gov keywordSearch=whale, only live zero-auth passive surface) | attack:4 business:6 tech:4 gate:10 cloud:6 fresh:9 => 6.1
+[PRIO] Whale v4.38.386.14 desktop binary (os_crypt_whale.cc/wbc_wrapper_apis.cc sync envelope, HUMAN-gated) | attack:8 business:9 tech:6 gate:2 cloud:2 fresh:5 => 6.15
+[PRIO] com.naver.whale 3.9.14.9 APK sync engine (all channels dead) | attack:6 business:8 tech:5 gate:1 cloud:2 fresh:4 => 5.0
+[HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork
+class: AUTH
+asset: Whale v4.38.386.14 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
+confidence: 62
+reasoning: Whale-only markers (xv10 magic, sync.encryption_bootstrap_token_per_account prefs) confirmed in prior binary recon; 0 sync/crypto source files in all 4 branches + 5 wiki pages + README.ko.md (fully enumerated, static this cycle); NVD 0-in-2026 gap static for 8 months with 0 sync-class keyword hits across all 28 CVE descriptions.
+evidence_needed: PBKDF2/scrypt algorithm + iteration count in Whale fork; derived-key persistence (keyring vs file vs Local State); delta vs Linux Chromium baseline.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes (regression/version-drift detection)
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0 keywordSearch=whale full pagination
+confidence: 55
+reasoning: 0 CVEs published 2026 across v4.35.352–v4.38.386.14 while 7 published in 2025; endpoint re-probed HTTP 200 in 0.15s this cycle (totalResults=28, newest CVE-2025-69235 @2025-12-30); 0 sync-class keyword hits in all 28 descriptions/IDs.
+evidence_needed: any new navercorp CVE or fix-version note; any sync/crypto-class keyword hit.
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/Cloudflare-challenge/000), diff published dates + sync-class keyword screen; new entry triggers re-scoping to that fixed version's delta. Zero auth, ≤1 rps.
+impact: early-warning of newly disclosed in-scope flaws → priority recalibration; Medium
+testability: PASSIVE
+[PARKED] Android sync encryption KDF (com.naver.whale 3.9.14.9): confidence 43 ≥ 40 but ALL acquisition channels definitively dead in-sandbox (Uptodown Android 410 Gone, APKPure CDN 403, Play requires HUMAN device) and it adds no independent evidence path over the desktop hypothesis — no concrete passive verify step exists; parked until a binary/APK is delivered.
+[PARKED] Sample-extension sidebar SOP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.38.386.14 = patched); 5 files + wiki HTTP 200 re-confirmed but no novel variant.
+[PARKED] socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io).
+[FINAL] 1) Desktop sync passphrase KDF weak iteration / master-key (62, AUTH_HELPED) 2) NVD gap monitor (55, PASSIVE) — survivors unchanged from prior cycle, top-first.
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or `WhaleSetup.exe` from Naver CDN) — sole blocker for the top-ranked sync-KDF hypothesis; all passive acquisition channels re-verified 100% blocked in-sandbox this cycle (cloudfront DNS `No answer` even via 8.8.8.8; APKMirror 403; Uptodown 404 Win+Android + 410 Android-page; APKPure CDN 403; pstatic 404 scope-excluded).
+[LEARN] ACCEPTED class @ NVD gap monitor: services.nvd.nist.gov HTTP 200 re-probed this cycle (0.15s, totalResults=28, year breakdown {2003:1,2007:1,2017:1,2018:4,2020:2,2021:1,2022:5,2023:3,2024:3,2025:7}, newest CVE-2025-69235 @2025-12-30, 0 sync-class keyword hits) — remains the only live zero-auth passive surface; `naver+whale` quirk returns 0 (bare `whale` correct); date-filtered queries still 404.
+[LEARN] REJECTED @ binary acquisition channels: `/tmp/opencode/whale_binary/` still MISSING (re-verified this cycle) — all passive channels 100% blocked (cloudfront DNS `No answer` even via 8.8.8.8 general to `*.cloudfront.net`; APKMirror 403; Uptowdown 404 Win+Android + 410 Android-page; APKPure CDN 403; pstatic 404 scope-excluded); binary-dependent sync-KDF verification permanently HUMAN-gated.
+[LEARN] CONFIRMED @ GitHub repo: pushed_at=2019-09-23T08:03:26Z, updated_at=2025-10-22T03:15:17Z, size=5043, has_wiki=true, has_pages=false — no new code surface; documentation-only surface permanently dead.
+[LEARN] CONFIRMED @ sample extension + wiki surface: manifest.json + background.js + whale.sidebarAction.md all HTTP 200 — sidebar SOP API surface live and unchanged; class remains REJECTED (duplicate of fixed CVE-2025-69234/69235, platform-agnostic CPE covers v4.38.386.14 = patched).
+[RISK] sync: 62 | sync-encryption (bootstrap-token/xv10) is the strongest in-scope surface but zero public source and binary gated behind HUMAN delivery; 8-month NVD gap leaves silent-regression risk undetectable passively.
+[RISK] browser: 28 | all known browser-side classes are fixed/duplicated CVEs; sample-extension sidebar surface is live but patched (platform-agnostic CPE covers v4.38.386.14); no novel variant proven.
+[RISK] libs: 22 | socket.io.slim.js is Whale-only in resources.pak but binary-inaccessible, handler runtime-fetched, no version line — speculative only.
