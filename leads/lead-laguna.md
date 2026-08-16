@@ -12052,3 +12052,28 @@ testability: PASSIVE
 [RISK] sync: 82 reason: Whale-only OSCrypt fork (xv10 magic, bootstrap-token prefs, custom /whalesync endpoint) confirmed real in v4.38.386.14; 0 CVEs in 8 months over 3 minor versions across 28 total with 0 sync-class keyword hits; master-key storage path + KDF constants unextracted (gap masks silent regression); binary delivery dependency is sole blocker; Critical impact if weak KDF confirmed.
 [RISK] browser: 16 reason: sidebar/dual-tab/web-panel SOP/CSP attack surface documented live (sample extension 5 files HTTP 200 + wiki whale.sidebarAction.md HTTP 200 + background.js 0 sender validation) but all known variants fixed; platform-agnostic CPE covers v4.38.386.14 (patched); no novel variant proven; static analysis path permanently dead.
 [RISK] libs: 10 reason: only socket.io.slim.js identified as Whale-only (in resources.pak) but confidence 38 < 40; CVE-2023-35780 irrelevant; no public third-party library manifest; low visibility, low actionable risk.
+## 2026-08-16 05:16:34 UTC [browser] (model laguna)
+class: AUTH
+asset: /tmp/opencode/whale_binary/ (Whale desktop v4.38.386.14; os_crypt_whale.so + Preferences JSON)
+confidence: 62
+reasoning: v4.38.386.14 confirmed to contain Whale-only prefs `sync.encryption_bootstrap_token[_per_account]` sha256-pinned + `whale_need_encryption_key_forced_time` + forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic + custom `/whalesync` endpoint (NEO_SES cookie auth); full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confirms no public audit path; NVD 28 whale CVEs with 0 sync-class keyword hits across all descriptions.
+evidence_needed: Per-account bootstrap-token plaintext vs Whale-OSCrypt-v10 envelope in Preferences JSON; master-key storage path on Linux; KDF iteration count + AES nonce size vs Chromium base
+verify_steps: HUMAN_ONLY: Deliver Whale v4.38.386.14 `.deb` into /tmp/opencode/whale_binary/ via unrestricted internet (d1vdt4q2qgdbji.cloudfront.net) → sha256sum only → grep Preferences for `sync.encryption_bootstrap_token` → `objdump -d os_crypt_whale.so | grep -iE 'pbkdf2|scrypt|aes|nonce|xv10'` → inspect master-key storage (KWallet vs keyring file vs stale fallback); zero Naver network requests needed
+impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → cross-device Whale account compromise (High)
+testability: HUMAN_ONLY
+class: AUTH
+asset: com.naver.whale 3.9.14.9 (dex/kernels/arm64-v8a/libWhale.so + sync engine)
+confidence: 43
+reasoning: Android 3.9.14.9 has zero published CVEs (28 total whale results, 0 sync-class keyword hits); sync-encryption markers (bootstrap-token prefs, xv10 magic) imply custom cross-platform impl; APKMirror 403, Uptodown 404, APKPure CDN 403 block passive APK acquisition; Play Store gating requires real device.
+evidence_needed: APK sha256 pin + dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence path (Keystore vs SharedPreferences vs file)
+verify_steps: AUTH_HELPED: HUMAN pulls 3.9.14.9 APK via Play Store on real device → push to /tmp/opencode/whale_binary/ → apktool + jadx → grep dex for KDF constants + Keystore/key-store paths; zero Naver-infra requests
+impact: Local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise (High)
+testability: AUTH_HELPED
+class: MISCONFIG
+asset: services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale
+confidence: 55
+reasoning: 0 CVEs published in 2026 across v4.35.352–v4.38.386.14 (8 months, 3 minor versions); keywordSearch=whale returns totalResults=28 with 0 sync-class keyword hits in any description; Whale sync code exists only in binary with no public source to audit.
+evidence_needed: New navercorp CVE with fixed-version note; any sync/crypto-class keyword hit across descriptions
+verify_steps: PASSIVE: weekly full-pagination `keywordSearch=whale` (resultsPerPage=200, retry on 503/000, ≤1 rps), diff published dates + sync-class keyword screen (sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring); zero auth
+impact: Early-warning of newly disclosed in-scope sync flaws → priority/freshness recalibration (Medium)
+testability: PASSIVE
