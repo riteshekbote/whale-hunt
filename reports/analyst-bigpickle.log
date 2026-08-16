@@ -50897,3 +50897,133 @@ STEP 7 — RISK SCORE
 - [RISK] sync: 68 — custom OSCrypt fork (xv10) + bootstrap-token envelope is the only in-scope high-value surface and has zero public code + zero CVE coverage in 8 months, but all verification is binary-gated.
 - [RISK] browser: 45 — all known classes (sidebar/dual-tab SOP-CSP, extension API) are patched in v4.38.386.14 with platform-agnostic CPEs; sample-extension API surface live but no novel variant proven.
 - [RISK] libs: 30 — only candidate (socket.io.slim.js in resources.pak) is conf 38, runtime-fetched, binary-gated; no other Whale-only lib identifiable without the binary.
+===== ANALYST bigpickle 2026-08-16 09:58:20 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /tmp/opencode/whale_binary/ 2>&1; echo "---"; date -u
+ls: cannot access '/tmp/opencode/whale_binary/': No such file or directory
+---
+Sun Aug 16 09:56:52 UTC 2026
+[0m
+[0m$ [0mcurl -s -o /tmp/opencode/nvd_whale.json -w "%{http_code}" --max-time 30 "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200"
+200
+[0m
+[0m$ [0mpython3 -c "
+import json
+d = json.load(open('/tmp/opencode/nvd_whale.json'))
+v = d.get('vulnerabilities', [])
+print('totalResults:', d.get('totalResults'))
+ids = []
+for x in v:
+    c = x['cve']
+    ids.append((c['id'], c['published']))
+ids.sort(key=lambda t: t[1])
+print('count:', len(ids))
+for i, p in ids:
+    print(p[:10], i)
+print('--- 2026 published:')
+for i, p in ids:
+    if p.startswith('2026'):
+        print(i, p)
+print('--- sync/crypto keyword screen on IDs+descriptions:')
+import re
+kws = ['sync','kdf','pbkdf','scrypt','oscrypt','bootstrap','master.key','keyring','encryption','crypto']
+for x in v:
+    c = x['cve']
+    desc = ' '.join(dd['value'] for dd in c.get('descriptions', []))
+    hits = [k for k in kws if k.lower() in desc.lower() or k.lower() in c['id'].lower()]
+    if hits:
+        print(c['id'], hits)
+print('done')
+"
+totalResults: 28
+count: 28
+2003-12-31 CVE-2003-1127
+2009-04-16 CVE-2007-2238
+2018-01-08 CVE-2017-15913
+2018-06-16 CVE-2018-9859
+2018-07-03 CVE-2018-7635
+2018-08-02 CVE-2018-12448
+2018-10-11 CVE-2018-12449
+2020-05-20 CVE-2020-9753
+2021-11-02 CVE-2021-33593
+2022-01-28 CVE-2022-24071
+2022-03-17 CVE-2022-24072
+2022-03-17 CVE-2022-24073
+2022-03-17 CVE-2022-24074
+2022-03-17 CVE-2022-24075
+2022-06-27 CVE-2020-9754
+2023-06-18 CVE-2023-3308
+2023-07-11 CVE-2023-35780
+2023-11-27 CVE-2023-25632
+2024-07-11 CVE-2024-40618
+2024-10-25 CVE-2024-50583
+2025-01-27 CVE-2024-56967
+2025-07-04 CVE-2025-53599
+2025-07-04 CVE-2025-53600
+2025-10-16 CVE-2025-62583
+2025-10-16 CVE-2025-62584
+2025-10-16 CVE-2025-62585
+2025-12-30 CVE-2025-69234
+2025-12-30 CVE-2025-69235
+--- 2026 published:
+--- sync/crypto keyword screen on IDs+descriptions:
+done
+[0m
+**STEP 1 — DELTA**
+NO_DELTA — re-probed NVD `keywordSearch=whale` (HTTP 200, totalResults=28, year breakdown static, 0 published in 2026, newest CVE-2025-69235 @2025-12-30, 0 sync/crypto keyword hits across all 28 IDs+descriptions); `/tmp/opencode/whale_binary/` still MISSING (09:56 UTC); all passive surfaces identical to 09:38:27 UTC cycle.
+
+**STEP 2 — PRIORITIZE**
+- [PRIO] Whale v4.38.386.14 binary `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` (sync KDF/master-key): score 6.05 — attack 7, business 9, tech 6, gate 3, cloud 4, fresh 3
+- [PRIO] com.naver.whale 3.9.14.9 APK sync engine: score 5.75 — attack 7, business 8, tech 6, gate 2, cloud 3, fresh 5
+- [PRIO] NVD gap monitor `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale`: score 3.75 — attack 1, business 3, tech 1, gate 10, cloud 2, fresh 9
+
+**STEP 3 — HYPOTHESES**
+[HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork
+class: AUTH
+asset: Whale v4.38.386.14 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
+confidence: 62
+reasoning: Whale-only markers (xv10 magic, sync.encryption_bootstrap_token_per_account prefs) confirmed in prior binary recon; 0 sync source in all 4 repo branches; NVD gap static at 0-in-2026 for 8 months (re-verified this cycle).
+evidence_needed: PBKDF2/scrypt algorithm + iteration count in Whale fork; derived-key persistence (keyring vs file vs Local State); delta vs Linux Chromium baseline.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable. Zero Naver-infra requests.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+
+[HYP] Android sync encryption KDF / master-key storage (custom mobile impl, zero CVE coverage)
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (Android Keystore / SharedPreferences)
+confidence: 43
+reasoning: 3.9.14.9 has zero published CVEs; cross-platform sync-encryption markers (bootstrap-token prefs, xv10) imply custom impl distinct from Chromium fork; Uptodown Android 410 Gone + APKPure CDN 403 — APK only via Play/HUMAN.
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants; master-key persistence (Keystore vs SharedPreferences vs file); APK sha256 pin.
+verify_steps: AUTH_HELPED: HUMAN pulls 3.9.14.9 APK via Play on real device → /tmp/opencode/whale_binary/ → decompile → grep dex for KDF constants + key-store paths. Zero Naver-infra requests.
+impact: local attacker decrypts synced passwords/cookies/autofill → cross-device sync account compromise; High
+testability: AUTH_HELPED
+
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes (regression/version-drift detection)
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0 keywordSearch=whale full pagination
+confidence: 55
+reasoning: 0 CVEs in 2026 across v4.35.352–v4.38.386.14 while 8 published in 2025; endpoint re-probed HTTP 200 this cycle, totalResults=28, newest CVE-2025-69235 @2025-12-30, 0 sync-class keyword hits in all 28 descriptions/IDs.
+evidence_needed: any new navercorp CVE or fix-version note; any sync/crypto-class keyword hit.
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/Cloudflare-challenge/000), diff published dates + sync-class keyword screen; new entry triggers re-scoping to that fixed version's delta. Zero auth, ≤1 rps.
+impact: early-warning of newly disclosed in-scope flaws → priority recalibration; Medium
+testability: PASSIVE
+
+**STEP 4 — SELF-CRITIQUE**
+All 3 hypotheses ≥ 40, classes (AUTH, OTHER) not on REJECTED list, concrete verify_steps present. No drops.
+- [FINAL] 1. Desktop sync KDF (62, AUTH) 2. NVD gap monitor (55, OTHER) 3. Android sync KDF (43, AUTH)
+
+**STEP 5 — NEXT ACTION**
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` (`.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or WhaleSetup.exe from Naver CDN) — sole blocker for the top-ranked sync-KDF hypothesis; all passive acquisition channels remain 100% blocked in-sandbox.
+
+**STEP 6 — LEARNING**
+- [LEARN] ACCEPTED class @ NVD gap monitor: services.nvd.nist.gov HTTP 200 re-probed this cycle (totalResults=28, year breakdown static, newest CVE-2025-69235 @2025-12-30, 0 sync-class keyword hits) — remains the only live zero-auth passive surface; `naver+whale` keyword quirk returns 0 (bare `whale` is correct); date-filtered queries still 404.
+- [LEARN] REJECTED @ binary acquisition: `/tmp/opencode/whale_binary/` still MISSING (re-verified 09:56 UTC) — all passive channels 100% blocked (cloudfront DNS `No answer` even via 8.8.8.8, APKMirror 403, Uptodown 404 Win+Android + 410 Android-page, APKPure CDN 403, pstatic 404 scope-excluded); binary-dependent sync-KDF verification permanently HUMAN-gated.
+- [LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE `cpe:2.3:a:navercorp:whale:*` covers v4.38.386.14 = patched); sample extension API surface live (5 files HTTP 200, 0 sender.* grep matches confirmed) but no novel variant or binary exploitability proven — permanently parked.
+- [LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked.
+
+**STEP 7 — RISK SCORE**
+- [RISK] sync: 65 — cross-device password/bookmark sync with custom OSCrypt fork (xv10) has zero public disclosure coverage since 2025-12-30; 8-month gap masks silent KDF/envelope regression; highest-value in-scope surface but unverifiable in-sandbox.
+- [RISK] browser: 45 — sidebar/web-panel SOP-CSP bypasses patched (v4.33.325.17, v4.35.351.12) with platform-agnostic CPE covering v4.38.386.14; no novel current-version vector proven; core Chromium surface inherits upstream CVE coverage.
+- [RISK] libs: 35 — socket.io.slim.js confirmed Whale-only bundled lib but confidence 38 < 40, handler runtime-fetched, no version line extractable; no public library manifest to assess version drift.
