@@ -4922,3 +4922,19 @@
 - LEARN: ACCEPTED @ NVD gap monitor: keywordSearch=whale HTTP 200 re-probed this cycle (totalResults=28, year breakdown static {2003:1,2009:1,2018:5,2020:1,2021:1,2022:6
 - LEARN: REJECTED passive binary acquisition: /tmp/opencode/whale_binary/ still MISSING (re-verified this cycle) — all passive channels remain 100% blocked in-sandbox (c
 - LEARN: NO_DELTA @ all passive surfaces: NVD totalResults=28/year breakdown static/newest 2025-12-30/0 sync-class hits + repo pushed 2019-09-23/size=5043 + sample ext m
+
+## RANKED HYPOTHESES 2026-08-16 02:14:10 UTC
+- [62] Whale: Sync bootstrap-token envelope storage — Whale OSCrypt v10 deviation on Linux (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key in os_crypt_whale fork (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 into `/tmp/opencode/whale_binary/` — `.deb` from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted inte
+- LEARN: ACCEPTED class @ sync KDF: No static analysis path exists — full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confir
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, latest CVE-2025-69235 @2025-12-30, 0 sy
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer general to *.cloudfront.net even via 8.8.8.8, APKMirror 403, Uptod
+- LEARN: ACCEPTED @ sync KDF: full repo enumeration (all 4 branches via recursive tree API + 5 wiki pages + README.ko.md = 0 sync/crypto/OSCrypt source files in any publ
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 re-probed this cycle — keywordSearch=whale returns totalResults=28, 0 in 2026, latest CVE-2025-69235 
+- LEARN: REJECTED @ sidebar SOP bypass: sample extension confirms API surface live (5 files HTTP 200, manifest.json `content_scripts` match ALL origins + `permissions:["
+- LEARN: REJECTED @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; CVE-2023-35780 confirmed irrelevant (WordPress
+- LEARN: REJECTED @ binary acquisition channels: `/tmp/opencode/whale_binary/` still MISSING (re-verified) — all passive channels 100% blocked (cloudfront DNS `No answer
