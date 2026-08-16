@@ -12077,3 +12077,4 @@ evidence_needed: New navercorp CVE with fixed-version note; any sync/crypto-clas
 verify_steps: PASSIVE: weekly full-pagination `keywordSearch=whale` (resultsPerPage=200, retry on 503/000, ≤1 rps), diff published dates + sync-class keyword screen (sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring); zero auth
 impact: Early-warning of newly disclosed in-scope sync flaws → priority/freshness recalibration (Medium)
 testability: PASSIVE
+## 2026-08-16 05:48:33 UTC [browser] (model laguna)
