@@ -1,13 +1,67 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base you provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), not about **gladiaio/** GitHub org or **@gladiaio/sdk** npm package. There's zero Gladia-related content in the RAG data.
-
-To triage a Gladia scan, I'd need:
-1. Actual scan results (grep hits, file paths, secret candidates) from gladiaio/ repos
-2. npm metadata for @gladiaio/sdk (version, dependencies, repository field, maintainers)
-3. A Gladia-specific knowledge base (scope rules, known exclusions, prior findings)
-
-The current knowledge base only contains Whale browser CVEs, sync flow analysis, binary acquisition paths, and sidebar/extension API surfaces — none of which apply to Gladia.
-
-**Please provide the actual scan output and Gladia-relevant context**, or confirm if the wrong knowledge base was attached.
+[0m$ [0mcurl -s "https://api.github.com/orgs/gladiaio/repos?per_page=100" | jq -r '.[] | "\(.name)\t\(.description // "no description")\t\(.html_url)\t\(.pushed_at)\t\(.language // "none")"'
+gladia-cli	no description	https://github.com/gladiaio/gladia-cli	2026-07-10T17:27:25Z	Go
+gladia-samples	no description	https://github.com/gladiaio/gladia-samples	2026-08-12T14:44:20Z	Python
+triton-inference-memory-allocation	no description	https://github.com/gladiaio/triton-inference-memory-allocation	2024-05-21T06:16:16Z	Python
+gunicorn-fix-sigabort	gunicorn 'Green Unicorn' is a WSGI HTTP Server for UNIX, fast clients and sleepy applications.	https://github.com/gladiaio/gunicorn-fix-sigabort	2024-06-06T21:53:16Z	Python
+uvicorn-fix-sigabort	An ASGI web server, for Python. 🦄	https://github.com/gladiaio/uvicorn-fix-sigabort	2024-03-20T18:05:53Z	Python
+docs	no description	https://github.com/gladiaio/docs	2026-08-13T18:27:23Z	MDX
+1password-scim	1Password SCIM Bridge deployment examples	https://github.com/gladiaio/1password-scim	2024-02-01T14:16:08Z	HCL
+sdk	no description	https://github.com/gladiaio/sdk	2026-08-08T10:05:09Z	Python
+gladia-quiz-app	no description	https://github.com/gladiaio/gladia-quiz-app	2025-11-26T13:18:52Z	TypeScript
+normalization	A lightweight library for normalizing speech transcripts before computing WER	https://github.com/gladiaio/normalization	2026-07-14T16:16:56Z	Python
+vllm_backend	no description	https://github.com/gladiaio/vllm_backend	2026-03-04T13:15:22Z	Python
+transformers	🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. 	https://github.com/gladiaio/transformers	2026-06-10T13:09:35Z	none
+compare-stt	Blind comparison of speech-to-text providers.	https://github.com/gladiaio/compare-stt	2026-08-14T14:07:10Z	TypeScript
+n8n-nodes-gladia	no description	https://github.com/gladiaio/n8n-nodes-gladia	2026-08-04T03:09:21Z	TypeScript
+cloudnative-pg	CloudNativePG is a comprehensive platform designed to seamlessly manage PostgreSQL databases within Kubernetes environments, covering the entire operational lifecycle from initial deployment to ongoing maintenance	https://github.com/gladiaio/cloudnative-pg	2026-07-25T03:29:04Z	none
+skills	Official AI agent skills from Gladia for integrating speech-to-text transcription into your applications	https://github.com/gladiaio/skills	2026-08-16T06:03:42Z	none
+realtime-multilingual-asr-router	no description	https://github.com/gladiaio/realtime-multilingual-asr-router	2026-05-29T15:10:13Z	Python
+vercel-ai	The AI Toolkit for TypeScript. From the creators of Next.js, the AI SDK is a free open-source library for building AI-powered applications and agents 	https://github.com/gladiaio/vercel-ai	2026-08-05T11:29:58Z	none
+gladiaflow	A desktop app for real-time voice dictation powered by Gladia's realtime transcription	https://github.com/gladiaio/gladiaflow	2026-08-04T14:00:25Z	Rust
+[0m
+The knowledge base provided is about Whale browser (naver/whale-browser-developers), but your task is to triage the **gladiaio/** GitHub org and **@gladiaio/sdk** npm package. I'll investigate the actual target.
+[0m$ [0mnpm view @gladiaio/sdk --json 2>/dev/null | jq '{name, version, description, repository, license, dependencies, devDependencies, scripts, files}'
+{
+  "name": "@gladiaio/sdk",
+  "version": "1.1.0",
+  "description": "Gladia JavaScript/TypeScript SDK",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gladiaio/sdk.git"
+  },
+  "license": "MIT",
+  "dependencies": null,
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.6",
+    "@types/node": "^20.19.19",
+    "@types/ws": "^8.18.1",
+    "tsdown": "^0.15.6"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch"
+  },
+  "files": null
+}
+[0m
+[0m$ [0mgit clone --depth=1 https://github.com/gladiaio/gladia-cli /tmp/gladia-cli 2>&1 | tail -5
+Cloning into '/tmp/gladia-cli'...
+[0m
+[0m$ [0mgit clone --depth=1 https://github.com/gladiaio/sdk /tmp/gladia-sdk 2>&1 | tail -5
+Cloning into '/tmp/gladia-sdk'...
+[0m
+[0m$ [0mgit clone --depth=1 https://github.com/gladiaio/gladia-samples /tmp/gladia-samples 2>&1 | tail -5
+Cloning into '/tmp/gladia-samples'...
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/gladia-sdk/*); auto-rejecting
+[0m✗ [0mcd /tmp/gladia-sdk && find . -type f \( -name "*.ts" -o -name "*.js" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" -o -name "*.env*" -o -name "*.toml" \) ! -path "./node_modules/*" ! -path "./.git/*" -exec grep -l -E "(api[_-]?key|secret|token|password|credential|auth|bearer|jwt|private[_-]?key|access[_-]?key)" {} \; 2>/dev/null failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+[93m[1m! [0mpermission requested: external_directory (/tmp/gladia-cli/*); auto-rejecting
+[0m✗ [0mcd /tmp/gladia-cli && find . -type f \( -name "*.go" -o -name "*.yaml" -o -name "*.yml" -o -name "*.env*" -o -name "*.toml" \) ! -path "./.git/*" -exec grep -l -E "(api[_-]?key|secret|token|password|credential|auth|bearer|jwt|private[_-]?key|access[_-]?key)" {} \; 2>/dev/null failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+[93m[1m! [0mpermission requested: external_directory (/tmp/gladia-samples/*); auto-rejecting
+[0m✗ [0mcd /tmp/gladia-samples && find . -type f \( -name "*.py" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" -o -name "*.env*" -o -name "*.toml" \) ! -path "./.git/*" -exec grep -l -E "(api[_-]?key|secret|token|password|credential|auth|bearer|jwt|private[_-]?key|access[_-]?key)" {} \; 2>/dev/null failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
