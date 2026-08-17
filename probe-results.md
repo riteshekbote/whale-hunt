@@ -836,3 +836,6 @@ https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerP
 
 ## 2026-08-17 08:57:57 UTC
 
+
+## 2026-08-17 09:41:30 UTC
+https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200' -> HTTP 404
