@@ -6405,3 +6405,23 @@
 - LEARN: CONFIRMED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, 0 sync-class keyword hits across all 2
 - LEARN: CONFIRMED @ GitHub repo: naver/whale-browser-developers documentation-only (pushed 2019-09-23, updated 2025-10-22, size=5043) — 0 sync/crypto source files; stat
 - LEARN: CONFIRMED @ sample extension background.js (translate branch): 0 sender.origin/sender.url/sender.tab/sender.id/sender.frameId/sender.tls grep matches — zero ori
+
+## RANKED HYPOTHESES 2026-08-17 13:03:38 UTC
+- [62] Whale: Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (from reports/hypotheses-nemotron3.txt)
+- [62] Whale: Desktop sync passphrase KDF weak iteration / device-recoverable master key (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or WhaleSetup.exe from Naver CDN
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: REJECTED class @ sync KDF static path: full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files in any public branch) confir
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer general to *.cloudfront.net even via 8.8.8.8, APKMirror 403, Uptod
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
+- LEARN: CONFIRMED @ NVD services endpoint: recovered HTTP 200 (was connection-failure 000 at 2026-08-15 20:59 UTC) — `keywordSearch=whale` re-confirmed totalResults=28,
+- LEARN: CONFIRMED @ GitHub repo naver/whale-browser-developers: documentation-only (pushed 2019-09-23, updated_at=2025-10-22, size=5043, has_wiki=true, 0 releases) — 0 
+- LEARN: CONFIRMED @ sample extension background.js (translate branch): 0 `sender.origin`/`sender.url`/`sender.tab`/`sender.id`/`sender.frameId`/`sender.tls` grep matche
+- LEARN: NO_DELTA @ all passive surfaces — NVD totalResults=28/year breakdown/0 sync-class hits + repo pushed 2019-09-23 + sample ext 5/5 HTTP 200 + binary dir MISSING +
+- LEARN: REJECTED class @ binary acquisition: all passive channels 100% blocked in-sandbox; binary-dependent sync-KDF verification permanently HUMAN-gated.
+- LEARN: REJECTED class @ sync KDF static path: 0 sync/crypto/OSCrypt source files in any public branch; binary extraction is the ONLY vector; HUMAN-gated, confidence 62
+- LEARN: CONFIRMED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, 0 sync-class keyword hits across all 2
+- LEARN: CONFIRMED @ GitHub repo: naver/whale-browser-developers documentation-only (pushed 2019-09-23, updated 2025-10-22, size=5043) — 0 sync/crypto source files; stat
+- LEARN: CONFIRMED @ sample extension background.js (translate branch): 0 sender.origin/sender.url/sender.tab/sender.id/sender.frameId/sender.tls grep matches — zero ori
