@@ -1327,3 +1327,8 @@
 - NEW NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` consistently returning HTTP 404/400 since 2026-08-15 18:48 UTC (last successful HTTP 200 was 2026-08-15 14:53:58 UTC) — passive CVE gap
 - NEW APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` consistently HTTP 404 — no curl-able APK path
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — confirms hard sandbox network egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)
+
+## 2026-08-17 17:05:13 UTC
+- NEW NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` consistently returning HTTP 404/400 since 2026-08-15 18:48 UTC (last successful HTTP 200 was 2026-08-15 14:53:58 UTC) — passive CVE gap
+- NEW APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` consistently HTTP 404 — no curl-able APK path
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — confirms hard sandbox network egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)
