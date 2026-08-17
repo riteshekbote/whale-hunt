@@ -6533,3 +6533,15 @@
 - LEARN: CONFIRMED @ binary acquisition: all channels 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 
 - LEARN: NVD re-probe confirms gap: all 28 CVEs got batch metadata modification on 2026-06-16/17 (NVD maintenance), but 0 new publications in 2026 — the gap is real, not
 - LEARN: background.js hardcoded message strings only — no novel message-confusion vector; sample is demo-only, not production attack surface.
+
+## RANKED HYPOTHESES 2026-08-17 16:11:06 UTC
+- [55] services.nvd.nist.gov/rest/json/cves/2.0: NVD 8-month gap hides undisclosed sync-class fixes (from reports/hypotheses-bigpickle.txt)
+- [55] services.nvd.nist.gov/rest/json/cves/2.0: NVD 8-month disclosure gap hides undisclosed sync-class fixes (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from cloudfront CDN via unrestricted internet, or WhaleSetup.exe from Naver CDN) into `/tmp/open
+- NEXT(hypotheses-bigpickle.txt): PASSIVE: Re-probe `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` for new 2026 CVEs or sync-class keyword hits.
+- LEARN: CONFIRMED @ NVD gap monitor: `services.nvd.nist.gov/rest/json/cves/2.0` restored to HTTP 200 (was HTTP 404 at 2026-08-17 15:43 UTC); `keywordSearch=whale` total
+- LEARN: REJECTED @ sample extension sidebar SOP bypass: confidence 32 < 40 AND maps to knowledge REJECTED class list (duplicate of CVE-2025-69234/69235/53600/62583/6258
+- LEARN: CONFIRMED @ GitHub repo `naver/whale-browser-developers`: documentation-only (pushed 2019-09-23, updated 2025-10-22, size=5043, 0 releases, has_wiki=true, 4 bra
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS `No answer` via both 127.0.0.53 and 8.8.8.8; APKMirror 403; Uptodown 404/410
+- LEARN: CONFIRMED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, 0 sync-class keyword hits; remains onl
+- LEARN: CONFIRMED @ binary acquisition: all channels 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 
