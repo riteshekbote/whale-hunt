@@ -1,8 +1,4 @@
-## 2026-08-17 03:13:30 UTC [browser] (model nemotron3)
-[NEW] APKPure landing page `https://apkpure.com/naver-whale-browser/com.naver.whale` flipped to HTTP 200 (was 403) but download CDN `download.apkpure.com` remains HTTP 403 — no curl-able APK path
-[NEW] NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was connection-failure 000) — `keywordSearch=whale` re-confirmed totalResults=28, 0 in 2026
-[CHANGED] Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — confirms hard sandbox network egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)
-[NEW] `whale.naver.com` (root) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
+## 2026-08-17 04:04:35 UTC [browser] (model nemotron3)
 [PRIO] Whale v4.38.386.14 desktop binary (os_crypt_whale.so + sync prefs), 7.85, atk=9 biz=9 tech=8 gate=2 cloud=3 fresh=8
 [PRIO] Whale Android 3.9.14.9 APK (com.naver.whale + whalesync prefs + keystore), 6.20, atk=7 biz=8 tech=7 gate=3 cloud=4 fresh=4
 [PRIO] NVD services endpoint (services.nvd.nist.gov/rest/json/cves/2.0), 4.85, atk=6 biz=7 tech=5 gate=8 cloud=2 fresh=4
@@ -33,9 +29,6 @@ evidence_needed: Version-diff of sync prefs + OSCrypt implementation between v4.
 verify_steps: HUMAN_ONLY: Acquire both binaries (v4.35.351.12 + v4.38.386.14) → bindiff os_crypt_whale + sync prefs schema; check for KDF constant changes, master-key storage relocation, or bootstrap-token envelope format shifts; zero network
 impact: Undisclosed sync crypto regression → silent downgrade of encryption envelope → mass credential decryption (Critical if confirmed)
 testability: HUMAN_ONLY
-[PARKED] Sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.38.386.14 (patched); no novel variant or binary exploitability proven
-[PARKED] Socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parked
-[PARKED] Installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
 [FINAL] 1) Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (confidence 62)
 [FINAL] 2) Whale Android 3.9.14.9 sync bootstrap-token storage in Keystore vs Preferences (confidence 58)
 [FINAL] 3) NVD 8-month disclosure gap hides undisclosed sync-class fixes in v4.35.352–v4.38.386.14 (confidence 55)

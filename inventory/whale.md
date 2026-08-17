@@ -1261,3 +1261,5 @@
 - NEW NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` recovered HTTP 200 (was connection-failure 000) — `keywordSearch=whale` re-confirmed totalResults=28, 0 in 2026
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — confirms hard sandbox network egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)
 - NEW `whale.naver.com` (root) returns HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml
+
+## 2026-08-17 04:04:46 UTC
