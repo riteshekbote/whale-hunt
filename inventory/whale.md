@@ -1648,3 +1648,14 @@
 ## 2026-08-18 23:04:05 UTC
 - NEW — none since 22:38 UTC cycle; full passive surface unchanged
 - CHANGED — no delta; all surfaces frozen (NVD HTTP 200 stable, 6 sample-ext+wiki artifacts HTTP 200, binary dir still MISSING, all acquisition channels 403/404/HTTP000)
+
+## 2026-08-18 23:28:31 UTC
+- NEW Desktop version double-bumped: v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18 same-day, 00:58 UTC); Chromium base 137 → 138.0.7204.92
+- NEW Login-server-error hotfix in v4.39.410.14 — active auth/login code churn in exact sync-KDF surface
+- NEW Browser lock flag (whale://flags) — passcode-based local-auth surface
+- NEW Softpedia download page shows v4.39.410.18 (190MB) — alt binary source (blocked in-sandbox)
+- CHANGED Uptodown Android definitively HTTP 410 Gone — Android passive APK path permanently closed
+- CHANGED APKPure landing page consistently HTTP 404 — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block general to all `*.cloudfront.net`
+- CHANGED NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
