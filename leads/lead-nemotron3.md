@@ -14328,3 +14328,14 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
 [LEARN] REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 403, pstatic 404 scope-excluded)
 [RISK] sync: 65 reason: custom /whalesync + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface | browser: 82 reason: sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; CPE Linux gap resolved; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show() message handling — high-priority regression window unchanged | libs: 35 reason: Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk
+## 2026-08-18 08:28:56 UTC [browser] (model nemotron3)
+[PRIO] Whale v4.38.386.14 desktop binary (os_crypt_whale.so + sync prefs), 7.10, atk=9 biz=9 tech=8 gate=2 cloud=3 fresh=8
+[PRIO] Whale Android 3.9.14.9 APK (com.naver.whale + whalesync prefs + keystore), 6.05, atk=7 biz=8 tech=7 gate=3 cloud=4 fresh=4
+[PRIO] NVD services endpoint (services.nvd.nist.gov/rest/json/cves/2.0), 5.80, atk=6 biz=7 tech=5 gate=8 cloud=2 fresh=4
+[HYP] Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork
+class: AUTH
+asset: Whale v4.38.386.14 desktop binary (os_crypt_whale.so + sync prefs)
+confidence: 62
+reasoning: v4.38.386.14 binary confirms Whale-only prefs keys (sync.encryption_bootstrap_token_per_account sha256=053ffa4b..., _migration_done, whale_need_encryption_key_forced_time) + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic); per-account bootstrap token envelope deviates from upstream Chromium sync.encryption_bootstrap_token; master-key storage location and KDF constants unextracted
+evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to stale key
+verify_steps: HUMAN_ONLY: Deliver Whale v4.38.386.14 .deb → objdump/strings on os_crypt_whale
