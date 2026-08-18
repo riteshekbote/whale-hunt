@@ -15606,3 +15606,33 @@ testability: HUMAN_ONLY
 [RISK] sync: 82 — Whale-only OSCrypt v10 fork (xv10 magic + sync.encryption_bootstrap_token_per_account confirmed in v4.38.386.14) + 8-month disclosure gap (0 CVEs in 2026, 0 sync-class keyword hits across all 28 NVD descriptions) + 3 unmonitored minor versions (v4.35.352→v4.38.386.14) with KDF constants/iteration counts + master-key storage path unextracted; binary delivery blocked in-sandbox. Critical if weak KDF confirmed. HUMAN-only verification.
 [RISK] browser: 14 — Sidebar/dual-tab SOP/CSP API surface documented live (5 ext files + whale.sidebarAction.md HTTP 200, background.js 0 sender.* grep matches confirmed this cycle) but platform-agnostic CPE cpe:2.3:a:navercorp:whale:* covers v4.38.386.14 (patched in CVE-2025-69235 fix v4.35.351.12); no novel variant proven (confidence 32 < 40, parked).
 [RISK] libs: 10 — Only socket.io.slim.js identified as Whale-only bundled library (confidence 38 < 40, handler runtime-fetched, binary absent, no passive version string, CVE-2023-35780 irrelevant as WordPress plugin CSRF); no public library manifest; permanently parked.
+## 2026-08-18 05:20:57 UTC [browser] (model laguna)
+[HYP] NVD whale CVE disclosure gap masks unfixed sync-class regression
+class: MISCONFIG
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: Full-pagination keywordSearch=whale confirms 28 total CVEs, 0 published in 2026, 0 sync-class keyword hits across all 28 descriptions (screened sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring|cookie|encryption); latest CVE-2025-69235 @2025-12-30 fixed v4.35.351.12, leaving v4.35.352–v4.38.386.14 with a confirmed 8-month disclosure gap across 3 unmonitored minor versions.
+evidence_needed: New Naver Whale CVE with fixed_version >= v4.35.352 mentioning sync/crypto/OSCrypt; OR sync-class keyword hit in any of the 28 CVE descriptions; OR binary extraction proving sync KDF deviation from Chromium base.
+verify_steps: PASSIVE: curl -s --connect-timeout 20 -H "User-Agent: whale-hunt/0.1" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200" | python3 parse totalResults + year breakdown + sync-class keyword hits in all 28 descriptions.
+impact: Sync-class flaws remain unreported 8+ months across 3 unmonitored minor versions; delayed remediation leads to sustained cross-device Whale account compromise if weak KDF confirmed (High).
+testability: PASSIVE
+[HYP] Whale desktop sync OSCrypt v10 fork — weak KDF/master-key exposure
+class: AUTH
+asset: /tmp/opencode/whale_binary/
+confidence: 62
+reasoning: Whale-only prefs keys (sync.encryption_bootstrap_token_per_account + xv10 magic confirmed via prior recon) + Whale-forked os_crypt_whale.cc/wbc_wrapper_apis.cc confirmed present in v4.38.386.14; full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confirms binary extraction is the ONLY static analysis vector; NVD full-pagination confirms 0 CVEs in 2026 and 0 sync-class keyword hits creating 8-month disclosure gap masking silent regression.
+evidence_needed: Whale-only prefs keys in Preferences JSON; KDF iteration count + AES nonce size in os_crypt_whale.so compared against Chromium base; master-key storage path on Linux.
+verify_steps: HUMAN_ONLY: Deliver official Whale desktop binary v4.38.386.14 (.deb from unrestricted internet) into /tmp/opencode/whale_binary/. Upon delivery: (1) sha256sum only — never raw secrets; (2) extract Preferences JSON → grep -ao "sync.encryption_bootstrap_token"; (3) objdump -d os_crypt_whale.so | grep -icE pbkdf2|scrypt|aes|nonce|xv10 compare against Chromium base; (4) inspect KWallet/GNOME keyring master-key path.
+impact: Local attacker decrypts synced passwords/cookies/autofill leading to cross-device Whale account compromise (Critical if weak KDF confirmed).
+testability: HUMAN_ONLY
+[HYP] Uptodown Android channel — Whale 3.9.14.9 APK passive acquisition viability
+class: OTHER
+asset: naver-whale-browser.en.uptodown.com/android
+confidence: 35
+reasoning: Uptodown Android page returns HTTP 200 this cycle (was 404/410), pins com.naver.whale 3.9.14.9 — however download flow is session-token/JS-resolved; curl to dw.uptodown.com returns HTTP 400 (errorCode -51) and resolver JS stc.utdstc.com/*/download.js returns HTTP 410 — no curl-able passive path exists.
+evidence_needed: Direct APK download URL that returns HTTP 200 with binary content under ≤3 chained redirects from a GET without session cookies.
+verify_steps: PASSIVE: curl -s -L --connect-timeout 15 -H "User-Agent: whale-hunt/0.1" "https://naver-whale-browser.en.uptodown.com/android/download" | grep -oE "dw\.uptodown\.com/dwn/[^\"' ]+" | curl test.
+impact: Android binary for sync KDF extraction would unlock strongest open surface, but passive path blocked — HUMAN-only remains gating.
+testability: HUMAN_ONLY
+[FINAL] [62] Whale desktop sync OSCrypt v10 fork — weak KDF/master-key exposure (HUMAN_ONLY, binary extraction is ONLY vector, 0 sync/crypto source files in public repo, 8-month disclosure gap)
+[FINAL] [55] NVD whale CVE disclosure gap masks unfixed sync-class regression (PASSIVE, monitoring-only, 28 total CVEs, 0 in 2026, 0 sync-class keyword hits)

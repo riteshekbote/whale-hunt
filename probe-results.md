@@ -947,3 +947,7 @@ https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerP
 
 ## 2026-08-18 04:52:55 UTC
 https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 -> 200 len=65680 type=application/json
+
+## 2026-08-18 05:21:07 UTC
+https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 -> 200 len=65680 type=application/json
+https://naver-whale-browser.en.uptodown.com/android/download -> 200 len=155581 type=text/html;charset=UTF-8
