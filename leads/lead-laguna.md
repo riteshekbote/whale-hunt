@@ -15777,3 +15777,4 @@ testability: HUMAN_ONLY
 [RISK] browser: 14 — Sample extension sidebarAction SOP bypass API surface documented live (5 ext files + whale.sidebarAction.md HTTP 200, background.js 0 sender.* grep matches confirmed via python grep with 0 results), but platform-agnostic CPE `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*:*` covers v4.38.386.14 (patched in CVE-2025-69235 fix v4.35.351.12); no novel variant proven (confidence 32 < 40, parked).
 [RISK] libs: 10 — Only `socket.io.slim.js` identified as Whale-only bundled library (confidence 38 < 40, handler runtime-fetched, binary absent, no passive version string, CVE-2023-35780 irrelevant as WordPress plugin CSRF); no public library manifest; permanently parked.
 ## 2026-08-18 08:28:19 UTC [browser] (model laguna)
+## 2026-08-18 09:07:01 UTC [browser] (model laguna)
