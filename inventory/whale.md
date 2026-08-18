@@ -1626,3 +1626,21 @@
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed
 - CHANGED NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+
+## 2026-08-18 22:39:19 UTC
+- NEW Desktop version double-bumped: v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18 same-day, 00:58 UTC); Chromium base 137 → 138.0.7204.92
+- NEW Login-server-error hotfix in v4.39.410.14 — active auth/login code churn in exact sync-KDF surface
+- NEW Browser lock flag (whale://flags) — passcode-based local-auth surface
+- NEW Softpedia download page shows v4.39.410.18 (190MB) — alt binary source
+- CHANGED Uptodown Android definitively HTTP 410 Gone — Android passive APK path permanently closed
+- CHANGED APKPure landing page consistently HTTP 404 — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block general to all `*.cloudfront.net`
+- CHANGED NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+- NEW Desktop version double-bumped v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18 same-day, 00:58 UTC); Chromium base 137 → 138.0.7204.92
+- NEW Login-server-error hotfix in v4.39.410.14 — active auth/login code churn in sync-KDF surface
+- NEW Browser lock flag (whale://flags) — passcode-based local-auth surface, out of primary sync scope
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated (all passive download channels: cloudfront DNS No-answer via 8.8.8.8+127.0.0.53, APKMirror 403, Upto
+- CHANGED GitHub repo naver/whale-browser-developers: documentation-only (pushed 2019-09-23, 0 releases) — 0 sync/crypto source files in any of 4 branches + 5 wiki pages + README.ko.md
+- CHANGED Sample extension background.js (translate branch): 0 `sender.*` grep matches confirmed via python grep (HTTP 200) — zero origin validation
+- CHANGED NVD services endpoint stable HTTP 200 — 28 total whale CVEs, 0 in 2026, 0 sync-class keyword hits across all 28 descriptions

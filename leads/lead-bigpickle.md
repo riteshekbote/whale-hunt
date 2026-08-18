@@ -12518,3 +12518,33 @@ evidence_needed: delivered v4.39.410.18 binary → strings/objdump for kEncrypti
 verify_steps: AUTH_HELPED: (1) strings v4.39.410.18 for kEncryptionIterations / iterations / PBKDF2; (2) read Local State post-sync-enable for encrypted_key; (3) verify v10 envelope → PBKDF2-AES-CTR with confirmed iteration count.
 impact: local attacker/infostealer decrypts synced passwords+bookmarks+cookies with 1 PBKDF2 iteration (trivially fast); High
 testability: AUTH_HELPED
+## 2026-08-18 22:37:15 UTC [sync] (model bigpickle)
+[PRIO] sync KDF (OSCrypt v10 fork) v4.39.410.18 binary, score 6.50, attack=6 business=8 tech=6 gate=3 cloud=2 fresh=10
+[PRIO] NVD gap monitor, score 4.70, attack=2 business=7 tech=2 gate=10 cloud=1 fresh=5
+[HYP] Whale desktop sync bootstrap-token envelope uses Chromium-baseline 1-iteration PBKDF2 in OSCrypt v10 fork (v4.39.410.18)
+class: AUTH
+asset: Whale v4.39.410.18 binary os_crypt_whale.cc + Local State encrypted_key
+confidence: 65
+reasoning: Chromium os_crypt_posix.cc baseline has kEncryptionIterations=1 + hardcoded password for PBKDF2-AES-CTR v10 envelope; Whale's os_crypt_whale.cc is a sync-mode fork confirmed present via prior binary strings; same-day double-release v4.39.410.14→v4.39.410.18 + login-server-error hotfix suggests iteration count or key-derivation change; 0 sync/crypto source in public repo
+evidence_needed: v4.39.410.18 binary strings for kEncryptionIterations/PBKDF2/iteration constants; Local State encrypted_key v10 envelope post-sync-enable; diff vs v4.38.386.14 if both available
+verify_steps: AUTH_HELPED: (1) strings v4.39.410.18 | grep -i 'iteration\|PBKDF2\|kEncryption'; (2) read Local State pre/post sync-enable for encrypted_key field; (3) parse v10 envelope to confirm PBKDF2 iteration count
+impact: local attacker/infostealer decrypts synced passwords+bookmarks+cookies with trivially fast PBKDF2 (1 iteration); High
+testability: AUTH_HELPED
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes in v4.35.352–v4.39.410.18
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: Full-pagination parse confirms totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 descriptions; newest CVE-2025-69235 @2025-12-30; gap now 8+ months covering v4.35.352 through v4.39.410.18 (2 Chromium bumps + login hotfix in between)
+evidence_needed: any new navercorp CVE or fix-version note; any sync-class keyword hit in future NVD updates
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/404/000), diff published dates + sync-class keyword screen
+impact: early-warning of newly disclosed in-scope flaws enables priority recalibration; Medium
+testability: PASSIVE
+[FINAL] Desktop sync passphrase KDF weak iteration / device-recoverable master key (OSCrypt v10 fork v4.39.410.18), 65
+[FINAL] NVD 8-month gap hides undisclosed sync-class fixes, 55
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or WhaleSetup.exe from Naver CDN) to `/tmp/opencode/whale_binary/`. Same-day version bump v4.39.410.14→v4.39.410.18 + Chromium 138 base + login-server-error hotfix makes this binary urgent for accurate sync KDF analysis. Once delivered: run `strings whale_binary | grep -iE 'iteration|PBKDF2|kEncryption|bootstrap_token|xv10'` and `readelf -p .rodata whale_binary | grep -iE 'password|salt|encrypt'`.
+[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235; platform-agnostic CPE covers v4.39.410.18 (patched); permanently parked.
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; permanently parked.
+[LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked.
+[LEARN] ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files) confirms binary extraction is the ONLY vector; confidence 65 retained, HUMAN-gated.
+[LEARN] ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface.
+[LEARN] ACCEPTED @ same-day version bump: v4.39.410.14→v4.39.410.18 (Aug 18, <24h) + Chromium 137→138 + login-server-error hotfix raises sync-KDF regression urgency.
