@@ -1600,3 +1600,10 @@
 - 2026-08-18 REJECTED @ Uptodown Android: definitively HTTP 410 Gone ("will not be available again") — prior flip-flop (200/404) resolved to permanent dead; Android passive APK path permanently closed.
 - 2026-08-18 ACCEPTED @ same-day version bump: v4.39.410.14 → v4.39.410.18 (Aug 18, 00:58) — 2 releases in <24 hours; same-day bump suggests urgent fix; Chromium base updated to 138.
 - 2026-08-18 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.18 (patched); no novel variant or binary exploitability proven
+- 2026-08-18 ACCEPTED @ v4.39.410.18 same-day double release after login-server-error hotfix + Chromium 138 — OSCrypt/KDF regression risk
+- 2026-08-18 REJECTED @ GitHub repo static analysis: documentation-only (pushed 2019-09-23, 0 releases) — 0 sync/crypto source files; binary extraction ONLY vector
+- 2026-08-18 REJECTED @ cloudfront DNS: No-answer via BOTH 127.0.0.53 AND 8.8.8.8 — hard sandbox egress block general to *.cloudfront.net
+- 2026-08-18 REJECTED @ Uptodown Android: definitively 410 Gone — permanently closed
+- 2026-08-18 REJECTED class @ sidebar SOP-CSP bypass: 32 < 40, duplicate of fixed CVE-2025-69234/69235, platform-agnostic CPE covers v4.39.410.18 — parked
+- 2026-08-18 REJECTED class @ socket.io event-handler injection: 38 < 40, handler runtime-fetched, no version string — parked
+- 2026-08-18 CONFIRMED @ NVD: 28 total whale CVEs, 0 in 2026, 0 sync-class hits, latest CVE-2025-69235 @2025-12-30 — only live zero-auth passive surface

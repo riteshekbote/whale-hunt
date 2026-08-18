@@ -1552,3 +1552,18 @@
 - NEW Browser lock flag (whale://flags) — passcode-based local auth (out of primary scope)
 - CHANGED NVD services endpoint stable HTTP 200 — 28 CVEs, 0 in 2026, 8-month gap confirmed static
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — all acquisition channels 100% blocked
+
+## 2026-08-18 19:57:16 UTC
+- NEW Desktop version bumped again: v4.39.410.14 → v4.39.410.18 (Aug 18, same-day bump, 00:58 UTC) — 2 releases in <24h suggests urgent fix; Chromium base 138.0.7204.92 (Aug 17)
+- NEW Softpedia downloads page shows v4.39.410.18 (190MB, license 4.9/5) — alternative binary source but access blocked in-sandbox
+- CHANGED NVD services endpoint stable HTTP 200 — `keywordSearch=whale` returns totalResults=28, 0 in 2026, 0 sync-class keyword hits; 8-month gap confirmed
+- CHANGED APKPure landing page consistently HTTP 404 — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block general to all `*.cloudfront.net`
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+- CHANGED Login-server-error hotfix in v4.39.410.14 — confirms active auth/login code changes in sync KDF surface
+- NEW Desktop v4.39.410.14 → v4.39.410.18 (same-day Aug 18 double release) — Chromium 137→138 (138.0.7204.92); OSCrypt fork / KDF params may have re-based
+- NEW Login-server-error hotfix in v4.39.410.14 — confirms active auth/login code churn in sync-KDF surface
+- NEW Browser lock flag (whale://flags) — passcode-based local-auth surface, out of primary sync scope
+- NEW Softpedia download page shows v4.39.410.18 (190MB) — alt source, blocked in-sandbox
+- CHANGED Uptodown Android now definitively 410 Gone — permanently closed
+- CHANGED /tmp/opencode/whale_binary/ still MISSING; cloudfront DNS No-answer via both 127.0.0.53+8.8.8.8; NVD gap 28/0-in-2026/0-sync-hits HTTP 200; sample ext 5/5 HTTP 200 (0 sender.* grep matches); GitHub re
