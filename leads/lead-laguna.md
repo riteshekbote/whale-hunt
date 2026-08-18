@@ -16127,3 +16127,41 @@ testability: AUTH_HELPED
 [RISK] sync: 65 — Whale-only OSCrypt xv10/bootstrap-token surface is strongest in-scope class but zero public source + binary HUMAN-gated; Chromium 150 upgrade in v4.39.410.14 raises regression risk; 8-month NVD gap confirmed.
 [RISK] browser: 28 — all known browser-side classes (sidebar/dual-tab SOP-CSP) fixed/duplicate CVEs with platform-agnostic CPE covering v4.39.410.14; sample extension API surface live but patched; no novel variant proven.
 [RISK] libs: 22 — Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible, handler runtime-fetched); no public third-party library manifest; passive lib-inventory path speculative only.
+## 2026-08-18 16:46:17 UTC [browser] (model laguna)
+[PRIO] Whale desktop binary v4.39.410.14 sync KDF/OSCrypt surface, score 7.1: attack_surface 8 | business_value 9 | tech_exposure 7 | gate_ease 2 | cloud_surface 5 | freshness 10
+[PRIO] NVD services endpoint CVE-gap monitor, score 4.1: attack_surface 2 | business_value 4 | tech_exposure 2 | gate_ease 10 | cloud_surface 2 | freshness 6
+[PRIO] Whale Android APK v3.9.14.9 sync engine, score 6.1: attack_surface 7 | business_value 8 | tech_exposure 6 | gate_ease 3 | cloud_surface 5 | freshness 5
+[HYP] Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (v4.39.410.14)
+class: AUTH
+asset: Whale v4.39.410.14 desktop binary (os_crypt_whale.cc fork + Local State + xv10 magic)
+confidence: 62
+reasoning: v4.39.410.14 is latest (Aug 18 bump); Chromium 150 upgrade may have altered Whale fork boundaries; login-server-error hotfix confirms active auth code changes in exact sync surface; Whale-only markers (xv10, sync.encryption_bootstrap_token_per_account) confirmed in prior recon; 0 sync/crypto source in any public branch.
+evidence_needed: PBKDF2/scrypt algorithm + iteration count in Whale OSCrypt fork; derived-key persistence path (keyring vs file vs Local State); delta vs Chromium 150 Linux baseline; master-key storage location; bootstrap-token envelope structure.
+verify_steps: AUTH_HELPED: HUMAN with unrestricted internet downloads official Whale .deb v4.39.410.14 (from d1vdt4q2qgdbji.cloudfront.net) → /tmp/opencode/whale_binary/ → objdump/strings/rodata scan for xv10 symbols + KDF iteration constants + bootstrap_token key paths; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable.
+impact: Local attacker or infostealer decrypts synced passwords/bookmarks/autofill across all devices linked to the account; High
+testability: AUTH_HELPED
+[HYP] NVD 8-month disclosure gap hides undisclosed sync-class fixes
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0 (keywordSearch=whale, resultsPerPage=200)
+confidence: 55
+reasoning: Full-pagination parse confirms totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 IDs+descriptions; newest CVE-2025-69235 @2025-12-30 → ~8 month gap; gap masks silent regression in v4.35.352–v4.39.410.14 including post-login hotfixes.
+evidence_needed: any new navercorp CVE or fix-version note; any sync-class keyword hit (sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|keyring) in future NVD updates.
+verify_steps: PASSIVE: re-probe HTTPS GET `https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` (≤1 rps, retry on 503/404/000); diff published dates + screen for sync/crypto keyword hits in all CVE descriptions.
+impact: Missed disclosure = missed patch window; early-warning of newly disclosed in-scope flaws. Low direct severity, high program awareness value.
+testability: PASSIVE
+[HYP] Whale Android 3.9.14.9 sync encryption KDF/master-key storage
+class: AUTH
+asset: com.naver.whale 3.9.14.9 sync engine (Android Keystore / SharedPreferences)
+confidence: 43
+reasoning: v3.9.14.9 confirmed latest (SHA-256 6f7c7907...); cross-platform sync-encryption markers imply custom impl distinct from Chromium; all passive APK acquisition channels blocked (APKMirror 403, APKPure CDN 404, Uptodown 410); confidence dropped 46→43 on retracted CVE-2025-53599 evidence.
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants + iteration counts; master-key persistence path (Keystore vs SharedPreferences vs file); SHA-256 verification of acquired APK.
+verify_steps: AUTH_HELPED: HUMAN pulls v3.9.14.9 APK via Play Store → /tmp/opencode/whale_binary/ → jadx/apktool decompile → grep dex for KDF constants + key-store paths.
+impact: Local attacker decrypts synced passwords/cookies/autofill → cross-device account compromise; High
+testability: AUTH_HELPED
+[FINAL] 1) Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (v4.39.410.14), 62
+[FINAL] 2) NVD 8-month disclosure gap hides undisclosed sync-class fixes, 55
+[FINAL] 3) Whale Android 3.9.14.9 sync encryption KDF/master-key storage, 43
+[NEXT] PROBE: Re-probe `https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` via HTTPS GET (≤1 rps) for new 2026 CVEs or any sync-class keyword hit in CVE descriptions; screen for modified dates since 2026-08-17 and any navercorp CPE fix-version notes.
+[RISK] sync: 65 — Whale-only OSCrypt xv10/bootstrap-token surface is the strongest in-scope class (login-server-error hotfix + v4.39.410.14 bump + Chromium 150 upgrade raise regression risk) but zero public source + binary HUMAN-gated; 8-month NVD gap masks undisclosed sync-class fixes; confidence 62 retained.
+[RISK] browser: 28 — all known browser-side classes (sidebar/dual-tab SOP-CSP bypass) fixed/duplicate CVEs with platform-agnostic CPE covering v4.39.410.14; sample extension API surface live (5 files HTTP 200, 0 sender.* grep matches confirmed) but proves documentation only, not current-binary exploitability; no novel variant found.
+[RISK] libs: 22 — Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible, handler runtime-fetched); no public third-party library manifest; passive lib-inventory path speculative only; no passive version string extractable.

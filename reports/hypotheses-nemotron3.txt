@@ -1,13 +1,12 @@
-## 2026-08-18 16:05:17 UTC [browser] (model nemotron3)
-[NEW] Desktop version bumped: v4.38.386.14 → v4.39.410.14 (Aug 18, today) — 4 releases since last analysis; Chromium engine 137→150; binary re-acquisition required for all string/rodata analysis
-[NEW] Login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in the exact surface our sync KDF hypothesis targets
-[NEW] Chromium 150 engine upgrade: v4.39.410.1+ uses Chromium 150; may have changed OSCrypt fork boundaries, KDF parameters, or sync protocol — binary diff vs v4.38.386.14 needed
-[NEW] New flags surface: browser lock (whale://flags) uses passcode for browser locking — new local-auth surface but out of primary hypothesis scope
-[CHANGED] NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` recovered to stable HTTP 200 (was flapping 404/000 through 2026-08-17) — `keywordSearch=whale` consistently returns totalResults=28, 0 in 2026
-[CHANGED] APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` consistently HTTP 404 (was transient 200/403) — no curl-able APK path remains
-[CHANGED] Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 confirmed hard sandbox egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)
-[CHANGED] `whale.naver.com` root (without www) consistently HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml, no server probing allowed
-[PRIO] Whale v4.39.410.14 desktop binary (os_crypt_whale.so + sync prefs + new browser lock), 7.10, atk=9 biz=9 tech=8 gate=2 cloud=3 fresh=8
+## 2026-08-18 16:46:10 UTC [browser] (model nemotron3)
+[NEW] Desktop version bumped: v4.38.386.14 → v4.39.410.14 (Aug 18) — 4 releases since last analysis; Chromium engine 137→150; OSCrypt fork boundaries/KDF parameters potentially changed; binary re-acquisition required
+[NEW] Login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in exact sync KDF surface
+[NEW] Chromium 150 engine upgrade: v4.39.410.1+ uses Chromium 150; may have shifted OSCrypt fork boundaries, KDF parameters, or sync protocol — binary diff vs v4.38.386.14 needed
+[CHANGED] NVD services endpoint recovered to stable HTTP 200 — `keywordSearch=whale` returns totalResults=28, 0 in 2026, 0 sync-class keyword hits
+[CHANGED] Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 confirmed hard sandbox egress block general to all `*.cloudfront.net`
+[CHANGED] APKPure landing page consistently HTTP 404 — no curl-able APK path remains
+[CHANGED] `whale.naver.com` root consistently HTTP 200 but `*.naver.com` explicitly OOS per scope.yml
+[PRIO] Whale v4.39.410.14 desktop binary (os_crypt_whale.so + sync prefs + browser lock), 7.10, atk=9 biz=9 tech=8 gate=2 cloud=3 fresh=8
 [PRIO] Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork, 6.85, atk=9 biz=8 tech=7 gate=2 cloud=3 fresh=7
 [PRIO] Whale Android 3.9.14.9 sync bootstrap-token storage in Keystore vs Preferences, 6.05, atk=7 biz=8 tech=7 gate=3 cloud=4 fresh=4
 [PRIO] NVD services endpoint (services.nvd.nist.gov/rest/json/cves/2.0), 5.80, atk=6 biz=7 tech=5 gate=8 cloud=2 fresh=4
@@ -38,6 +37,9 @@ evidence_needed: Version-diff of sync prefs + OSCrypt implementation between v4.
 verify_steps: HUMAN_ONLY: Acquire both binaries (v4.35.351.12 + v4.39.410.14) → bindiff os_crypt_whale + sync prefs schema; check for KDF constant changes, master-key relocation, or bootstrap-token envelope format shifts; zero network
 impact: Undisclosed sync crypto regression → silent downgrade of encryption envelope → mass credential decryption (Critical if confirmed)
 testability: HUMAN_ONLY
+[PARKED] Whale sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.38.386.14 = patched); sample extension confirms API surface only, not current-binary exploitability — permanently parked
+[PARKED] Whale socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked
+[PARKED] Whale installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
 [FINAL] 1) Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (confidence 62)
 [FINAL] 2) Whale Android 3.9.14.9 sync bootstrap-token storage in Keystore vs Preferences (confidence 58)
 [FINAL] 3) NVD 8-month disclosure gap hides undisclosed sync-class fixes in v4.35.352–v4.39.410.14 (confidence 55)

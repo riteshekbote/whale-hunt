@@ -1010,3 +1010,6 @@ https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerP
 
 ## 2026-08-18 16:05:29 UTC
 
+
+## 2026-08-18 17:01:57 UTC
+https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` -> HTTP 400
