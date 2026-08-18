@@ -1427,3 +1427,9 @@
 ## 2026-08-18 12:05:45 UTC
 
 ## 2026-08-18 13:06:53 UTC
+
+## 2026-08-18 14:02:06 UTC
+- NEW NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` recovered to stable HTTP 200 (was flapping 404/000 through 2026-08-17) — `keywordSearch=whale` consistently returns totalResults=28, 0 
+- NEW APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` consistently HTTP 404 (was transient 200/403) — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 confirmed hard sandbox egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)
+- CHANGED `whale.naver.com` root (without www) consistently HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml, no server probing allowed
