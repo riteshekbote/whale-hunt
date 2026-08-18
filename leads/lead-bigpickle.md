@@ -12124,3 +12124,4 @@ testability: PASSIVE
 [RISK] sync: 62 — Chromium 137→150 engine jump + login-server-error hotfix in v4.39.410.14 raises relevance but binary HUMAN-gated; 0 public source; 8-month NVD gap confirmed.
 [RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium 150 may introduce new surfaces but inaccessible without binary.
 [RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible; speculative only.
+## 2026-08-18 15:43:56 UTC [sync] (model bigpickle)

@@ -1449,3 +1449,13 @@
 - NEW APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` consistently HTTP 404 (was transient 200/403) — no curl-able APK path remains
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 confirmed hard sandbox egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)
 - CHANGED `whale.naver.com` root (without www) consistently HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml, no server probing allowed
+
+## 2026-08-18 15:44:11 UTC
+- NEW Desktop version bumped: v4.38.386.14 → v4.39.410.14 (Aug 18, today) — 4 releases since last analysis; Chromium engine 137→150; binary re-acquisition required for all string/rodata analysis
+- NEW Login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in the exact surface our sync KDF hypothesis targets
+- NEW Chromium 150 engine upgrade: v4.39.410.1+ uses Chromium 150; may have changed OSCrypt fork boundaries, KDF parameters, or sync protocol — binary diff vs v4.38.386.14 needed
+- NEW New flags surface: browser lock (whale://flags) uses passcode for browser locking — new local-auth surface but out of primary hypothesis scope
+- CHANGED NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` recovered to stable HTTP 200 (was flapping 404/000 through 2026-08-17) — `keywordSearch=whale` consistently returns totalResults=28, 0 
+- CHANGED APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` consistently HTTP 404 (was transient 200/403) — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 confirmed hard sandbox egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)
+- CHANGED `whale.naver.com` root (without www) consistently HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml, no server probing allowed
