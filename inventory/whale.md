@@ -1509,3 +1509,12 @@
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block general to all `*.cloudfront.net`
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
 - CHANGED Login-server-error hotfix in v4.39.410.14 — confirms active auth/login code changes in sync KDF surface
+
+## 2026-08-18 18:08:10 UTC
+- NEW Desktop version bumped again: v4.39.410.14 → v4.39.410.18 (Aug 18, same-day bump, 00:58 UTC) — 2 releases in <24h suggests urgent fix; Chromium base 138.0.7204.92 (Aug 17)
+- NEW Softpedia downloads page shows v4.39.410.18 (190MB, license 4.9/5) — alternative binary source but access blocked in-sandbox
+- CHANGED NVD services endpoint stable HTTP 200 — `keywordSearch=whale` returns totalResults=28, 0 in 2026, 0 sync-class keyword hits; 8-month gap confirmed
+- CHANGED APKPure landing page consistently HTTP 404 — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block general to all `*.cloudfront.net`
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+- CHANGED Login-server-error hotfix in v4.39.410.14 — confirms active auth/login code changes in sync KDF surface
