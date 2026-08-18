@@ -7832,3 +7832,21 @@
 - LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files) confirms binary extraction is the ONLY vector
 - LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface.
 - LEARN: ACCEPTED @ same-day version bump: v4.39.410.14→v4.39.410.18 (Aug 18, <24h) + Chromium 137→138 + login-server-error hotfix raises sync-KDF regression urgency.
+
+## RANKED HYPOTHESES 2026-08-18 23:04:05 UTC
+- [65] Whale: Whale desktop sync bootstrap-token envelope uses Chromium-baseline 1-iteration PBKDF2 in OSCrypt v10 fork (v4.39.410.18) (from reports/hypotheses-bigpickle.txt)
+- [65] /tmp/opencode/whale_binary/: Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from `https://d1vdt4q2qgdbji.cloudfront.net/` via unrestricted internet, or v4.39.410.18 install
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from `d1vdt4q2qgdbji.cloudfront.net` via unrestricted internet, or WhaleSetup.exe from Naver CDN
+- LEARN: NO_DELTA @ all passive surfaces: NVD HTTP 200 (28/0-in-2026/0 sync-class hits), GitHub repo pushed 2019-09-23 (documentation-only, 0 sync/crypto source files), 
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary ex
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable this cycle (0.59s) — keywordSearch=whale returns totalResults=28, 0 in 2026, 0 sync-class keyw
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/625
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both 127.0.0.53 and 8.8.8.8 general to `*.cloudfront.net`; APK
+- LEARN: ACCEPTED @ version bump: v4.39.410.14→v4.39.410.18 (Aug 18 same-day double release) + Chromium 137→138 + login-server-error hotfix — binary re-acquisition requi
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235; platform-agnostic CPE covers v4.39.410.18 (pa
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; permanently p
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked.
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confirms binary extraction is the ONLY 
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface.
+- LEARN: ACCEPTED @ same-day version bump: v4.39.410.14→v4.39.410.18 (Aug 18, <24h) + Chromium 137→138 + login-server-error hotfix raises sync-KDF regression urgency.
