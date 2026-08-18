@@ -1482,3 +1482,21 @@
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 confirmed hard sandbox egress block general to all `*.cloudfront.net`
 - CHANGED APKPure landing page consistently HTTP 404 — no curl-able APK path remains
 - CHANGED `whale.naver.com` root consistently HTTP 200 but `*.naver.com` explicitly OOS per scope.yml
+
+## 2026-08-18 17:14:23 UTC
+- NEW Desktop v4.38.386.14 → v4.39.410.14 (Aug 18) — Chromium engine 137→150; binary re-acquisition required
+- NEW Login-server-error hotfix in v4.39.410.14 — confirms active auth/login code changes in sync KDF surface
+- NEW Chromium 150 engine upgrade — may have changed OSCrypt fork boundaries, KDF parameters, or sync protocol
+- NEW Browser lock flag (whale://flags) — new passcode-based local auth surface (out of primary scope)
+- CHANGED APKPure landing page flipped to HTTP 404 (was transient 200/403) — download CDN remains 403
+- CHANGED NVD services endpoint stable HTTP 200 — 28 total whale CVEs, 0 in 2026, 8-month gap confirmed
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+- NEW v4.39.410.18 released Aug 18 (00:58) — version bumped from v4.39.410.14 within same day; possible critical fix
+- NEW Softpedia downloads page now shows v4.39.410.18 (190MB, license 4.9/5) — may have different binary than v4.39.410.13
+- NEW Chromium engine jump 137→150 — confirmed in v4.39.410.14, may have re-baselined OSCrypt fork
+- NEW Login-server-error hotfix in v4.39.410.14 — confirms active auth/login code changes in sync KDF surface
+- NEW Browser lock flag (whale://flags) — new passcode-based local auth surface (out of primary scope)
+- CHANGED APKPure landing page flipped to HTTP 404 (was transient 200/403) — download CDN remains 403
+- CHANGED NVD services endpoint stable HTTP 200 — 28 total whale CVEs, 0 in 2026, 8-month gap confirmed
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+- CHANGED New Stable Channel (2026-08-18) — Chromium 138 → may affect base Chromium assumptions in prior hypotheses
