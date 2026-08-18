@@ -1599,3 +1599,4 @@
 - 2026-08-18 ACCEPTED @ NVD gap monitor: services.nvd.nist.gov stable HTTP 200 — keywordSearch=whale returns totalResults=28, 0 in 2026, 0 sync-class keyword hits; 8-month disclosure gap confirmed (latest CVE-2025-69235 @2025-12-30).
 - 2026-08-18 REJECTED @ Uptodown Android: definitively HTTP 410 Gone ("will not be available again") — prior flip-flop (200/404) resolved to permanent dead; Android passive APK path permanently closed.
 - 2026-08-18 ACCEPTED @ same-day version bump: v4.39.410.14 → v4.39.410.18 (Aug 18, 00:58) — 2 releases in <24 hours; same-day bump suggests urgent fix; Chromium base updated to 138.
+- 2026-08-18 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.18 (patched); no novel variant or binary exploitability proven
