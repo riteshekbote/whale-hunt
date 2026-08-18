@@ -11363,3 +11363,4 @@ testability: AUTH_HELPED
 [RISK] sync: 62 — Whale-only OSCrypt xv10/bootstrap-token surface is strongest in-scope class but zero public source + binary HUMAN-gated; 8-month NVD gap confirmed.
 [RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; sample sidebar surface live but patched (platform-agnostic CPE covers v4.38.386.14).
 [RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible, handler runtime-fetched; speculative only; no passive version string; CVE-2023-35780 confirmed irrelevant.
+## 2026-08-18 04:52:43 UTC [sync] (model bigpickle)

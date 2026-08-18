@@ -1,4 +1,4 @@
-## 2026-08-18 04:10:42 UTC [browser] (model nemotron3)
+## 2026-08-18 04:51:38 UTC [browser] (model nemotron3)
 [PRIO] Whale v4.38.386.14 desktop binary (os_crypt_whale.so + sync prefs), 7.10, atk=9 biz=9 tech=8 gate=2 cloud=3 fresh=8
 [PRIO] Whale Android 3.9.14.9 APK (com.naver.whale + whalesync prefs + keystore), 6.05, atk=7 biz=8 tech=7 gate=3 cloud=4 fresh=4
 [PRIO] NVD services endpoint (services.nvd.nist.gov/rest/json/cves/2.0), 5.80, atk=6 biz=7 tech=5 gate=8 cloud=2 fresh=4
@@ -11,15 +11,6 @@ evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences
 verify_steps: HUMAN_ONLY: Deliver Whale v4.38.386.14 .deb → objdump/strings on os_crypt_whale.so + whale_sync_util call sites for bootstrap-token envelope and /whalesync/reset request shape; diff pref set vs upstream Chromium; zero network
 impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
 testability: HUMAN_ONLY
-[HYP] Whale Android 3.9.14.9 sync bootstrap-token storage in Keystore vs Preferences
-class: AUTH
-asset: Whale Android 3.9.14.9 (com.naver.whale APK)
-confidence: 58
-reasoning: Android sync uses same /whalesync endpoint + NEO_SES cookie auth; bootstrap tokens likely stored in Android Keystore or SharedPreferences; Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, whale_need_encryption_key_forced_time) confirmed in desktop binary — Android variant unanalyzed; APK acquisition channels blocked (APKPure CDN 403, Uptodown 410 Gone)
-evidence_needed: APK binary to inspect libos_crypt_whale.so / keystore usage; sync prefs schema in Android SharedPreferences; bootstrap token envelope format parity with desktop xv10 magic
-verify_steps: HUMAN_ONLY: Acquire com.naver.whale 3.9.14.9 APK via unrestricted internet → apktool + grep for sync.encryption_bootstrap_token* + keystore APIs; compare envelope format vs desktop xv10 magic; zero network
-impact: Local attacker with root/backup access extracts bootstrap tokens → decrypts cross-device synced credentials (High)
-testability: HUMAN_ONLY
 [HYP] NVD 8-month disclosure gap hides undisclosed sync-class fixes in v4.35.352–v4.38.386.14
 class: MISCONFIG
 asset: Whale v4.35.351.12 vs v4.38.386.14 binary diff (os_crypt_whale + sync prefs schema)
@@ -28,6 +19,15 @@ reasoning: NVD keywordSearch=whale returns 28 total CVEs, 0 published in 2026 (l
 evidence_needed: Version-diff of sync prefs + OSCrypt implementation between v4.35.351.12 (last CVE fix) and v4.38.386.14; binary diff of os_crypt_whale.so symbols
 verify_steps: HUMAN_ONLY: Acquire both binaries (v4.35.351.12 + v4.38.386.14) → bindiff os_crypt_whale + sync prefs schema; check for KDF constant changes, master-key storage relocation, or bootstrap-token envelope format shifts; zero network
 impact: Undisclosed sync crypto regression → silent downgrade of encryption envelope → mass credential decryption (Critical if confirmed)
+testability: HUMAN_ONLY
+[HYP] Whale Android 3.9.14.9 sync bootstrap-token storage in Keystore vs Preferences
+class: AUTH
+asset: Whale Android 3.9.14.9 (com.naver.whale APK)
+confidence: 58
+reasoning: Android sync uses same /whalesync endpoint + NEO_SES cookie auth; bootstrap tokens likely stored in Android Keystore or SharedPreferences; Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, whale_need_encryption_key_forced_time) confirmed in desktop binary — Android variant unanalyzed; APK acquisition channels blocked (APKPure CDN 403, Uptodown 410 Gone)
+evidence_needed: APK binary to inspect libos_crypt_whale.so / keystore usage; sync prefs schema in Android SharedPreferences; bootstrap token envelope format parity with desktop xv10 magic
+verify_steps: HUMAN_ONLY: Acquire com.naver.whale 3.9.14.9 APK via unrestricted internet → apktool + grep for sync.encryption_bootstrap_token* + keystore APIs; compare envelope format vs desktop xv10 magic; zero network
+impact: Local attacker with root/backup access extracts bootstrap tokens → decrypts cross-device synced credentials (High)
 testability: HUMAN_ONLY
 [FINAL] 1) Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (confidence 62)
 [FINAL] 2) Whale Android 3.9.14.9 sync bootstrap-token storage in Keystore vs Preferences (confidence 58)
