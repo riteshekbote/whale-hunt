@@ -1,31 +1,28 @@
-## 2026-08-18 20:59:06 UTC [browser] (model laguna)
-[PRIO] NVD gap monitor endpoint (services.nvd.nist.gov keywordSearch=whale) — score: 7 — axes: atk=6 biz=8 tech=3 gate=10 cloud=5 fresh=7
-[PRIO] Whale desktop binary v4.39.410.18 (.deb/.exe → `/tmp/opencode/whale_binary/`) — score: 6 — axes: atk=9 biz=9 tech=8 gate=2 cloud=2 fresh=10
-[PRIO] GitHub repo naver/whale-browser-developers (doc-only, pushed 2019-09-23) — score: 3 — axes: atk=2 biz=1 tech=2 gate=10 cloud=5 fresh=1
-[HYP] Monitor NVD for new sync-class Whale CVE disclosures covering v4.39.410.18
-class: OTHER
-asset: https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200
-confidence: 55
-reasoning: 28 total whale CVEs, 0 published in 2026; latest CVE-2025-69235 @2025-12-30 (CWE-346, fixed v4.35.351.12); same-day double-release v4.39.410.14→v4.39.410.18 after login-server-error hotfix + Chromium 138 bump raises silent sync-regression risk; passive endpoint stable HTTP 200.
-evidence_needed: New navercorp CVE published post-2025-12-30 containing sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring|cookie keyword; or sync-class keyword hit in any whale CVE description.
-verify_steps: PASSIVE: HTTPS GET services.nvd.nist.gov keywordSearch=whale (≤1 rps, full pagination resultsPerPage=200); screen all 28 CVE descriptions for sync-class keywords; re-probe weekly for new disclosures.
-impact: Missed patch window / early-warning gap for High-severity sync regression; Low direct exploitability, high awareness value.
-testability: PASSIVE
+## 2026-08-18 21:27:22 UTC [browser] (model laguna)
 [HYP] Whale desktop sync OSCrypt v10 bootstrap-token envelope deviation in v4.39.410.18
 class: AUTH
 asset: /tmp/opencode/whale_binary/ (Whale desktop binary v4.39.410.18)
 confidence: 62
 reasoning: Same-day double-release v4.39.410.14→v4.39.410.18 after login-server-error hotfix + Chromium 138 bump; Whale-only xv10/os_crypt_whale.cc/bootstrap-token markers confirmed present in prior v4.38.386.14 binary recon; 8-month NVD gap (0 CVEs in 2026) masks silent regression; 0 sync/crypto source files in any public branch confirms binary-only surface.
 evidence_needed: PBKDF2/scrypt algorithm + iteration count from os_crypt_whale fork; xv10 envelope format deviation vs Chromium 138 baseline; master-key storage path in Local State file; bootstrap-token per-account scoping weakness.
-verify_steps: AUTH_HELPED: HUMAN downloads official v4.39.410.18 .deb to `/tmp/opencode/whale_binary/` via unrestricted internet → objdump/strings for KDF constants + xv10 magic + keyring/Local State snapshot → diff os_crypt_whale.cc fork against Chromium 138 baseline for envelope deviation.
+verify_steps: AUTH_HELPED: HUMAN downloads official v4.39.410.18 .deb to /tmp/opencode/whale_binary/ via unrestricted internet → objdump/strings for KDF constants + xv10 magic + keyring/Local State snapshot → diff os_crypt_whale.cc fork against Chromium 138 baseline for envelope deviation.
 impact: Local attacker with OS access decrypts synced passwords/cookies/bookmarks/autofill across all linked devices → cross-device account takeover.
 testability: AUTH_HELPED
-[FINAL] 1) Whale desktop sync OSCrypt v10 bootstrap-token envelope deviation in v4.39.410.18, 62
-[FINAL] 2) NVD 8-month disclosure gap masks sync-class regressions (monitoring), 55
-[NEXT] PROBE: HTTPS GET https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 — screen all CVE descriptions for sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring keyword hits; re-run weekly to catch new navercorp:whale disclosures covering v4.39.410.18.
-[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/62584/62585); platform-agnostic CPE `cpe:2.3:a:navercorp:whale:*` covers v4.39.410.18 = patched; sample extension confirms API surface only (5 files HTTP 200, background.js 0 `sender.*` grep matches confirmed this cycle via raw fetch + python grep) but NOT current-binary exploitability — permanently parked.
-[LEARN] ACCEPTED class @ sync KDF: same-day double-release v4.39.410.14→v4.39.410.18 + login-server-error hotfix + Chromium 138 bump raises binary analysis relevance; confidence 62 retained, binary-gated (binary extraction is the ONLY verify path).
-[LEARN] REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS `No answer` via both 127.0.0.53 and 8.8.8.8, APKMirror 403, Uptodown 410, APKPure CDN 403/404, static-whale.pstatic.net 404 scope-excluded) — `/tmp/opencode/whale_binary/` still MISSING; binary-dependent sync-KDF verification permanently HUMAN-gated.
-[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked.
-[LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path — permanently parked.
-[RISK] sync: 65 | browser: 28 | libs: 22
+[HYP] Monitor NVD for new sync-class Whale CVE disclosures covering v4.39.410.18
+class: OTHER
+asset: https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200
+confidence: 55
+reasoning: 28 total whale CVEs, 0 published in 2026; latest CVE-2025-69235 @2025-12-30 (CWE-346, fixed v4.35.351.12); same-day double-release v4.39.410.14→v4.39.410.18 after login-server-error hotfix + Chromium 138 bump raises silent sync-regression risk; passive endpoint stable HTTP 200 with 0 sync-class keyword hits across all 28 descriptions.
+evidence_needed: New navercorp CVE published post-2025-12-30 containing sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring keyword; or sync-class keyword hit in any whale CVE description.
+verify_steps: PASSIVE: HTTPS GET services.nvd.nist.gov keywordSearch=whale (≤1 rps, full pagination resultsPerPage=200); screen all 28 CVE descriptions for sync-class keywords; re-probe weekly for new disclosures.
+impact: Missed patch window / early-warning gap for High-severity sync regression; Low direct exploitability, high awareness value.
+testability: PASSIVE
+[HYP] Whale Android 3.9.14.9 sync encryption KDF / master-key storage
+class: AUTH
+asset: com.naver.whale 3.9.14.9 (Android APK)
+confidence: 43
+reasoning: v3.9.14.9 confirmed latest (364.2MB arm64 XAPK, SHA-256 6f7c7907...); cross-platform sync markers imply custom CryptoJNI impl distinct from Chromium; APKMirror has 4 arch variants but all passive download channels blocked (403/410/404); below 50 threshold but ≥40 so retained.
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants + iteration counts; KeyGenParameterSpec usage; master-key persistence path (Keystore vs SharedPreferences vs file).
+verify_steps: AUTH_HELPED: HUMAN pulls v3.9.14.9 APK via Play Store → jadx -d output whale.apk && grep -ri "PBKDF2|scrypt|AES/GCM|KeyGenParameterSpec|bootstrap_token" output/ for KDF constants + key-store paths.
+impact: Local attacker with root/ADB access decrypts synced passwords/cookies/autofill → cross-device account compromise.
+testability: AUTH_HELPED

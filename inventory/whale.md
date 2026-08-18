@@ -1604,3 +1604,14 @@
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed
 - CHANGED NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+
+## 2026-08-18 21:28:52 UTC
+- NEW Desktop version double-bumped: v4.39.410.14 → v4.39.410.18 (Aug 18, same-day, 00:58 UTC) — 2 releases in <24h suggests urgent fix
+- NEW Login-server-error hotfix in v4.39.410.14 — confirms active auth/login code changes in sync KDF surface
+- NEW Browser lock flag (whale://flags) — passcode-based local-auth surface
+- NEW Softpedia download page shows v4.39.410.18 (190MB) — alternative binary source, blocked in-sandbox
+- CHANGED Uptodown Android definitively HTTP 410 Gone — Android passive APK path permanently closed
+- CHANGED APKPure landing page consistently HTTP 404 — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed
+- CHANGED NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated

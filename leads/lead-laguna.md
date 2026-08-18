@@ -16489,3 +16489,31 @@ testability: AUTH_HELPED
 [LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked.
 [LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path — permanently parked.
 [RISK] sync: 65 | browser: 28 | libs: 22
+## 2026-08-18 21:27:22 UTC [browser] (model laguna)
+[HYP] Whale desktop sync OSCrypt v10 bootstrap-token envelope deviation in v4.39.410.18
+class: AUTH
+asset: /tmp/opencode/whale_binary/ (Whale desktop binary v4.39.410.18)
+confidence: 62
+reasoning: Same-day double-release v4.39.410.14→v4.39.410.18 after login-server-error hotfix + Chromium 138 bump; Whale-only xv10/os_crypt_whale.cc/bootstrap-token markers confirmed present in prior v4.38.386.14 binary recon; 8-month NVD gap (0 CVEs in 2026) masks silent regression; 0 sync/crypto source files in any public branch confirms binary-only surface.
+evidence_needed: PBKDF2/scrypt algorithm + iteration count from os_crypt_whale fork; xv10 envelope format deviation vs Chromium 138 baseline; master-key storage path in Local State file; bootstrap-token per-account scoping weakness.
+verify_steps: AUTH_HELPED: HUMAN downloads official v4.39.410.18 .deb to /tmp/opencode/whale_binary/ via unrestricted internet → objdump/strings for KDF constants + xv10 magic + keyring/Local State snapshot → diff os_crypt_whale.cc fork against Chromium 138 baseline for envelope deviation.
+impact: Local attacker with OS access decrypts synced passwords/cookies/bookmarks/autofill across all linked devices → cross-device account takeover.
+testability: AUTH_HELPED
+[HYP] Monitor NVD for new sync-class Whale CVE disclosures covering v4.39.410.18
+class: OTHER
+asset: https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200
+confidence: 55
+reasoning: 28 total whale CVEs, 0 published in 2026; latest CVE-2025-69235 @2025-12-30 (CWE-346, fixed v4.35.351.12); same-day double-release v4.39.410.14→v4.39.410.18 after login-server-error hotfix + Chromium 138 bump raises silent sync-regression risk; passive endpoint stable HTTP 200 with 0 sync-class keyword hits across all 28 descriptions.
+evidence_needed: New navercorp CVE published post-2025-12-30 containing sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring keyword; or sync-class keyword hit in any whale CVE description.
+verify_steps: PASSIVE: HTTPS GET services.nvd.nist.gov keywordSearch=whale (≤1 rps, full pagination resultsPerPage=200); screen all 28 CVE descriptions for sync-class keywords; re-probe weekly for new disclosures.
+impact: Missed patch window / early-warning gap for High-severity sync regression; Low direct exploitability, high awareness value.
+testability: PASSIVE
+[HYP] Whale Android 3.9.14.9 sync encryption KDF / master-key storage
+class: AUTH
+asset: com.naver.whale 3.9.14.9 (Android APK)
+confidence: 43
+reasoning: v3.9.14.9 confirmed latest (364.2MB arm64 XAPK, SHA-256 6f7c7907...); cross-platform sync markers imply custom CryptoJNI impl distinct from Chromium; APKMirror has 4 arch variants but all passive download channels blocked (403/410/404); below 50 threshold but ≥40 so retained.
+evidence_needed: dex strings for PBKDF2/scrypt/AES-GCM constants + iteration counts; KeyGenParameterSpec usage; master-key persistence path (Keystore vs SharedPreferences vs file).
+verify_steps: AUTH_HELPED: HUMAN pulls v3.9.14.9 APK via Play Store → jadx -d output whale.apk && grep -ri "PBKDF2|scrypt|AES/GCM|KeyGenParameterSpec|bootstrap_token" output/ for KDF constants + key-store paths.
+impact: Local attacker with root/ADB access decrypts synced passwords/cookies/autofill → cross-device account compromise.
+testability: AUTH_HELPED
