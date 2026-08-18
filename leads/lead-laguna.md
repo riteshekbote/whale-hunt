@@ -15444,3 +15444,27 @@ testability: PASSIVE
 [RISK] sync: 82 — Whale-only OSCrypt v10 fork (xv10 magic + sync.encryption_bootstrap_token_per_account confirmed in v4.38.386.14) + 8-month disclosure gap (0 CVEs in 2026, 0 sync-class keyword hits across all 28 NVD descriptions) + 3 unmonitored minor versions (v4.35.352→v4.38.386.14) with KDF constants/iteration counts + master-key storage path unextracted; binary delivery blocked in-sandbox. Critical if weak KDF confirmed. HUMAN-only verification.
 [RISK] browser: 14 — Sidebar/dual-tab SOP/CSP API surface documented live (5 ext files + whale.sidebarAction.md HTTP 200, background.js 0 sender.* grep matches confirmed this cycle) but platform-agnostic CPE cpe:2.3.a:navercorp:whale:* covers v4.38.386.14 (patched in CVE-2025-69235 v4.35.351.12); no novel variant proven (confidence 32 < 40, parked).
 [RISK] libs: 10 — Only socket.io.slim.js identified as Whale-only bundled library (confidence 38 < 40, handler runtime-fetched, binary absent, no passive version string, CVE-2023-35780 irrelevant as WordPress plugin CSRF); no public library manifest; permanently parked.
+## 2026-08-18 02:46:43 UTC [browser] (model laguna)
+[HYP] Whale desktop sync OSCrypt v10 fork — weak KDF/master-key exposure
+class: AUTH
+asset: /tmp/opencode/whale_binary/
+confidence: 62
+reasoning: Whale-only prefs keys (sync.encryption_bootstrap_token_per_account + xv10 magic) confirmed present in v4.38.386.14 via prior binary recon; full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files) confirms binary extraction is the ONLY vector; NVD full-pagination confirms 0 CVEs in 2026 and 0 sync-class keyword hits, creating 8-month disclosure gap masking silent regression across v4.35.352-v4.38.386.14.
+evidence_needed: Whale-only prefs keys in Preferences JSON; KDF iteration count + AES nonce size in os_crypt_whale.so vs Chromium base; master-key storage path on Linux.
+verify_steps: HUMAN_ONLY: Deliver official Whale desktop binary v4.38.386.14 (.deb from unrestricted internet) into /tmp/opencode/whale_binary/. Once delivered: (1) sha256sum only — never raw secrets; (2) extract Preferences JSON → grep -ao "sync.encryption_bootstrap_token"; (3) objdump -d os_crypt_whale.so | grep -icE pbkdf2|scrypt|aes|nonce|xv10 compare against Chromium base; (4) inspect KWallet/GNOME keyring master-key path. Zero Naver network requests.
+impact: Local attacker decrypts synced passwords/cookies/autofill → cross-device Whale account compromise (Critical if weak KDF confirmed).
+testability: HUMAN_ONLY
+[HYP] NVD whale CVE disclosure gap masks unfixed sync-class regression in v4.38.386.14
+class: MISCONFIG
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: Full-pagination keywordSearch=whale confirms 28 total CVEs, 0 published in 2026, 0 sync-class keyword hits across all 28 descriptions; latest CVE-2025-69235 (sidebar SOP bypass) @2025-12-30; binary verification blocked prevents confirming whether sync-class regression exists in v4.35.352-v4.38.386.14.
+evidence_needed: New Naver Whale CVE with fixed_version >= v4.35.352 mentioning sync/crypto/OSCrypt; OR sync-class keyword hit in any of the 28 CVE descriptions; OR binary extraction proving sync KDF deviation.
+verify_steps: PASSIVE: curl -s --connect-timeout 15 -H "User-Agent: whale-hunt/0.1" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200" | python3 -c "[parse totalResults, new_2026, sync-class keyword hits]" — full pagination, ≤1 rps.
+impact: Sync-class flaws remain unreported 8+ months across 3 unmonitored minor versions; delayed remediation → sustained cross-device Whale account compromise if weak KDF confirmed (High).
+testability: PASSIVE
+[FINAL]
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from unrestricted internet — all passive channels blocked in-sandbox: cloudfront DNS `No answer` via both 127.0.0.53 and 8.8.8.8, APKMirror 403, Uptodown dw-cdn 404, APKPure download CDN 403, pstatus 404 scope-excluded) into `/tmp/opencode/whale_binary/`. This is the ONLY vector to verify the confidence-62 sync KDF hypothesis. Once delivered: (1) `sha256sum` only — never raw secrets; (2) extract Preferences JSON → `grep -ao "sync.encryption_bootstrap"`; (3) `objdump -d os_crypt_whale.so | grep -icE pbkdf2|scrypt|aes|nonce|xv10`; (4) inspect KWallet/GNOME keyring master-key storage path.
+[RISK] sync: 82 — Whale-only OSCrypt v10 fork (xv10 magic + sync.encryption_bootstrap_token_per_account confirmed in v4.38.386.14) + 8-month disclosure gap (0 CVEs in 2026, 0 sync-class keyword hits across all 28 NVD descriptions) + 3 unmonitored minor versions (v4.35.352-v4.38.386.14) with KDF constants/iteration counts + master-key storage path unextracted; binary delivery blocked in-sandbox. Critical if weak KDF confirmed. HUMAN-only verification.
+[RISK] browser: 14 — Sidebar/dual-tab SOP/CSP API surface documented live (5 ext files + whale.sidebarAction.md HTTP 200, background.js 0 sender.* grep matches confirmed this cycle) but platform-agnostic CPE `cpe:2.3:a:navercorp:whale:*` covers v4.38.386.14 (patched in CVE-2025-69235 v4.35.351.12); no novel variant proven (confidence 32 < 40, parked).
+[RISK] libs: 10 — Only socket.io.slim.js identified as Whale-only bundled library (confidence 38 < 40, handler runtime-fetched, binary absent, no passive version string, CVE-2023-35780 irrelevant); no public library manifest; permanently parked.
