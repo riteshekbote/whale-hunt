@@ -1518,3 +1518,22 @@
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block general to all `*.cloudfront.net`
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
 - CHANGED Login-server-error hotfix in v4.39.410.14 — confirms active auth/login code changes in sync KDF surface
+
+## 2026-08-18 18:56:25 UTC
+- NEW Desktop version bumped again: v4.39.410.14 → v4.39.410.18 (Aug 18, same-day bump, 00:58 UTC) — 2 releases in <24h suggests urgent fix; Chromium base 138.0.7204.92 (Aug 17)
+- NEW Softpedia downloads page shows v4.39.410.18 (190MB, license 4.9/5) — alternative binary source but access blocked in-sandbox
+- CHANGED NVD services endpoint stable HTTP 200 — `keywordSearch=whale` returns totalResults=28, 0 in 2026, 0 sync-class keyword hits; 8-month gap confirmed
+- CHANGED APKPure landing page consistently HTTP 404 — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block general to all `*.cloudfront.net`
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+- CHANGED Login-server-error hotfix in v4.39.410.14 — confirms active auth/login code changes in sync KDF surface
+- NEW Desktop v4.38.386.14 → v4.39.410.14 (Aug 18) → v4.39.410.18 (Aug 18, same-day bump 00:58) — Chromium engine 137→150→138; OSCrypt fork boundaries/KDF parameters potentially changed
+- NEW Login-server-error hotfix in v4.39.410.14 — confirms active auth/login code changes in exact sync-KDF surface
+- NEW Softpedia downloads page shows v4.39.410.18 (190MB) — alternative binary source, access blocked in-sandbox
+- CHANGED NVD services endpoint stable HTTP 200 — `keywordSearch=whale` returns totalResults=28, 0 in 2026, 0 sync-class keyword hits; 8-month gap confirmed (latest CVE-2025-69235 @2025-12-30)
+- CHANGED APKPure download CDN `download.apkpure.com` remains HTTP 403 despite landing page flip-flopping 200/404
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+- CHANGED Uptodown Android page definitively HTTP 410 Gone ("will not be available again") — Android APK path permanently closed
+- NEW Desktop version bumped v4.39.410.14 → v4.39.410.18 (Aug 18, 00:58 UTC) — same-day bump, 2 releases in <24h; Chromium base updated to 138.0.7204.92
+- NEW Browser lock flag (whale://flags) — passcode-based local auth surface (out of primary sync scope)
+- CHANGED NVD services endpoint stable HTTP 200 — `keywordSearch=whale` totalResults=28, 0 in 2026, 8-month gap confirmed static
