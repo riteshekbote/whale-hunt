@@ -7634,3 +7634,47 @@
 - LEARN: REJECTED class @ sidebar SOP-CSP bypass: 32 < 40, duplicate of fixed CVE-2025-69234/69235, platform-agnostic CPE covers v4.39.410.18 — parked
 - LEARN: REJECTED class @ socket.io event-handler injection: 38 < 40, handler runtime-fetched, no version string — parked
 - LEARN: CONFIRMED @ NVD: 28 total whale CVEs, 0 in 2026, 0 sync-class hits, latest CVE-2025-69235 @2025-12-30 — only live zero-auth passive surface
+
+## RANKED HYPOTHESES 2026-08-18 20:17:18 UTC
+- [65] Whale: Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (from reports/hypotheses-nemotron3.txt)
+- [62] /tmp/opencode/whale_binary/: Whale desktop sync OSCrypt v10 bootstrap-token envelope deviation (v4.39.410.18) (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Deliver official Whale desktop binary **v4.39.410.18** (the very latest, released TODAY at 00:58) to `/tmp/opencode/whale_binary/` via unrestricted inter
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-3578
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 4
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extracti
+- LEARN: ACCEPTED @ desktop version bump: v4.38.386.14 → v4.39.410.14 (Aug 18, today) — 4 releases since last analysis; Chromium engine 137→150; binary re-acquisition re
+- LEARN: ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in the exact sur
+- LEARN: ACCEPTED @ Chromium 138 engine upgrade: v4.39.410.18 aligns with latest Chromium stable 138.0.7204.92 (Aug 17); may have changed OSCrypt fork boundaries, KDF pa
+- LEARN: ACCEPTED @ NVD confirmed: 28 total whale CVEs, 0 in 2026 as of Aug 18; stack.watch confirms "0 vulnerabilities in Naver Whale Browser" in 2026
+- LEARN: CONFIRMED @ Android APK: v3.9.14.9 is latest (364.2MB arm64 XAPK, SHA-256 6f7c7907...); APKMirror has 4 arch variants; APKPure download CDN still HTTP 200 with 
+- LEARN: REJECTED @ all binary acquisition channels: still 100% blocked in-sandbox as of Aug 18
+- LEARN: REJECTED class @ sidebar/dual-tab SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list — permanently parked
+- LEARN: ACCEPTED @ same-day version bump: v4.39.410.14 → v4.39.410.18 (Aug 18, 00:58) — 2 releases in <24 hours; same-day bump suggests urgent fix; Chromium base update
+- LEARN: ACCEPTED @ v4.39.410.18 same-day double release after login-server-error hotfix + Chromium 138 — OSCrypt/KDF regression risk
+- LEARN: REJECTED @ GitHub repo static analysis: documentation-only (pushed 2019-09-23, 0 releases) — 0 sync/crypto source files; binary extraction ONLY vector
+- LEARN: REJECTED @ cloudfront DNS: No-answer via BOTH 127.0.0.53 AND 8.8.8.8 — hard sandbox egress block general to *.cloudfront.net
+- LEARN: REJECTED @ Uptodown Android: definitively 410 Gone — permanently closed
+- LEARN: REJECTED class @ sidebar SOP-CSP bypass: 32 < 40, duplicate of fixed CVE-2025-69234/69235, platform-agnostic CPE covers v4.39.410.18 — parked
+- LEARN: REJECTED class @ socket.io event-handler injection: 38 < 40, handler runtime-fetched, no version string — parked
+- LEARN: CONFIRMED @ NVD: 28 total whale CVEs, 0 in 2026, 0 sync-class hits, latest CVE-2025-69235 @2025-12-30 — only live zero-auth passive surface
+- LEARN: REJECTED @ cloudfront DNS: `d1vdt4q2qgdbji.cloudfront.net` resolves `No answer` via BOTH 127.0.0.53 AND 8.8.8.8 — hard sandbox egress block general to all `*.cl
+- LEARN: REJECTED @ Uptodown Android: definitively HTTP 410 Gone ("will not be available again") — Android passive APK path permanently closed.
+- LEARN: REJECTED @ APKPure: landing HTTP 200/404 flip-flopping but download CDN `download.apkpure.com` consistently HTTP 403 — no curl-able APK path.
+- LEARN: REJECTED @ GitHub repo static analysis: documentation-only (pushed 2019-09-23, 0 releases, 4 branches = 131 total blobs, has_wiki=true) — 0 sync/crypto source f
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/625
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; CVE-2023-35780 confirmed irrelevant (Wor
+- LEARN: CONFIRMED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 — keywordSearch=whale returns totalResults=28, 0 in 2026, 0 sync-class keyword hits across all 28 de
+- LEARN: CONFIRMED @ sample extension background.js (translate branch, HTTP 200): 0 `sender.origin`/`sender.url`/`sender.tab`/`sender.id`/`sender.frameId`/`sender.tls` g
+- LEARN: ACCEPTED @ sync KDF surface: same-day double-release v4.39.410.14→v4.39.410.18 + login-server-error hotfix + Chromium 138 bump raises confidence 62 retains; bin
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary ex
+- LEARN: REJECTED @ all binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure C
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total whale CVEs, 0 in 2026, 8-month disclosure gap confirmed; remains only live zero-aut
+- LEARN: ACCEPTED @ same-day version bump: v4.39.410.14 → v4.39.410.18 (Aug 18, 00:58) — 2 releases in <24 hours; same-day bump suggests urgent fix; Chromium base update
+- LEARN: ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in the exact sur
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/625
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-3578
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked.

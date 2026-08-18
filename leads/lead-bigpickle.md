@@ -12384,3 +12384,62 @@ testability: PASSIVE
 [RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium138 may introduce new surfaces but inaccessible without binary.
 [RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible; speculative only; no passive version string; CVE-2023-35780 confirmed irrelevant.
 ## 2026-08-18 19:57:01 UTC [sync] (model bigpickle)
+## 2026-08-18 20:17:03 UTC [sync] (model bigpickle)
+[PRIO] sync KDF (OSCrypt v10 fork) v4.39.410.18, score 6.85, attack=6 business=8 tech=6 gate=3 cloud=2 fresh=10
+[PRIO] NVD gap monitor, score 4.70, attack=3 business=7 tech=2 gate=10 cloud=1 fresh=5
+[PRIO] Android sync engine, score 3.85, attack=6 business=8 tech=4 gate=2 cloud=2 fresh=3
+[HYP] Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (v4.39.410.18)
+class: AUTH
+asset: Whale v4.39.410.18 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
+confidence: 62
+reasoning: Whale-only markers (xv10 magic, sync.encryption_bootstrap_token_per_account) confirmed in prior binary recon of v4.38.386.14; v4.39.410.14→v4.39.410.18 same-day bump suggests urgent fix in login/auth surface; Chromium base updated to 138 which may have re-baselined OSCrypt fork; 0 sync/crypto source in all public branches + wiki.
+evidence_needed: PBKDF2/scrypt/argon2 algorithm + iteration count in Whale fork; derived-key persistence (keyring vs file vs Local State); delta vs Chromium138 baseline; whether Chromium138 OSCrypt changes propagated to Whale fork.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered v4.39.410.18 binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable; diff binary symbols vs v4.38.386.14 if both available.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: Full-pagination parse confirms totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 IDs+descriptions; newest CVE-2025-69235 @2025-12-30; 8-month gap extends to Aug 18, 2026.
+evidence_needed: any new navercorp CVE or fix-version note; any sync-class keyword hit in future NVD updates.
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/404/000), diff published dates + sync-class keyword screen.
+impact: early-warning of newly disclosed in-scope flaws enables priority recalibration; Medium
+testability: PASSIVE
+[PARKED] Android sync encryption KDF / master-key storage: confidence 43 < 50 threshold; all acquisition channels 100% blocked in-sandbox; no passive proof path; no delta since inception.
+[PARKED] Android sync encryption KDF / master-key storage: confidence 43 < 50 threshold; all acquisition channels 100% blocked; permanently parked.
+[FINAL] Desktop sync passphrase KDF weak iteration / device-recoverable master key, 62
+[FINAL] NVD 8-month gap hides undisclosed sync-class fixes, 55
+[NEXT] HUMAN: Deliver official Whale desktop binary **v4.39.410.18** (the very latest, released TODAY at 00:58) to `/tmp/opencode/whale_binary/` via unrestricted internet. Softpedia offers v4.39.410.13 (190MB .exe) and v4.39.410.13 (171MB .deb) — either will provide the `xv10` magic bytes and `os_crypt_whale.cc` symbols needed for the sync KDF hypothesis. The same-day version bump v4.39.410.14→v4.39.410.18 combined with Chromium 138 base update makes this binary urgent for accurate analysis.
+[LEARN] ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extraction is the ONLY vector; confidence 62 retained, HUMAN-gated.
+[LEARN] REJECTED @ all binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 403, pstatic 404 scope-excluded); binary-dependent sync-KDF verification permanently HUMAN-gated.
+[LEARN] ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total whale CVEs, 0 in 2026, 8-month disclosure gap confirmed; remains only live zero-auth passive surface.
+[LEARN] ACCEPTED @ same-day version bump: v4.39.410.14 → v4.39.410.18 (Aug 18, 00:58) — 2 releases in <24 hours; same-day bump suggests urgent fix; Chromium base updated to 138.
+[LEARN] ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in the exact surface our sync KDF hypothesis targets.
+[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/62584/62585); platform-agnostic CPE covers v4.38.386.14 = patched — permanently parked.
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked.
+[LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked.
+[RISK] sync: 62 — same-day version bump v4.39.410.14→v4.39.410.18 + Chromium138 base + login-server-error hotfix raises urgency; binary HUMAN-gated; 0 public source; 8-month NVD gap confirmed.
+[RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium138 may introduce new surfaces but inaccessible without binary.
+[RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible; speculative only; no passive version string; CVE-2023-35780 confirmed irrelevant.
+[HYP] Whale Naver NID auth ECDH key exchange — client_private_key stored in browser, used for token rotation; ECDH key exchange with server via WhaleNidServer; epoch key confirmation via X-Epoch-Key header. Custom code not in Chromium. AuthkeyFetcher obtains auth keys via refresh token.
+class: AUTH
+asset: whale/components/signin/public/identity_manager/authkey_fetcher.cc + whale/google_apis/naver_epoch_key_confirmer.cc
+confidence: 68
+reasoning: Whale-only ECDH key exchange code handles client_private_key (base64url), server ECDH public keys (SPKI), and epoch key confirmation. The login-server-error hotfix in v4.39.410.14 may have fixed a vulnerability in this exact flow. Error messages suggest specific failure modes. Auth key flow is Whale-only custom code.
+evidence_needed: Running Whale instance to intercept ECDH exchange; protocol specification; whether client_private_key is persisted to disk or memory only; whether epoch key has replay potential.
+verify_steps: AUTH_HELPED: Run Whale, enable sync, capture network traffic during Naver login; examine Local State / Preferences for client_private_key storage; test epoch key replay.
+[HYP] Desktop sync passphrase KDF weak iteration / device-recoverable master key (upgraded from 62 to 65)
+class: AUTH
+asset: Whale v4.39.410.14 binary os_crypt_whale.cc + trusted_vault_request_whale.cc
+confidence: 65
+reasoning: Binary confirms 9 Whale-only sync files including trusted_vault_request_whale.cc. TrustedVault + Nigori sync encryption confirmed. os_crypt_async with secret_portal_key_provider. Bootstrap token prefs confirmed. login-server-error hotfix in v4.39.410.14.
+evidence_needed: Same as before — KDF iteration counts, key derivation parameters.
+verify_steps: Same as before.
+[HYP] Whale push notification service worker + socket.io attack surface (NEW)
+class: OTHER
+asset: whale_sync_push/service_worker.js + whale_sync_push/socket.io.slim.js
+confidence: 45
+reasoning: Whale-specific service worker using socket.io.slim.js for real-time push notifications. utilityPrivate exposes onPushUpdated/onPushConnected/onPushConnectError/onPushDisconnected events. getPushServerURL returns server URL. Push notification system is Whale-only custom code.
+evidence_needed: Push server endpoint; socket.io version; authentication mechanism for push channel; whether push channel can be used to inject messages.
+verify_steps: NETWORK: Capture push server URL and socket.io connection; examine service worker code in resources.pak; test push message injection.
