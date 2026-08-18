@@ -7359,3 +7359,27 @@
 - LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path — permanently park
 - LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path — permanently parked.
 - LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 4
+
+## RANKED HYPOTHESES 2026-08-18 15:06:37 UTC
+- [62] Whale: Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-bigpickle.txt): PASSIVE: Re-probe `https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` for new 2026 CVEs or sync-class keyword hits (only l
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extracti
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 4
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extracti
+- LEARN: CONFIRMED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, 0 sync-class keyword hits; remains onl
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/625
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path — permanently park
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path — permanently parked.
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 4
+- LEARN: ACCEPTED @ desktop version bump: v4.38.386.14 → v4.39.410.14 (Aug 18, today) — 4 releases since last analysis; Chromium engine 137→150; binary re-acquisition re
+- LEARN: ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in the exact sur
+- LEARN: ACCEPTED @ Chromium150 engine upgrade: v4.39.410.1+ uses Chromium 150; may have changed OSCrypt fork boundaries, KDF parameters, or sync protocol — binary diff 
+- LEARN: ACCEPTED @ new flags: browser lock (whale://flags) uses passcode for browser locking — new local-auth surface but out of primary hypothesis scope.
+- LEARN: ACCEPTED @ NVD confirmed: 28 total whale CVEs, 0 in 2026 as of Aug 18; stack.watch confirms "0 vulnerabilities in Naver Whale Browser" in 2026.
+- LEARN: CONFIRMED @ Android APK: v3.9.14.9 is latest (364.2MB arm64 XAPK, SHA-256 6f7c7907...); APKMirror has 4 arch variants; APKPure download CDN still HTTP 200 with 
+- LEARN: REJECTED @ all binary acquisition channels: still 100% blocked in-sandbox as of Aug 18.
+- LEARN: REJECTED class @ sidebar/dual-tab SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list — permanently parked.

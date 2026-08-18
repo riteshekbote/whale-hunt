@@ -12053,3 +12053,74 @@ testability: PASSIVE
 [RISK] sync: 62 — Whale-only OSCrypt xv10/bootstrap-token surface is strongest in-scope class but zero public source + binary HUMAN-gated; 8-month NVD gap confirmed.
 [RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; sample sidebar surface live but patched (platform-agnostic CPE covers v4.38.386.14).
 [RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible, handler runtime-fetched; speculative only; no passive version string; CVE-2023-35780 confirmed irrelevant.
+## 2026-08-18 15:06:20 UTC [sync] (model bigpickle)
+[PRIO] NVD gap monitor, score 4.70, attack=3 business=7 tech=2 gate=10 cloud=1 fresh=5
+[PRIO] sync KDF (OSCrypt v10 fork), score 4.35, attack=6 business=8 tech=5 gate=3 cloud=2 fresh=3
+[PRIO] Android sync engine, score 3.85, attack=6 business=8 tech=4 gate=2 cloud=2 fresh=3
+[HYP] Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork
+class: AUTH
+asset: Whale v4.38.386.14 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
+confidence: 62
+reasoning: Whale-only markers (xv10 magic, sync.encryption_bootstrap_token_per_account) confirmed in prior binary recon; 0 sync/crypto source in all public branches + wiki; KDF constants/iteration counts/master-key storage path remain unextracted; 8-month NVD gap masks silent regression.
+evidence_needed: PBKDF2/scrypt algorithm + iteration count in Whale fork; derived-key persistence (keyring vs file vs Local State); delta vs Linux Chromium baseline.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: Full-pagination parse confirms totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 IDs+descriptions; newest CVE-2025-69235 @2025-12-30; 8-month gap static for v4.35.352–v4.38.386.14.
+evidence_needed: any new navercorp CVE or fix-version note; any sync-class keyword hit in future NVD updates.
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/404/000), diff published dates + sync-class keyword screen.
+impact: early-warning of newly disclosed in-scope flaws enables priority recalibration; Medium
+testability: PASSIVE
+[PARKED] Android sync encryption KDF / master-key storage: confidence 43 < 50 threshold; all acquisition channels 100% blocked in-sandbox; no passive proof path; no delta since inception.
+[FINAL] Desktop sync passphrase KDF weak iteration / device-recoverable master key, 62
+[FINAL] NVD 8-month gap hides undisclosed sync-class fixes, 55
+[NEXT] PASSIVE: Re-probe `https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` for new 2026 CVEs or sync-class keyword hits (only live zero-auth passive surface; next re-probe in 7 days).
+[LEARN] ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extraction is the ONLY vector; confidence 62 retained, HUMAN-gated.
+[LEARN] CONFIRMED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, 0 sync-class keyword hits; remains only live zero-auth passive surface; 8-month gap continues.
+[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/62584/62585); platform-agnostic CPE covers v4.38.386.14 (patched) — permanently parked.
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path — permanently parked.
+[LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path — permanently parked.
+[LEARN] REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 403, pstatic 404 scope-excluded); binary-dependent sync-KDF verification permanently HUMAN-gated.
+[RISK] sync: 62 — Whale-only OSCrypt xv10/bootstrap-token surface is strongest in-scope class but zero public source + binary HUMAN-gated; 8-month NVD gap confirmed.
+[RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; sample sidebar surface live but patched (platform-agnostic CPE covers v4.38.386.14).
+[RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible, handler runtime-fetched; speculative only; no passive version string; CVE-2023-35780 confirmed irrelevant.
+[PRIO] sync KDF (OSCrypt v10 fork), score 4.35, attack=6 business=8 tech=5 gate=3 cloud=2 fresh=4 ← bumped fresh due to login-server-error hotfix
+[PRIO] NVD gap monitor, score 4.70, attack=3 business=7 tech=2 gate=10 cloud=1 fresh=5
+[PRIO] Android sync engine, score 3.85, attack=6 business=8 tech=4 gate=2 cloud=2 fresh=3
+[HYP] Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork
+class: AUTH
+asset: Whale v4.39.410.14 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
+confidence: 62
+reasoning: Whale-only markers (xv10 magic, sync.encryption_bootstrap_token_per_account) confirmed in prior binary recon of v4.38.386.14; 0 sync/crypto source in all public branches + wiki; Chromium engine jumped 137→150 which may have changed OSCrypt v10 fork boundaries; login-server-error hotfix in v4.39.410.14 (today) confirms active login/auth code changes — the exact surface our KDF hypothesis targets. KDF constants/iteration counts/master-key storage remain unextracted.
+evidence_needed: PBKDF2/scrypt/argon2 algorithm + iteration count in Whale fork; derived-key persistence (keyring vs file vs Local State); delta vs Chromium baseline; whether Chromium150 OSCrypt changes propagated to Whale fork.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered v4.39.410.14 binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable; diff binary symbols vs v4.38.386.14 if both available.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: Full-pagination parse confirms totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 IDs+descriptions; newest CVE-2025-69235 @2025-12-30; 8-month gap now extends to Aug 18, 2026.
+evidence_needed: any new navercorp CVE or fix-version note; any sync-class keyword hit in future NVD updates.
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/404/000), diff published dates + sync-class keyword screen.
+impact: early-warning of newly disclosed in-scope flaws enables priority recalibration; Medium
+testability: PASSIVE
+[PARKED] Android sync encryption KDF / master-key storage: confidence 43 < 50 threshold; all acquisition channels 100% blocked in-sandbox; no passive proof path; no delta since inception.
+[FINAL] Desktop sync passphrase KDF weak iteration / device-recoverable master key, 62
+[FINAL] NVD 8-month gap hides undisclosed sync-class fixes, 55
+[NEXT] HUMAN: Deliver official Whale desktop binary **v4.39.410.14** (the current latest stable, released TODAY) to `/tmp/opencode/whale_binary/` via unrestricted internet. The Chromium engine jumped from ~137 to 150 — the binary must be re-acquired for accurate string/rodata extraction. Softpedia offers v4.39.410.13 as WhaleSetup.exe (192MB); the official forum post for v4.39.410.14 is live at `forum.whale.naver.com/announcement/137`. The login-server-error hotfix in this version is directly relevant to our sync/auth hypothesis and warrants priority analysis.
+[LEARN] ACCEPTED @ desktop version bump: v4.38.386.14 → v4.39.410.14 (Aug 18, today) — 4 releases since last analysis; Chromium engine 137→150; binary re-acquisition required for all string/rodata analysis.
+[LEARN] ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in the exact surface our sync KDF hypothesis targets; raises relevance but does not change confidence (still 62, HUMAN-gated).
+[LEARN] ACCEPTED @ Chromium150 engine upgrade: v4.39.410.1+ uses Chromium 150; may have changed OSCrypt fork boundaries, KDF parameters, or sync protocol — binary diff vs v4.38.386.14 needed.
+[LEARN] ACCEPTED @ new flags: browser lock (whale://flags) uses passcode for browser locking — new local-auth surface but out of primary hypothesis scope.
+[LEARN] ACCEPTED @ NVD confirmed: 28 total whale CVEs, 0 in 2026 as of Aug 18; stack.watch confirms "0 vulnerabilities in Naver Whale Browser" in 2026.
+[LEARN] CONFIRMED @ Android APK: v3.9.14.9 is latest (364.2MB arm64 XAPK, SHA-256 6f7c7907...); APKMirror has 4 arch variants; APKPure download CDN still HTTP 200 with XAPK link.
+[LEARN] REJECTED @ all binary acquisition channels: still 100% blocked in-sandbox as of Aug 18.
+[LEARN] REJECTED class @ sidebar/dual-tab SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list — permanently parked.
+[RISK] sync: 62 — Chromium 137→150 engine jump + login-server-error hotfix in v4.39.410.14 raises relevance but binary HUMAN-gated; 0 public source; 8-month NVD gap confirmed.
+[RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium 150 may introduce new surfaces but inaccessible without binary.
+[RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible; speculative only.
