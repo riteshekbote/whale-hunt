@@ -15780,3 +15780,36 @@ testability: HUMAN_ONLY
 ## 2026-08-18 09:07:01 UTC [browser] (model laguna)
 ## 2026-08-18 09:47:17 UTC [browser] (model laguna)
 ## 2026-08-18 10:12:46 UTC [browser] (model laguna)
+## 2026-08-18 10:49:20 UTC [browser] (model laguna)
+[PRIO] services.nvd.nist.gov/rest/json/cves/2.0: 66, axes: attack_surface=4 (passive CVE API only, no execution), business_value=10 (disclosure gap reveals vulnerable versions), tech_exposure=3 (API metadata surface), gate_ease=10 (no auth needed), cloud_surface=2 (static metadata), freshness=10 (operational, re-verified HTTP 200 @07:32 UTC)
+[PRIO] /tmp/opencode/whale_binary/: 60, axes: attack_surface=0 (absent), business_value=10 (only sync/crypto vector), tech_exposure=0 (no binary present), gate_ease=0 (delivery blocked), cloud_surface=0 (no metadata without binary), freshness=0 (MISSING since Aug 7 — persistent)
+[PRIO] naver/whale-browser-developers (translate branch): 42, axes: attack_surface=3 (sample extension docs only), business_value=5 (only public code surface), tech_exposure=2 (JS sample files), gate_ease=10 (public repo), cloud_surface=1 (GitHub metadata), freshness=0 (no code commits since 2019-09-23)
+[PRIO] cloudfront DNS (desktop .deb acquisition): 35, axes: attack_surface=0 (blocked), business_value=8 (binary unlocks sync vector), tech_exposure=0 (egress blocked), gate_ease=0 (No-answer via both resolvers), cloud_surface=0 (no CDN metadata), freshness=0 (permanently dead)
+[HYP] Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork
+class: AUTH
+asset: /tmp/opencode/whale_binary/
+confidence: 62
+reasoning: Full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto/OSCrypt source files in any public branch) confirms binary extraction is the ONLY vector; Whale-forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic + `sync.encryption_bootstrap_token_per_account` prefs key confirmed present in v4.38.386.14 via prior binary recon; 8-month disclosure gap (0 CVEs in 2026, 0 sync-class keyword hits across all 28 NVD descriptions) masks 3 unmonitored minor versions (v4.35.352→v4.38.386.14).
+evidence_needed: Whale-only prefs keys in Preferences JSON; KDF iteration count + AES nonce size in `os_crypt_whale.so` compared against Chromium base; master-key storage path on Linux (KWallet/GNOME keyring).
+verify_steps: HUMAN_ONLY: Deliver official Whale desktop binary v4.38.386.14 (.deb via unrestricted internet, NOT cloudfront-blocked sandbox) into `/tmp/opencode/whale_binary/`. Upon delivery: (1) `sha256sum` only — never raw secrets; (2) extract `Preferences` JSON → `grep -ao 'sync.encryption_bootstrap_token'` to confirm key presence; (3) `objdump -d os_crypt_whale.so | grep -icE 'pbkdf2|scrypt|aes|nonce|xv10'` compare against Chromium base; (4) inspect KWallet/GNOME keyring for master-key path.
+impact: Local attacker decrypts synced passwords/cookies/autofill leading to cross-device Whale account compromise (Critical if weak KDF confirmed, e.g. PBKDF2 iteration count below Chromium baseline).
+testability: HUMAN_ONLY
+[HYP] NVD whale CVE disclosure gap masks unfixed sync-class regression across 8-month window
+class: MISCONFIG
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: Full-pagination `keywordSearch=whale` confirms 28 total CVEs, 0 published in 2026, 0 sync-class keyword hits across all 28 descriptions (screened: sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring|cookie|encryption|os_crypt|bootstrap_token|whale_sync|sync_encryption|weak_kdf); latest modified 2026-06-17 (NVD maintenance batch only — no new publications, confirmed via full-pagination parse).
+evidence_needed: New Naver Whale CVE with fixed_version >= v4.35.352 mentioning sync/crypto/OSCrypt; OR sync-class keyword hit in any of the 28 CVE descriptions; OR binary extraction proving sync KDF deviation from Chromium base.
+verify_steps: PASSIVE: `curl -s --connect-timeout 20 -H "User-Agent: whale-hunt/0.1" "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200"` → parse totalResults + year breakdown + sync-class keyword hits — full pagination, ≤1 rps, probe daily during disclosure window.
+impact: Sync-class flaws remain unreported 8+ months across 3 unmonitored minor versions (v4.35.352→v4.38.386.14); delayed remediation risks sustained cross-device Whale account compromise if weak KDF confirmed (High, monitoring-only).
+testability: PASSIVE
+[HYP] Whale sidebarAction SOP bypass API surface — unvalidated onMessage dispatch from any web origin
+class: XSS
+asset: raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js
+confidence: 30
+reasoning: Sample extension (all 5 files HTTP 200 this cycle) confirms `manifest.json` content_scripts match ALL origins (`http://*/*` + `https://*/*`) + `permissions:["tabs"`; `contentscript.js` dispatches `sidebarAction.show`/`show2`/`hide`/`hideAll` from `navigator.userAgent.includes('sidebar')===false` branch (any web page → privileged background); `background.js` accepts `sender` param in onMessage listener but python grep confirms ZERO matches for `sender.origin`/`sender.url`/`sender.tab`/`sender.id`/`sender.frameId`/`sender.tls` (0 results, 1772 bytes).
+evidence_needed: Live browser reproduction showing arbitrary web page triggering `sidebarAction.show({url})` into privileged sidebar context bypassing SOP on v4.38.386.14; OR confirmation that CVE-2025-69235 fix (v4.35.351.12) fully closed the `show({url})` path.
+verify_steps: HUMAN_ONLY: Install Whale v4.38.386.14 desktop + load sample extension → navigate any web page → trigger `whale.runtime.sendMessage('sidebarAction.show')` → observe sidebar panel loading arbitrary URL crossing origin boundary. No passive/binary-extraction proof path available (repo is documentation-only, no binary accessible in-sandbox via cloudfront DNS No-answer | APKMirror 403 | Uptodown 410 | APKPure CDN 403 | pstatic 404).
+impact: SOP bypass in sidebar context allowing cross-origin resource access via `sidebarAction.show({url})` (same class as CVE-2025-69235, CVSS 9.1 if exploitable on current version).
+testability: HUMAN_ONLY
+[PARKED]
