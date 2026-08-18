@@ -1,86 +1,14 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt
-total 1196
-drwxr-xr-x 11 runner runner   4096 Aug 18 22:03 .
-drwxr-xr-x  3 runner runner   4096 Aug 18 22:03 ..
-drwxr-xr-x  7 runner runner   4096 Aug 18 22:03 .git
-drwxr-xr-x  3 runner runner   4096 Aug 18 22:03 .github
--rw-r--r--  1 runner runner   1057 Aug 18 22:03 README.md
--rw-r--r--  1 runner runner      0 Aug 18 22:03 cands-naver.txt
-drwxr-xr-x  2 runner runner   4096 Aug 18 22:03 inventory
-drwxr-xr-x  2 runner runner   4096 Aug 18 22:03 knowledge
-drwxr-xr-x  2 runner runner  36864 Aug 18 22:03 leads
--rw-r--r--  1 runner runner  33957 Aug 18 22:03 probe-results.md
-drwxr-xr-x  2 runner runner   4096 Aug 18 22:03 reports
--rw-r--r--  1 runner runner 597846 Aug 18 22:03 repos-naver.json
-drwxr-xr-x  3 runner runner   4096 Aug 18 22:03 reposcan-raw
--rw-r--r--  1 runner runner 462890 Aug 18 22:03 scan-prompt.txt
--rw-r--r--  1 runner runner   1513 Aug 18 22:03 scope.yml
-drwxr-xr-x  2 runner runner   4096 Aug 18 22:03 scripts
--rw-r--r--  1 runner runner     34 Aug 18 22:03 state_bigpickle.json
--rw-r--r--  1 runner runner     37 Aug 18 22:03 state_laguna.json
--rw-r--r--  1 runner runner     34 Aug 18 22:03 state_ling3.json
--rw-r--r--  1 runner runner     34 Aug 18 22:03 state_longcat.json
--rw-r--r--  1 runner runner     37 Aug 18 22:03 state_nemotron3.json
-drwxr-xr-x  2 runner runner  20480 Aug 18 22:03 triage
-[0m
-The knowledge base you've provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), not **gladiaio**. There's no gladiaio content in the RAG base.
+There's a **critical mismatch**: the knowledge base provided is entirely about **Naver Whale browser** (`naver/whale-browser-developers`), not about **gladiaio** or `@gladiaio/sdk`.
 
-Let me check the actual workspace for gladiaio repos:
-[0m→ [0mRead scope.yml
-[0m
-[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/inventory/
-total 160
-drwxr-xr-x  2 runner runner   4096 Aug 18 22:03 .
-drwxr-xr-x 11 runner runner   4096 Aug 18 22:03 ..
--rw-r--r--  1 runner runner 155534 Aug 18 22:03 whale.md
-[0m
-[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/reposcan-raw/
-total 480
-drwxr-xr-x  3 runner runner   4096 Aug 18 22:03 .
-drwxr-xr-x 11 runner runner   4096 Aug 18 22:03 ..
--rw-r--r--  1 runner runner   1936 Aug 18 22:06 analysis.txt
--rw-r--r--  1 runner runner     40 Aug 18 22:03 grep-delta.txt
--rw-r--r--  1 runner runner     50 Aug 18 22:03 grep-hits.prev.txt
--rw-r--r--  1 runner runner     50 Aug 18 22:03 grep-hits.txt
-drwxr-xr-x  2 runner runner   4096 Aug 18 22:03 naver
--rw-r--r--  1 runner runner 461661 Aug 18 22:03 rag.txt
-[0m
-[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/reposcan-raw/naver/
-total 8
-drwxr-xr-x 2 runner runner 4096 Aug 18 22:03 .
-drwxr-xr-x 3 runner runner 4096 Aug 18 22:03 ..
-[0m
-**This workspace is for the Naver Whale Browser hunt, not gladiaio.**
+The knowledge base contains:
+- 200+ entries about Whale browser CVEs, repo enumeration, binary acquisition, sidebar SOP bypasses, sync KDF analysis
+- Zero mentions of `gladiaio`, `@gladiaio/sdk`, or any Gladia-related repos/packages
 
-The workspace contains:
-- `scope.yml` → program: **Naver Whale Browser**, github_orgs: `naver`
-- `inventory/whale.md` → only Whale inventory
-- `reposcan-raw/naver/` → naver org reposcan data
-- Knowledge base (your RAG) → entirely Whale browser CVEs, sync KDF, sidebar SOP bypass, binary acquisition channels, etc.
+**I cannot triage a gladiaio scan with this knowledge base.** You need to either:
+1. Provide the correct gladiaio knowledge base/RAG data, or
+2. Clarify if you meant to scan Naver Whale (in which case the knowledge base is correct but your query describes the wrong target)
 
-There's **no gladiaio content** in this workspace — no repos, no inventory, no scan data, no npm metadata for `@gladiaio/sdk`.
-
----
-
-**If you meant to triage the Whale browser hunt** (which matches this workspace and knowledge base), the current state is:
-
-| Surface | Status |
-|---------|--------|
-| `naver/whale-browser-developers` | Documentation-only (last code commit 2019-09-23); 0 sync/crypto source files in any branch |
-| Binary acquisition | 100% blocked in-sandbox (CloudFront DNS `No answer`, APKMirror 403, Uptodown 410 Gone, APKPure CDN 403, pstatic 404) |
-| NVD gap monitor | `services.nvd.nist.gov` HTTP 200 — `keywordSearch=whale` = 28 total, **0 in 2026**, latest CVE-2025-69235 @2025-12-30 (8-month gap) |
-| Sample extension | All 5 files HTTP 200 — `content_scripts` match ALL origins, `background.js` has **0 `sender.origin`/`sender.url`/`sender.tab` matches** (zero origin validation) |
-| Desktop version | v4.39.410.18 (Aug 18 same-day double-release after login-server-error hotfix + Chromium 138 bump) |
-| Android APK | v3.9.14.9 latest — no passive curl-able download path |
-
-**Active hypothesis**: Sync KDF / bootstrap-token / OSCrypt fork (confidence 65, HUMAN-gated — requires binary extraction)  
-**Rejected classes**: Sidebar SOP bypass (dup of fixed CVEs, platform-agnostic CPE covers v4.39.410.18), socket.io event-handler injection (conf 38 < 40), installer DLL search-order (conf 50 < 60)
-
----
-
-**If you actually want gladiaio triage**, you'll need to:
-1. Point me at the correct workspace/repo with gladiaio scan data
-2. Provide the gladiaio knowledge base (not the Whale one)
+Which target should I actually triage?
