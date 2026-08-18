@@ -1,67 +1,33 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-[0m$ [0mls -la
-total 1192
-drwxr-xr-x 11 runner runner   4096 Aug 18 20:48 .
-drwxr-xr-x  3 runner runner   4096 Aug 18 20:47 ..
-drwxr-xr-x  7 runner runner   4096 Aug 18 20:48 .git
-drwxr-xr-x  3 runner runner   4096 Aug 18 20:48 .github
--rw-r--r--  1 runner runner   1057 Aug 18 20:48 README.md
--rw-r--r--  1 runner runner      0 Aug 18 20:48 cands-naver.txt
-drwxr-xr-x  2 runner runner   4096 Aug 18 20:48 inventory
-drwxr-xr-x  2 runner runner   4096 Aug 18 20:48 knowledge
-drwxr-xr-x  2 runner runner  36864 Aug 18 20:48 leads
--rw-r--r--  1 runner runner  33391 Aug 18 20:48 probe-results.md
-drwxr-xr-x  2 runner runner   4096 Aug 18 20:48 reports
--rw-r--r--  1 runner runner 597846 Aug 18 20:48 repos-naver.json
-drwxr-xr-x  3 runner runner   4096 Aug 18 20:48 reposcan-raw
--rw-r--r--  1 runner runner 458773 Aug 18 20:48 scan-prompt.txt
--rw-r--r--  1 runner runner   1513 Aug 18 20:48 scope.yml
-drwxr-xr-x  2 runner runner   4096 Aug 18 20:48 scripts
--rw-r--r--  1 runner runner     34 Aug 18 20:48 state_bigpickle.json
--rw-r--r--  1 runner runner     37 Aug 18 20:48 state_laguna.json
--rw-r--r--  1 runner runner     34 Aug 18 20:48 state_ling3.json
--rw-r--r--  1 runner runner     34 Aug 18 20:48 state_longcat.json
--rw-r--r--  1 runner runner     37 Aug 18 20:48 state_nemotron3.json
-drwxr-xr-x  2 runner runner  20480 Aug 18 20:48 triage
-[0m
-The knowledge base you've provided is entirely about **Naver Whale Browser** (naver/whale-browser-developers), but your task asks about **gladiaio/ GitHub org** and **@gladiaio/sdk** npm package. These are completely different projects.
+**Triage Summary: Whale Browser (naver/whale-browser-developers)**
 
-Let me check what's actually in the workspace to understand what we're working with:
-[0m→ [0mRead scope.yml
-[0m→ [0mRead scan-prompt.txt
-[0m→ [0mRead inventory
-[0m→ [0mRead probe-results.md
-[0m→ [0mRead inventory/whale.md
-There's a **critical mismatch** in your prompt:
+The provided knowledge base covers **Naver Whale Browser** vulnerability research, not `gladiaio/` repos or `@gladiaio/sdk`. The inventory explicitly states "Inventory: whale" and all content pertains to Whale's attack surface (sidebar SOP bypass, sync KDF, binary acquisition). No Gladia-related artifacts appear in the knowledge base.
 
-- **Prompt says**: Triaging `gladiaio/` GitHub org + `@gladiaio/sdk` npm package
-- **Actual workspace**: Naver Whale Browser hunting (`naver/whale-browser-developers`)
-- **Scope.yml**: Whale Browser program only
-- **Probe results**: HTTP probes of Whale-related endpoints (GitHub, NVD, Uptodown, CloudFront, APKMirror)
-- **Knowledge base**: 1000+ entries about Whale Browser CVEs, sync KDF, sidebar SOP bypass, binary acquisition failures
+### Scan Results
+| Category | Hits | Details |
+|----------|------|---------|
+| REAL_SECRET | 0 | No credentials/API keys found — scan summary: "0 code/config files scanned, 0 hits" |
+| TEST_OR_EXAMPLE | 0 | N/A |
+| ENDPOINT_LEAK | 0 | N/A |
+| INTERESTING | 0 | N/A |
 
-The probe-results.md contains **only HTTP probe logs** (HEAD/GET requests to various URLs) — no source code files were scanned, no grep hits exist, no secrets/endpoints were found in code.
+### Verdict List
+| Candidate | REPORT_CANDIDATE | Reason |
+|-----------|------------------|--------|
+| Whale sidebar SOP bypass (CVE-2025-69234/69235) | **no** | Duplicate of fixed CVEs; platform-agnostic CPE covers v4.39.410.18; sample extension confirms API surface only, not current-binary exploitability |
+| Whale sync KDF / OSCrypt / bootstrap-token | **no** (HUMAN-gated) | Strongest open surface (confidence 62), but **binary extraction required** — all passive acquisition channels blocked (CloudFront DNS No-answer, APKMirror 403, Uptodown 410, pstatic 404); `/tmp/opencode/whale_binary/` missing |
+| Socket.io.slim.js event-handler injection | **no** | Confidence 38 < 40; handler runtime-fetched; no passive version string; CVE-2023-35780 irrelevant (WordPress plugin) |
+| Installer DLL search-order regression | **no** | Confidence 50 < 60; all passive binary channels dead; no proof path |
+| Public repo static analysis | **no** | Repo is documentation-only (pushed 2019-09-23, 0 releases, 4 branches); 0 sync/crypto/OSCrypt source files in any branch |
+| NVD gap monitor (keywordSearch=whale) | **monitor only** | 28 total CVEs, 0 in 2026, 0 sync-class keyword hits; latest CVE-2025-69235 @2025-12-30; only live zero-auth passive surface |
 
-**There are no scan hits to classify** because:
-1. No source code repositories were cloned/scanned (the only public repo is documentation-only)
-2. All binary acquisition channels are blocked in-sandbox
-3. The probe-results only show HTTP status checks, not code analysis
+### Key Confirmed State (2026-08-18)
+- **Desktop version**: v4.39.410.18 (same-day double release after login-server-error hotfix + Chromium 138 bump)
+- **Android APK**: v3.9.14.9 (latest, but all download channels blocked in-sandbox)
+- **Binary acquisition**: 100% blocked in-sandbox (CloudFront DNS No-answer via 127.0.0.53 + 8.8.8.8; APKMirror 403; Uptodown 410 Gone; APKPure CDN 403; pstatic 404 scope-excluded)
+- **Static analysis path**: Permanently dead — no Whale-specific source code in public GitHub
+- **Valid bugs accumulated**: **0** across all triage cycles
 
----
-
-### Triage Verdict
-
-| Category | Count | Details |
-|----------|-------|---------|
-| REAL_SECRET | 0 | No source code scanned |
-| TEST_OR_EXAMPLE | 0 | No source code scanned |
-| ENDPOINT_LEAK | 0 | Only public endpoints probed (GitHub API, NVD, Uptodown) |
-| INTERESTING | 0 | No code analyzed |
-
-**REPORT_CANDIDATE: no** — No actionable findings from this passive scan cycle. The attack surface requires binary extraction (HUMAN-gated) which is blocked in-sandbox.
-
----
-
-**Note**: If you intended to scan `gladiaio/` repos, you'll need to point the scanner at that org. The current workspace is exclusively for Naver Whale Browser.
+**Conclusion**: No reportable findings for automated disclosure. The only viable path (sync KDF analysis) requires **HUMAN with unrestricted internet** to acquire v4.39.410.18 desktop binary or v3.9.14.9 Android XAPK. All other surfaces are duplicates of patched CVEs or below confidence thresholds.
