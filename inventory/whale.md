@@ -1459,3 +1459,17 @@
 - CHANGED APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` consistently HTTP 404 (was transient 200/403) — no curl-able APK path remains
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 confirmed hard sandbox egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)
 - CHANGED `whale.naver.com` root (without www) consistently HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml, no server probing allowed
+
+## 2026-08-18 16:05:29 UTC
+- NEW Desktop version bumped: v4.38.386.14 → v4.39.410.14 (Aug 18, today) — 4 releases since last analysis; Chromium engine 137→150; binary re-acquisition required for all string/rodata analysis
+- NEW Login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in the exact surface our sync KDF hypothesis targets
+- NEW Chromium 150 engine upgrade: v4.39.410.1+ uses Chromium 150; may have changed OSCrypt fork boundaries, KDF parameters, or sync protocol — binary diff vs v4.38.386.14 needed
+- NEW New flags surface: browser lock (whale://flags) uses passcode for browser locking — new local-auth surface but out of primary hypothesis scope
+- CHANGED NVD services endpoint `services.nvd.nist.gov/rest/json/cves/2.0` recovered to stable HTTP 200 (was flapping 404/000 through 2026-08-17) — `keywordSearch=whale` consistently returns totalResults=28, 0 
+- CHANGED APKPure landing page `apkpure.com/naver-whale-browser/com.naver.whale` consistently HTTP 404 (was transient 200/403) — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 confirmed hard sandbox egress block general to all `*.cloudfront.net` (DNS No-answer via both 127.0.0.53 and 8.8.8.8)
+- CHANGED `whale.naver.com` root (without www) consistently HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml, no server probing allowed
+- NEW Desktop version bumped: v4.39.410.14 (Aug 18) — 4 releases since v4.38.386.14; Chromium engine 137→150; OSCrypt fork boundaries/KDF parameters potentially changed; binary re-acquisition now required f
+- NEW Login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes targeting exact surface of sync KDF hypothesis
+- CHANGED NVD services endpoint recovered: HTTP 200 operational (`keywordSearch=whale` returns totalResults=28, 0 in 2026, 0 sync-class keyword hits); gap now ~8 months (latest CVE-2025-69235 @2025-12-30)
+- CHANGED APKPure: landing HTTP 200 flip-flopped but download CDN download.apkpure.com remains HTTP 403 — no curl-able APK path for v3.9.14.9
