@@ -983,3 +983,7 @@ https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerP
 
 ## 2026-08-18 11:15:23 UTC
 https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 -> 200 len=65680 type=application/json
+
+## 2026-08-18 11:45:26 UTC
+https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 -> 200 len=65680 type=application/json
+https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` -> HTTP 400
