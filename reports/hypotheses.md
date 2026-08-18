@@ -7191,3 +7191,12 @@
 - LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
 - LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
 - LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 4
+
+## RANKED HYPOTHESES 2026-08-18 10:27:00 UTC
+- [62] Whale: Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extracti
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 4
