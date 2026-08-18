@@ -1419,3 +1419,5 @@
 - CHANGED `whale.naver.com` root (without www) consistently HTTP 200 — but `*.naver.com` explicitly OOS per scope.yml, no server probing allowed
 
 ## 2026-08-18 10:50:31 UTC
+
+## 2026-08-18 11:15:23 UTC
