@@ -7043,3 +7043,25 @@
 - LEARN: CONFIRMED @ sample extension background.js (translate branch): 0 sender.origin/sender.url/sender.tab/sender.id/sender.frameId/sender.tls grep matches — zero ori
 - LEARN: CONFIRMED @ cloudfront DNS: d1vdt4q2qgdbji.cloudfront.net resolves No-answer via BOTH 127.0.0.53 and 8.8.8.8 — hard sandbox network egress block general to all 
 - LEARN: CONFIRMED @ NVD gap monitor: `services.nvd.nist.gov` HTTP 200 operational — `keywordSearch=whale` totalResults=**28**, **0 in 2026**, **0 sync-class keyword hit
+
+## RANKED HYPOTHESES 2026-08-18 05:52:51 UTC
+- [62] Whale: Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (from reports/hypotheses-nemotron3.txt)
+- [55] services.nvd.nist.gov/rest/json/cves/2.0: NVD whale CVE disclosure gap masks unfixed sync-class regression (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.38.386.14 (.deb from d1vdt4q2qgdbji.cloudfront.net via unrestricted internet, or WhaleSetup.exe from Naver CDN) 
+- NEXT(hypotheses-laguna.txt): PROBE: Re-probe `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` (HTTP 200 confirmed) for any NEW 2026 CVE publication with syn
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive proof path; permanently parke
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 404/410, APKPure CDN 4
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, 0 in 2026, 0 sync-class keyword hits across all 28
+- LEARN: ACCEPTED @ GitHub repo naver/whale-browser-developers: documentation-only (pushed 2019-09-23, updated_at=2025-10-22, size=5043, has_wiki=true, 0 releases) — 0 s
+- LEARN: ACCEPTED @ sample extension background.js (translate branch): 0 `sender.origin`/`sender.url`/`sender.tab`/`sender.id`/`sender.frameId`/`sender.tls` grep matches
+- LEARN: ACCEPTED @ cloudfront DNS: d1vdt4q2qgdbji.cloudfront.net resolves `No answer` via BOTH 127.0.0.53 and 8.8.8.8 — hard sandbox network egress block general to all
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extracti
+- LEARN: REJECTED class @ sample extension sidebar SOP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/62584/625
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-3578
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead (cloudfront DNS No-answer via both resolvers, APKMi
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational this cycle (re-verified) — keywordSearch=whale totalResults=28, 0 in 2026, 0 sync-class k
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both 127.0.0.53 and 8.8.8.8, APKMirror 403, Uptodown 404/410, 
+- LEARN: REJECTED @ Uptodown Android acquisition: `naver-whale-browser.en.uptodown.com/android` definitively HTTP 410 Gone ("will not be available again") — Android pass
+- LEARN: REJECTED class @ sync KDF static analysis: full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto/OSCrypt source files) confirms binary
