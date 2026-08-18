@@ -1,1 +1,32 @@
-## 2026-08-18 20:36:27 UTC [sync] (model bigpickle)
+## 2026-08-18 21:05:53 UTC [sync] (model bigpickle)
+[PRIO] sync KDF (OSCrypt v10 fork) v4.39.410.18, score 6.50, attack=6 business=8 tech=6 gate=3 cloud=2 fresh=10
+[PRIO] NVD gap monitor, score 4.70, attack=2 business=7 tech=2 gate=10 cloud=1 fresh=5
+[PRIO] push notification socket.io surface, score 3.85, attack=4 business=5 tech=5 gate=6 cloud=3 fresh=7
+[HYP] Whale desktop sync bootstrap-token envelope deviation in OSCrypt v10 fork (v4.39.410.18)
+class: AUTH
+asset: Whale v4.39.410.18 binary os_crypt_whale.cc/wbc_wrapper_apis.cc + Local State/keyring
+confidence: 65
+reasoning: Whale-only markers (xv10 magic, sync.encryption_bootstrap_token_per_account) confirmed in v4.38.386.14 binary; v4.39.410.14→v4.39.410.18 same-day bump suggests urgent fix in auth/login surface; Chromium base updated to 138 which may have re-baselined OSCrypt fork; 0 sync/crypto source in public repo.
+evidence_needed: PBKDF2/scrypt/argon2 algorithm + iteration count in Whale fork; derived-key persistence (keyring vs file vs Local State); delta vs Chromium138 baseline; whether Chromium138 OSCrypt changes propagated to Whale fork.
+verify_steps: AUTH_HELPED: objdump/strings/.rodata on delivered v4.39.410.18 binary for iteration constants + xv10 symbols; authorized Linux login snapshot of keyring + Preferences pre/post encrypted-sync enable; diff binary symbols vs v4.38.386.14 if both available.
+impact: local attacker/infostealer decrypts synced passwords+bookmarks across devices; High
+testability: AUTH_HELPED
+[HYP] NVD 8-month gap hides undisclosed sync-class fixes
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: Full-pagination parse confirms totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 IDs+descriptions; newest CVE-2025-69235 @2025-12-30; 8-month gap extends to Aug 18, 2026.
+evidence_needed: any new navercorp CVE or fix-version note; any sync-class keyword hit in future NVD updates.
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/404/000), diff published dates + sync-class keyword screen.
+impact: early-warning of newly disclosed in-scope flaws enables priority recalibration; Medium
+testability: PASSIVE
+[PARKED] Whale push notification service worker + socket.io attack surface: confidence 45 < 50 threshold; handler runtime-fetched; binary absent; no passive version string; no concrete verify_steps for push endpoint/auth — dropped.
+[FINAL] Desktop sync passphrase KDF weak iteration / device-recoverable master key (OSCrypt v10 fork v4.39.410.18), 65
+[FINAL] NVD 8-month gap hides undisclosed sync-class fixes, 55
+[NEXT] HUMAN: Deliver official Whale desktop binary **v4.39.410.18** (.deb from `d1vdt4q2qgdbji.cloudfront.net` or WhaleSetup.exe from Softpedia/Naver CDN) to `/tmp/opencode/whale_binary/` via unrestricted internet. The same-day version bump v4.39.410.14→v4.39.410.18 + Chromium 138 base + login-server-error hotfix makes this binary urgent for accurate sync KDF analysis.
+[LEARN] ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extraction is the ONLY vector; confidence 65 retained, HUMAN-gated.
+[LEARN] REJECTED class @ push notification socket.io: confidence 45 < 50 threshold; handler runtime-fetched; binary absent; no passive version string; dropped.
+[LEARN] ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total whale CVEs, 0 in 2026, 8-month disclosure gap confirmed; remains only live zero-auth passive surface.
+[RISK] sync: 65 — same-day version bump v4.39.410.14→v4.39.410.18 + Chromium138 base + login-server-error hotfix raises urgency; binary HUMAN-gated; 0 public source; 8-month NVD gap confirmed.
+[RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium138 may introduce new surfaces but inaccessible without binary.
+[RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible; speculative only; no passive version string; CVE-2023-35780 confirmed irrelevant.
