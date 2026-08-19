@@ -1,29 +1,3 @@
-## 2026-08-19 05:32:35 UTC [browser] (model laguna)
-[HYP] Whale desktop sync bootstrap-token envelope in OSCrypt v10 fork (v4.39.410.18)
-class: AUTH
-asset: `/tmp/opencode/whale_binary/`
-confidence: 65
-reasoning: Full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files) confirms binary extraction is the ONLY vector; same-day double-release v4.39.410.14→v4.39.410.18 + Chromium 137→138 + login-server-error hotfix alters auth/login KDF surface; prior v4.38.386.14 recon confirmed Whale-only xv10/os_crypt_whale.cc/wbc_wrapper_apis.cc + sync.encryption_bootstrap_token_per_account prefs present.
-evidence_needed: PBKDF2 iteration count from os_crypt_whale fork; v10 envelope format deviation vs Chromium 138 baseline; per-account bootstrap-token storage path in Local State; master-key protection mechanism
-verify_steps: AUTH_HELPED: HUMAN downloads official Whale v4.39.410.18 .deb (Softpedia 190MB dated Aug 18) → sha256sum → `strings whale_binary | grep -iE 'iteration|PBKDF2|bootstrap_token|xv10|os_crypt_whale'` → parse Local State pre/post sync-enable for encrypted_key field → diff os_crypt_whale against Chromium 138 baseline
-impact: Local attacker or infostealer with profile access decrypts synced passwords, cookies, bookmarks, autofill across all linked devices → cross-device account takeover. Severity: High.
-testability: AUTH_HELPED
-[HYP] NVD disclosure-gap masks sync-class regression in v4.39.410.18
-class: OTHER
-asset: `https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200`
-confidence: 55
-reasoning: Full-pagination parse confirms totalResults=28, 0 published in 2026, 0 sync-class keyword hits (sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring|crypto = 0 matches) across all 28 CVE descriptions; latest CVE-2025-69235 @2026-06-17 (NVD maintenance batch); 8-month gap spans v4.35.352→v4.39.410.18
-evidence_needed: New navercorp CVE published post-2025-06-17 containing sync-class keyword; or sync-class keyword hit added to any future whale CVE description
-verify_steps: PASSIVE: HTTPS GET `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` (≤1 rps); screen all CVE descriptions for sync-class keywords; re-probe weekly for new disclosures
-impact: Missed early-warning window for High-severity sync regression. Severity: Low.
-testability: PASSIVE
-[HYP] Sample extension sidebar-action unvalidated message dispatch (background.js zero sender validation)
-class: OTHER
-asset: `https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js`
-confidence: 32
-reasoning: background.js HTTP 200 (1772 bytes), python grep confirms 0 matches for sender.origin/sender.url/sender.tab/sender.id/sender.frameId/sender.tls — zero origin validation in onMessage listener; manifest.json content_scripts match ALL origins + permissions ["tabs"]; contentscript.js dispatches sidebarAction.show/show2 from userAgent.includes('sidebar')===false branch
-evidence_needed: Live reproduction of arbitrary URL loading via sidebarAction.show from cross-origin content script against current binary v4.39.410.18; proof binary does NOT enforce origin checks despite API surface
-verify_steps: AUTH_HELPED: Install Whale v4.39.410.18 → load translate-branch sample extension → navigate attacker.com → verify content script invokes whale.sidebarAction.show({details:{url:'https://attacker.com/'}}) without origin error
-impact: Arbitrary sidebar URL injection from any web origin, potential SOP bypass. Severity: Medium.
-testability: AUTH_HELPED
-[NEXT] HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from Softpedia 190MB dated Aug 18) to `/tmp/opencode/whale_binary/`. Same-day double-release v4.39.410.14→v4.39.410.18 + Chromium 138 + login-server-error hotfix makes this binary urgent. Cloudfront DNS `No answer` via both 127.0.0.53 + 8.8.8.8 confirms hard sandbox egress block — no passive path exists. Once delivered: `sha256sum whale_binary && strings whale_binary | grep -iE 'iteration|PBKDF2|bootstrap_token|xv10|os_crypt_whale'` → compare os_crypt_whale fork against Chromium 138 baseline, parse Local State for encrypted_key field.
+## 2026-08-19 06:00:58 UTC [browser] (model laguna)
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb 190MB from Softpedia dated Aug 18) to `/tmp/opencode/whale_binary/`.
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb 190MB from Softpedia dated Aug 18) to `/tmp/opencode/whale_binary/`. Same-day double-release v4.39.410.14→v4.39.410.18 + Chromium 138 + login-server-error hotfix makes this binary urgent. Cloudfront DNS `No answer` via both 127.0.0.53 + 8.8.8.8 confirms hard sandbox egress block — no passive path exists. Once delivered: `sha256sum whale_binary && strings whale_binary | grep -iE 'iteration|PBKDF2|bootstrap_token|xv10|os_crypt_whale' && readelf -p .rodata whale_binary | grep -iE 'password|salt|encrypt'` → compare os_crypt_whale against Chromium 138 baseline, parse Local State for encrypted_key field.
