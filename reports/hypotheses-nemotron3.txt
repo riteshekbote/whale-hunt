@@ -1,6 +1,7 @@
-## 2026-08-19 13:39:01 UTC [browser] (model nemotron3)
+## 2026-08-19 14:17:31 UTC [browser] (model nemotron3)
 [PRIO] Whale v4.39.410.18 desktop binary (os_crypt_whale.so + sync prefs), 7.30, atk=9 biz=9 tech=8 gate=2 cloud=3 fresh=10
 [PRIO] NVD services endpoint (services.nvd.nist.gov/rest/json/cves/2.0), 5.80, atk=6 biz=7 tech=5 gate=8 cloud=2 fresh=4
+[PRIO] Whale Android 3.9.14.9 APK (libos_crypt_whale.so + Keystore sync prefs), 6.10, atk=8 biz=8 tech=7 gate=1 cloud=3 fresh=8
 [HYP] Whale desktop sync bootstrap-token envelope uses Chromium-baseline 1-iteration PBKDF2 in OSCrypt v10 fork (v4.39.410.18)
 class: AUTH
 asset: Whale v4.39.410.18 desktop binary (os_crypt_whale.so + sync prefs)
@@ -10,7 +11,26 @@ evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences
 verify_steps: HUMAN_ONLY: Deliver Whale v4.39.410.18 .deb → objdump/strings on os_crypt_whale.so + whale_sync_util call sites for bootstrap-token envelope and /whalesync/reset request shape; diff pref set vs upstream Chromium; zero network
 impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
 testability: HUMAN_ONLY
+[HYP] Whale Android 3.9.14.9 sync bootstrap tokens stored in Android Keystore with weaker envelope than desktop
+class: AUTH
+asset: Whale Android 3.9.14.9 (com.naver.whale APK)
+confidence: 58
+reasoning: Android sync uses same /whalesync endpoint + NEO_SES cookie auth; bootstrap tokens likely stored in Android Keystore or SharedPreferences; Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, whale_need_encryption_key_forced_time) confirmed in desktop binary — Android variant unanalyzed; APK acquisition channels blocked (APKPure CDN 403, Uptodown 410 Gone)
+evidence_needed: APK binary to inspect libos_crypt_whale.so / keystore usage; sync prefs schema in Android SharedPreferences; bootstrap token envelope format parity with desktop xv10 magic
+verify_steps: HUMAN_ONLY: Acquire com.naver.whale 3.9.14.9 APK via unrestricted internet → apktool + grep for sync.encryption_bootstrap_token* + keystore APIs; compare envelope format vs desktop xv10 magic; zero network
+impact: Local attacker with root/backup access extracts bootstrap tokens → decrypts cross-device synced credentials (High)
+testability: HUMAN_ONLY
+[HYP] NVD 8-month disclosure gap hides undisclosed sync-class fixes in v4.35.352–v4.39.410.18
+class: MISCONFIG
+asset: Whale v4.35.351.12 vs v4.39.410.18 binary diff (os_crypt_whale + sync prefs schema)
+confidence: 55
+reasoning: NVD keywordSearch=whale returns 28 total CVEs, 0 published in 2026 (latest CVE-2025-69235 @2025-12-30); v4.35.352–v4.39.410.18 span 8+ months with zero public disclosures; Whale-specific sync code (os_crypt_whale, wbc_wrapper_apis, /whalesync endpoint) exists only in binary; no public source to audit; disclosure gap may mask silent fixes or regression introduction
+evidence_needed: Version-diff of sync prefs + OSCrypt implementation between v4.35.351.12 (last CVE fix) and v4.39.410.18; binary diff of os_crypt_whale.so symbols
+verify_steps: HUMAN_ONLY: Acquire both binaries (v4.35.351.12 + v4.39.410.18) → bindiff os_crypt_whale + sync prefs schema; check for KDF constant changes, master-key relocation, or bootstrap-token envelope format shifts; zero network
+impact: Undisclosed sync crypto regression → silent downgrade of encryption envelope → mass credential decryption (Critical if confirmed)
+testability: HUMAN_ONLY
 [PARKED] NVD 8-month disclosure gap hides undisclosed sync-class fixes in v4.35.352–v4.39.410.18: confidence 55 ≥ 40 but verify_steps is HUMAN_ONLY with zero passive path — parked pending binary delivery
+[PARKED] Whale Android 3.9.14.9 sync bootstrap tokens stored in Android Keystore with weaker envelope than desktop: confidence 58 ≥ 40 but verify_steps is HUMAN_ONLY with zero passive path — parked pending binary delivery
 [FINAL] 1) Whale desktop sync bootstrap-token envelope uses Chromium-baseline 1-iteration PBKDF2 in OSCrypt v10 fork (v4.39.410.18) (confidence 65)
 [NEXT] HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from Softpedia 190MB dated Aug 18, or from cloudfront d1vdt4q2qgdbji.cloudfront.net/ via unrestricted internet, or WhaleSetup.exe from Naver CDN) to /tmp/opencode/whale_binary/ — all passive download paths confirmed dead (cloudfront DNS No-answer, APKMirror 403, Uptodown 410 Gone, APKPure CDN 403, pstatic 404)
 [LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.18 (patched); no novel variant or binary exploitability proven
