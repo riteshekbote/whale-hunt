@@ -1746,3 +1746,10 @@
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block general to all `*.cloudfront.net`
 - CHANGED NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+
+## 2026-08-19 11:59:23 UTC
+- NEW No new surface items since last cycle (2026-08-19 11:36 UTC) — all passive surfaces unchanged
+- NEW Desktop version bumped v4.38.386.14→v4.39.410.18 (Aug 18 same-day double release); Chromium 137→138.0.7204.92
+- NEW Login-server-error hotfix (v4.39.410.14) confirms active auth/login code churn in sync-KDF surface
+- NEW Browser lock flag (whale://flags) — new passcode-based local-auth surface
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — all passive binary acquisition channels remain 100% blocked (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown Android 410 Gone, APKPur
