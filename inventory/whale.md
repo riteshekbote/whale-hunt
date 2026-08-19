@@ -1806,3 +1806,12 @@
 - NEW NO_DELTA — all passive surfaces identical to last cycle: NVD 28/0-in-2026, GitHub repo pushed 2019-09-23, sample ext 6/6 artifacts HTTP 200, cloudfront DNS No-answer via both resolvers, all binary cha
 
 ## 2026-08-19 21:29:23 UTC
+
+## 2026-08-19 21:53:54 UTC
+- NEW Desktop version same-day double-bumped: v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18); Chromium 137→138.0.7204.92
+- NEW Login-server-error hotfix in v4.39.410.14 — active auth/login code churn in sync-KDF surface
+- NEW Browser lock flag (`whale://flags`) — passcode-based local-auth surface added in v4.39.410.18
+- NEW Softpedia lists v4.39.410.18 (190MB .deb) — alt download (blocked in-sandbox)
+- CHANGED Uptodown Android → HTTP 410 Gone (permanent); APKPure CDN 403/404 (permanent); cloudfront DNS No-answer via both resolvers (permanent) — all binary channels dead
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary extraction permanently HUMAN-gated
+- CHANGED NVD services endpoint stable HTTP 200 — 28 total, 0 in 2026, 0 sync-class keyword hits (gap confirmed static)

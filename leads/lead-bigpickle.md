@@ -13148,3 +13148,45 @@ testability: PASSIVE
 [RISK] sync: 65 — same-day version bump v4.39.410.14→v4.39.410.18 + Chromium138 base + login-server-error hotfix raises urgency; binary HUMAN-gated; 0 public source; 8-month NVD gap confirmed.
 [RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium138 may introduce new surfaces but inaccessible without binary.
 [RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible; speculative only; no passive version string; CVE-2023-35780 confirmed irrelevant.
+## 2026-08-19 21:53:43 UTC [sync] (model bigpickle)
+[PRIO] sync KDF (v4.39.410.18), score 6.35, attack=7 business=8 tech=6 gate=2 cloud=2 fresh=10 — active (HUMAN-gated)
+[PRIO] NVD gap monitor, score 4.70, attack=2 business=7 tech=2 gate=10 cloud=1 fresh=5 — active (PASSIVE)
+[HYP] NVD 8-month gap still holds — totalResults=28, 0 sync-class hits, 0 CVE-2026
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 descriptions; newest CVE-2025-69235 @2025-12-30; gap now 8+ months covering v4.35.352 through v4.39.410.18 (Chromium 138 bump + login-server-error hotfix in between)
+evidence_needed: any new navercorp CVE or fix-version note; any sync-class keyword hit in future NVD updates
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/404/000), diff published dates + sync-class keyword screen
+impact: early-warning of newly disclosed in-scope flaws enables priority recalibration; Medium
+testability: PASSIVE
+[HYP] Whale v4.39.410.18 sync KDF regression remains unreported
+class: OTHER
+asset: /tmp/opencode/whale_binary/whale_4.39.410.18.deb
+confidence: 65
+reasoning: Same-day double-release v4.39.410.14→v4.39.410.18 + Chromium 137→138 + login-server-error hotfix + Whale-only xv10/os_crypt_whale.cc fork confirmed in prior v4.38 binary; full repo enumeration (4 branches + 5 wiki + README.ko.md) confirms 0 sync/crypto source files — binary extraction is the ONLY verify vector; 0 public CVEs for v4.39.410.18 confirms regression window remains open
+evidence_needed: binary delivery to /tmp/opencode/whale_binary/, then string extraction (grep for sync.encryption_bootstrap_token_per_account, whale_need_encryption_key_forced_time, xv10 magic, KDF iteration count constants)
+verify_steps: HUMAN: Download v4.39.410.18 .deb from Softpedia (190MB) or cloudfront CDN and deliver to /tmp/opencode/whale_binary/; then PASSIVE: strings + grep for KDF params + compare against known Whale-only prefs keys
+impact: KDF parameter extraction enables weak-crypto vulnerability report (CWE-327/CWE-330) if iterations < 100K or derivation lacks domain separation; High severity
+testability: HUMAN_ONLY
+[HYP] Socket.io push channel version drift remains speculative
+class: OTHER
+asset: resources.pak (socket.io.slim.js)
+confidence: 22
+reasoning: socket.io.slim.js confirmed Whale-only in resources.pak via prior v4.38 binary recon but handler is runtime-fetched; no passive version string; confidence 38 < 40 threshold; binary absent in-sandbox
+evidence_needed: binary extraction + resources.pak parsing to determine socket.io version
+verify_steps: HUMAN: binary delivery → resources.pak extraction → socket.io.slim.js version string
+impact: if socket.io < 4.x, known CVEs may apply; Low without binary evidence
+testability: HUMAN_ONLY
+[PARKED] Socket.io push channel version drift: confidence 22 < 40 threshold; handler runtime-fetched; binary absent; no passive version string; no concrete passive verify_steps — dropped.
+[FINAL] Whale v4.39.410.18 sync KDF regression remains unreported, 65 — top priority (HUMAN-gated)
+[FINAL] NVD 8-month gap hides undisclosed sync-class fixes in v4.35.352–v4.39.410.18, 55 — passive monitor (PASSIVE)
+[NEXT] PASSIVE: GET https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 — confirm HTTP 200, re-parse totalResults + year breakdown + sync-class keyword screen; retry on 503/404/000.
+[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.18; permanently parked.
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; permanently parked.
+[LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; permanently parked.
+[LEARN] ACCEPTED class @ sync KDF: full repo enumeration confirms 0 sync/crypto source files; binary extraction is the ONLY vector; confidence 65 retained, HUMAN-gated.
+[LEARN] ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface.
+[RISK] sync: 65 — same-day version bump v4.39.410.14→v4.39.410.18 + Chromium138 base + login-server-error hotfix raises urgency; binary HUMAN-gated; 0 public source; 8-month NVD gap confirmed.
+[RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium138 may introduce new surfaces but inaccessible without binary.
+[RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible; speculative only; no passive version string; CVE-2023-35780 confirmed irrelevant.
