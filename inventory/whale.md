@@ -1753,3 +1753,5 @@
 - NEW Login-server-error hotfix (v4.39.410.14) confirms active auth/login code churn in sync-KDF surface
 - NEW Browser lock flag (whale://flags) — new passcode-based local-auth surface
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — all passive binary acquisition channels remain 100% blocked (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown Android 410 Gone, APKPur
+
+## 2026-08-19 12:58:32 UTC
