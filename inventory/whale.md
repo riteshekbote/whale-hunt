@@ -1826,3 +1826,10 @@
 - NEW Browser-lock flag (`whale://flags`) — passcode-based local-auth surface introduced in v4.39.410.18
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
 - CHANGED `/tmp/opencode/whale_binary/whale_4.39.410.18.deb` now the target asset name (version bumped)
+
+## 2026-08-19 23:38:18 UTC
+- NEW Browser-lock flag (`whale://flags`) — passcode-based local-auth surface introduced in v4.39.410.18
+- CHANGED Desktop version bumped to v4.39.410.18 (same-day double release v4.39.410.14→v4.39.410.18 Aug 18, Chromium 137→138.0.7204.92)
+- CHANGED Sync KDF hypothesis confidence raised 62→65 (Chromium 138 double-release + login-server-error hotfix + xv10/os_crypt_whale.cc fork from prior v4.38 recon)
+- CHANGED Binary acquisition target now v4.39.410.18.deb (Softpedia 190MB dated Aug 18)
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated

@@ -8788,3 +8788,35 @@
 - LEARN: REJECTED class @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both 127.0.0.53 and 8.8.8.8; APKMirror 403; Uptodown And
 - LEARN: CONFIRMED @ sample extension background.js (translate branch): 0 sender.origin/sender.url/sender.tab/sender.id/sender.frameId/sender.tls grep matches confirmed 
 - LEARN: CONFIRMED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale returns 28 total, 0 in 2026, 0 sync-class keyword hits; 8-month ga
+
+## RANKED HYPOTHESES 2026-08-19 23:38:18 UTC
+- [65] `/tmp/opencode/whale_binary/whale_4.39.410.18.deb`: Whale desktop sync OSCrypt v10 bootstrap-token KDF regression post-Chromium-138 same-day double release (from reports/hypotheses-laguna.txt)
+- [65] /tmp/opencode/whale_binary/whale_4.39.410.18.deb: Whale v4.39.410.18 sync KDF regression remains unreported (from reports/hypotheses-bigpickle.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from Softpedia 190MB dated Aug 18, or from cloudfront d1vdt4q2qgdbji.cloudfront.net/ via unrestr
+- NEXT(hypotheses-laguna.txt): HUMAN: Operator to download official Whale desktop binary v4.39.410.18 (.deb 190MB from Softpedia dated Aug 18, or via unrestricted internet to d1vdt4q2qgdbji.c
+- NEXT(hypotheses-bigpickle.txt): PASSIVE: GET https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 — confirm HTTP 200, re-parse totalResults + year breakdown 
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass @ sample extension: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; pl
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection @ resources.pak: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version strin
+- LEARN: REJECTED class @ installer DLL search-order regression @ WhaleSetup.exe: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanentl
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 410 Gone, APKPure CDN 
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extracti
+- LEARN: ACCEPTED @ desktop version bump: v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18 same-day double release); Chromium 137→138; binary re-acquisition required
+- LEARN: ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in sync KDF surf
+- LEARN: ACCEPTED @ Chromium 138 engine upgrade: v4.39.410.18 aligns with latest Chromium stable 138.0.7204.92 (Aug 17); may have changed OSCrypt fork boundaries, KDF pa
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface
+- LEARN: REJECTED class @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both 127.0.0.53 and 8.8.8.8; APKMirror 403; Uptodown And
+- LEARN: ACCEPTED class @ sync KDF: confidence retained at 65; same-day Chromium 138 double-release + login-server-error hotfix + 0 sync/crypto source files in public re
+- LEARN: REJECTED class @ sidebar SOP bypass @ sample extension: confidence 32 < 40, duplicate of CVE-2025-69234/69235 (platform-agnostic CPE covers v4.39.410.18 = patch
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extracti
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface.
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; permanently parked.
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; permanently parked.
+- LEARN: ACCEPTED: Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 166MB .deb, source URL `repo.whale.naver.com/stable/deb/pool/main/n/na
+- LEARN: ACCEPTED @ WBC crypto layer: `../../whale/crypto/wbc/wbc.cc` + `wbc_wrapper_apis.cc` + `../../whale/crypto/encryptor.cc` confirmed compiled into binary; WBC is 
+- LEARN: ACCEPTED @ sync engine fork: 7 Whale-specific sync source files confirmed: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_wh
+- LEARN: ACCEPTED @ KDF debug string: `%s: kdf key len: %d` present in binary — Whale-specific KDF logging that needs disassembly to trace.
+- LEARN: ACCEPTED @ utilityPrivate API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present — JS API surface for sync enc
+- LEARN: ACCEPTED @ Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface
+- LEARN: REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE.
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
