@@ -17343,3 +17343,4 @@ testability: PASSIVE
 [RISK] browser: 28 — Sidebar SOP surface patched (platform-agnostic CPE cpe:2.3:a:navercorp:whale:* covers v4.39.410.18); sample extension proves API surface only (background.js 0 sender.* grep matches confirmed) but REJECTED as duplicate of fixed CVE-2025-69234/69235; Chromium 138 bump may introduce new rendering/SOP regressions but unverifiable without binary.
 [RISK] libs: 22 — socket.io.slim.js confirmed Whale-only in resources.pak (prior recon, confidence 38 < 40); no public library manifest, no passive version string, binary absent; 2 desktop releases v4.38→v4.39 with Chromium 137→138 may have silently updated bundled lib versions but unverifiable; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io).
 ## 2026-08-19 12:58:18 UTC [browser] (model laguna)
+## 2026-08-19 13:41:33 UTC [browser] (model laguna)
