@@ -17699,3 +17699,35 @@ testability: PASSIVE
 [RISK] sync: 92 — Same-day Chromium 138 double-release v4.39.410.14→v4.39.410.18 + login-server-error hotfix + Whale-only xv10/os_crypt_whale.cc fork + sync.encryption_bootstrap_token_per_account confirmed in prior v4.38 binary recon; 0 sync/crypto source files in any public branch + 0 sync-class keywords across 8-month CVE gap (28 total, latest 2025-12-30) masks silent regression; per-account bootstrap-token KDF iteration count unverified; fully HUMAN-gated (all passive binary channels dead); impact = cross-device password/cookie/bookmark decryption → account takeover (High).
 [RISK] browser: 28 — Sidebar SOP surface patched (platform-agnostic CPE `cpe:2.3:a:navercorp:whale:*` covers v4.39.410.18 = patched); sample extension proves API surface only (background.js 0 sender.* grep matches + manifest ALL-origin content_scripts confirmed live this cycle) but REJECTED as duplicate of fixed CVE-2025-69234/69235; Chromium 138 bump may introduce new rendering/SOP regressions + new browser-lock flag surface but unverifiable without binary.
 [RISK] libs: 21 — socket.io.slim.js confirmed Whale-only in resources.pak (prior recon, confidence 38<40); no public library manifest, no passive version string, binary absent in-sandbox; 2 desktop releases v4.38→v4.39 with Chromium 137→138 may have silently updated bundled lib versions but unverifiable; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io).
+## 2026-08-19 21:29:03 UTC [browser] (model laguna)
+[PRIO] `/tmp/opencode/whale_binary/whale_4.39.410.18.deb` (sync OSCrypt KDF): score 7.55 — attack_surface 9, business 10, tech 6, gate 4, cloud 3, freshness 8
+[PRIO] `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale`: score 6.2 — attack_surface 4, business 10, tech 5, gate 10, cloud 3, freshness 9
+[PRIO] `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/`: score 4.7 — attack_surface 3, business 6, tech 3, gate 10, cloud 4, freshness 3
+[HYP] Whale desktop sync OSCrypt v10 bootstrap-token KDF regression post-Chromium-138 same-day double release
+class: AUTH
+asset: `/tmp/opencode/whale_binary/whale_4.39.410.18.deb`
+confidence: 65
+reasoning: Full repo enumeration (4 branches + 5 wiki + README.ko.md) confirms 0 sync/crypto source files in any public branch; binary extraction is the ONLY vector. Same-day double-release v4.39.410.14 to v4.39.410.18 + Chromium 137 to 138 + login-server-error hotfix confirms active auth code churn. Prior v4.38 recon confirmed xv10 magic + os_crypt_whale.cc fork + sync.encryption_bootstrap_token_per_account pref; per-account bootstrap-token KDF iteration count unverified.
+evidence_needed: PBKDF2 iteration count extracted from os_crypt_whale.so in v4.39.410.18; comparison with Chromium 138.0.7204.92 OSCrypt::EncryptString call path; v10 envelope format deviation; pre/post sync-enable Local State JSON diff for encrypted_key field
+verify_steps: HUMAN_ONLY: Deliver official Whale desktop binary v4.39.410.18 (.deb 190MB from Softpedia dated Aug 18, or unrestricted internet to cloudfront d1vdt4q2qgdbji.cloudfront.net) to /tmp/opencode/whale_binary/ then sha256sum then objdump -T on os_crypt_whale.so grep iter|PBKDF2 then strings for bootstrap_token + xv10 + encrypted_key then parse Local State JSON pre/post sync-enable for encrypted_key field
+impact: Local attacker or infostealer with profile access decrypts synced passwords/cookies/bookmarks/autofill across devices, enabling cross-device account takeover. Severity: High
+testability: HUMAN_ONLY
+[HYP] NVD 8-month disclosure gap masks sync-class regression during Chromium-138 window
+class: OTHER
+asset: `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200`
+confidence: 55
+reasoning: HTTP 200 confirmed this cycle — totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 descriptions (sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|encrypted_key all 0 matches). Gap spans v4.35.352 to v4.39.410.18 covering Chromium 137 to 138 + login-server-error hotfix + same-day double release. No passive CVE evidence exists for sync/OSCrypt changes in latest 8 months.
+evidence_needed: Any new navercorp Whale CVE published post-2025-12-30 containing sync-class keyword in description; fix-version note claiming sync/OSCrypt changes
+verify_steps: PROBE: GET https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 at <=1 rps weekly; grep response descriptions for sync-class keywords
+impact: Blind spot for sync KDF regression masked during active auth code churn + engine upgrade. Severity: Low
+testability: PASSIVE
+[HYP] Sample extension unvalidated sidebarAction message dispatch from arbitrary web origins
+class: OTHER
+asset: `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/`
+confidence: 30
+reasoning: All 5 files + whale.sidebarAction.md HTTP 200 confirmed; background.js 0 sender.origin/sender.url/sender.tab/sender.id/sender.frameId/sender.tls grep matches (1772 bytes, python grep 0 results); contentscript.js dispatches from navigator.userAgent.includes('sidebar')===false branch; manifest content_scripts match all origins. However duplicates CVE-2025-69234/69235 (platform-agnostic CPE cpe:2.3:a:navercorp:whale:* covers v4.39.410.18 = patched).
+evidence_needed: Dynamic exploitability proof against v4.39.410.18 binary showing sidebarAction.show from arbitrary origin bypassing SOP
+verify_steps: PROBE: GET all 5 sample extension files to confirm HTTP 200; python grep background.js for sender.origin/sender.url/sender.tab/sender.id/sender.frameId/sender.tls
+impact: Cross-origin sidebar content injection if unpatched variant exists. Severity: Medium
+testability: PASSIVE
+[PARKED] Sample extension unvalidated sidebarAction dispatch from arbitrary web origins: confidence 30 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/62584/62
