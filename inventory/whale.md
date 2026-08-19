@@ -1712,3 +1712,5 @@
 - CHANGED Uptodown Android definitively HTTP 410 Gone ("will not be available again") — Android passive APK path permanently closed
 - CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block via both 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+
+## 2026-08-19 10:07:57 UTC

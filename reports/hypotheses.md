@@ -8201,3 +8201,18 @@
 - LEARN: CONFIRMED @ GitHub repo: naver/whale-browser-developers documentation-only (pushed_at=2019-09-23, updated_at=2025-10-22, size=5043, 0 releases) — 0 sync/crypto 
 - LEARN: CONFIRMED @ sample extension: all 5 files + whale.sidebarAction.md HTTP 200; background.js 0 sender.origin/sender.url/sender.tab/sender.id/sender.frameId/sender
 - LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, curl HTTP 000; APKMirror 403; Uptodown Android
+
+## RANKED HYPOTHESES 2026-08-19 10:07:57 UTC
+- [65] `/tmp/opencode/whale_binary/`: Same-day Chromium 138 double-release masks sync KDF regression in OSCrypt v10 fork (from reports/hypotheses-laguna.txt)
+- [65] Whale: Whale desktop sync bootstrap-token envelope uses Chromium-baseline 1-iteration PBKDF2 in OSCrypt v10 fork (v4.39.410.18) (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from Softpedia 190MB dated Aug 18, or from cloudfront d1vdt4q2qgdbji.cloudfront.net/ via unrestr
+- NEXT(hypotheses-laguna.txt): HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb 190MB from Softpedia dated Aug 18, or cloudfront d1vdt4q2qgdbji.cloudfront.net/ via unrestricted
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary ex
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/625
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-3578
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked.
+- LEARN: REJECTED class @ push notification socket.io: confidence 45 < 50; handler runtime-fetched; binary absent; no passive version string; dropped.
+- LEARN: CONFIRMED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 operational — keywordSearch=whale totalResults=28, year breakdown static {2003:1,2009:1,2018:5,2020:
+- LEARN: CONFIRMED @ GitHub repo: naver/whale-browser-developers documentation-only (pushed_at=2019-09-23, updated_at=2025-10-22, size=5043, has_wiki=true, 0 releases, 4
+- LEARN: CONFIRMED @ sample extension surface: all 5 files + whale.sidebarAction.md HTTP 200 confirmed this cycle (manifest content_scripts match ALL origins + permissio
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox this cycle (cloudfront DNS No-answer via both 127.0.0.53 and 8.8.8.8 general to *.cloudfront
