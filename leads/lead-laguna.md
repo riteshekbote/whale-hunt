@@ -16842,3 +16842,28 @@ testability: AUTH_HELPED
 [RISK] sync: 90 — Same-day double-release v4.39.410.14→v4.39.410.18 + login-server-error hotfix + Chromium 137→138 bump raises regression urgency; Whale-only xv10/os_crypt_whale.cc/bootstrap-token confirmed present in prior v4.38.386.14 binary recon; zero sync source in public repo creates silent regression window; 8-month NVD gap (0 CVEs, 0 sync-class keyword hits) masks any regression; but fully HUMAN-gated (binary delivery blocked on all passive channels: cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 410 Gone, APKPure 403/404, pstatus 404 scope-excluded).
 [RISK] browser: 28 — Latest v4.39.410.18 sidebar SOP surface patched (platform-agnostic CPE `cpe:2.3:a:navercorp:whale:*` covers current version); sample extension proves API surface only (6 artifacts HTTP 200, background.js 0 sender.* grep matches confirmed) but no novel variant or binary exploitability (confidence 32 < 40, REJECTED class); no new public CVE since Dec 2025 — 8-month disclosure gap.
 [RISK] libs: 22 — socket.io.slim.js confirmed Whale-only in resources.pak (confidence 38 < 40, handler runtime-fetched); no public library manifest, no passive version string, binary absent; no version-drift vuln class proven; 4 new desktop releases (v4.38→v4.39) with Chromium 138 base may have updated bundled lib versions silently.
+## 2026-08-19 04:19:59 UTC [browser] (model laguna)
+class: AUTH
+asset: `/tmp/opencode/whale_binary/`
+confidence: 65
+reasoning: Same-day double-release v4.39.410.14→v4.39.410.18 (Chromium 137→138) + login-server-error hotfix alters auth/login code paths in exact sync-KDF surface; Whale-only xv10/os_crypt_whale.cc/wbc_wrapper_apis.cc + sync.encryption_bootstrap_token_per_account prefs confirmed in prior v4.38.386.14 recon; zero sync/crypto source in any public branch (4 branches + 5 wiki + README.ko.md = 0 files); 8-month NVD gap (28 total, 0 in 2026, 0 sync-class keyword hits) masks silent regression.
+evidence_needed: PBKDF2/scrypt iteration count from os_crypt_whale fork; v10 envelope format deviation vs Chromium 138 baseline; per-account bootstrap-token storage path in Local State file; master-key protection mechanism
+verify_steps: AUTH_HELPED: HUMAN downloads official Whale v4.39.410.18 .deb (Softpedia showing 190MB Aug 18, or cloudfront via unrestricted internet — DNS No-answer via both resolvers in-sandbox) → sha256sum → `strings whale_binary | grep -iE 'iteration|PBKDF2|kEncryption|bootstrap_token|xv10|os_crypt_whale'` → `readelf -p .rodata whale_binary | grep -iE 'password|salt|encrypt'` → parse Local State pre/post sync-enable for encrypted_key field → diff os_crypt_whale against Chromium 138 baseline.
+impact: Local attacker or infostealer with profile access decrypts synced passwords, cookies, bookmarks, autofill across all linked devices → cross-device account takeover. Severity: High.
+testability: AUTH_HELPED
+class: OTHER
+asset: `https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200`
+confidence: 55
+reasoning: Full-pagination parse confirms totalResults=28, 0 published in 2026, 0 sync-class keyword hits (sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring|crypto all 0 matches) across all 28 CVE descriptions; latest CVE-2025-69235 @2025-12-30 (fixed v4.35.351.12); 8-month gap now spans v4.35.352 through v4.39.410.18 (same-day double release + Chromium 138 bump + login-server-error hotfix).
+evidence_needed: New navercorp CVE published post-2025-12-30 containing sync|kdf|pbkdf|scrypt|oscrypt|bootstrap keyword; or sync-class keyword hit in any future whale CVE description
+verify_steps: PASSIVE: HTTPS GET `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200` (≤1 rps, retry on 503/404/000); screen all CVE descriptions for sync-class keywords; re-probe weekly for new disclosures
+impact: Missed early-warning window for High-severity sync regression; Low direct exploitability, high awareness value. Severity: Low.
+testability: PASSIVE
+class: OTHER
+asset: `https://raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js`
+confidence: 32
+reasoning: background.js HTTP 200 (1772 bytes), python grep confirms 0 matches for sender.origin/sender.url/sender.tab/sender.id/sender.frameId/sender.tls — zero origin validation in onMessage listener; manifest.json content_scripts match ALL origins + permissions ["tabs"]; contentscript.js dispatches sidebarAction.show/show2 from userAgent.includes('sidebar')===false branch (any web page → privileged background).
+evidence_needed: Live reproduction of arbitrary URL loading via sidebarAction.show from cross-origin content script context against current binary v4.39.410.18; proof that current binary does NOT enforce origin checks despite API surface
+verify_steps: AUTH_HELPED: Install Whale v4.39.410.18 → load translate-branch sample extension → navigate to attacker.com → verify content script can invoke whale.sidebarAction.show({details:{url:'https://attacker.com/'}}) without origin error → check browser console for CORS/origin-gated errors
+impact: Arbitrary sidebar URL injection from any web origin, potential SOP bypass in current version if regression present. Severity: Medium.
+testability: AUTH_HELPED
