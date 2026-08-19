@@ -13324,3 +13324,4 @@ testability: PASSIVE
 [RISK] sync: 78 — binary acquired + WBC crypto layer confirmed + KDF debug string found + per-account bootstrap token pref present; 8-month NVD gap; disassembly needed to extract KDF params; High.
 [RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium138 may introduce new surfaces but requires disassembly.
 [RISK] libs: 22 — socket.io.slim.js Whale-only confirmed in binary; but binary-acquired so version strings extractable.
+## 2026-08-19 23:54:59 UTC [sync] (model bigpickle)

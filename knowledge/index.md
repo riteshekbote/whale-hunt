@@ -1791,3 +1791,6 @@
 - 2026-08-19 ACCEPTED @ Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface, upstream migrating to async.
 - 2026-08-19 REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE.
 - 2026-08-19 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.14; permanently parked.
+- 2026-08-19 ACCEPTED @ Chromium 138 engine upgrade: v4.39.410.14/18 aligns with latest Chromium stable 138.0.7204.92 (Aug 17); may have changed OSCrypt fork boundaries, KDF parameters, or sync protocol
+- 2026-08-19 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.14 (patched); sample extension proves API surface only, not current-binary exploitability — permanently parked
+- 2026-08-19 ACCEPTED @ Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface while upstream migrates to async
