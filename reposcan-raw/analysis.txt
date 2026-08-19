@@ -1,13 +1,71 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), not Gladia. There's zero Gladia-related content in the RAG data - no gladiaio repos, no @gladiaio/sdk npm metadata, no Gladia vulnerabilities or code surfaces.
+[0m$ [0mls -la
+total 1228
+drwxr-xr-x 11 runner runner   4096 Aug 19 13:01 .
+drwxr-xr-x  3 runner runner   4096 Aug 19 13:00 ..
+drwxr-xr-x  7 runner runner   4096 Aug 19 13:01 .git
+drwxr-xr-x  3 runner runner   4096 Aug 19 13:00 .github
+-rw-r--r--  1 runner runner   1057 Aug 19 13:00 README.md
+-rw-r--r--  1 runner runner      0 Aug 19 13:01 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 19 13:00 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 19 13:00 knowledge
+drwxr-xr-x  2 runner runner  36864 Aug 19 13:00 leads
+-rw-r--r--  1 runner runner  38724 Aug 19 13:00 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 19 13:00 reports
+-rw-r--r--  1 runner runner 597846 Aug 19 13:01 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 19 13:01 reposcan-raw
+-rw-r--r--  1 runner runner 492055 Aug 19 13:01 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 19 13:00 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 19 13:00 scripts
+-rw-r--r--  1 runner runner     34 Aug 19 13:00 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 19 13:00 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 19 13:00 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 19 13:00 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 19 13:00 state_nemotron3.json
+drwxr-xr-x  2 runner runner  20480 Aug 19 13:00 triage
+[0m
+The knowledge base you've provided is entirely about **Naver Whale browser** (`naver/whale-browser-developers`), but your task asks me to triage **gladiaio/** GitHub org and **@gladiaio/sdk** npm package. These are completely different targets.
 
-To triage Gladia, I'd need:
-1. Actual Gladia repo inventory (github.com/gladiaio/*)
-2. @gladiaio/sdk npm package metadata (version, dependencies, repository field)
-3. Any static scan results from Gladia sources
+Let me check the actual workspace for gladiaio content:
+[0m→ [0mRead scope.yml
+[0m✱ [0mGlob "**/*gladia*"[90m 0 matches[0m
+**Discrepancy detected:** Your prompt mentions `gladiaio/` org and `@gladiaio/sdk`, but the workspace, knowledge base, and `scope.yml` are all for **Naver Whale Browser** (`naver/whale-browser-developers`). No gladiaio content exists in this workspace.
 
-The current knowledge base covers Whale browser sync KDF, sidebar SOP bypasses, binary acquisition blockers, and NVD CVE gaps - none applicable to Gladia.
+---
 
-**Verdict**: Cannot triage Gladia with this knowledge base. Need correct RAG data for gladiaio org and @gladiaio/sdk.
+### Triage Summary for Naver Whale Browser (actual target)
+
+**Current State (per knowledge base):**
+- **Public code surface:** `naver/whale-browser-developers` — documentation-only (last real commit 2019-09-23). No browser source, sync code, or library manifests.
+- **Binary acquisition:** All channels blocked in-sandbox (CloudFront DNS `No answer`, APKMirror 403, Uptodown 404/410, APKPure 403, pstatic 404). Binary extraction = HUMAN_ONLY.
+- **Latest version:** v4.39.410.18 (Aug 18, same-day double release after v4.39.410.14); Chromium 138.
+- **CVE gap:** 28 total Whale CVEs, **0 in 2026** (8-month disclosure gap since CVE-2025-69235 @ Dec 2025).
+- **Live attack surface (doc-level only):**
+  - Sample extension (`translate` branch): `content_scripts` match ALL origins + `background.js` dispatches `sidebarAction.show/show2` with **zero `sender.origin` validation** (confirmed via grep)
+  - Wiki docs: `whale.sidebarAction.show({url})` loads arbitrary URL; drag-nav risk documented
+- **Rejected classes (per knowledge base):**
+  - Sidebar/dual-tab SOP/CSP bypass — duplicates CVE-2025-69234/69235/53600/62583/62584/62585 (platform-agnostic CPE covers v4.39.410.18)
+  - `socket.io.slim.js` event-handler injection — confidence 38 < 40, handler runtime-fetched
+  - Installer DLL search-order regression — confidence 50 < 60
+- **Open HOLD (HUMAN-gated):**
+  - **Sync KDF / bootstrap-token / OSCrypt** — confidence 65; full repo enumeration confirms **0 sync/crypto source files** in any public branch; binary extraction is the ONLY vector
+
+---
+
+### Verdict
+
+| Category | Finding | Report Candidate |
+|----------|---------|------------------|
+| **Static analysis** | No Whale-specific source code in public repos — path permanently dead | No |
+| **Sidebar SOP bypass** | API surface live in docs/sample, but duplicates fixed CVEs (CPE covers current version) | No |
+| **Sync KDF / crypto** | Strongest hypothesis (confidence 65), but **binary required** — all acquisition blocked in-sandbox | **HOLD** (HUMAN-gated) |
+| **Bundled libs** | `socket.io.slim.js` confirmed in `resources.pak` but stale (handler runtime-fetched, conf 38) | No |
+| **NVD gap** | 0 CVEs in 2026 confirmed via `services.nvd.nist.gov` — passive monitor operational | N/A (monitoring) |
+
+**No reportable findings from passive static scan alone.** The sync KDF surface requires binary extraction (HUMAN_ONLY). All other classes are rejected as duplicates of patched CVEs or below confidence thresholds.
+
+---
+
+If you intended to scan **gladiaio/** repos, please provide the correct workspace/knowledge base. This workspace is configured for Naver Whale Browser hunting.
