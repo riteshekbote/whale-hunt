@@ -17455,3 +17455,4 @@ impact: Arbitrary sidebar URL injection from any web origin → potential SOP by
 testability: AUTH_HELPED
 [FINAL] Ranked surviving hypotheses:
 [NEXT] HUMAN: Operator to download official Whale desktop binary v4.39.410.18 (.deb 190MB from Softpedia dated Aug 18, or via cloudfront `d1vdt4q2qgdbji.cloudfront.net/` if unrestricted internet available) → deliver to `/tmp/opencode/whale_binary/whale_4.39.410.18.deb` → sha256sum → `objdump -T os_crypt_whale.so | grep -iE 'iter|PBKDF2'` → `strings` for bootstrap_token + xv10 + encrypted_key → parse Local State JSON pre/post sync-enable for encrypted_key field. This is the ONLY path to validate the confidence-65 sync KDF hypothesis — all passive download paths confirmed dead in-sandbox (cloudfront DNS No-answer via both 127.0.0.53 and 8.8.8.8, APKMirror 403, Uptodown 410 Gone, APKPure CDN 403, pstatus 404 scope-excluded).
+## 2026-08-19 16:43:44 UTC [browser] (model laguna)
