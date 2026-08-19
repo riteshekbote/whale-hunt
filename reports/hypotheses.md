@@ -8134,3 +8134,29 @@
 - LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; permanently parked.
 - LEARN: ACCEPTED class @ sync KDF: full repo enumeration confirms 0 sync/crypto source files; binary extraction is the ONLY vector; confidence 65 retained, HUMAN-gated;
 - LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface.
+
+## RANKED HYPOTHESES 2026-08-19 08:19:57 UTC
+- [65] Whale: Whale desktop sync bootstrap-token envelope uses Chromium-baseline 1-iteration PBKDF2 in OSCrypt v10 fork (v4.39.410.18) (from reports/hypotheses-nemotron3.txt)
+- [55] https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200: NVD disclosure gap masks Whale sync-class regression introduced by same-day Chromium 138 double-release (from reports/hypotheses-laguna.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from Softpedia 190MB dated Aug 18, or from cloudfront d1vdt4q2qgdbji.cloudfront.net/ via unrestr
+- NEXT(hypotheses-laguna.txt): PROBE: `curl -s "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200" | python3 -c "..."` — re-parse all 28 CVE descriptions
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-3578
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 410 Gone, APKPure CDN 
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extracti
+- LEARN: ACCEPTED @ desktop version bump: v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18 same-day double release); Chromium 137→138; binary re-acquisition required
+- LEARN: ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in sync KDF surf
+- LEARN: ACCEPTED @ Chromium 138 engine upgrade: v4.39.410.18 aligns with latest Chromium stable 138.0.7204.92 (Aug 17); may have changed OSCrypt fork boundaries, KDF pa
+- LEARN: ACCEPTED @ NVD confirmed: 28 total whale CVEs, 0 in 2026 as of Aug 18; stack.watch confirms "0 vulnerabilities in Naver Whale Browser" in 2026
+- LEARN: CONFIRMED @ Android APK: v3.9.14.9 is latest (364.2MB arm64 XAPK, SHA-256 6f7c7907...); APKMirror has 4 arch variants; APKPure download CDN HTTP 200 with XAPK l
+- LEARN: REJECTED @ all binary acquisition channels: still 100% blocked in-sandbox as of Aug 18
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40 AND on knowledge REJECTED list (duplicate of CVE-2025-69234/69235/53600/62583/625
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki pages + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary ex
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; CVE-2023-35780 confirmed irrelevant (Wor
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked — no cha
+- LEARN: REJECTED class @ push notification socket.io: confidence 45 < 50; handler runtime-fetched; binary absent; no passive version string; dropped — no change.
+- LEARN: CONFIRMED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total whale CVEs, 0 in 2026, 0 sync-class keyword hits, latest CVE-2025-69235 @2025-12-3
+- LEARN: CONFIRMED @ GitHub repo: naver/whale-browser-developers documentation-only (pushed 2019-09-23, updated 2025-10-22, size=5043, has_wiki=True, 0 releases) — 0 syn
+- LEARN: CONFIRMED @ sample extension: all 6 artifacts HTTP 200 (manifest.json content_scripts match ALL origins + permissions ["tabs"]; background.js 0 sender.* grep ma
+- LEARN: REJECTED @ binary acquisition: all passive channels 100% blocked in-sandbox (cloudfront DNS No-answer via both 127.0.0.53 and 8.8.8.8 general to *.cloudfront.ne
