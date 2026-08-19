@@ -1815,3 +1815,5 @@
 - CHANGED Uptodown Android → HTTP 410 Gone (permanent); APKPure CDN 403/404 (permanent); cloudfront DNS No-answer via both resolvers (permanent) — all binary channels dead
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary extraction permanently HUMAN-gated
 - CHANGED NVD services endpoint stable HTTP 200 — 28 total, 0 in 2026, 0 sync-class keyword hits (gap confirmed static)
+
+## 2026-08-19 22:16:52 UTC
