@@ -12880,3 +12880,28 @@ testability: PASSIVE
 ## 2026-08-19 09:43:42 UTC [sync] (model bigpickle)
 ## 2026-08-19 10:07:44 UTC [sync] (model bigpickle)
 ## 2026-08-19 10:47:03 UTC [sync] (model bigpickle)
+## 2026-08-19 11:06:23 UTC [sync] (model bigpickle)
+[PRIO] sync KDF (v4.39.410.18), score 6.35, attack=7 business=8 tech=6 gate=2 cloud=2 fresh=10
+[PRIO] NVD gap monitor, score 4.70, attack=2 business=7 tech=2 gate=10 cloud=1 fresh=5
+[HYP] Whale v4.39.410.18 NVD gap hides sync-class regression introduced by same-day double release
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 descriptions; newest CVE-2025-69235 @2025-12-30; gap now 8+ months covering v4.35.352 through v4.39.410.18 (Chromium 138 bump + login-server-error hotfix in between)
+evidence_needed: any new navercorp CVE or fix-version note; any sync-class keyword hit in future NVD updates
+verify_steps: PASSIVE: weekly full-pagination keywordSearch=whale (resultsPerPage=200, retry on 503/404/000), diff published dates + sync-class keyword screen
+impact: early-warning of newly disclosed in-scope flaws enables priority recalibration; Medium
+testability: PASSIVE
+[PARKED] sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.18; permanently parked.
+[PARKED] socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; permanently parked.
+[PARKED] installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; permanently parked.
+[FINAL] NVD 8-month gap hides undisclosed sync-class fixes in v4.35.352–v4.39.410.18, 55
+[NEXT] PROBE: GET https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 — confirm HTTP 200, re-parse totalResults + year breakdown + sync-class keyword screen; retry on 503/404/000.
+[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; permanently parked.
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; permanently parked.
+[LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; permanently parked.
+[LEARN] ACCEPTED class @ sync KDF: full repo enumeration confirms 0 sync/crypto source files; binary extraction is the ONLY vector; confidence 65 retained, HUMAN-gated.
+[LEARN] ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface.
+[RISK] sync: 65 — same-day version bump v4.39.410.14→v4.39.410.18 + Chromium138 base + login-server-error hotfix raises urgency; binary HUMAN-gated; 0 public source; 8-month NVD gap confirmed.
+[RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium138 may introduce new surfaces but inaccessible without binary.
+[RISK] libs: 22 — socket.io.slim.js Whale-only but binary-inaccessible; speculative only; no passive version string; CVE-2023-35780 confirmed irrelevant.

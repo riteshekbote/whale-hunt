@@ -1716,3 +1716,22 @@
 ## 2026-08-19 10:07:57 UTC
 
 ## 2026-08-19 10:47:16 UTC
+
+## 2026-08-19 11:06:38 UTC
+- NEW Desktop version double-bumped: v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18 same-day, 00:58 UTC); Chromium base 137 → 138.0.7204.92
+- NEW Login-server-error hotfix in v4.39.410.14 — active auth/login code churn in exact sync-KDF surface
+- NEW Browser lock flag (whale://flags) — passcode-based local-auth surface added
+- NEW Softpedia download page shows v4.39.410.18 (190MB) — alt binary source (blocked in-sandbox)
+- CHANGED Uptodown Android definitively HTTP 410 Gone — Android passive APK path permanently closed
+- CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block general to all `*.cloudfront.net`
+- CHANGED NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+- NEW Softpedia download page shows v4.39.410.18 (190MB) — alt binary source (blocked in-sandbox, HUMAN-gated)
+- NEW Login-server-error hotfix in v4.39.410.14 — active auth/login code churn in exact sync-KDF surface
+- NEW Browser lock flag (whale://flags) — new passcode-based local-auth surface
+- CHANGED Uptodown Android definitively HTTP 410 Gone ("will not be available again") — Android passive APK path permanently closed
+- CHANGED APKPure landing page consistently HTTP 404 — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+- CHANGED NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
