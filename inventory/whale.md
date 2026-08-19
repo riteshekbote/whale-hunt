@@ -1703,3 +1703,12 @@
 ## 2026-08-19 08:19:57 UTC
 
 ## 2026-08-19 09:02:25 UTC
+
+## 2026-08-19 09:44:20 UTC
+- NEW Desktop version double-bumped: v4.39.410.14 → v4.39.410.18 (Aug 18 same-day); Chromium 137→138.0.7204.92; binary re-acquisition required for sync KDF verification
+- NEW Login-server-error hotfix in v4.39.410.14 — active auth/login code churn in sync KDF surface; browser.lock flag (whale://flags) added as local-auth surface
+- NEW Softpedia download page shows v4.39.410.18 (190MB) — alt binary source (blocked in-sandbox, HUMAN-gated)
+- NEW NVD CVE-2025-69234 confirmed via full-pagination parse: CWE-346 iframe sandbox escape in sidebar (sibling of 69235), both pub 2025-12-30
+- CHANGED Uptodown Android definitively HTTP 410 Gone ("will not be available again") — Android passive APK path permanently closed
+- CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block via both 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
