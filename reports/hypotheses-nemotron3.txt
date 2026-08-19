@@ -1,4 +1,4 @@
-## 2026-08-19 10:05:18 UTC [browser] (model nemotron3)
+## 2026-08-19 10:43:05 UTC [browser] (model nemotron3)
 [PRIO] Whale v4.39.410.18 desktop binary (os_crypt_whale.so + sync prefs), 7.30, atk=9 biz=9 tech=8 gate=2 cloud=3 fresh=10
 [PRIO] Whale Android 3.9.14.9 sync bootstrap-token storage in Keystore vs Preferences, 6.15, atk=7 biz=8 tech=7 gate=3 cloud=4 fresh=5
 [PRIO] NVD services endpoint (services.nvd.nist.gov/rest/json/cves/2.0), 5.80, atk=6 biz=7 tech=5 gate=8 cloud=2 fresh=4
@@ -33,4 +33,15 @@ testability: HUMAN_ONLY
 [PARKED] NVD 8-month disclosure gap hides undisclosed sync-class fixes in v4.35.352–v4.39.410.18: confidence 55 ≥ 40 but verify_steps is HUMAN_ONLY with zero passive path — parked pending binary delivery
 [FINAL] 1) Whale desktop sync bootstrap-token envelope uses Chromium-baseline 1-iteration PBKDF2 in OSCrypt v10 fork (v4.39.410.18) (confidence 65)
 [NEXT] HUMAN: Deliver official Whale desktop binary v4.39.410.18 (.deb from Softpedia 190MB dated Aug 18, or from cloudfront d1vdt4q2qgdbji.cloudfront.net/ via unrestricted internet, or WhaleSetup.exe from Naver CDN) to /tmp/opencode/whale_binary/ — all passive download paths confirmed dead (cloudfront DNS No-answer, APKMirror 403, Uptodown 410 Gone, APKPure CDN 403, pstatic 404)
+[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.18 (patched); no novel variant or binary exploitability proven
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked
+[LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
+[LEARN] REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 410 Gone, APKPure CDN 403, pstatic 404 scope-excluded)
+[LEARN] ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extraction is the ONLY vector; confidence 65 retained, HUMAN-gated
+[LEARN] ACCEPTED @ desktop version bump: v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18 same-day double release); Chromium 137→138; binary re-acquisition required
+[LEARN] ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in sync KDF surface
+[LEARN] ACCEPTED @ Chromium 138 engine upgrade: v4.39.410.18 aligns with latest Chromium stable 138.0.7204.92 (Aug 17); may have changed OSCrypt fork boundaries, KDF parameters, or sync protocol
+[LEARN] ACCEPTED @ NVD confirmed: 28 total whale CVEs, 0 in 2026 as of Aug 18; stack.watch confirms "0 vulnerabilities in Naver Whale Browser" in 2026
+[LEARN] CONFIRMED @ Android APK: v3.9.14.9 is latest (364.2MB arm64 XAPK, SHA-256 6f7c7907...); APKMirror has 4 arch variants; APKPure download CDN HTTP 200 with XAPK link
+[LEARN] REJECTED @ all binary acquisition channels: still 100% blocked in-sandbox as of Aug 18
 [RISK] sync: 70 reason: custom /whalesync + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface; same-day v4.39.410.18 bump suggests active changes in this surface | browser: 82 reason: sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; CPE Linux gap resolved; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show() message handling — high-priority regression window unchanged | libs: 35 reason: Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk
