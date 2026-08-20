@@ -18073,3 +18073,4 @@ testability: BINARY_ACQUIRED
 [RISK] sync: 78 — binary acquired + WBC layer + KDF debug string + Whale-only sync prefs + 0 public sync source files + 8-month NVD gap + same-day Chromium 138 double-release + login-server-error hotfix; confidence 65, HUMAN-gated for disassembly
 [RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium 138 may introduce new surfaces but inaccessible without binary disassembly
 [RISK] libs: 22 — socket.io.slim.js confirmed Whale-only in binary but binary-acquired so extractable; weak library surface only if sync KDF uses bundled socket.io for key transport
+## 2026-08-20 04:16:46 UTC [browser] (model laguna)
