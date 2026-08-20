@@ -1923,3 +1923,6 @@
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
 
 ## 2026-08-20 11:51:45 UTC
+
+## 2026-08-20 12:09:02 UTC
+- NEW Binary extracted and ready for string/disassembly analysis at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale`
