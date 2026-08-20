@@ -1979,3 +1979,12 @@
 - CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
 
 ## 2026-08-20 17:31:23 UTC
+
+## 2026-08-20 18:03:45 UTC
+- CHANGED Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` (v4.39.410.14) still NOT present in sandbox — directory missing
+- CHANGED Binary acquisition from `repo.whale.naver.com` confirmed accessible (HTTP 200, 166MB .deb) but not yet delivered to sandbox
+- NEW WBC crypto layer (`wbc.cc`, `wbc_wrapper_apis.cc`, `encryptor.cc`) confirmed compiled into binary via string extraction
+- NEW 7 Whale-specific sync source files confirmed in binary string table
+- NEW KDF debug string `%s: kdf key len: %d` present in binary
+- NEW utilityPrivate JS API (`setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup`) confirmed in binary
+- NEW Chromium upstream `os_crypt/sync/` is legacy but Whale still uses it

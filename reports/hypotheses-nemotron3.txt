@@ -1,12 +1,20 @@
-## 2026-08-20 17:27:58 UTC [browser] (model nemotron3)
-[PRIO] Whale desktop v4.39.410.14 binary (os_crypt_whale.so + sync prefs + WBC layer + 7 Whale-specific sync files), 9.15, atk=10 biz=10 tech=10 gate=2 cloud=3 fresh=10
-[PRIO] Whale binary repo `repo.whale.naver.com` (166MB .deb v4.39.410.14), 8.20, atk=9 biz=9 tech=9 gate=3 cloud=2 fresh=10
-[PRIO] Whale Android 3.9.14.9 APK (libos_crypt_whale.so + Keystore sync prefs), 6.85, atk=8 biz=8 tech=8 gate=1 cloud=3 fresh=8
+## 2026-08-20 17:58:33 UTC [browser] (model nemotron3)
+[CHANGED] Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` (v4.39.410.14) still NOT present in sandbox — directory missing
+[CHANGED] Binary acquisition from `repo.whale.naver.com` confirmed accessible (HTTP 200, 166MB .deb) but not yet delivered to sandbox
+[NEW] WBC crypto layer (`wbc.cc`, `wbc_wrapper_apis.cc`, `encryptor.cc`) confirmed compiled into binary via string extraction
+[NEW] 7 Whale-specific sync source files confirmed in binary string table
+[NEW] KDF debug string `%s: kdf key len: %d` present in binary
+[NEW] utilityPrivate JS API (`setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup`) confirmed in binary
+[NEW] Chromium upstream `os_crypt/sync/` is legacy but Whale still uses it
+[PRIO] Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com`), 9.15, atk=10 biz=10 tech=10 gate=2 cloud=3 fresh=10
+[PRIO] WBC crypto layer (Whale-only encryption), 8.20, atk=9 biz=9 tech=9 gate=3 cloud=2 fresh=10
+[PRIO] Sync engine fork (7 Whale-specific files), 8.20, atk=9 biz=9 tech=9 gate=3 cloud=2 fresh=10
+[PRIO] utilityPrivate JS API (sync key management), 7.80, atk=9 biz=8 tech=8 gate=4 cloud=2 fresh=10
 [HYP] Whale desktop sync OSCrypt v10 bootstrap-token KDF regression post-Chromium-138 same-day double release
 class: AUTH
 asset: Whale v4.39.410.14 desktop binary (/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale)
 confidence: 65
-reasoning: v4.38.386.14 binary confirms Whale-only prefs keys (sync.encryption_bootstrap_token_per_account sha256=053ffa4b..., _migration_done, whale_need_encryption_key_forced_time) + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic) + WBC layer; per-account bootstrap token envelope deviates from upstream Chromium; v4.39.410.14 login hotfix + Chromium 138 upgrade may have shifted KDF/master-key boundaries; master-key storage location and KDF constants unextracted; 7 Whale-specific sync files confirm deep fork
+reasoning: v4.38 binary confirms Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic) + WBC layer; per-account bootstrap token envelope deviates from upstream Chromium; v4.39.410.14 login hotfix + Chromium 138 upgrade may have shifted KDF/master-key boundaries; master-key storage location and KDF constants unextracted; 7 Whale-specific sync files confirm deep fork
 evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to stale key; diff pref set vs upstream Chromium in v4.39.410.14
 verify_steps: strings /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'kdf\|bootstrap\|xv10\|wbc\|encryptor'; objdump -T /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'os_crypt\|wbc'; ghidra/bindiff os_crypt_whale.so vs upstream Chromium 138 os_crypt; zero network
 impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
