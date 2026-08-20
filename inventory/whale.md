@@ -1964,3 +1964,16 @@
 - NEW NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static (latest CVE-2025-69235 @2025-12-30)
 - NEW Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
 - NEW APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+
+## 2026-08-20 17:13:28 UTC
+- NEW Binary extraction previously reported at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` (v4.39.410.14) is NOT present in sandbox — `/tmp/opencode/whale_binary/` directory does not exist
+- NEW Desktop version confirmed v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse; same-day double-release v4.39.410.14→v4.39.410.18 occurred but latest stable is v4.39.410.14
+- NEW Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 166MB .deb, source URL `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_
+- NEW WBC crypto layer: `../../whale/crypto/wbc/wbc.cc` + `wbc_wrapper_apis.cc` + `../../whale/crypto/encryptor.cc` confirmed compiled into binary; WBC is Whale's custom encryption layer separate from Chrom
+- NEW Sync engine fork: 7 Whale-specific sync source files confirmed: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `data_ty
+- NEW KDF debug string: `%s: kdf key len: %d` present in binary — Whale-specific KDF logging that needs disassembly to trace
+- NEW utilityPrivate JS API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present — JS API surface for sync encryption key management
+- NEW Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface while upstream migrates to async
+- CHANGED NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static (latest CVE-2025-69235 @2025-12-30)
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+- CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
