@@ -2052,3 +2052,16 @@
 - CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
 
 ## 2026-08-20 21:28:30 UTC
+
+## 2026-08-20 21:54:11 UTC
+- NEW Binary acquisition from `repo.whale.naver.com` confirmed accessible (HTTP 200, 166MB .deb, v4.39.410.14) but binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still NOT
+- CHANGED Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse
+- CHANGED NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap static
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+- CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+- CHANGED Binary acquisition UNBLOCKED after ~year of dead channels: repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb -> HTTP 200, 173111388 bytes, Last-
+- NEW OSCrypt variant in v4.39.410.14 is ASYNC: components/os_crypt/async/browser/{freedesktop_secret_key_provider,secret_portal_key_provider}.cc + async/common/encryptor.cc (Chromium 138 standard). Legacy 
+- NEW Whale sync fork map first-party verified — 9 files under ../../whale/components/sync/: engine/{data_type_worker_whale.cc, whale_sync_util.cc}, engine/net/sync_server_connection_manager_whale.cc, inval
+- NEW setSyncEncryptionKeys + retrieveTrustedVaultKeys JS bindings confirmed in-binary, adjacent to upstream setClientEncryptionKeys; metrics Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito / ...Val
+- NEW Naver auth endpoint map extracted: /oauth2/v1/nid/{login,refresh,epoch/v1} (epoch endpoint = naver_epoch_key_confirmer target), v1/appauth/authkey, user2/appauth/loginByAuthKey.nhn, getLoginStatus.nhn
+- NEW Prefs verified: sync.encryption_bootstrap_token{,_per_account,_per_account_migration_done}, sync.whale_need_encryption_key_forced_time (Whale-specific). utilityPrivate full manifest dumped incl. getSy

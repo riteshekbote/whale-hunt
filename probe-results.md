@@ -1304,3 +1304,8 @@ https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerP
 
 ## 2026-08-20 21:28:30 UTC
 
+
+## 2026-08-20 21:54:14 UTC
+https://account.whalebrowser.com/ -> 200 len=241 type=text/html; charset=utf-8
+https://account.whalespace.io/ -> 200 len=320363 type=text/html; charset=utf-8
+https://%smyactivity.whale.naver.com/ -> ERR <urlopen error [Errno -2] Name or service not know
