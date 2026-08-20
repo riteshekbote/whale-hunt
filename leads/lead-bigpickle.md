@@ -13427,3 +13427,4 @@ testability: PASSIVE
 [RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium138 may introduce new surfaces but requires disassembly.
 [RISK] libs: 22 — socket.io.slim.js Whale-only confirmed in binary; but binary-acquired so version strings extractable.
 ## 2026-08-20 20:52:46 UTC [sync] (model bigpickle)
+## 2026-08-20 21:28:15 UTC [sync] (model bigpickle)
