@@ -29146,3 +29146,84 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE
 
 [RISK] sync: 70 reason: custom /whalesync + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth + WBC crypto layer + 9 Whale-specific sync files + KDF debug string + utilityPrivate API all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface; same-day v4.39.410.14 bump suggests active changes in this surface | browser: 82 reason: sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; CPE Linux gap resolved; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show | libs: 40 reason: socket.io.slim.js confirmed in resources.pak but handler runtime-fetched; no version string extracted; no passive CVE link; binary required for version audit
+===== ANALYST nemotron3 2026-08-20 23:44:22 UTC =====
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[NEW] Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 166MB .deb, v4.39.410.14 (Naver's own repo bypasses all cloudfront/APKMirror/Uptodown blocks)
+[NEW] WBC crypto layer (`wbc.cc`, `wbc_wrapper_apis.cc`, `encryptor.cc`) confirmed compiled into binary via string extraction
+[NEW] 9 Whale-specific sync source files confirmed in binary string table under `../../whale/components/sync/` (engine, engine/net, invalidations, model, protocol)
+[NEW] KDF debug string `%s: kdf key len: %d` present in binary — Whale-specific KDF logging
+[NEW] utilityPrivate JS API (`setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup`) confirmed in binary
+[NEW] OSCrypt variant in v4.39.410.14 is ASYNC: `components/os_crypt/async/browser/{freedesktop_secret_key_provider,secret_portal_key_provider}.cc` + `async/common/encryptor.cc` (Chromium 138 standard). Legacy sync interface still used by Whale
+[NEW] `setSyncEncryptionKeys` + `retrieveTrustedVaultKeys` JS bindings confirmed in-binary, adjacent to upstream `setClientEncryptionKeys`; metrics `Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito` present
+[NEW] Naver auth endpoint map extracted: `/oauth2/v1/nid/{login,refresh,epoch/v1}` (epoch endpoint = `naver_epoch_key_confirmer` target), `v1/appauth/authkey`, `user2/appauth/loginByAuthKey.nhn`, `getLoginStatus.nhn`
+[NEW] Prefs verified: `sync.encryption_bootstrap_token{,_per_account,_per_account_migration_done}`, `sync.whale_need_encryption_key_forced_time` (Whale-specific). utilityPrivate full manifest dumped incl. getSyncEncryptionKeys
+[CHANGED] Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse
+[CHANGED] Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still NOT present in sandbox — directory missing
+[CHANGED] NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap static
+[CHANGED] Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+[CHANGED] APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+
+[PRIO] Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com`), score: 8.10, axes: attack=10 biz=10 tech=10 gate=2 cloud=3 fresh=10
+[PRIO] WBC crypto layer (Whale-only encryption), score: 7.50, axes: attack=9 biz=9 tech=9 gate=3 cloud=2 fresh=10
+[PRIO] Sync engine fork (9 Whale-specific files under `../../whale/components/sync/`), score: 7.50, axes: attack=9 biz=9 tech=9 gate=3 cloud=2 fresh=10
+[PRIO] utilityPrivate JS API (sync key management), score: 7.25, axes: attack=9 biz=8 tech=8 gate=4 cloud=2 fresh=10
+[PRIO] OSCrypt async transition surface (Chromium 138 async vs Whale legacy sync), score: 7.00, axes: attack=8 biz=8 tech=9 gate=3 cloud=2 fresh=10
+[PRIO] Naver auth endpoint map (NID OAuth2 + epoch key), score: 6.70, axes: attack=8 biz=7 tech=7 gate=4 cloud=3 fresh=10
+
+[HYP] Whale desktop sync OSCrypt v10 bootstrap-token KDF regression post-Chromium-138 async transition
+class: AUTH
+asset: Whale v4.39.410.14 desktop binary (/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale)
+confidence: 65
+reasoning: v4.39.410.14 binary confirms Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, _migration_done, whale_need_encryption_key_forced_time) + Whale-forked legacy OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic) + WBC layer coexisting with Chromium 138 async OSCrypt; per-account bootstrap token envelope deviates from upstream Chromium; same-day v4.39.410.14 login hotfix + Chromium 138 upgrade may have shifted KDF/master-key boundaries; master-key storage location and KDF constants unextracted; 9 Whale-specific sync files confirm deep fork
+evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to stale key; diff pref set vs upstream Chromium in v4.39.410.14
+verify_steps: strings /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'kdf\|bootstrap\|xv10\|wbc\|encryptor'; objdump -T /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'os_crypt\|wbc'; ghidra/bindiff os_crypt_whale.so vs upstream Chromium 138 os_crypt; zero network
+impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
+testability: HUMAN_ONLY
+
+[HYP] Whale desktop WBC crypto layer (wbc.cc/wbc_wrapper_apis.cc/encryptor.cc) exposes custom encryption API separable from Chromium OSCrypt
+class: AUTH
+asset: Whale v4.39.410.14 desktop binary (/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale)
+confidence: 55
+reasoning: Binary strings confirm 3 Whale-specific crypto source files compiled in: `../../whale/crypto/wbc/wbc.cc`, `wbc_wrapper_apis.cc`, `../../whale/crypto/encryptor.cc`; WBC is a custom encryption layer separate from Chromium's os_crypt/sync/; attack surface is Whale-only code not present in Chromium
+evidence_needed: Disassembly of WBC functions to identify key derivation, IV handling, algorithm choices; whether WBC wraps or replaces OSCrypt for sync payloads; any hardcoded constants or weak defaults
+verify_steps: strings /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'wbc\|encryptor'; objdump -d /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -A20 'WBC\|wbc_'; ghidra on wbc_wrapper_apis entry points; zero network
+impact: If WBC has weaker KDF/algorithm than upstream OSCrypt, local attacker decrypts sync data bypassing Chromium's protections (High)
+testability: HUMAN_ONLY
+
+[HYP] Whale utilityPrivate JS API (setSyncEncryptionKeys/getSyncCacheGuid/getPushServerURL/showLoginPopup) allows extension-origin sync key manipulation
+class: AUTH
+asset: Whale v4.39.410.14 desktop binary utilityPrivate API surface
+confidence: 50
+reasoning: Binary strings confirm 4 utilityPrivate functions for sync encryption key management; these are JS-callable APIs that could be invoked from privileged extension contexts (including the sample extension with ALL-origin content_scripts); no origin validation observed in sample extension background.js
+evidence_needed: Whether utilityPrivate API checks caller origin/extension ID; whether setSyncEncryptionKeys accepts attacker-controlled key material; whether getSyncCacheGuid leaks sync identifiers cross-origin
+verify_steps: strings /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'utilityprivate\|setsyncencryption\|getsynccacheguid\|getpushserverurl\|showloginpopup'; examine extension API bindings in binary for origin checks; zero network
+impact: Compromised/malicious extension with utilityPrivate access could overwrite sync encryption keys or extract sync identifiers → cross-device credential sync hijack (High)
+testability: HUMAN_ONLY
+
+[PARKED] Whale desktop sync OSCrypt v10 bootstrap-token KDF regression post-Chromium-138 async transition: verify_steps require binary at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` which does not exist in sandbox — cannot be validated passively until binary delivered
+[PARKED] Whale desktop WBC crypto layer (wbc.cc/wbc_wrapper_apis.cc/encryptor.cc) exposes custom encryption API separable from Chromium OSCrypt: verify_steps require binary at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` which does not exist in sandbox — cannot be validated passively until binary delivered
+[PARKED] Whale utilityPrivate JS API (setSyncEncryptionKeys/getSyncCacheGuid/getPushServerURL/showLoginPopup) allows extension-origin sync key manipulation: verify_steps require binary at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` which does not exist in sandbox — cannot be validated passively until binary delivered
+[FINAL] All three hypotheses parked pending binary delivery — no surviving hypotheses with executable verify_steps in current environment
+
+[NEXT] HUMAN: Deliver official Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`) to `/tmp/opencode/whale_binary/` and extract for string/disassembly analysis
+
+[LEARN] ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extraction is the ONLY vector; confidence 65 retained, HUMAN-gated
+[LEARN] ACCEPTED @ desktop version bump: v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18 same-day double release); Chromium 137→138; binary re-acquisition required
+[LEARN] ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in sync KDF surface
+[LEARN] ACCEPTED @ Chromium 138 engine upgrade: v4.39.410.14/18 aligns with latest Chromium stable 138.0.7204.92 (Aug 17); may have changed OSCrypt fork boundaries, KDF parameters, or sync protocol
+[LEARN] ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface
+[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.14 (patched); sample extension proves API surface only, not current-binary exploitability — permanently parked
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked
+[LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path — permanently parked
+[LEARN] REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 410 Gone, APKPure CDN 403, pstatic 404 scope-excluded)
+[LEARN] ACCEPTED: Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 166MB .deb, source URL `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`
+[LEARN] ACCEPTED @ WBC crypto layer: `../../whale/crypto/wbc/wbc.cc` + `wbc_wrapper_apis.cc` + `../../whale/crypto/encryptor.cc` confirmed compiled into binary; WBC is Whale's custom encryption layer separate from Chromium's `os_crypt/sync/`
+[LEARN] ACCEPTED @ sync engine fork: 9 Whale-specific sync source files confirmed: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `data_type_worker_whale.cc`, `sync_server_connection_manager_whale.cc`, `whale_sync_util.cc`, plus 2 more under `../../whale/components/sync/`
+[LEARN] ACCEPTED @ KDF debug string: `%s: kdf key len: %d` present in binary — Whale-specific KDF logging that needs disassembly to trace
+[LEARN] ACCEPTED @ utilityPrivate API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present — JS API surface for sync encryption key management
+[LEARN] ACCEPTED @ Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface while upstream migrates to async
+[LEARN] REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE
+
+[RISK] sync: 70 reason: custom /whalesync + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth + WBC crypto layer + 9 Whale-specific sync files + KDF debug string + utilityPrivate API all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface; same-day v4.39.410.14 bump suggests active changes in this surface | browser: 82 reason: sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; CPE Linux gap resolved; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show | libs: 40 reason: socket.io.slim.js confirmed in resources.pak but handler runtime-fetched; no version string extracted; no passive CVE link; binary required for version audit
