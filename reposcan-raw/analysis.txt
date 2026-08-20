@@ -1,11 +1,90 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), not Gladia. It contains Whale CVEs, sidebar SOP bypasses, sync KDF analysis, and binary acquisition channels — none of which relate to `gladiaio/` repos or `@gladiaio/sdk`.
+[0m$ [0mls -la
+total 1256
+drwxr-xr-x 11 runner runner   4096 Aug 20 13:32 .
+drwxr-xr-x  3 runner runner   4096 Aug 20 13:31 ..
+drwxr-xr-x  7 runner runner   4096 Aug 20 13:32 .git
+drwxr-xr-x  3 runner runner   4096 Aug 20 13:31 .github
+-rw-r--r--  1 runner runner   1057 Aug 20 13:31 README.md
+-rw-r--r--  1 runner runner      0 Aug 20 13:32 cands-naver.txt
+drwxr-xr-x  2 runner runner   4096 Aug 20 13:31 inventory
+drwxr-xr-x  2 runner runner   4096 Aug 20 13:31 knowledge
+drwxr-xr-x  2 runner runner  36864 Aug 20 13:31 leads
+-rw-r--r--  1 runner runner  42851 Aug 20 13:31 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Aug 20 13:31 reports
+-rw-r--r--  1 runner runner 597846 Aug 20 13:32 repos-naver.json
+drwxr-xr-x  3 runner runner   4096 Aug 20 13:32 reposcan-raw
+-rw-r--r--  1 runner runner 516690 Aug 20 13:32 scan-prompt.txt
+-rw-r--r--  1 runner runner   1513 Aug 20 13:31 scope.yml
+drwxr-xr-x  2 runner runner   4096 Aug 20 13:31 scripts
+-rw-r--r--  1 runner runner     34 Aug 20 13:31 state_bigpickle.json
+-rw-r--r--  1 runner runner     37 Aug 20 13:31 state_laguna.json
+-rw-r--r--  1 runner runner     34 Aug 20 13:31 state_ling3.json
+-rw-r--r--  1 runner runner     34 Aug 20 13:31 state_longcat.json
+-rw-r--r--  1 runner runner     37 Aug 20 13:31 state_nemotron3.json
+drwxr-xr-x  2 runner runner  20480 Aug 20 13:31 triage
+[0m
+The knowledge base you've provided is for **Naver Whale browser** (naver/whale-browser-developers), but you're asking me to triage **gladiaio** repos and the **@gladiaio/sdk** npm package. These are completely different targets.
 
-**Cannot triage Gladia SDK** with this knowledge base. You need:
-1. Gladia GitHub org repo list (`gladiaio/*`)
-2. `@gladiaio/sdk` npm package metadata (versions, dependencies, repository URL)
-3. Actual scan results (secret grep hits, config files, etc.)
+Let me first check what's actually in the workspace to understand the real scan target.
+[0m→ [0mRead scope.yml
+[0m✱ [0mGlob "leads/*"[90m 100 matches[0m
+[0m✱ [0mGlob "inventory/*"[90m 1 match[0m
+[0m→ [0mRead inventory/whale.md
+[0m→ [0mRead leads/reposcan-2026-08-20-11-53.md
+The workspace and all scan data are for **Naver Whale Browser**, not Gladia. The latest reposcan confirms this mismatch:
 
-The `INVENTORY gladia` section at the bottom still describes Whale ("# Inventory: whale"). Please provide the correct Gladia-specific knowledge base and scan output.
+> "The knowledge base provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), not Gladia. There is zero Gladia-related content in the RAG data."
+
+---
+
+## Triage Summary: Naver Whale Browser (Actual Target)
+
+### Current Surface State (2026-08-20)
+
+| Surface | Status | Details |
+|---------|--------|---------|
+| **GitHub repo** | `naver/whale-browser-developers` | Documentation-only; last real commit 2019-09-23; 0 sync/crypto source files |
+| **Desktop version** | v4.39.410.14/18 (Aug 18 same-day double release) | Chromium 137→138; login-server-error hotfix in v4.39.410.14 |
+| **Android version** | 3.9.14.9 (APKMirror/APKPure) | Latest arm64 XAPK, SHA256 pinned |
+| **Binary acquisition** | **100% blocked in-sandbox** | Cloudfront DNS No-answer (general to *.cloudfront.net); APKMirror 403; Uptodown 410 Gone; APKPure CDN 403; pstatic 404 |
+| **NVD CVE gap** | 28 total Whale CVEs, **0 in 2026** | Latest CVE-2025-69235 @2025-12-30; 8-month disclosure gap static |
+| **Sample extension** | Live on `translate` branch (5 files HTTP 200) | ALL-origin `content_scripts` + zero `sender.origin`/`sender.url` validation in `background.js` |
+
+### Confirmed Attack Surface (Static Evidence)
+
+1. **Sidebar SOP bypass API** (CVE-2025-69234/69235 class) — `whale.sidebarAction.show({url})` loads arbitrary URL in sidebar panel; `background.js` dispatches from any web origin with **zero origin validation** (grep: 0 matches for `sender.origin`/`sender.url`/`sender.tab`)
+
+2. **Sync KDF / OSCrypt fork** — Whale-only prefs (`sync.encryption_bootstrap_token_per_account`, `whale_need_encryption_key_forced_time`), forked `os_crypt_whale.cc`/`wbc_wrapper_apis.cc` with `xv10` magic, 7 Whale-specific sync source files confirmed in binary strings (`whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, etc.), custom WBC crypto layer separate from Chromium's `os_crypt/sync/`
+
+3. **Bundled `socket.io.slim.js`** in `resources.pak` — Whale-only, but handler runtime-fetched (confidence 38 < 40, parked)
+
+### Rejected / Parked Classes (Do Not Re-report)
+
+| Class | Reason |
+|-------|--------|
+| Sidebar/dual-tab/web-panel SOP-CSP bypass | Duplicates CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.14 (patched); no novel variant or binary exploitability proven |
+| Extension API origin validation | Duplicates CVE-2022-24072/2024-40618 |
+| `socket.io.slim.js` event-handler injection | Confidence 38 < 40; handler runtime-fetched; no passive version string |
+| Installer DLL search-order regression | Confidence 50 < 60; all binary channels dead; no passive proof path |
+| Naver web services (`*.naver.com`) | Explicitly excluded per `scope.yml` out_of_scope |
+
+### Active Hypothesis (HUMAN_GATED)
+
+**Sync KDF / Bootstrap-token / OSCrypt** — Confidence 65
+- **Evidence**: Binary strings confirm Whale-only prefs, forked OSCrypt, WBC crypto layer, 7 Whale-specific sync source files, KDF debug string `%s: kdf key len: %d`, `utilityPrivate.setSyncEncryptionKeys` API
+- **Blocker**: Binary acquisition 100% blocked in-sandbox (cloudfront DNS hard-block at resolver level); `/tmp/opencode/whale_binary/` missing
+- **Path**: Requires HUMAN with unrestricted internet to fetch `repo.whale.naver.com/stable/deb/.../naver-whale-stable_4.39.410.14-1_amd64.deb` (HTTP 200 confirmed accessible externally)
+
+### Verdict
+
+| Category | Count | Verdict |
+|----------|-------|---------|
+| REAL_SECRET | 0 | — |
+| TEST_OR_EXAMPLE | 0 | — |
+| ENDPOINT_LEAK | 0 | — |
+| INTERESTING | 1 | **Sync KDF surface** — binary-only, HUMAN-gated |
+
+**REPORT_CANDIDATE: no** — No static-analysis findings reportable without binary extraction. The only viable path (Sync KDF) requires HUMAN binary delivery. All public repo surfaces exhausted (documentation-only).
