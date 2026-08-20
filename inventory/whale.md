@@ -1926,3 +1926,6 @@
 
 ## 2026-08-20 12:09:02 UTC
 - NEW Binary extracted and ready for string/disassembly analysis at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale`
+
+## 2026-08-20 13:16:41 UTC
+- NEW Binary extracted and ready for string/disassembly analysis at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` (v4.39.410.14 desktop binary delivered via repo.whale.naver.com)
