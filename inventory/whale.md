@@ -2098,3 +2098,19 @@
 - CHANGED NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap static
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
 - CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+
+## 2026-08-20 23:14:45 UTC
+- NEW Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 166MB .deb, v4.39.410.14 (Naver's own repo bypasses all cloudfront/APKMirror/Uptodown blocks)
+- NEW WBC crypto layer (`wbc.cc`, `wbc_wrapper_apis.cc`, `encryptor.cc`) confirmed compiled into binary via string extraction
+- NEW 9 Whale-specific sync source files confirmed in binary string table under `../../whale/components/sync/` (engine, engine/net, invalidations, model, protocol)
+- NEW KDF debug string `%s: kdf key len: %d` present in binary — Whale-specific KDF logging
+- NEW utilityPrivate JS API (`setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup`) confirmed in binary
+- NEW OSCrypt variant in v4.39.410.14 is ASYNC: `components/os_crypt/async/browser/{freedesktop_secret_key_provider,secret_portal_key_provider}.cc` + `async/common/encryptor.cc` (Chromium 138 standard). Leg
+- NEW `setSyncEncryptionKeys` + `retrieveTrustedVaultKeys` JS bindings confirmed in-binary, adjacent to upstream `setClientEncryptionKeys`; metrics `Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito` 
+- NEW Naver auth endpoint map extracted: `/oauth2/v1/nid/{login,refresh,epoch/v1}` (epoch endpoint = `naver_epoch_key_confirmer` target), `v1/appauth/authkey`, `user2/appauth/loginByAuthKey.nhn`, `getLoginS
+- NEW Prefs verified: `sync.encryption_bootstrap_token{,_per_account,_per_account_migration_done}`, `sync.whale_need_encryption_key_forced_time` (Whale-specific). utilityPrivate full manifest dumped incl. g
+- CHANGED Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse
+- CHANGED Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still NOT present in sandbox — directory missing
+- CHANGED NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap static
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+- CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
