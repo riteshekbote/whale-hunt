@@ -13442,3 +13442,17 @@ testability: PASSIVE
 [NEXT] STEP 2 PRIORITIZE: sync/WBC crypto surface #1 (7.70) > setSyncEncryptionKeys JS API #2 (7.05) > Naver auth fork #3 (6.40).
 [NEXT] STEP 3 HYPOTHESES: emitted 3 (conf 55/50/45, all >= threshold). Top action requires HUMAN Ghidra session: xref "../../whale/crypto/wbc/wbc.cc" + "../../whale/crypto/encryptor.cc" strings in /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale, decompile callers, extract KDF parameters. Alternative machine-runnable probe: execute ELF headless locally to enumerate the setSyncEncryptionKeys owning namespace (HYP-2 verification).
 [NEXT] PASSIVE weekly monitor unchanged: NVD keywordSearch=whale (28 total, 0 published 2026, latest CVE-2025-69235 @2025-12-30).
+## 2026-08-20 22:16:03 UTC [sync] (model bigpickle)
+reasoning: facts — WBC crypto layer compiled in; kdf-len debug string present; per-account bootstrap-token prefs present; scrypt/pbkdf/hkdf code paths all linked; stock saltysalt confined to local cookie crypto, so any weak KDF would be specific to the Whale sync vault layer. unknowns — actual KDF params (iterations/N/salt/domain separation) unknowable via strings; Scrypt8192 attribution unresolved.
+evidence_needed: disassembly xref of "../../whale/crypto/wbc/wbc.cc" and "%s: kdf key len: %d" → decompiled callers → KDF parameter extraction comparable against upstream async-OSCrypt defaults.
+verify_steps: PASSIVE(done): strings enumeration above. Remaining: HUMAN Ghidra session on the ELF (stripped, no symbols).
+testability: HUMAN_ONLY
+reasoning: facts — metrics Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs} prove a JS-callable path that ingests sync encryption keys; bindings absent from the full utilityPrivate schema → custom surface outside standard extension-API gating; forked trusted_vault_request_whale.cc + whale_sync_auth_manager.cc show active modification of exactly this subsystem. counter-evidence — "ValidArgs" metric name implies argument validation exists. unknowns — which contexts (web page? content script? whale:// WebUI?) may invoke it.
+evidence_needed: identification of owning context + demonstration that an underprivileged caller (content script or ordinary https page) can invoke it and plant attacker-chosen vault keys (CWE-284/CWE-732).
+verify_steps: PASSIVE(done): utilityPrivate manifest ruled out; resources.pak strings yielded nothing (entries compressed). ACTIVE local: launch ELF headless with --remote-debugging-port, enumerate execution contexts via CDP, attempt binding invocation from data:/https page vs whale://settings.
+testability: PASSIVE->ACTIVE local run (no external probing)
+reasoning: facts — custom access-token fetcher (naver_access_token_fetcher.cc) + epoch key confirmer replace upstream Gaia binding logic; error string proves refresh-token exchange implemented in-fork. unknowns — whether keys/tokens are bound to session/device/client_id as upstream does.
+evidence_needed: decompilation of authkey fetcher showing absence of key↔token binding enabling cross-account substitution.
+verify_steps: HUMAN Ghidra on naver_access_token_fetcher.cc / login_urls.cc call sites; local-only MITM of own test account if pursued.
+testability: HUMAN_ONLY
+[FINAL]
