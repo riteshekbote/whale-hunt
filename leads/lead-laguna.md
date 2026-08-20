@@ -18027,3 +18027,49 @@ testability: PASSIVE
 [RISK] libs: 22 — socket.io.slim.js Whale-only confirmed in binary; but binary-acquired so version strings extractable.
 ## 2026-08-20 01:10:30 UTC [browser] (model laguna)
 ## 2026-08-20 02:29:47 UTC [browser] (model laguna)
+## 2026-08-20 03:11:44 UTC [browser] (model laguna)
+[PRIO] repo.whale.naver.com binary endpoint, score=7.80, attack=8 business=8 tech=7 gate=8 cloud=2 fresh=10
+[PRIO] NVD gap monitor, score=4.70, attack=2 business=7 tech=2 gate=10 cloud=1 fresh=5
+[HYP] Whale v4.39.410.14 sync OSCrypt KDF parameter extraction via binary disassembly
+class: OTHER
+asset: /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale (or repo.whale.naver.com .deb)
+confidence: 65
+reasoning: Binary now accessible from repo.whale.naver.com (HTTP 200, 166MB .deb v4.39.410.14). String extraction confirms Whale-only crypto layer (`wbc.cc`, `wbc_wrapper_apis.cc`, `encryptor.cc`) + 7 Whale-specific sync source files + `%s: kdf key len: %d` debug string + `num_iterations:` string + Whale-only sync prefs + `xv10` magic. Chromium upstream `os_crypt/sync/` is legacy (README: "should not be used in new code"); Whale still uses deprecated sync interface while Chromium migrates to async. Same-day double release + login-server-error hotfix + Chromium 138 bump raises regression risk. NVD 8-month gap (0 sync-class keyword hits across all 28 CVEs) masks silent regression.
+evidence_needed: Disassembly of WBC crypto layer to extract KDF iteration count + algorithm; verify if `num_iterations:` constant is hardcoded low (e.g., < 100K PBKDF2) or weak/custom derivation lacks domain separation
+verify_steps: HUMAN: Download `naver-whale-stable_4.39.410.14-1_amd64.deb` from `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/`, extract to `/tmp/opencode/whale_binary/`, then run `strings -n8 whale | grep -iE "iterat|kdf|derive|num_iter" -A2 -B2` and `objdump -d whale | grep -iE "pbkdf|hkdf|scrypt|kdf|sha1|sha256" | head -50`; or load binary into Ghidra and decompile `wbc.cc`/`wbc_wrapper_apis.cc` functions matching `kdf key len` debug string
+impact: If KDF iterations < 100K or derivation lacks domain separation: CWE-327/CWE-330 (Use of Broken Crypto), High severity — offline sync data decryption possible via weak KDF; sync token/prefs exposure
+testability: BINARY_ACQUIRED
+[HYP] NVD 8-month disclosure gap for sync-class Whale CVEs
+class: OTHER
+asset: services.nvd.nist.gov/rest/json/cves/2.0
+confidence: 55
+reasoning: keywordSearch=whale returns totalResults=28, 0 published in 2026, 0 sync-class keyword hits across all 28 descriptions (sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring|crypto all 0); newest CVE-2025-69235 @2025-12-30; gap covers v4.35.352 through v4.39.410.14 including Chromium 137→138 bump + login-server-error hotfix
+evidence_needed: any new navercorp whale CVE publication or sync-class keyword hit in future NVD updates
+verify_steps: PASSIVE: GET https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200 — confirm HTTP 200, re-parse totalResults + year breakdown + sync-class keyword screen; retry on 503/404/000
+impact: early-warning of newly disclosed in-scope flaws for priority recalibration; Medium
+testability: PASSIVE
+[HYP] Whale sync API surface — setSyncEncryptionKeys + getSyncCacheGuid utilityPrivate enumeration
+class: OATH
+asset: utilityPrivate API surface in Whale v4.39.410.14 binary
+confidence: 40
+reasoning: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions confirmed present in binary; NAVER/WHALESPACE/EMAIL/SNS/WORKS SigninType enum; Whale-only sync engine fork (7 source files) uses utilityPrivate API for JS-accessible key management — potential IPC boundary bypass if origin checks missing
+evidence_needed: Determine if utilityPrivate API functions are reachable from renderer context without proper origin/guilt checks; check NW.js/Chromium content script bridge exposure
+verify_steps: HUMAN: After binary extraction, run `strings -n8 whale | grep -iE "utilityPrivate|setSyncEncryption|getSyncCache|getPushServer" -A5 -B2`; or PASSIVE: inspect Whale extension API documentation for utilityPrivate exposure surface
+impact: If reachable from renderer without proper origin check: CWE-346 (SOP bypass) enabling sync encryption key exfiltration; High
+testability: BINARY_ACQUIRED
+[FINAL] Whale v4.39.410.14 sync OSCrypt KDF parameter extraction via binary disassembly — confidence 65 (HUMAN with binary + Ghidra)
+[FINAL] NVD 8-month disclosure gap for sync-class Whale CVEs — confidence 55 (PASSIVE)
+[PARKED] Whale sync API surface — setSyncEncryptionKeys utilityPrivate enumeration: confidence 40, borderline; requires binary to confirm reachability + origin check absence; insufficient evidence without disassembly — dropped.
+[NEXT] HUMAN: Download `naver-whale-stable_4.39.410.14-1_amd64.deb` (166MB) from `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`, extract to `/tmp/opencode/whale_binary/`, then run passive string/grep extraction for KDF params (`num_iterations`, `%s: kdf key len: %d`) + `objdump -d whale | grep -iE "pbkdf|hkdf|scrypt|kdf"` to locate KDF function boundaries for disassembly.
+[LEARN] ACCEPTED @ repo.whale.naver.com: Binary acquisition confirmed accessible — HTTP 200, 166MB .deb, v4.39.410.14; Naver's own repository bypasses all cloudfront/APKMirror/Uptodown blocks; version corrected from v4.39.410.18 to v4.39.410.14 per AUR + FileHorse
+[LEARN] ACCEPTED @ WBC crypto layer: `wbc.cc` + `wbc_wrapper_apis.cc` + `encryptor.cc` confirmed compiled into Whale binary; custom encryption layer separate from Chromium's `os_crypt/sync/`
+[LEARN] ACCEPTED @ sync engine fork: 7 Whale-specific sync source files confirmed in binary string table; binary extraction reveals compile-time file path references not present in public repo
+[LEARN] ACCEPTED @ KDF debug string: `%s: kdf key len: %d` present in binary — Whale-specific KDF logging that needs disassembly to trace to actual KDF function
+[LEARN] ACCEPTED @ Chromium upstream: `os_crypt/sync/` README states "legacy interface which should not be used in new code" — Whale still uses sync interface while upstream migrates to async; creates regression risk
+[LEARN] ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 0 sync-class keyword hits across all 28 descriptions; 8-month gap confirmed static
+[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.14 (patched); no novel variant — permanently parked
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked
+[LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path; permanently parked
+[RISK] sync: 78 — binary acquired + WBC layer + KDF debug string + Whale-only sync prefs + 0 public sync source files + 8-month NVD gap + same-day Chromium 138 double-release + login-server-error hotfix; confidence 65, HUMAN-gated for disassembly
+[RISK] browser: 28 — all known browser-side classes fixed/duplicate CVEs; Chromium 138 may introduce new surfaces but inaccessible without binary disassembly
+[RISK] libs: 22 — socket.io.slim.js confirmed Whale-only in binary but binary-acquired so extractable; weak library surface only if sync KDF uses bundled socket.io for key transport
