@@ -2011,3 +2011,16 @@
 - CHANGED NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap static
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
 - CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+
+## 2026-08-20 20:00:19 UTC
+- NEW Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` (v4.39.410.14) still NOT present in sandbox — directory missing
+- NEW Binary acquisition from `repo.whale.naver.com` confirmed accessible (HTTP 200, 166MB .deb) but not yet delivered to sandbox
+- NEW WBC crypto layer (`wbc.cc`, `wbc_wrapper_apis.cc`, `encryptor.cc`) confirmed compiled into binary via string extraction
+- NEW 7 Whale-specific sync source files confirmed in binary string table
+- NEW KDF debug string `%s: kdf key len: %d` present in binary
+- NEW utilityPrivate JS API (`setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup`) confirmed in binary
+- NEW Chromium upstream `os_crypt/sync/` is legacy but Whale still uses it
+- CHANGED Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse
+- CHANGED NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap static
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+- CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
