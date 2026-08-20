@@ -1,70 +1,9 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-The knowledge base you provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), but you're asking me to triage **gladiaio/** GitHub org repos and **@gladiaio/sdk** npm package. These are completely different targets.
+The knowledge base you've provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), not **gladiaio/** or **@gladiaio/sdk**. There's zero Gladia-related content in the RAG data — no GitHub repos, no npm metadata, no source code, no secrets.
 
-The Whale browser knowledge base contains:
-- Naver Whale browser vulnerability research (CVE-2025-69234/69235, sidebar SOP bypass, sync KDF, etc.)
-- Binary acquisition channels (cloudfront, APKMirror, Uptodown - all blocked)
-- GitHub repo: naver/whale-browser-developers (documentation-only)
+The inventory header says "INVENTORY gladia" but the content is 100% Whale browser recon (Naver org, sidebarAction, sync KDF, cloudfront blocks, NVD CVE gaps, etc.).
 
-**No Gladia content exists in this knowledge base.**
-
-To triage Gladia repos, I need to either:
-1. **Scan the actual gladiaio GitHub org** to find their public repos
-2. **Check npm for @gladiaio/sdk** metadata
-
-Let me search for the Gladia org and SDK:
-[0m◈ [0mExa Web Search "gladiaio GitHub organization repos"
-[0m◈ [0mExa Web Search "@gladiaio/sdk npm package"
-Now I have the Gladia context. Let me fetch the SDK repo structure and npm package details for proper triage:
-[0m% [0mWebFetch https://github.com/gladiaio/sdk
-[0m% [0mWebFetch https://registry.npmjs.org/@gladiaio/sdk
-[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/package.json
-[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/pyproject.toml
-[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/index.ts
-[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/client.ts
-[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/httpClient.ts
-[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/network/wsClient.ts
-[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-python/src/gladiaio_sdk/client.py
-Now I have a clear picture. Let me check a couple more repos and then provide the triage:
-[0m✗ [0mWebFetch https://raw.githubusercontent.com/gladiaio/gladia-cli/main/main.go failed
-[91m[1mError: [0mStatusCode: non 2xx status code (404 GET https://raw.githubusercontent.com/gladiaio/gladia-cli/main/main.go)
-[0m% [0mWebFetch https://github.com/gladiaio/gladia-cli
-Now I have a complete picture. Here's the triage:
-
----
-
-## TRIAGE: gladiaio/ GitHub Org + @gladiaio/sdk npm
-
-### Repos Scanned (19 public, key ones analyzed):
-| Repo | Stars | Language | Purpose | Last Push |
-|------|-------|----------|---------|-----------|
-| gladiaio/sdk | 4 | TypeScript/Python | **Monorepo: JS/TS SDK, Python SDK, OpenAPI→SDK generator** | 2026-07-13 |
-| gladiaio/gladia-samples | 61 | Python/JS | Code samples for SDK integration | 2026-07-10 |
-| gladiaio/gladia-cli | 26 | Go | CLI for transcription (install via curl\|sh) | 2026-07-10 |
-| gladiaio/normalization | 28 | Python | Text normalization for WER eval | 2026-07-14 |
-| gladiaio/realtime-multilingual-asr-router | 20 | Python | ASR routing service | 2026-05-29 |
-| gladiaio/docs | 4 | MDX | Documentation site | 2026-07-14 |
-| gladiaio/skills | - | - | AI agent skills (Cursor/IDE integration) | - |
-| gladiaio/open_asr_leaderboard | 0 | - | Fork of HF ASR leaderboard | 2026-06-09 |
-
-### npm Package: @gladiaio/sdk
-| Field | Value |
-|-------|-------|
-| Version | 1.1.0 |
-| License | MIT |
-| Weekly downloads | ~4,437 |
-| Published | 2025-09-09 |
-| Updated | 2026-07-23 |
-| Repository | github:gladiaio/sdk |
-| Peer deps | `ws` (optional, wide range), `undici` (optional, `>=5`), `eventemitter3` (>=5) |
-
----
-
-## STATIC ANALYSIS FINDINGS
-
-### REAL_SECRET — Hardcoded credentials/API keys
-| File | Line | SHA256 | Verdict |
-|------|------|--------|---------|
-| *(none found)* | -
+**To proceed, I need:**
+1. The actual Gladia static scan results (code/config files with
