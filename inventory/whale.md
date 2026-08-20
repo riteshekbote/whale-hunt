@@ -1936,3 +1936,10 @@
 - CHANGED NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static (latest CVE-2025-69235 @2025-12-30)
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
 - CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+
+## 2026-08-20 14:42:32 UTC
+- CHANGED Binary extraction previously reported at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` (v4.39.410.14) is NOT present in sandbox — `/tmp/opencode/whale_binary/` directory does not exist;
+- CHANGED Desktop version confirmed v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse; same-day double-release v4.39.410.14→v4.39.410.18 occurred but latest stable is v4.39.410.14
+- CHANGED NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static (latest CVE-2025-69235 @2025-12-30)
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+- CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains

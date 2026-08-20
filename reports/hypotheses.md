@@ -9223,3 +9223,23 @@
 - LEARN: ACCEPTED @ utilityPrivate API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present — JS API surface for sync enc
 - LEARN: ACCEPTED @ Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface
 - LEARN: REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE
+
+## RANKED HYPOTHESES 2026-08-20 14:42:32 UTC
+- [65] Whale: Whale desktop sync OSCrypt v10 bootstrap-token KDF regression post-Chromium-138 same-day double release (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Deliver official Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410
+- LEARN: ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extracti
+- LEARN: ACCEPTED @ desktop version bump: v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18 same-day double release); Chromium 137→138; binary re-acquisition required
+- LEARN: ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in sync KDF surf
+- LEARN: ACCEPTED @ Chromium 138 engine upgrade: v4.39.410.14/18 aligns with latest Chromium stable 138.0.7204.92 (Aug 17); may have changed OSCrypt fork boundaries, KDF
+- LEARN: ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-3578
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path — permanently parked
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 410 Gone, APKPure CDN 
+- LEARN: ACCEPTED: Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 166MB .deb, source URL `repo.whale.naver.com/stable/deb/pool/main/n/na
+- LEARN: ACCEPTED @ WBC crypto layer: `../../whale/crypto/wbc/wbc.cc` + `wbc_wrapper_apis.cc` + `../../whale/crypto/encryptor.cc` confirmed compiled into binary; WBC is 
+- LEARN: ACCEPTED @ sync engine fork: 7 Whale-specific sync source files confirmed: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_wh
+- LEARN: ACCEPTED @ KDF debug string: `%s: kdf key len: %d` present in binary — Whale-specific KDF logging that needs disassembly to trace
+- LEARN: ACCEPTED @ utilityPrivate API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present — JS API surface for sync enc
+- LEARN: ACCEPTED @ Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface
+- LEARN: REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE
