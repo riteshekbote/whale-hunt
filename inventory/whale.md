@@ -1857,3 +1857,17 @@
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
 - CHANGED NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static
 - CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+
+## 2026-08-20 02:30:01 UTC
+- NEW Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse; same-day double-release was v4.39.410.14→v4.39.410.18 but latest stable is v4.39.410.14
+- NEW Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 166MB .deb at `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb
+- NEW WBC crypto layer confirmed in binary: `../../whale/crypto/wbc/wbc.cc` + `wbc_wrapper_apis.cc` + `../../whale/crypto/encryptor.cc` — Whale's custom encryption layer separate from Chromium's `os_crypt/s
+- NEW Sync engine fork confirmed: 7 Whale-specific sync source files — `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `data_t
+- NEW KDF debug string: `%s: kdf key len: %d` present in binary — Whale-specific KDF logging requiring disassembly to trace
+- NEW utilityPrivate API surface: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present — JS API for sync encryption key management
+- NEW Chromium upstream note: `os_crypt/sync/` README states "legacy interface which should not be used in new code" — Whale still uses sync interface while upstream migrates to async
+- CHANGED Sync KDF hypothesis confidence raised 62→65 (Chromium 138 double-release + login-server-error hotfix + xv10/os_crypt_whale.cc fork from prior v4.38 recon)
+- CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+- CHANGED NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static
+- CHANGED `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated

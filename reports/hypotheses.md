@@ -8877,3 +8877,6 @@
 - LEARN: ACCEPTED @ utilityPrivate API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present — JS API surface for sync enc
 - LEARN: ACCEPTED @ Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface
 - LEARN: REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE
+
+## RANKED HYPOTHESES 2026-08-20 02:30:01 UTC
+- [65] Whale: Whale desktop sync OSCrypt v10 bootstrap-token KDF regression post-Chromium-138 same-day double release (from reports/hypotheses-nemotron3.txt)

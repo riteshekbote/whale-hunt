@@ -17931,3 +17931,43 @@ testability: HUMAN_ONLY
 [LEARN] ACCEPTED @ Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface while upstream migrates to async
 [LEARN] REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE
 [RISK] sync: 70 reason: custom /whalesync + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth + WBC crypto layer + 7 Whale-specific sync files + KDF debug string + utilityPrivate API all confirmed in latest binary; key-storage/KDF and reset-auth not yet runtime-verified; server-tweakable client heuristics widen the sync attack surface; same-day v4.39.410.14 bump suggests active changes in this surface | browser: 82 reason: sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; CPE Linux gap resolved; sample extension manifest + background.js (both HTTP 200) confirm ALL-origin content_scripts + unvalidated sidebarAction.show() message handling — high-priority regression window unchanged | libs: 35 reason: Whale bundles Chromium (inherits upstream CVEs); socket.io.slim.js confirmed Whale-only in resources.pak but version-drift audit blocked (binary inaccessible); no public third-party library manifest; passive lib-inventory path degraded to speculative; low visibility, moderate inherent risk
+## 2026-08-20 02:18:18 UTC [browser] (model nemotron3)
+[NEW] Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse; same-day double-release was v4.39.410.14→v4.39.410.18 but latest stable is v4.39.410.14
+[NEW] Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 166MB .deb at `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`
+[NEW] WBC crypto layer confirmed in binary: `../../whale/crypto/wbc/wbc.cc` + `wbc_wrapper_apis.cc` + `../../whale/crypto/encryptor.cc` — Whale's custom encryption layer separate from Chromium's `os_crypt/sync/`
+[NEW] Sync engine fork confirmed: 7 Whale-specific sync source files — `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `data_type_worker_whale.cc`, `sync_server_connection_manager_whale.cc`, `whale_sync_util.cc`
+[NEW] KDF debug string: `%s: kdf key len: %d` present in binary — Whale-specific KDF logging requiring disassembly to trace
+[NEW] utilityPrivate API surface: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present — JS API for sync encryption key management
+[NEW] Chromium upstream note: `os_crypt/sync/` README states "legacy interface which should not be used in new code" — Whale still uses sync interface while upstream migrates to async
+[CHANGED] Sync KDF hypothesis confidence raised 62→65 (Chromium 138 double-release + login-server-error hotfix + xv10/os_crypt_whale.cc fork from prior v4.38 recon)
+[CHANGED] APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+[CHANGED] Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+[CHANGED] NVD services endpoint stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap confirmed static
+[CHANGED] `/tmp/opencode/whale_binary/` still MISSING — binary-dependent verification permanently HUMAN-gated
+[PRIO] Whale desktop v4.39.410.14 binary (os_crypt_whale.so + sync prefs + WBC layer + 7 sync files), 8.15, atk=9 biz=9 tech=9 gate=2 cloud=3 fresh=10
+[PRIO] Whale binary repo `repo.whale.naver.com` (166MB .deb), 7.20, atk=8 biz=8 tech=8 gate=3 cloud=2 fresh=10
+[PRIO] Whale Android 3.9.14.9 APK (libos_crypt_whale.so + Keystore sync prefs), 6.30, atk=8 biz=8 tech=7 gate=1 cloud=3 fresh=8
+[PRIO] NVD services endpoint (services.nvd.nist.gov/rest/json/cves/2.0), 5.80, atk=6 biz=7 tech=5 gate=8 cloud=2 fresh=4
+[HYP] Whale desktop sync OSCrypt v10 bootstrap-token KDF regression post-Chromium-138 same-day double release
+class: AUTH
+asset: Whale v4.39.410.14 desktop binary (os_crypt_whale.so + sync prefs + WBC layer + 7 Whale-specific sync files)
+confidence: 65
+reasoning: v4.38.386.14 binary confirms Whale-only prefs keys (sync.encryption_bootstrap_token_per_account sha256=053ffa4b..., _migration_done, whale_need_encryption_key_forced_time) + Whale-forked OSCrypt (os_crypt_whale.cc, wbc_wrapper_apis.cc, xv10 magic) + WBC layer; per-account bootstrap token envelope deviates from upstream Chromium; v4.39.410.14 login hotfix + Chromium 138 upgrade may have shifted KDF/master-key boundaries; master-key storage location and KDF constants unextracted; 7 Whale-specific sync files confirm deep fork
+evidence_needed: Per-account token plaintext vs Whale-OSCrypt-v10 in Preferences; where os_crypt_whale stores master key on Linux; whether whale_need_encryption_key_forced_time downgrades to stale key; diff pref set vs upstream Chromium in v4.39.410.14
+verify_steps: HUMAN_ONLY: Deliver Whale v4.39.410.14 .deb → objdump/strings on os_crypt_whale.so + whale_sync_util call sites for bootstrap-token envelope and /whalesync/reset request shape; diff pref set vs upstream Chromium; zero network
+impact: Local attacker/infostealer with profile access decrypts synced passwords/cookies/autofill → full-account compromise (High)
+testability: HUMAN_ONLY
+[HYP] Whale Android 3.9.14.9 sync bootstrap tokens stored in Android Keystore with weaker envelope than desktop
+class: AUTH
+asset: Whale Android 3.9.14.9 (com.naver.whale APK)
+confidence: 58
+reasoning: Android sync uses same /whalesync endpoint + NEO_SES cookie auth; bootstrap tokens likely stored in Android Keystore or SharedPreferences; Whale-only prefs keys (sync.encryption_bootstrap_token_per_account, whale_need_encryption_key_forced_time) confirmed in desktop binary — Android variant unanalyzed; APK acquisition channels blocked (APKPure CDN 403, Uptodown 410 Gone)
+evidence_needed: APK binary to inspect libos_crypt_whale.so / keystore usage; sync prefs schema in Android SharedPreferences; bootstrap token envelope format parity with desktop xv10 magic
+verify_steps: HUMAN_ONLY: Acquire com.naver.whale 3.9.14.9 APK via unrestricted internet → apktool + grep for sync.encryption_bootstrap_token* + keystore APIs; compare envelope format vs desktop xv10 magic; zero network
+impact: Local attacker with root/backup access extracts bootstrap tokens → decrypts cross-device synced credentials (High)
+testability: HUMAN_ONLY
+[HYP] NVD 8-month disclosure gap hides undisclosed sync-class fixes in v4.35.352–v4.39.410.14
+class: MISCONFIG
+asset: Whale v4.35.351.12 vs v4.39.410.14 binary diff (os_crypt_whale + sync prefs schema + WBC layer)
+confidence: 55
+reasoning: NVD keywordSearch=whale returns 28 total CVEs, 0 published in 2026 (latest CVE-2025-69235 @2025-12-30); v4.35.3
