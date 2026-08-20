@@ -13456,3 +13456,8 @@ evidence_needed: decompilation of authkey fetcher showing absence of key↔token
 verify_steps: HUMAN Ghidra on naver_access_token_fetcher.cc / login_urls.cc call sites; local-only MITM of own test account if pursued.
 testability: HUMAN_ONLY
 [FINAL]
+## 2026-08-20 22:57:29 UTC [sync] (model bigpickle)
+[HYP] class=CRYPTO conf=45 testability=ACTIVE_LOCAL->HUMAN_ONLY | Whale accepts x-epoch-key response-header value captured at oauth.whale.naver.com/oauth2/v1/nid/authorize_callback (whale-signin webViewRequest, pak ID=23471 lines 1260-1269) as sync encryption key material without verifying provenance (CWE-347/CWE-494); key flows naverEpochKey -> authCompleted event -> C++ naver_epoch_key_confirmer.cc. If confirmer lacks signature check, party knowing epoch key decrypts synced data.
+[HYP] class=AUTH conf=40 testability=ACTIVE_LOCAL | setSyncEncryptionKeys/retrieveTrustedVaultKeys exist ONLY in stripped ELF (zero refs in resources.pak JS or on-disk extension files); binding likely registered for whale-signin remote content or dead code. Callable-from-underprivileged-context unproven.
+[HYP] class=CRYPTO conf=45 testability=ACTIVE_LOCAL->HUMAN_ONLY | Whale accepts x-epoch-key header value from oauth.whale.naver.com callback as sync encryption key material without verifying provenance (CWE-347); attacker knowing epoch key decrypts synced data | falsified-if: naver_epoch_key_confirmer.cc enforces signature/MAC on key
+[HYP] class=AUTH conf=40 testability=ACTIVE_LOCAL | setSyncEncryptionKeys binding is reachable from underprivileged caller when whale-signin hosts remote content | falsified-if: binding registered only post-signin to WebUI-only context

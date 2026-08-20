@@ -1,14 +1,5 @@
-## 2026-08-20 22:16:03 UTC [sync] (model bigpickle)
-reasoning: facts — WBC crypto layer compiled in; kdf-len debug string present; per-account bootstrap-token prefs present; scrypt/pbkdf/hkdf code paths all linked; stock saltysalt confined to local cookie crypto, so any weak KDF would be specific to the Whale sync vault layer. unknowns — actual KDF params (iterations/N/salt/domain separation) unknowable via strings; Scrypt8192 attribution unresolved.
-evidence_needed: disassembly xref of "../../whale/crypto/wbc/wbc.cc" and "%s: kdf key len: %d" → decompiled callers → KDF parameter extraction comparable against upstream async-OSCrypt defaults.
-verify_steps: PASSIVE(done): strings enumeration above. Remaining: HUMAN Ghidra session on the ELF (stripped, no symbols).
-testability: HUMAN_ONLY
-reasoning: facts — metrics Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs} prove a JS-callable path that ingests sync encryption keys; bindings absent from the full utilityPrivate schema → custom surface outside standard extension-API gating; forked trusted_vault_request_whale.cc + whale_sync_auth_manager.cc show active modification of exactly this subsystem. counter-evidence — "ValidArgs" metric name implies argument validation exists. unknowns — which contexts (web page? content script? whale:// WebUI?) may invoke it.
-evidence_needed: identification of owning context + demonstration that an underprivileged caller (content script or ordinary https page) can invoke it and plant attacker-chosen vault keys (CWE-284/CWE-732).
-verify_steps: PASSIVE(done): utilityPrivate manifest ruled out; resources.pak strings yielded nothing (entries compressed). ACTIVE local: launch ELF headless with --remote-debugging-port, enumerate execution contexts via CDP, attempt binding invocation from data:/https page vs whale://settings.
-testability: PASSIVE->ACTIVE local run (no external probing)
-reasoning: facts — custom access-token fetcher (naver_access_token_fetcher.cc) + epoch key confirmer replace upstream Gaia binding logic; error string proves refresh-token exchange implemented in-fork. unknowns — whether keys/tokens are bound to session/device/client_id as upstream does.
-evidence_needed: decompilation of authkey fetcher showing absence of key↔token binding enabling cross-account substitution.
-verify_steps: HUMAN Ghidra on naver_access_token_fetcher.cc / login_urls.cc call sites; local-only MITM of own test account if pursued.
-testability: HUMAN_ONLY
-[FINAL]
+## 2026-08-20 22:57:29 UTC [sync] (model bigpickle)
+[HYP] class=CRYPTO conf=45 testability=ACTIVE_LOCAL->HUMAN_ONLY | Whale accepts x-epoch-key response-header value captured at oauth.whale.naver.com/oauth2/v1/nid/authorize_callback (whale-signin webViewRequest, pak ID=23471 lines 1260-1269) as sync encryption key material without verifying provenance (CWE-347/CWE-494); key flows naverEpochKey -> authCompleted event -> C++ naver_epoch_key_confirmer.cc. If confirmer lacks signature check, party knowing epoch key decrypts synced data.
+[HYP] class=AUTH conf=40 testability=ACTIVE_LOCAL | setSyncEncryptionKeys/retrieveTrustedVaultKeys exist ONLY in stripped ELF (zero refs in resources.pak JS or on-disk extension files); binding likely registered for whale-signin remote content or dead code. Callable-from-underprivileged-context unproven.
+[HYP] class=CRYPTO conf=45 testability=ACTIVE_LOCAL->HUMAN_ONLY | Whale accepts x-epoch-key header value from oauth.whale.naver.com callback as sync encryption key material without verifying provenance (CWE-347); attacker knowing epoch key decrypts synced data | falsified-if: naver_epoch_key_confirmer.cc enforces signature/MAC on key
+[HYP] class=AUTH conf=40 testability=ACTIVE_LOCAL | setSyncEncryptionKeys binding is reachable from underprivileged caller when whale-signin hosts remote content | falsified-if: binding registered only post-signin to WebUI-only context
