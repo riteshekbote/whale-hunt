@@ -1,11 +1,85 @@
 [0m
-> build · nemotron-3-ultra-free
+> build · mimo-v2.5-free
 [0m
-**Mismatch detected**: The provided knowledge base is entirely about **Naver Whale browser** (naver/whale-browser-developers), not `gladiaio/` repos or `@gladiaio/sdk`.
+[0m% [0mWebFetch https://api.github.com/orgs/gladiaio/repos?per_page=100
+[0m% [0mWebFetch https://registry.npmjs.org/@gladiaio/sdk
+## Objective
+- Triaging a static scan of public repos from gladiaio/ GitHub org (official Gladia org) plus npm package metadata for @gladiaio/sdk, within the context of a Whale browser security research program
+- Attempting to find novel, reportable vulnerabilities in Naver Whale browser via public source code, binary analysis, and passive recon — with all findings routed through the program's scope rules
 
-**Scan results**: The inventory shows `SCAN SUMMARY: 0 code/config files scanned, 0 hits` — no findings to triage.
+## Important Details
+- **Scope (scope.yml)**: Eligible — latest-version Whale browser bugs (must reproduce on latest); third-party libs used ONLY by Whale; synchronization bugs. NOT eligible — all Naver web services (*.naver.com), built-in extension servers, URL preview spoofing, XSS Auditor bypass, IETab, SafeBrowsing FP/FN
+- **Current latest Whale desktop version**: v4.39.410.14 (corrected from v4.39.410.18 per AUR + FileHorse); Chromium 138 engine; same-day double release Aug 18 with login-server-error hotfix
+- **Current latest Whale Android version**: v3.9.14.9 (364.2MB arm64 XAPK, SHA-256 6f7c7907...)
+- **GitHub repo `naver/whale-browser-developers`**: Documentation-only (pushed 2019-09-23, updated 2025-10-22, 0 releases, 4 branches, 5 wiki pages, README.ko.md) — 0 sync/crypto/OSCrypt source files exist; static analysis path permanently dead
+- **NVD status**: 28 total whale CVEs, 0 published in 2026, latest CVE-2025-69235 @2025-12-30; 8-month+ disclosure gap confirmed static; `keywordSearch=whale` is correct query (naver+whale returns 0 due to keyword quirk); `services.nvd.nist.gov` is working endpoint; date-filtered queries return 404
+- **Binary acquisition**: `repo.whale.naver.com` confirmed accessible (HTTP 200, 166MB .deb, hash-pinned); all other channels permanently blocked (cloudfront DNS No-answer, APKMirror 403, Uptodown 410, APKPure CDN 403, pstatic 404 scope-excluded)
+- **Binary analysis findings (v4.39.410.14)**:
+  - WBC crypto layer: `wbc.cc` + `wbc_wrapper_apis.cc` + `encryptor.cc` compiled into binary (custom encryption separate from Chromium's os_crypt/sync/)
+  - 9 Whale-specific sync source files: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `data_type_worker_whale.cc`, `sync_server_connection_manager_whale.cc`, `whale_sync_util.cc`, plus 2 more
+  - `authkey_fetcher.cc` confirmed as Whale fork inside upstream identity_manager
+  - `os_crypt/sync/` directory: upstream README states "legacy interface which should not be used in new code" — Whale still uses it while upstream migrates to async
+  - `utilityPrivate` API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present
+  - Sample extension (translate branch): all 5 files HTTP 200 — ALL-origin content_scripts + 0 sender.origin/sender.url/sender.tab validation; class REJECTED as duplicate of fixed CVEs (platform-agnostic CPE covers v4.39.410.14)
+- **Alive hypothesis classes**:
+  - **sync KDF** (confidence 65): Binary extraction only vector; KDF constants/iteration counts/master-key storage unextracted; same-day Chromium 138 double-release + login-server-error hotfix raises regression urgency; HUMAN-gated
+  - **epoch-key HMAC scheme-properties** (confidence 55→70): static-static ECDH + request-only `Authorization: HMAC key=v1` + plain-JSON token parsing (zero MAC response verification) — asymmetric request-only authentication design code-proven
+  - **epoch-key exchange verification** (alive): zero whale-specific signature-verification strings for epoch-key response; lacks client-side verification
+  - **utilityPrivate trustedVault binding exposure** (alive): manifest origin-binding gaps for setSyncEncryptionKeys/retrieveTrustedVaultKeys; `Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs}` metrics
+  - **OSCrypt async variant** (alive): v4.39.410.14 uses Chromium 138 async OSCrypt while retaining legacy Whale OSCrypt fork — coexistence confirmed
+  - **signin delivery** (alive): client_private_key/session_id/csrf_token arrive as JSON trio via `OnEpochKeyConfirmed` WebUI bridge in `inline_login_handler_impl_whale.cc`
+  - **WhaleNidAuth request signing** (alive): HMAC key = ECDH(PKCS#8 client_private_key, hex server pubkey) domain-separated `whale:hmac:`+`v1`, canonical message binds X-CSRF-Token/X-Timestamp/X-Nonce
 
-**Action needed**: 
-- Confirm the correct target (Gladia vs Whale)
-- Provide actual static scan output (grep/hits) for the intended target
-- The current knowledge base contains only Whale browser recon data, not Gladia SDK scan results
+## Work State
+### Completed
+- Full repo enumeration (4 branches via recursive tree API + 5 wiki pages + README.ko.md) — 0 sync/crypto source files in any public branch confirmed
+- Binary string-table analysis of v4.39.410.14 .deb from `repo.whale.naver.com` — WBC crypto layer, 9 sync fork files, authkey_fetcher fork, utilityPrivate API, OSCrypt async coexistence all confirmed
+- REX.W LEA rip-relative byte-pattern sweep method validated for stripped Chromium-derived binary analysis — reliably enumerates string-consumer sets without symbols
+- epoch-key HMAC scheme-properties attack class (EPOCH-HMAC-1) fully code-proven: request signing (EVP_DigestSign, domain-separated labels, len-CHECKed 32B global) with zero response verification
+- xref-exhaustive REX.W LEA sweep proves pinned SPKI/`whale:hmac:`/`Authorization: HMAC key=` each have exactly ONE consumer, all inside signing cluster; response parser makes zero crypto-helper calls
+- BoringSSL static-linkage depth confirmed: init CHECK strings = `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.cc.inc` (EVP_DigestSign) with 0 EVP_/ECDSA_/RSA_ symbols among 2975 dynamic imports
+- NVD gap monitor confirmed stable across multiple cycles: 28 total, 0 in 2026, 0 sync-class keyword hits
+- Sample extension source fully analyzed: 0 sender.* grep matches via raw fetch + python grep; class REJECTED as duplicate of fixed CVEs
+- All binary acquisition channels characterized: `repo.whale.naver.com` is the only live path; all others permanently blocked in-sandbox
+- Browser lock flag (`whale://flags`) documented as new local-auth surface in v4.39.410.18
+
+### Active
+- Investigating epoch-key HMAC scheme-properties attack surface (EPOCH-HMAC-1) — strongest alive hypothesis at conf 70
+- Investigating utilityPrivate trustedVault binding exposure — pending caller-context proof
+- Investigating OSCrypt async/legacy coexistence — potential regression surface
+- Investigating signin delivery via OnEpochKeyConfirmed WebUI bridge — plaintext key transmission analysis ongoing
+- WhaleNidAuth request signing analysis — replay-protection fields exist on requests (prior absence claim falsified)
+
+### Blocked
+- All disassembly/RE work requires re-downloading binary from `repo.whale.naver.com` after each sandbox wipe — `/tmp/opencode/whale_binary/` is ephemeral
+- client_private_key binding origin check — requires tracing `utilityPrivate` binding from JS API to native with full caller-context proof
+- KDF constants/iteration counts/master-key storage location remain unextracted from binary
+- `naver+whale` NVD keyword quirk returns 0; must use bare `whale` (28 total)
+
+## Next Move
+1. Continue disassembly of epoch-key exchange cluster (signing cluster `0xc0d46e6`–`0xc0d4f10`, response parser `0xc0d5c91`–`0xc0d5eb6`) to trace full key lifecycle and identify exploitable gaps
+2. Trace `utilityPrivate` binding from JS API to native `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys` to prove or disprove cross-origin invocation path
+3. Analyze OSCrypt async vs legacy coexistence for downgrade/regression potential across the Chromium 137→138 boundary
+
+## Relevant Files
+- `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb` — current binary target (166MB, hash-pinned, re-acquirable)
+- `naver/whale-browser-developers` (GitHub) — documentation-only, 4 branches, 0 releases; `translate/src/sidebar-sample/` contains sample extension (manifest.json, background.js, contentscript.js, index.html, index.js)
+- `raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md` — sidebarAction API docs (HTTP 200)
+- `/tmp/opencode/whale_binary/` — ephemeral extraction directory (missing after sandbox wipe; must re-download)
+- `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale` — NVD gap monitor endpoint
+- Binary compiled path references: `../../whale/crypto/wbc/wbc.cc`, `../../whale/crypto/wbc/wbc_wrapper_apis.cc`, `../../whale/crypto/encryptor.cc`, `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc`
+- Signing cluster: `0xc0d46e6`–`0xc0d4f10`; response parser: `0xc0d5c91`–`0xc0d5eb6`
+- Pinned SPKI @ `0x2968510`
+Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+[0m• [0mProcess GitHub org repos[90m General Agent[0m
+[0m• [0mProcess npm SDK metadata[90m General Agent[0m
+[0m✓ [0mProcess GitHub org repos[90m General Agent[0m
+[0m✓ [0mProcess npm SDK metadata[90m General Agent[0m
+I need clarification. You have two active research tracks:
+
+1. **Naver Whale browser security research** (extensive context with active hypotheses, binary analysis, epoch-key HMAC scheme, etc.)
+2. **Gladiaio/ GitHub org + @gladiaio/sdk npm package scanning** (which I just completed processing)
+
+The system-reminder mentions both are in scope, but the rules explicitly state "gladiaio/" is out of scope.
+
+Which task should I continue?
