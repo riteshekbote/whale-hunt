@@ -1,1 +1,97 @@
-## 2026-08-21 04:23:03 UTC [sync] (model bigpickle)
+## 2026-08-21 05:13:29 UTC [sync] (model bigpickle)
+[NEW] Binary acquisition channel `repo.whale.naver.com` live (HTTP 200, 173111388B `.deb` v4.39.410.14, sha256=6458a95a… pinned, byte-exact across 4 re-acquisitions) — reverses standing "all passive channels blocked".
+[NEW] Hardcoded EC P-256 SPKI pinned key @rodata VA `0x2968510` (91-byte DER, prime256v1), EXACTLY ONE code xref @`.text` `0xc0d46e6`, feeding 32-byte derivation with domain labels `"whale:hmac:"` (`0x1ee9aad`) + `"v1"` (`0x29685c7`).
+[NEW] Request-auth scheme reconstructed: `Authorization: HMAC key=v1, signature=<tag>` derived from static-static ECDH (pinned pubkey × `client_private_key`); epoch/token responses parsed as plain JSON with zero MAC/verification.
+[NEW] `client_private_key` referenced ×4 @`0xc0cebd2`/`0xc0ceee4`/`0xc0cf1fd`/`0xc0cf3de` in form-fields cluster beside session_id/csrf_token; no local pref persists it.
+[NEW] utilityPrivate manifest origin-binding gaps for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`; `authkey_fetcher.cc` Whale fork confirmed inside upstream identity_manager.
+[CHANGED] "Zero whale-specific signature-verification material" premise FALSIFIED at pinned-key site → top hypothesis reframed from absence-of-crypto to scheme-properties (no FS, no response binding, JS-bridge transit of `naverEpochKey`).
+[CHANGED] `%s: kdf key len: %d` killed as sync-crypto evidence (libsrtp/WebRTC sibling cluster).
+[CHANGED] Desktop latest pinned v4.39.410.14 (not .18), Chromium 138 base, same-day double release Aug 18 incl. login-server-error hotfix touching exactly this auth surface.
+[PRIO] epoch-key establishment cluster (`/oauth2/v1/nid/epoch/v1` client side): 7.80 | attack 9, business 9, tech 9, gate 5, cloud 3, fresh 9
+[PRIO] utilityPrivate trustedVault bindings (`setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`): 7.35 | attack 8, business 9, tech 8, gate 6, cloud 2, fresh 8
+[PRIO] `client_private_key` lifecycle / authkey_fetcher fork: 6.75 | attack 7, business 8, tech 8, gate 4, cloud 4, fresh 8
+[HYP] Whale desktop epoch-key HMAC key-establishment lacks forward secrecy and per-response authentication binding; naverEpochKey additionally transits the whale-signin authCompleted JS bridge outside the crypto envelope
+class: OATH
+asset: Whale desktop v4.39.410.14 epoch-key cluster (local ELF BuildID 90f8aa1e…; POST `<env-base>/oauth2/v1/nid/epoch/v1`)
+confidence: 55
+reasoning: facts — pinned P-256 SPKI parsed once @0xc0d46e6 feeds 32-byte derivation labeled whale:hmac:/v1; `client_private_key` shipped as JSON form field in same TU; token responses parsed as plain JSON with zero MAC; C++ consumes `naverEpochKey` directly from JS-posted authCompleted object (getter @0x11b66cde). Static-static ECDH → no ephemeral server contribution observed; response authentication rests on TLS alone.
+evidence_needed: Decompile proving whether the HMAC signature binds request body/timestamp (vs labels-only) and whether any MAC verifies epoch-key/token responses before acceptance; identification of the derived 32-byte key's consumers; whether dev/stage/prod share the single pinned key.
+verify_steps: PASSIVE(done): basic-block disassembly 0xc0d4560–0xc0d4820; single-xref map. PASSIVE(next): objdump window 0xc0d4a00–0xc0d6000 for MAC-compare pattern on response fields; xref-scan consumers of literal VA 0x1ee9aad. Decisive: HUMAN Ghidra decompile of `a1d0a20`/`a8faf90` call sites @0xc0d4e6d/0xc0d4edf.
+impact: Trusted-CA MITM injects token/epoch responses undetected by the custom layer → cross-account sync-vault access or persistent key substitution; static ECDH → server-key compromise yields retroactive decryption. High-Critical.
+testability: HUMAN_ONLY
+[HYP] utilityPrivate setSyncEncryptionKeys/retrieveTrustedVaultKeys reachable from underprivileged caller context enabling attacker-chosen sync encryption keys
+class: AUTH
+asset: Whale desktop v4.39.410.14 utilityPrivate/trustedVault JS bindings (local ELF)
+confidence: 42
+reasoning: facts — metrics `Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs}` prove a JS-callable path ingesting vault keys; bindings absent from full utilityPrivate schema dump → registered outside standard extension-API gating; manifest shows origin-binding gaps; owning context unverified.
+evidence_needed: Owning namespace/context identified; demonstration that an https:/data: page (vs whale:// WebUI) can invoke the binding and plant attacker-chosen vault keys.
+verify_steps: AUTH_HELPED: launch extracted ELF headless (`--remote-debugging-port --user-data-dir=/tmp/wtest`), enumerate contexts via CDP Runtime.evaluate probing window.chrome/utilityPrivate from data: URL vs whale://settings; decompress resources.pak entries and grep binding names.
+impact: Web attacker sets victim's sync encryption keys → synced-data plaintext recovery or persistent lock-out. High-Critical.
+testability: AUTH_HELPED
+[HYP] Naver app-auth `client_private_key` is bridge/server-delivered long-lived static ECDH identity capturable at signin, enabling permanent request forgery with no forward secrecy
+class: OATH
+asset: Whale desktop v4.39.410.14 authkey_fetcher.cc fork / form-fields cluster `0xc0cebd2`–`0xc0cf3de`
+confidence: 40
+reasoning: facts — `client_private_key` referenced ×4 in form fields beside session_id/csrf_token; no local pref persists it; static-static design means later key compromise recovers all past derived HMAC keys; custom fetcher replaces upstream Gaia binding logic.
+evidence_needed: Decompile identifying key source (response parse vs pref vs JS-bridge object); signin JS grep for `client_private_key`.
+verify_steps: HUMAN_ONLY: Ghidra decompile of 0xc0cebd2/0xc0ceee4/0xc0cf1fd sites; decompress resources.pak grepping signin JS for `client_private_key`; local-only observation of own-account refresh flow if pursued.
+impact: Renderer/XSS compromise during signin captures long-lived static ECDH identity → permanent request forgery and retroactive HMAC recovery. Critical.
+testability: HUMAN_ONLY
+[FINAL] #1 epoch-key HMAC scheme-properties (OATH, conf 55 ≥ 40, class not rejected, concrete passive+human verify_steps) — survives
+[FINAL] #2 utilityPrivate trustedVault binding reachability (AUTH, conf 42 ≥ 40, locally testable via CDP) — survives
+[FINAL] #3 client_private_key lifecycle (OATH, conf 40 = threshold, thinnest evidence, HUMAN-gated) — survives, ranked last
+[NEXT] SCAN: Ensure ELF present at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` — if wiped, re-download hash-pinned `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb` (sha256=6458a95a…, GET ≤1 rps) — then objdump `-d --start-address=0xc0d4a00 --stop-address=0xc0d6000` plus byte-pattern xref-scan of consumers of rodata VA `0x1ee9aad` (`whale:hmac:`) to detect a MAC-compare pattern over epoch/token response fields before HUMAN Ghidra handoff.
+[LEARN] REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material"; superseded by scheme-properties attack (EPOCH-HMAC-1).
+[LEARN] ACCEPTED class @ epoch-key HMAC scheme-properties: static-static ECDH + request-only `Authorization: HMAC key=v1` credential + plain-JSON token parsing (zero MAC) confirmed at code level — class alive, conf 55.
+[LEARN] ACCEPTED class @ utilityPrivate trustedVault binding exposure: `Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs}` metrics + manifest origin-binding gaps — class alive pending caller-context proof.
+[LEARN] ACCEPTED @ binary acquisition channel `repo.whale.naver.com`: HTTP 200 hash-pinned `.deb` — reverses "all passive channels blocked"; repeatable local static analysis now possible (sandbox-wipe resilient via re-download).
+[RISK] sync: 78 — custom epoch/HMAC auth layer + 9-file forked sync engine + trustedVault JS bindings with origin-binding gaps, freshly churned (same-day double release, login hotfix, Chromium 138 bump) under an 8-month zero-disclosure window.
+[RISK] browser: 45 — sidebar/dual-tab surfaces parked as patched duplicates; extension API surface documented but no novel variant proven; core largely upstream Chromium 138.
+[RISK] libs: 35 — socket.io.slim.js parked (runtime-fetched handler, no version string); boringssl statically linked blinds import-scan; no public library manifests.
+[NEW] Xref-exhaustive scan (full `.text` REX.W LEA sweep): pinned SPKI, `"whale:hmac:"`, and `"Authorization: HMAC key="` each have EXACTLY ONE consumer; `"v1"` has two — ALL confined to request-signing cluster `0xc0d46e6`–`0xc0d4f10`.
+[NEW] Request path fully mapped: `pthread_once(1384d178)` → init `a1d0e40` → global `@1384d180` **len-CHECKed == 0x20**; 5-entry ordered struct (4 runtime SSO strings + literal `("v1",2)`) → serialize `a0ce9c0` → derive `a1d0a20` → HMAC `a8faf90` → header build @`c0d4f10`.
+[NEW] Init routine CHECK strings = boringssl `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.c` (**EVP_DigestSign**) — crypto core primitive identified.
+[NEW] Response parser (`0xc0d5c91`–`0xc0d5eb6`) consumes ONLY `expires_in`/`access_token`/`id_token`/`error`/`error_description` via JSON accessors — ZERO crypto-helper calls.
+[NEW] No `signature`/`mac`/`nonce`/`timestamp` fields anywhere in cluster rodata; tokens flow straight into `Authorization: Bearer %s`; `naver-oauth2-client-secret` embedded.
+[NEW] Pinned key stored twice: raw DER + full hex-SPKI string (`3059…0004||04||X||Y`). `jwks_uri`/RS256/ES256 belong to upstream Chromium email-verifier — no Whale-side JWT verification. `StartFetchingAuthKey`/`GetFetchKey` + `crypto::keypair::PrivateKey`/`ToEcP256PrivateKey` confirmed adjacent to `naverEpochKey`.
+[PRIO] epoch-key establishment cluster: 8.30 | attack 9, business 9, tech 9, gate 6↑, cloud 3, fresh 9
+[PRIO] utilityPrivate trustedVault bindings: 7.35 | attack 8, business 9, tech 8, gate 6, cloud 2, fresh 8
+[PRIO] `client_private_key` lifecycle / authkey_fetcher fork: 7.00 | attack 7, business 8, tech 8, gate 5↑, cloud 4, fresh 8
+[HYP] Whale desktop epoch-key scheme authenticates requests only — responses carry no custom-layer MAC, signature, nonce, or timestamp verification; combined with static-static ECDH against a single hardcoded server key and JS-bridge transit of naverEpochKey, a trusted-CA MITM can inject epoch/token responses undetected
+class: OATH
+asset: Whale desktop v4.39.410.14 epoch cluster (ELF BuildID 90f8aa1e…; signing cluster `0xc0d46e6`–`0xc0d4f10`, response parser `0xc0d5c91`–`0xc0d5eb6`)
+confidence: 70
+reasoning: facts — xref-exhaustive scan confines ALL custom-crypto material to the request path; response parser makes zero calls to any of the five crypto helpers and parses plain JSON into `Authorization: Bearer %s`; no MAC/nonce/timestamp field exists in cluster rodata; init routine invokes boringssl EVP_DigestSign for signing only; id_token has no Whale-side JWKS verification.
+evidence_needed: Sources of the 4 runtime strings in the signed 5-entry struct (are code_verifier/public_key/state bound?); derivation inputs of globals in `a1d0ed0`/`a1d0f60`/`a1d0ff0` bodies (per-install randomness vs pinned-key-only); confirmation no inlined label-free verifier exists.
+verify_steps: HUMAN_ONLY: Ghidra decompile of (a) signing-cluster function start (<`0xc0d4300`, prologue not yet located) to recover struct-string sources, (b) `a1d0ed0`/`a1d0f60`/`a1d0ff0` bodies; then AUTH_HELPED local run with own test account capturing loopback-only exchange traffic to observe replay window.
+impact: Trusted-CA MITM injects token/epoch responses undetected by the custom layer → cross-account sync-vault access or persistent key substitution; single hardcoded server key + static ECDH → server-key compromise yields retroactive forgery across all installs. High-Critical.
+testability: HUMAN_ONLY
+[HYP] utilityPrivate setSyncEncryptionKeys/retrieveTrustedVaultKeys reachable from underprivileged caller context enabling attacker-chosen sync encryption keys
+class: AUTH
+asset: Whale desktop v4.39.410.14 utilityPrivate/trustedVault JS bindings (local ELF)
+confidence: 42
+reasoning: facts — metrics `Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs}` prove JS-callable vault-key ingestion; bindings absent from schema dump; manifest shows origin-binding gaps; owning context unverified.
+evidence_needed: Owning namespace/context; invocation from https:/data: page vs whale:// WebUI planting attacker-chosen keys.
+verify_steps: AUTH_HELPED: headless ELF (`--remote-debugging-port --user-data-dir=/tmp/wtest`), CDP Runtime.evaluate probing from data: URL vs whale://settings; decompress resources.pak grep binding names.
+impact: Web attacker sets victim sync encryption keys → plaintext recovery or persistent lock-out. High-Critical.
+testability: AUTH_HELPED
+[HYP] Naver app-auth `client_private_key` is bridge/server-delivered long-lived static ECDH identity capturable at signin, enabling permanent request forgery with no forward secrecy
+class: OATH
+asset: Whale desktop v4.39.410.14 authkey_fetcher fork / form-fields cluster `0xc0cebd2`–`0xc0cf3de`
+confidence: 45
+reasoning: facts — ×4 form-field references beside session_id/csrf_token; no pref persistence; static-static design; NEW: `crypto::keypair::PrivateKey`/`ToEcP256PrivateKey` infrastructure confirmed adjacent to authkey_fetcher strings, suggesting local P-256 generation capability whose use is undetermined.
+evidence_needed: Decompile of key source (local generate via keypair infra vs bridge/server delivery); signin JS grep.
+verify_steps: HUMAN_ONLY: Ghidra decompile of `0xc0cebd2`/`0xc0ceee4`/`0xc0cf1fd` sites + xref-scan consumers of `crypto::keypair::PrivateKey` string table region.
+impact: Renderer/XSS compromise during signin captures long-lived static ECDH identity → permanent forgery, retroactive HMAC recovery. Critical.
+testability: HUMAN_ONLY
+[FINAL] #1 epoch-key request-only authentication (OATH, conf 70 ≥ 40, concrete verify_steps, class not rejected) — survives, evidence materially strengthened this cycle
+[FINAL] #2 utilityPrivate binding reachability (AUTH, conf 42) — survives unchanged
+[FINAL] #3 client_private_key lifecycle (OATH, conf 40→45 on new keypair-infra evidence) — survives
+[NEXT] HUMAN: Ghidra decompile of (a) the signing-cluster function containing `0xc0d46e6`–`0xc0d4f10` (locate prologue below `0xc0d4300`) to recover the 4 runtime strings bound into the HMAC input, and (b) singleton-init bodies `a1d0ed0`/`a1d0f60`/`a1d0ff0` to determine whether derived globals incorporate per-install randomness or are pinned-key-only — outcome decides reportability of EPOCH-HMAC-1 vs need for AUTH_HELPED traffic capture.
+[LEARN] ACCEPTED class @ asymmetric epoch-HMAC design: client signs requests (EVP_DigestSign, domain-separated labels, len-CHECKed 32B global) but performs zero response verification — statically proven via xref-exhaustive consumer confinement + crypto-free response parser; class alive, conf 70.
+[LEARN] REJECTED class @ Whale-side id_token JWT verification: jwks_uri/RS256/ES256 strings owned by upstream Chromium email-verifier component, not Whale auth flow — do not re-emit "JWT verified client-side" claims.
+[LEARN] ACCEPTED @ method: REX.W LEA rip-relative byte-pattern sweep over stripped .text reliably enumerates string-consumer sets in Chromium-derived binaries without symbols; reusable for remaining clusters (client_private_key, utilityPrivate bindings).
+[LEARN] ACCEPTED @ binary channel resilience: repo.whale.naver.com re-acquisition + sha256 pin works after every sandbox wipe (5/5 byte-exact); always hash-verify before analysis.
+[RISK] sync: 82 — request-only authentication now code-proven; asymmetric crypto design + hardcoded universal server key + fresh churn under zero-disclosure window.
+[RISK] browser: 45 — unchanged; parked surfaces remain duplicates.
+[RISK] libs: 35 — unchanged; boringssl statically linked (EVP CHECK strings now confirm inlining depth).

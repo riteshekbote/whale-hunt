@@ -2200,3 +2200,27 @@
 - CHANGED Prior premise "zero whale-specific signature-verification material" FALSIFIED at pinned-key site; HYP-1 reframed, confidence 55→48
 - NEW dynsym scan: 2975 dynamic imports, ZERO EVP_/ECDSA_/RSA_ symbols → boringssl statically linked
 - NEW `"Encryption settings signature missing or malformed"` string present — attributed to upstream sync cryptographer
+
+## 2026-08-21 05:13:43 UTC
+- NEW Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still MISSING despite confirmed accessible .deb from `repo.whale.naver.com` (4th re-acquisition post-sandbox-loss)
+- NEW `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — NOT sync-crypto evidence; kills prior KDF evidence line
+- NEW epoch-key exchange verification class ACCEPTED: binary confirms zero whale-specific signature-verification strings for epoch-key response; epoch-key path lacks client-side verification
+- NEW utilityPrivate origin-binding gaps class ACCEPTED: full manifest shows origin-binding gaps for setSyncEncryptionKeys/retrieveTrustedVaultKeys
+- NEW authkey_fetcher fork class ACCEPTED: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` confirmed as Whale fork inside upstream identity_manager
+- NEW OSCrypt async variant class ACCEPTED: v4.39.410.14 uses Chromium 138 async OSCrypt while retaining legacy Whale OSCrypt fork — coexistence confirmed
+- CHANGED Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse
+- CHANGED Prior premise "zero whale-specific signature-verification material" FALSIFIED at pinned-key site (hardcoded P-256 SPKI at VA 0x2968510 + `whale:hmac:`/`v1` labels exist); HYP-1 reframed, confidence 55
+- NEW Binary acquisition channel `repo.whale.naver.com` live (HTTP 200, 173111388B `.deb` v4.39.410.14, sha256=6458a95a… pinned, byte-exact across 4 re-acquisitions) — reverses standing "all passive channel
+- NEW Hardcoded EC P-256 SPKI pinned key @rodata VA `0x2968510` (91-byte DER, prime256v1), EXACTLY ONE code xref @`.text` `0xc0d46e6`, feeding 32-byte derivation with domain labels `"whale:hmac:"` (`0x1ee9a
+- NEW Request-auth scheme reconstructed: `Authorization: HMAC key=v1, signature=<tag>` derived from static-static ECDH (pinned pubkey × `client_private_key`); epoch/token responses parsed as plain JSON with
+- NEW `client_private_key` referenced ×4 @`0xc0cebd2`/`0xc0ceee4`/`0xc0cf1fd`/`0xc0cf3de` in form-fields cluster beside session_id/csrf_token; no local pref persists it.
+- NEW utilityPrivate manifest origin-binding gaps for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`; `authkey_fetcher.cc` Whale fork confirmed inside upstream identity_manager.
+- CHANGED "Zero whale-specific signature-verification material" premise FALSIFIED at pinned-key site → top hypothesis reframed from absence-of-crypto to scheme-properties (no FS, no response binding, JS-bridge 
+- CHANGED `%s: kdf key len: %d` killed as sync-crypto evidence (libsrtp/WebRTC sibling cluster).
+- CHANGED Desktop latest pinned v4.39.410.14 (not .18), Chromium 138 base, same-day double release Aug 18 incl. login-server-error hotfix touching exactly this auth surface.
+- NEW Xref-exhaustive scan (full `.text` REX.W LEA sweep): pinned SPKI, `"whale:hmac:"`, and `"Authorization: HMAC key="` each have EXACTLY ONE consumer; `"v1"` has two — ALL confined to request-signing clu
+- NEW Request path fully mapped: `pthread_once(1384d178)` → init `a1d0e40` → global `@1384d180` **len-CHECKed == 0x20**; 5-entry ordered struct (4 runtime SSO strings + literal `("v1",2)`) → serialize `a0ce
+- NEW Init routine CHECK strings = boringssl `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.c` (**EVP_DigestSign**) — crypto core primitive identified.
+- NEW Response parser (`0xc0d5c91`–`0xc0d5eb6`) consumes ONLY `expires_in`/`access_token`/`id_token`/`error`/`error_description` via JSON accessors — ZERO crypto-helper calls.
+- NEW No `signature`/`mac`/`nonce`/`timestamp` fields anywhere in cluster rodata; tokens flow straight into `Authorization: Bearer %s`; `naver-oauth2-client-secret` embedded.
+- NEW Pinned key stored twice: raw DER + full hex-SPKI string (`3059…0004||04||X||Y`). `jwks_uri`/RS256/ES256 belong to upstream Chromium email-verifier — no Whale-side JWT verification. `StartFetchingAuthK
