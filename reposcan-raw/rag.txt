@@ -1867,6 +1867,10 @@
 - 2026-08-21 ACCEPTED class @ WhaleNidAuth request signing: HMAC key = ECDH(PKCS#8 client_private_key, hex server pubkey) domain-separated `whale:hmac:`+`v1`, canonical message binds X-CSRF-Token/X-Timestamp/X-Nonce — replay-protection fields EXIST on requests (prior absence claim falsified).
 - 2026-08-21 ACCEPTED class @ signin delivery: client_private_key/session_id/csrf_token arrive as JSON trio via OnEpochKeyConfirmed WebUI bridge (inline_login_handler_impl_whale.cc), parsed with type-tags, re-serialized into every token-fetch payload; endpoint `/oauth2/v1/nid/epoch/v1`.
 - 2026-08-21 REJECTED @ address-mapping assumptions: `a1d0ed0/a1d0f60/a1d0ff0` are BoringSSL ASN.1 template singletons, not key-derivation bodies — pthread_once+constant-table pattern is the discriminator; also direct-call byte-scan must exclude PLT-indirect/vtable dispatch (signer entry has 0 direct calls, 1 .data.rel.ro slot).
+- 2026-08-21 ACCEPTED class @ epoch-key response parser verification absence: binary code at 0xc0d5c91–0xc0d5eb6 consumes plain JSON with zero crypto-helper calls — asymmetric response-trust design confirmed via xref-exhaustive consumer confinement
+- 2026-08-21 ACCEPTED class @ request-response asymmetry: client signs outbound requests (EVP_DigestSign, domain-separated whale:hmac:+v1, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs zero response verification — code-proven, not hypothesis
+- 2026-08-21 REJECTED class @ KDF debug string sync evidence: %s: kdf key len: %d proven to be libsrtp/WebRTC debug output, not sync-crypto evidence — no longer a signal
+- 2026-08-21 REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + whale:hmac:/v1 labels falsify "zero client-side verification material" — the verification gap is specifically in the RESPONSE path, not the request path
 === INVENTORY gladia ===
 # Inventory: whale
 
