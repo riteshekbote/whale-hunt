@@ -2381,3 +2381,31 @@
 - NEW call-graph: WebUI `OnEpochKeyConfirmed` → bridge `11b67130` (callback-registered, 0 direct callers) → form_builder `c0ceb60` ← also called from JS-bridge region `11b671bc`; signer entry `c0d3f90` reac
 - NEW combine_fn `c0d70f0` has exactly 2 callers: signing fn `c0d4770` + unknown version-gated consumer at `c4dec5c` (checks vtable tag `0x198`, field `0x19f` @ +0x1f0, pthread_once singleton `1384d488`/ini
 - CHANGED prior "derive/init bodies" mapping at `a1d0ed0/a1d0f60/a1d0ff0` falsified — they are pthread_once BoringSSL ASN.1 template singletons (pure table writes, zero entropy/EVP calls)
+
+## 2026-08-21 11:42:29 UTC
+- NEW Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` NOW EXISTS (sha256=10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19)
+- NEW All epoch-key strings confirmed in binary: `naverEpochKey` @0x11b66cde, `X-Epoch-Key` @0x11b68c36, `whale:hmac:`, `/oauth2/v1/nid/epoch/v1`
+- NEW 9 Whale-specific sync source files confirmed in binary string table: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `da
+- NEW WBC crypto layer confirmed compiled into binary: `wbc.cc` + `wbc_wrapper_apis.cc` + `encryptor.cc` — Whale's custom encryption layer separate from Chromium's `os_crypt/sync/`
+- NEW OSCrypt async variant coexistence confirmed: v4.39.410.14 uses Chromium 138 async OSCrypt (`components/os_crypt/async/browser/...`) while retaining legacy Whale OSCrypt fork
+- NEW utilityPrivate manifest origin-binding gaps confirmed for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`; `authkey_fetcher.cc` Whale fork confirmed inside upstream identity_manager
+- NEW KDF debug string `%s: kdf key len: %d` PROVEN libsrtp/WebRTC (srtp/srtcp context) — NOT sync-crypto evidence
+- NEW boringssl static-linkage depth confirmed: init CHECK strings = `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.cc.inc` (EVP_DigestSign) with 0 EVP_/ECDSA_/RSA_ symbols among 2975 dy
+- NEW "Encryption settings signature missing or malformed" string present — attributed to upstream sync cryptographer
+- NEW Fork-file identity: signing fn lives in `../../whale/google_apis/naver_access_token_fetcher.cc`; dedicated `../../whale/google_apis/naver_epoch_key_confirmer.cc`; bridge in `../../chrome/browser/ui/we
+- NEW Epoch endpoint path literal `/oauth2/v1/nid/epoch/v1` @ rodata `2968060`; error strings `"Epoch confirm failed with HTTP "` (`205fd1c`), `"Epoch confirm response missing session cookies"` (`1b57abf`)
+- NEW FALSIFIED prior fact "no MAC/nonce/timestamp fields exist in cluster rodata": literals `X-CSRF-Token: `/`X-Timestamp: `/`X-Nonce: ` ARE loaded inside the signing fn (`206f083`/`207b7d6`/`207207c`)
+- NEW Full request-signing pipeline decoded: base64url(`client_private_key`) → PKCS#8 parse → hex-decode server ECDH pubkey → combine `c0d70f0` → 32B secret → domain-separated HMAC (`whale:hmac:`+`v1`)
+- NEW `client_private_key`/`session_id`/`csrf_token` confirmed as JSON/form field trio (`2967de0`/`2967df3`/`2967dfe`): parser `c0cee40` extracts w/ type-tag checks (tag 1/tag 6); builder `c0ceb60` requires
+- NEW Call-graph: WebUI `OnEpochKeyConfirmed` → bridge `11b67130` (callback-registered, 0 direct callers) → form_builder `c0ceb60` ← also called from JS-bridge region `11b671bc`; signer entry `c0d3f90` reac
+- NEW combine_fn `c0d70f0` has exactly 2 callers: signing fn `c0d4770` + unknown version-gated consumer at `c4dec5c` (checks vtable tag `0x198`, field `0x19f` @ +0x1f0, pthread_once singleton `1384d488`)
+- NEW Prior "derive/init bodies" mapping at `a1d0ed0/a1d0f60/a1d0ff0` falsified — they are pthread_once BoringSSL ASN.1 template singletons (pure table writes, zero entropy/EVP calls)
+- NEW WhaleNidAuth request signing: HMAC key = ECDH(PKCS#8 client_private_key, hex server pubkey) domain-separated `whale:hmac:`+`v1`, canonical message binds X-CSRF-Token/X-Timestamp/X-Nonce — replay-prote
+- NEW Signin delivery: client_private_key/session_id/csrf_token arrive as JSON trio via OnEpochKeyConfirmed WebUI bridge (inline_login_handler_impl_whale.cc), parsed with type-tags, re-serialized into every
+- NEW Address-mapping assumptions falsified: `a1d0ed0/a1d0f60/a1d0ff0` are BoringSSL ASN.1 template singletons, not key-derivation bodies — pthread_once+constant-table pattern is the discriminator
+- CHANGED EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign with domain-separated labels, len-CHECKed 32B global; response parser consumes 
+- CHANGED Desktop version confirmed as v4.39.410.14 (not v4.39.410.18) per binary + AUR + FileHorse; same-day double release Aug 18 incl. login-server-error hotfix touching auth surface
+- CHANGED Binary acquisition channel `repo.whale.naver.com` confirmed live and resilient: HTTP 200, hash-pinned .deb (sha256=6458a95a…), byte-exact across re-acquisitions post-sandbox-wipe
+- CHANGED Prior premise "zero whale-specific signature-verification material" FALSIFIED at pinned-key site (hardcoded P-256 SPKI + `whale:hmac:`/`v1` labels exist); top hypothesis reframed from absence-of-crypt
+- CHANGED `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — NOT sync-crypto evidence; kills prior KDF evidence line
+- CHANGED Binary artifact state: extracted ELF `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` absent post-wipe while acquisition channel `repo.whale.naver.com` stays live (sha256=6458a95a… pinned,

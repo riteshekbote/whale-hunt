@@ -13768,3 +13768,9 @@ testability: AUTH_HELPED
 [RISK] sync: 86 — signin-time key-delivery chain now fully mapped (server-delivered static ECDH identity + unverified-looking confirm responses + endpoint pinned), raising exploit-chain plausibility despite stronger request signing
 [RISK] browser: 45 — unchanged; parked duplicates remain parked
 [RISK] libs: 35 — unchanged; boringssl static linkage further confirmed (ASN.1 template singletons inlined at `a1d0a00–a1d1200`)
+## 2026-08-21 11:42:14 UTC [sync] (model bigpickle)
+[PRIO]
+[FINAL]
+[NEXT] SCAN: verify ELF sha256 `10de323e…` at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale`; if wiped, re-download pinned `.deb` (sha256=`6458a95a7db3a45e3902254977880f1de679b47938cb0728ba5c3f0acaa32b53`, GET ≤1 rps) + `dpkg-deb -x`; then REX.W LEA rip-relative sweep for consumers of `Epoch confirm failed with HTTP ` (@205fd1c), `Epoch confirm response missing session cookies` (@1b57abf), and `../../whale/google_apis/naver_epoch_key_confirmer.cc` (@1de7c09) to enumerate every confirmer branch and guard order — flags any early-return that skips even plain-JSON validation.
+[LEARN]
+[RISK]

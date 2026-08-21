@@ -9902,3 +9902,18 @@
 - LEARN: ACCEPTED class @ WhaleNidAuth request signing: HMAC key = ECDH(PKCS#8 client_private_key, hex server pubkey) domain-separated `whale:hmac:`+`v1`, canonical mess
 - LEARN: ACCEPTED class @ signin delivery: client_private_key/session_id/csrf_token arrive as JSON trio via OnEpochKeyConfirmed WebUI bridge (inline_login_handler_impl_w
 - LEARN: REJECTED @ address-mapping assumptions: `a1d0ed0/a1d0f60/a1d0ff0` are BoringSSL ASN.1 template singletons, not key-derivation bodies — pthread_once+constant-tab
+
+## RANKED HYPOTHESES 2026-08-21 11:42:29 UTC
+- [70] Whale: Whale desktop epoch-key response lacks custom-layer MAC/signature/nonce/timestamp verification (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Extract the re-acquired Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4
+- NEXT(hypotheses-bigpickle.txt): SCAN: verify ELF sha256 `10de323e…` at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale`; if wiped, re-download pinned `.deb` (sha256=`6458a95a7db3a4
+- LEARN: ACCEPTED class @ epoch-key exchange verification: binary confirms zero whale-specific signature-verification strings for epoch-key response; epoch-key path lack
+- LEARN: ACCEPTED class @ utilityPrivate origin-binding gaps: full manifest shows origin-binding gaps for setSyncEncryptionKeys/retrieveTrustedVaultKeys
+- LEARN: ACCEPTED class @ authkey_fetcher fork: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` confirmed as Whale fork inside upstream identi
+- LEARN: REJECTED class @ KDF debug string sync evidence: `%s: kdf key len: %d` proven to be libsrtp/WebRTC debug output, NOT sync-crypto evidence
+- LEARN: ACCEPTED class @ OSCrypt async variant: v4.39.410.14 uses Chromium 138 async OSCrypt (`components/os_crypt/async/browser/...`) while retaining legacy Whale OSCr
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-3578
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)
+- LEARN: REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero
