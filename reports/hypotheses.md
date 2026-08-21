@@ -9718,3 +9718,26 @@
 - LEARN: ACCEPTED @ binary channel resilience: repo.whale.naver.com re-acquisition + sha256 pin works after every sandbox wipe (5/5 byte-exact); always hash-verify befor
 - LEARN: ACCEPTED class @ epoch-key request-path confinement: xref-exhaustive REX.W LEA sweep proves pinned SPKI/`whale:hmac:`/`Authorization: HMAC key=` each have exact
 - LEARN: ACCEPTED @ boringssl static-linkage depth: init CHECK strings = `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.c` (EVP_DigestSign) with 0 EV
+
+## RANKED HYPOTHESES 2026-08-21 06:14:40 UTC
+- [70] Whale: Whale desktop epoch-key scheme authenticates requests only — responses carry no custom-layer MAC/signature/nonce/timestamp; combined with static-static ECDH against a single hardcoded server key and JS-bridge transit of naverEpochKey, a trusted-CA MITM can inject epoch/token responses undetected (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Extract the re-acquired Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4
+- LEARN: ACCEPTED class @ epoch-key exchange verification: binary confirms zero whale-specific signature-verification strings for epoch-key response; epoch-key path lack
+- LEARN: ACCEPTED class @ utilityPrivate origin-binding gaps: full manifest shows origin-binding gaps for setSyncEncryptionKeys/retrieveTrustedVaultKeys
+- LEARN: ACCEPTED class @ authkey_fetcher fork: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` confirmed as Whale fork inside upstream identi
+- LEARN: REJECTED class @ KDF debug string sync evidence: `%s: kdf key len: %d` proven to be libsrtp/WebRTC debug output, NOT sync-crypto evidence
+- LEARN: ACCEPTED class @ OSCrypt async variant: v4.39.410.14 uses Chromium 138 async OSCrypt (`components/os_crypt/async/browser/...`) while retaining legacy Whale OSCr
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-3578
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)
+- LEARN: REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material"; s
+- LEARN: ACCEPTED class @ epoch-key HMAC scheme-properties: static-static ECDH + request-only `Authorization: HMAC key=v1` credential + plain-JSON token parsing (zero MA
+- LEARN: ACCEPTED class @ utilityPrivate trustedVault binding exposure: `Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs}` metrics + manifest origin-b
+- LEARN: ACCEPTED @ binary acquisition channel `repo.whale.naver.com`: HTTP 200 hash-pinned `.deb` — reverses "all passive channels blocked"; repeatable local static ana
+- LEARN: ACCEPTED class @ asymmetric epoch-HMAC design: client signs requests (EVP_DigestSign, domain-separated labels, len-CHECKed 32B global) but performs zero respons
+- LEARN: REJECTED class @ Whale-side id_token JWT verification: jwks_uri/RS256/ES256 strings owned by upstream Chromium email-verifier component, not Whale auth flow
+- LEARN: ACCEPTED @ method: REX.W LEA rip-relative byte-pattern sweep over stripped .text reliably enumerates string-consumer sets in Chromium-derived binaries without s
+- LEARN: ACCEPTED @ binary channel resilience: repo.whale.naver.com re-acquisition + sha256 pin works after every sandbox wipe (5/5 byte-exact); always hash-verify befor
+- LEARN: ACCEPTED class @ epoch-key request-path confinement: xref-exhaustive REX.W LEA sweep proves pinned SPKI/`whale:hmac:`/`Authorization: HMAC key=` each have exact
+- LEARN: ACCEPTED @ boringssl static-linkage depth: init CHECK strings = `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.c` (EVP_DigestSign) with 0 EV

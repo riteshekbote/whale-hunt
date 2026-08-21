@@ -2245,3 +2245,20 @@
 - NEW Xref-exhaustive `.text` REX.W LEA sweep: pinned SPKI, `"whale:hmac:"`, `"Authorization: HMAC key="` each have EXACTLY ONE consumer (`"v1"`: two) — ALL confined to request-signing cluster `0xc0d46e6`–`
 - NEW Pinned key dual-encoded (raw DER + full hex-SPKI `3059…0004||04||X||Y`); `StartFetchingAuthKey`/`GetFetchKey` + `crypto::keypair::PrivateKey`/`ToEcP256PrivateKey` confirmed adjacent to `naverEpochKey`
 - CHANGED EPOCH-HMAC-1 confidence 55→70: request-only authentication now code-proven (asymmetric design), superseding the falsified absence-of-crypto framing.
+
+## 2026-08-21 06:14:40 UTC
+- NEW Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still MISSING despite 4th confirmed accessible .deb from `repo.whale.naver.com`
+- NEW EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign with domain-separated labels, len-CHECKed 32B global; response parser consumes 
+- NEW `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — NOT sync-crypto evidence; kills prior KDF evidence line
+- NEW Binary acquisition channel `repo.whale.naver.com` confirmed live and resilient: HTTP 200, hash-pinned .deb (sha256=6458a95a…), byte-exact across 5/5 re-acquisitions post-sandbox-wipe
+- NEW Full epoch-key request/response path mapped: xref-exhaustive REX.W LEA sweep proves pinned SPKI (VA 0x2968510), "whale:hmac:" (VA 0x1ee9aad), "Authorization: HMAC key=" each have EXACTLY ONE consumer 
+- NEW `client_private_key` referenced ×4 at 0xc0cebd2/0xc0ceee4/0xc0cf1fd/0xc0cf3de in form-fields cluster beside session_id/csrf_token; no local pref persists it
+- NEW `naverEpochKey` JS property getter @0x11b66cde; `X-Epoch-Key` header setter @0x11b68c36 — epoch key transits whale-signin authCompleted JS bridge outside crypto envelope
+- NEW utilityPrivate manifest origin-binding gaps confirmed for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`; `authkey_fetcher.cc` Whale fork confirmed inside upstream identity_manager
+- NEW OSCrypt async variant coexistence confirmed: v4.39.410.14 uses Chromium 138 async OSCrypt (`components/os_crypt/async/browser/...`) while retaining legacy Whale OSCrypt fork
+- NEW 9 Whale-specific sync source files confirmed in binary string table: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `da
+- NEW WBC crypto layer confirmed compiled into binary: `wbc.cc` + `wbc_wrapper_apis.cc` + `encryptor.cc` — Whale's custom encryption layer separate from Chromium's `os_crypt/sync/`
+- NEW Init routine CHECK strings = boringssl `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.c` (EVP_DigestSign) — crypto core primitive identified; 2975 dynamic imports, ZERO EVP_/ECDSA_
+- NEW `"Encryption settings signature missing or malformed"` string present — attributed to upstream sync cryptographer
+- CHANGED Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse; same-day double release Aug 18 incl. login-server-error hotfix touching auth surface
+- CHANGED Prior premise "zero whale-specific signature-verification material" FALSIFIED at pinned-key site (hardcoded P-256 SPKI + `whale:hmac:`/`v1` labels exist); top hypothesis reframed from absence-of-crypt
