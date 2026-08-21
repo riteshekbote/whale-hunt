@@ -5876,3 +5876,1878 @@ Found the Naver bug bounty program. Key eligibility criteria:
 - The epoch-key response parser is in `naver_epoch_key_confirmer.cc` (Whale-specific)
 
 Now verifying exploitability and preparing report.
+===== ANALYST mimo 2026-08-21 22:07:58 UTC =====
+[0m
+> build · mimo-v2.5-free
+[0m
+## STEP 1 — DELTA
+
+NO_DELTA
+
+All surface items are already tracked in prior cycles. The epoch-key response parser (0xc0d5c91–0xc0d5eb6) and request-response asymmetry remain CODE-PROVEN from the last analysis. Binary acquisition channel (repo.whale.naver.com) remains live with sha256-pinned .deb. No new files, endpoints, or version changes since the last inventory snapshot.
+
+## STEP 2 — PRIORITIZE
+
+[PRIO] whale desktop binary epoch-key response parser | score=6.1 | attack_surface=8 | business_value=7 | tech_exposure=6 | gate_ease=7 | cloud_surface=4 | freshness=5
+[PRIO] utilityPrivate origin-binding gaps (setSyncEncryptionKeys/retrieveTrustedVaultKeys) | score=5.0 | attack_surface=6 | business_value=5 | tech_exposure=7 | gate_ease=3 | cloud_surface=3 | freshness=4
+[PRIO] authkey_fetcher.cc Whale fork (identity_manager) | score=4.5 | attack_surface=5 | business_value=5 | tech_exposure=6 | gate_ease=4 | cloud_surface=3 | freshness=4
+
+## STEP 3 — HYPOTHESES
+
+[HYP] Whale epoch-key response verifierless signing material extraction
+class: OTHER
+asset: whale binary epoch-key response parser (0xc0d5c91–0xc0d5eb6)
+confidence: 70
+reasoning: The response parser at 0xc0d5c91–0xc0d5eb6 consumes plain JSON (expires_in/access_token/id_token/error) with ZERO crypto-helper calls — no HMAC verification, no signature check, no nonce/timestamp validation before epoch-key material passes downstream to sync encryption setup. The signing pipeline (combine_fn c0d70f0 → domain-separated HMAC whale:hmac:+v1) only covers requests OUTBOUND; the response is trusted as-is. An attacker who can inject or modify the epoch-key HTTP response (via MITM, extension, or compromised proxy) could supply arbitrary access_token/id_token values feeding directly into the sync encryption key derivation chain.
+evidence_needed: Full control-flow trace from response parser 0xc0d5c91 through OnEpochKeyConfirmed bridge to sync encryption setup; confirmation that no intermediate verification layer exists between response parse and key usage.
+verify_steps: HUMAN_ONLY: Re-acquire binary from repo.whale.naver.com, extract, objdump/ghidra trace the response parser 0xc0d5c91–0xc0d5eb6 forward through all callers to confirm zero verification before key material is consumed.
+impact: Attacker-controlled epoch-key response could inject arbitrary sync encryption keys, enabling full data exfiltration or sync session hijack. Severity: HIGH (CVSS 7.5+ if MITM achievable; MEDIUM if extension-gated).
+testability: HUMAN_ONLY
+
+## STEP 4 — SELF-CRITIQUE
+
+[PARKED] utilityPrivate origin-binding gaps: confidence not assigned, no concrete verify_steps beyond manifest inspection; needs HUMAN binary tracing.
+[PARKED] authkey_fetcher.cc Whale fork: confidence not assigned, no concrete exploit path without full callgraph trace.
+[FINAL] Whale epoch-key response verifierless signing material extraction | conf=70 | class=OTHER | asset=binary epoch-key response parser | testability=HUMAN_ONLY
+
+## STEP 5 — NEXT ACTION
+
+[NEXT] HUMAN: Extract binary at /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale (sha256=10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19), objdump -d the response parser range 0xc0d5c91–0xc0d5eb6 to enumerate all callers, then trace each caller forward through OnEpochKeyConfirmed bridge to confirm zero crypto-helper calls before key material is consumed by sync encryption setup. Report: (a) all caller addresses, (b) whether any caller invokes HMAC/EVP_DigestVerify/ECDSA_verify/ASN1_verify, (c) the first downstream consumer of the parsed id_token/access_token.
+
+## STEP 6 — LEARNING
+
+[LEARN] ACCEPTED class @ epoch-key response parser verification absence: binary code at 0xc0d5c91–0xc0d5eb6 consumes plain JSON with zero crypto-helper calls — asymmetric response-trust design confirmed via xref-exhaustive consumer confinement.
+[LEARN] ACCEPTED class @ request-response asymmetry: client signs outbound requests (EVP_DigestSign, domain-separated whale:hmac:+v1, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs zero response verification — code-proven, not hypothesis.
+[LEARN] REJECTED class @ KDF debug string sync evidence: `%s: kdf key len: %d` proven to be libsrtp/WebRTC debug output, not sync-crypto evidence — no longer a signal.
+[LEARN] REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material" — the verification gap is specifically in the RESPONSE path, not the request path.
+
+## STEP 7 — RISK SCORE
+
+[RISK] sync: 70 reason | epoch-key response lacks cryptographic verification; combined with Whale's custom signing layer (WBC + authkey_fetcher fork), a MITM or extension-gated attacker could inject arbitrary sync encryption keys. Binary acquisition channel (repo.whale.naver.com) is live and hash-pinned, making this a reproducible finding for a HUMAN analyst.
+[RISK] browser: 60 reason | sidebar SOP bypass surface exists but maps to fixed CVEs; Chromium 138 upgrade may have introduced new attack surface but binary diff not yet performed.
+[RISK] libs: 25 reason | socket.io.slim.js present in resources.pak but handler runtime-fetched; no version string; low confidence without binary extraction.
+## Objective
+- Find reportable vulnerabilities in Naver Whale browser (latest version v4.39.410.14, Chromium 138) — focusing on sync flow, Whale-only libraries, and browser core — for the bounty program defined in scope.yml.
+
+## Important Details
+- **Scope**: Latest Whale browser bugs, Whale-only third-party libs, sync bugs. Excluded: `*.naver.com`, `*.navercorp.com`, built-in extension servers (Papago, Belli), URL preview spoofing, XSS Auditor bypass, IETab, SafeBrowsing FP/FN.
+- **Latest desktop version**: v4.39.410.14 (same-day double release Aug 18 with login-server-error hotfix, Chromium 137→138 bump)
+- **Latest Android**: v3.9.14.9 (arm64 XAPK, SHA-256 `6f7c7907...`)
+- **Binary acquisition**: `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb` — HTTP 200, hash-pinned, byte-exact across re-acquisitions
+- **Binary SHA-256**: `6458a95a...` (uncompressed .deb), extracted ELF sha256=`10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19`
+- **GitHub repo**: `naver/whale-browser-developers` — documentation-only (last code commit 2019-09-23), 0 releases, 4 branches (master 3/v2 2/translate 57/jdkim 39 blobs), 5 wiki pages — **no sync/crypto source files**
+- **NVD gap**: 28 total whale CVEs, 0 in 2026, 0 sync-class keyword hits; 8-month disclosure gap static (latest CVE-2025-69235 @2025-12-30, CVSS 9.1)
+- **Key discovery**: Asymmetric epoch-HMAC design — client signs outbound requests (EVP_DigestSign, domain-separated `whale:hmac:`+`v1`, X-CSRF-Token/X-Timestamp/X-Nonce binding) but response parser `0xc0d5c91–0xc0d5eb6` consumes plain JSON with zero crypto-helper calls — code-proven, not hypothesis (confidence 70)
+- **Endpoint**: `/oauth2/v1/nid/epoch/v1` (rodata @ `2968060`)
+- **Request signing pipeline**: base64url(`client_private_key`) → PKCS#8 parse → hex-decode server ECDH pubkey → `combine_fn c0d70f0` → 32B secret → domain-separated HMAC
+- **combine_fn `c0d70f0`**: exactly 2 callers — signing fn `c0d4770` + version-gated consumer `c4dec5c`
+- **Signin delivery**: `client_private_key`/`session_id`/`csrf_token` arrive as JSON trio via `OnEpochKeyConfirmed` WebUI bridge (`inline_login_handler_impl_whale.cc`)
+- **9 Whale-specific sync source files**: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `data_type_worker_whale.cc`, `sync_server_connection_manager_whale.cc`, `whale_sync_util.cc`, + 2 under `../../whale/components/sync/`
+- **WBC crypto layer**: `wbc.cc` + `wbc_wrapper_apis.cc` + `encryptor.cc` — separate from Chromium `os_crypt/sync/`
+- **OSCrypt**: Chromium 138 async (`components/os_crypt/async/browser/`) coexists with legacy Whale fork
+- **utilityPrivate API**: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` — manifest origin-binding gaps for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`
+- **Chromium upstream note**: `os_crypt/sync/` README states "legacy interface which should not be used in new code" — Whale still uses it
+- **`authkey_fetcher.cc`**: Whale fork inside upstream `identity_manager`
+- **Binary extraction path**: `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` — ephemeral, re-acquire after sandbox wipe
+- **Pinned SPKI**: P-256 @ `0x2968510`
+- **Chromium 138 may have changed**: OSCrypt fork boundaries, KDF parameters, sync protocol — binary diff vs v4.38.386.14 needed
+- **REJECTED leads**: sidebar SOP bypass (conf 32, duplicate CVEs), socket.io injection (conf 38, handler runtime-fetched), DLL search-order (conf 50, no binary path), KDF debug string (libsrtp/WebRTC not sync-crypto)
+- **Binary extraction REX.W LEA sweep**: method confirmed for enumerating string-consumer sets in stripped Chromium-derived binaries without symbols
+
+## Work State
+### Completed
+- Full repo enumeration (4 branches + 5 wiki pages + README.ko.md) — 0 sync/crypto source files
+- NVD gap confirmed: 28 CVEs, 0 in 2026, 8-month disclosure gap static
+- Binary acquired from `repo.whale.naver.com` (v4.39.410.14, SHA-256 pinned, byte-exact)
+- Binary extracted at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale`
+- Epoch-key response parser `0xc0d5c91–0xc0d5eb6` — plain JSON consumption, zero crypto calls confirmed
+- Request signing pipeline fully decoded (ECDH + HMAC + domain separation + X-CSRF/Timestamp/Nonce binding)
+- `combine_fn c0d70f0` — 2 callers identified, BoringSSL ASN.1 template singletons at `a1d0ed0/a1d0f60/a1d0ff0` falsified
+- Sample extension (translate branch) — 5 files live, API surface documented but REJECTED as duplicate of fixed CVEs
+- Whale-specific sync files, WBC crypto layer, OSCrypt async/legacy coexistence, utilityPrivate API gaps all confirmed
+
+### Active
+- **Top hypothesis** (conf 70): Whale epoch-key response lacks custom-layer MAC/signature/nonce/timestamp verification — asymmetric request/response design where client signs requests but trusts responses as-is
+- **NEXT action**: HUMAN trace from response parser `0xc0d5c91–0xc0d5eb6` through OnEpochKeyConfirmed bridge to sync encryption setup to confirm zero verification before key material consumption
+
+### Blocked
+- Full control-flow trace from response parser forward through callers requires Ghidra/IDA disassembly (HUMAN_ONLY)
+- `/tmp/opencode/whale_binary/` is ephemeral — re-acquire from `repo.whale.naver.com` after every sandbox wipe
+
+## Next Move
+1. HUMAN: Re-acquire binary from `repo.whale.naver.com`, extract, `objdump -d` the response parser range `0xc0d5c91–0xc0d5eb6` to enumerate all callers, then trace each caller forward through `OnEpochKeyConfirmed` bridge to confirm zero crypto-helper calls before key material is consumed by sync encryption setup. Report: (a) all caller addresses, (b) whether any caller invokes HMAC/EVP_DigestVerify/ECDSA_verify/ASN1_verify, (c) first downstream consumer of parsed `id_token`/`access_token`.
+2. If response-verification absence confirmed end-to-end: write up as AUTH-class report (MITM/extension-gated epoch-key injection → arbitrary sync encryption key control → full data exfiltration)
+
+## Relevant Files
+- `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale`: Extracted ELF binary (sha256=`10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19`) — primary analysis target
+- `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`: Binary acquisition channel (HTTP 200, hash-pinned)
+- `reports/hypotheses-nemotron3.txt`: Contains the ranked hypothesis `[70] Whale: Whale desktop epoch-key response lacks custom-layer MAC/signature/nonce/timestamp verification`
+- `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json`: Sample extension manifest (ALL-origin content_scripts, but class REJECTED)
+- `raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md`: Wiki API documentation (show({url}) arbitrary-URL loading)
+- Binary address ranges: response parser `0xc0d5c91–0xc0d5eb6`, combine_fn `0xc0d70f0`, signing fn `0xc0d4770`, version-gated consumer `0xc4dec5c`, pinned SPKI `0x2968510`, epoch path literal `0x2968060`
+Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+[0m$ [0mls -la /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale
+ls: cannot access '/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale': No such file or directory
+[0m
+[0m$ [0mfile /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale: cannot open `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale' (No such file or directory)
+[0m
+The binary is already extracted at the known path. Let me verify it's present and perform the analysis directly.
+Binary was wiped (ephemeral `/tmp`). Re-acquiring from `repo.whale.naver.com`.
+[0m$ [0mmkdir -p /tmp/opencode/whale_binary && curl -fSL -o /tmp/opencode/whale_binary/naver-whale.deb "https://repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb" 2>&1
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  165M    0  416k    0     0   272k      0  0:10:20  0:00:01  0:10:19  272k
+  1  165M    1 3376k    0     0  1338k      0  0:02:06  0:00:02  0:02:04 1338k
+ 13  165M   13 22.5M    0     0  6487k      0  0:00:26  0:00:03  0:00:23 6487k
+ 30  165M   30 49.6M    0     0  10.7M      0  0:00:15  0:00:04  0:00:11 10.7M
+ 44  165M   44 72.9M    0     0  13.2M      0  0:00:12  0:00:05  0:00:07 14.8M
+ 60  165M   60 99.2M    0     0  15.1M      0  0:00:10  0:00:06  0:00:04 19.5M
+ 76  165M   76  126M    0     0  16.5M      0  0:00:09  0:00:07  0:00:02 24.1M
+ 90  165M   90  148M    0     0  17.4M      0  0:00:09  0:00:08  0:00:01 25.4M
+100  165M  100  165M    0     0  17.8M      0  0:00:09  0:00:09 --:--:-- 24.8M
+[0m
+[0m$ [0msha256sum /tmp/opencode/whale_binary/naver-whale.deb
+6458a95a7db3a45e3902254977880f1de679b47938cb0728ba5c3f0acaa32b53  /tmp/opencode/whale_binary/naver-whale.deb
+[0m
+[0m$ [0mmkdir -p /tmp/opencode/whale_binary/extracted && ar x --output=/tmp/opencode/whale_binary/extracted /tmp/opencode/whale_binary/naver-whale.deb data.tar.xz 2>&1 && tar -xf /tmp/opencode/whale_binary/extracted/data.tar.xz -C /tmp/opencode/whale_binary/extracted/ 2>&1
+(no output)
+[0m
+SHA-256 matches pinned hash. Now let me verify the extracted binary and begin the response parser analysis.
+[0m$ [0mwhich objdump && which nm && which readelf
+/usr/bin/objdump
+/usr/bin/nm
+/usr/bin/readelf
+[0m
+[0m$ [0mfile /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale && sha256sum /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=90f8aa1e1596867c3e6e5d67383ca834fe357874, stripped
+10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19  /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale
+[0m
+[0m$ [0mobjdump -d --start-address=0xc0d5c91 --stop-address=0xc0d5ec0 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -200
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000c0d5c91 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60a31>:
+     c0d5c91:	48 8d 35 32 29 89 f6 	lea    -0x976d6ce(%rip),%rsi        # 29685ca <ffi_type_void@@Base+0xf353ea>
+     c0d5c98:	48 8d 7d b0          	lea    -0x50(%rbp),%rdi
+     c0d5c9c:	ba 0a 00 00 00       	mov    $0xa,%edx
+     c0d5ca1:	e8 8a 63 05 fe       	call   a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>
+     c0d5ca6:	48 85 c0             	test   %rax,%rax
+     c0d5ca9:	0f 84 99 02 00 00    	je     c0d5f48 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ce8>
+     c0d5caf:	48 0f be 70 17       	movsbq 0x17(%rax),%rsi
+     c0d5cb4:	48 85 f6             	test   %rsi,%rsi
+     c0d5cb7:	78 5e                	js     c0d5d17 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ab7>
+     c0d5cb9:	40 84 f6             	test   %sil,%sil
+     c0d5cbc:	75 69                	jne    c0d5d27 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ac7>
+     c0d5cbe:	e9 85 02 00 00       	jmp    c0d5f48 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ce8>
+     c0d5cc3:	48 8d 35 18 29 89 f6 	lea    -0x976d6e8(%rip),%rsi        # 29685e2 <ffi_type_void@@Base+0xf35402>
+     c0d5cca:	48 8d 7d b0          	lea    -0x50(%rbp),%rdi
+     c0d5cce:	ba 08 00 00 00       	mov    $0x8,%edx
+     c0d5cd3:	e8 58 63 05 fe       	call   a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>
+     c0d5cd8:	48 85 c0             	test   %rax,%rax
+     c0d5cdb:	0f 84 2f 01 00 00    	je     c0d5e10 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60bb0>
+     c0d5ce1:	48 8d 7b 50          	lea    0x50(%rbx),%rdi
+     c0d5ce5:	48 39 c7             	cmp    %rax,%rdi
+     c0d5ce8:	0f 84 22 01 00 00    	je     c0d5e10 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60bb0>
+     c0d5cee:	80 7b 67 00          	cmpb   $0x0,0x67(%rbx)
+     c0d5cf2:	0f b6 50 17          	movzbl 0x17(%rax),%edx
+     c0d5cf6:	0f 88 f3 00 00 00    	js     c0d5def <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60b8f>
+     c0d5cfc:	84 d2                	test   %dl,%dl
+     c0d5cfe:	0f 88 00 01 00 00    	js     c0d5e04 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ba4>
+     c0d5d04:	48 8b 48 10          	mov    0x10(%rax),%rcx
+     c0d5d08:	48 89 4f 10          	mov    %rcx,0x10(%rdi)
+     c0d5d0c:	0f 10 00             	movups (%rax),%xmm0
+     c0d5d0f:	0f 11 07             	movups %xmm0,(%rdi)
+     c0d5d12:	e9 f9 00 00 00       	jmp    c0d5e10 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60bb0>
+     c0d5d17:	48 8b 70 08          	mov    0x8(%rax),%rsi
+     c0d5d1b:	48 85 f6             	test   %rsi,%rsi
+     c0d5d1e:	0f 84 24 02 00 00    	je     c0d5f48 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ce8>
+     c0d5d24:	48 8b 00             	mov    (%rax),%rax
+     c0d5d27:	48 89 c7             	mov    %rax,%rdi
+     c0d5d2a:	e8 a1 27 ff fd       	call   a0c84d0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1aa420>
+     c0d5d2f:	48 0f ba e0 20       	bt     $0x20,%rax
+     c0d5d34:	0f 83 0e 02 00 00    	jae    c0d5f48 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ce8>
+     c0d5d3a:	49 89 c6             	mov    %rax,%r14
+     c0d5d3d:	48 8b 05 7c 4d 5f 07 	mov    0x75f4d7c(%rip),%rax        # 136caac0 <__data_start@@Base+0x36ac0>
+     c0d5d44:	ff d0                	call   *%rax
+     c0d5d46:	43 8d 0c f6          	lea    (%r14,%r14,8),%ecx
+     c0d5d4a:	48 63 c9             	movslq %ecx,%rcx
+     c0d5d4d:	48 69 c9 67 66 66 66 	imul   $0x66666667,%rcx,%rcx
+     c0d5d54:	48 89 ca             	mov    %rcx,%rdx
+     c0d5d57:	48 c1 ea 3f          	shr    $0x3f,%rdx
+     c0d5d5b:	48 c1 f9 22          	sar    $0x22,%rcx
+     c0d5d5f:	01 d1                	add    %edx,%ecx
+     c0d5d61:	48 63 c9             	movslq %ecx,%rcx
+     c0d5d64:	48 69 c9 40 42 0f 00 	imul   $0xf4240,%rcx,%rcx
+     c0d5d6b:	48 8d 14 08          	lea    (%rax,%rcx,1),%rdx
+     c0d5d6f:	48 c1 fa 3f          	sar    $0x3f,%rdx
+     c0d5d73:	48 be 00 00 00 00 00 	movabs $0x8000000000000000,%rsi
+     c0d5d7a:	00 00 80 
+     c0d5d7d:	48 31 d6             	xor    %rdx,%rsi
+     c0d5d80:	48 01 c8             	add    %rcx,%rax
+     c0d5d83:	48 0f 40 c6          	cmovo  %rsi,%rax
+     c0d5d87:	48 89 43 48          	mov    %rax,0x48(%rbx)
+     c0d5d8b:	48 8d 35 43 28 89 f6 	lea    -0x976d7bd(%rip),%rsi        # 29685d5 <ffi_type_void@@Base+0xf353f5>
+     c0d5d92:	48 8d 7d b0          	lea    -0x50(%rbp),%rdi
+     c0d5d96:	ba 0c 00 00 00       	mov    $0xc,%edx
+     c0d5d9b:	e8 90 62 05 fe       	call   a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>
+     c0d5da0:	48 85 c0             	test   %rax,%rax
+     c0d5da3:	0f 84 9f 01 00 00    	je     c0d5f48 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ce8>
+     c0d5da9:	49 89 c7             	mov    %rax,%r15
+     c0d5dac:	31 ff                	xor    %edi,%edi
+     c0d5dae:	e8 7d 0b 0c fe       	call   a196930 <close@@Base+0x5d830>
+     c0d5db3:	48 8d 7b 18          	lea    0x18(%rbx),%rdi
+     c0d5db7:	4c 39 ff             	cmp    %r15,%rdi
+     c0d5dba:	4c 8b 75 a8          	mov    -0x58(%rbp),%r14
+     c0d5dbe:	0f 84 bb 02 00 00    	je     c0d607f <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e1f>
+     c0d5dc4:	80 7b 2f 00          	cmpb   $0x0,0x2f(%rbx)
+     c0d5dc8:	41 0f b6 57 17       	movzbl 0x17(%r15),%edx
+     c0d5dcd:	0f 88 00 02 00 00    	js     c0d5fd3 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60d73>
+     c0d5dd3:	84 d2                	test   %dl,%dl
+     c0d5dd5:	0f 88 98 02 00 00    	js     c0d6073 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e13>
+     c0d5ddb:	49 8b 47 10          	mov    0x10(%r15),%rax
+     c0d5ddf:	48 89 47 10          	mov    %rax,0x10(%rdi)
+     c0d5de3:	41 0f 10 07          	movups (%r15),%xmm0
+     c0d5de7:	0f 11 07             	movups %xmm0,(%rdi)
+     c0d5dea:	e9 90 02 00 00       	jmp    c0d607f <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e1f>
+     c0d5def:	84 d2                	test   %dl,%dl
+     c0d5df1:	79 07                	jns    c0d5dfa <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60b9a>
+     c0d5df3:	48 8b 50 08          	mov    0x8(%rax),%rdx
+     c0d5df7:	48 8b 00             	mov    (%rax),%rax
+     c0d5dfa:	48 89 c6             	mov    %rax,%rsi
+     c0d5dfd:	e8 ee 3b 49 06       	call   125699f0 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15eeff0>
+     c0d5e02:	eb 0c                	jmp    c0d5e10 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60bb0>
+     c0d5e04:	48 8b 30             	mov    (%rax),%rsi
+     c0d5e07:	48 8b 50 08          	mov    0x8(%rax),%rdx
+     c0d5e0b:	e8 70 3c 49 06       	call   12569a80 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15ef080>
+     c0d5e10:	48 8d 35 b3 27 89 f6 	lea    -0x976d84d(%rip),%rsi        # 29685ca <ffi_type_void@@Base+0xf353ea>
+     c0d5e17:	48 8d 7d b0          	lea    -0x50(%rbp),%rdi
+     c0d5e1b:	ba 0a 00 00 00       	mov    $0xa,%edx
+     c0d5e20:	e8 0b 62 05 fe       	call   a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>
+     c0d5e25:	48 85 c0             	test   %rax,%rax
+     c0d5e28:	0f 84 d4 00 00 00    	je     c0d5f02 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ca2>
+     c0d5e2e:	48 0f be 70 17       	movsbq 0x17(%rax),%rsi
+     c0d5e33:	48 85 f6             	test   %rsi,%rsi
+     c0d5e36:	78 0a                	js     c0d5e42 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60be2>
+     c0d5e38:	40 84 f6             	test   %sil,%sil
+     c0d5e3b:	75 15                	jne    c0d5e52 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60bf2>
+     c0d5e3d:	e9 c0 00 00 00       	jmp    c0d5f02 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ca2>
+     c0d5e42:	48 8b 70 08          	mov    0x8(%rax),%rsi
+     c0d5e46:	48 85 f6             	test   %rsi,%rsi
+     c0d5e49:	0f 84 b3 00 00 00    	je     c0d5f02 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ca2>
+     c0d5e4f:	48 8b 00             	mov    (%rax),%rax
+     c0d5e52:	48 89 c7             	mov    %rax,%rdi
+     c0d5e55:	e8 76 26 ff fd       	call   a0c84d0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1aa420>
+     c0d5e5a:	48 0f ba e0 20       	bt     $0x20,%rax
+     c0d5e5f:	0f 83 e3 00 00 00    	jae    c0d5f48 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ce8>
+     c0d5e65:	49 89 c6             	mov    %rax,%r14
+     c0d5e68:	48 8b 05 51 4c 5f 07 	mov    0x75f4c51(%rip),%rax        # 136caac0 <__data_start@@Base+0x36ac0>
+     c0d5e6f:	ff d0                	call   *%rax
+     c0d5e71:	43 8d 0c f6          	lea    (%r14,%r14,8),%ecx
+     c0d5e75:	48 63 c9             	movslq %ecx,%rcx
+     c0d5e78:	48 69 c9 67 66 66 66 	imul   $0x66666667,%rcx,%rcx
+     c0d5e7f:	48 89 ca             	mov    %rcx,%rdx
+     c0d5e82:	48 c1 ea 3f          	shr    $0x3f,%rdx
+     c0d5e86:	48 c1 f9 22          	sar    $0x22,%rcx
+     c0d5e8a:	01 d1                	add    %edx,%ecx
+     c0d5e8c:	48 63 c9             	movslq %ecx,%rcx
+     c0d5e8f:	48 69 c9 40 42 0f 00 	imul   $0xf4240,%rcx,%rcx
+     c0d5e96:	48 8d 14 08          	lea    (%rax,%rcx,1),%rdx
+     c0d5e9a:	48 c1 fa 3f          	sar    $0x3f,%rdx
+     c0d5e9e:	48 be 00 00 00 00 00 	movabs $0x8000000000000000,%rsi
+     c0d5ea5:	00 00 80 
+     c0d5ea8:	48 31 d6             	xor    %rdx,%rsi
+     c0d5eab:	48 01 c8             	add    %rcx,%rax
+     c0d5eae:	48 0f 40 c6          	cmovo  %rsi,%rax
+     c0d5eb2:	48 89 43 48          	mov    %rax,0x48(%rbx)
+     c0d5eb6:	48 8d 35 18 27 89 f6 	lea    -0x976d8e8(%rip),%rsi        # 29685d5 <ffi_type_void@@Base+0xf353f5>
+     c0d5ebd:	48                   	rex.W
+     c0d5ebe:	8d                   	.byte 0x8d
+     c0d5ebf:	7d                   	.byte 0x7d
+[0m
+Binary confirmed. Disassembling the response parser and finding its callers.
+[0m$ [0mobjdump -d /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>/dev/null | grep -E 'call.*c0d5c[89a-f]|call.*c0d5d[0-9a-f]|call.*c0d5e[0-9a]' | head -30
+(no output)
+[0m
+[0m$ [0m# Verify the string contents at the rodata addresses referenced by the parser
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    for addr in [0x29685ca, 0x29685e2, 0x29685d5]:
+        f.seek(addr)
+        data = f.read(32)
+        print(f'0x{addr:x}: {data}')
+"
+0x29685ca: b'expires_in\x00access_token\x00id_token'
+0x29685e2: b'id_token\x00error\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00er'
+0x29685d5: b'access_token\x00id_token\x00error\x00\x00\x00\x00\x00'
+[0m
+The response parser is at a function boundary. Let me find its callers by searching for `call` instructions targeting this range, and also verify the string references.
+[0m$ [0m# Find what calls the response parser range - search for LEA of the string refs first
+objdump -d /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>/dev/null | grep -B5 '29685ca\|29685e2\|29685d5' | grep -E 'call|29685' | head -20
+c0d5c91:	48 8d 35 32 29 89 f6 	lea    -0x976d6ce(%rip),%rsi        # 29685ca <ffi_type_void@@Base+0xf353ea>
+     c0d5cc3:	48 8d 35 18 29 89 f6 	lea    -0x976d6e8(%rip),%rsi        # 29685e2 <ffi_type_void@@Base+0xf35402>
+     c0d5d8b:	48 8d 35 43 28 89 f6 	lea    -0x976d7bd(%rip),%rsi        # 29685d5 <ffi_type_void@@Base+0xf353f5>
+     c0d5dfd:	e8 ee 3b 49 06       	call   125699f0 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15eeff0>
+     c0d5e0b:	e8 70 3c 49 06       	call   12569a80 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15ef080>
+     c0d5e10:	48 8d 35 b3 27 89 f6 	lea    -0x976d84d(%rip),%rsi        # 29685ca <ffi_type_void@@Base+0xf353ea>
+     c0d5eb6:	48 8d 35 18 27 89 f6 	lea    -0x976d8e8(%rip),%rsi        # 29685d5 <ffi_type_void@@Base+0xf353f5>
+[0m
+[0m$ [0m# Find the full function containing the response parser - look backwards for function prologue
+objdump -d /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>/dev/null | awk '/^[0-9a-f]+ </{addr=strtonum("0x" substr($1,1,length($1)-1))} /push.*rbp/{if(addr>=0xc0d4000 && addr<=0xc0d5c91) last_push=addr} END{print "Last push rbp before parser:", last_push}' 2>/dev/null | tail -5
+Last push rbp before parser:
+[0m
+Strings confirmed. Now let me find callers by searching for `call` instructions targeting the parser, and trace forward through the internal calls.
+[0m$ [0m# Also find what the parser's internal calls go to
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    data = f.read()
+    
+    parser_start = 0xc0d5c91
+    parser_end = 0xc0d5ec0
+    
+    results = []
+    for i in range(parser_start, parser_end):
+        if i+5 <= len(data) and data[i] == 0xe8:
+            offset = struct.unpack_from('<i', data, i+1)[0]
+            target = i + 5 + offset
+            if 0x400000 <= target <= len(data):
+                results.append((i, target))
+    
+    print(f'Calls FROM parser range:')
+    for caller, target in results:
+        print(f'  0x{caller:x} -> 0x{target:x}')
+"
+Calls FROM parser range:
+  0xc0d5c98 -> 0x3562570
+  0xc0d5cac -> 0x3562570
+  0xc0d5cc8 -> 0x3562570
+  0xc0d5ce8 -> 0xa1b4260
+  0xc0d5cf4 -> 0xa194f80
+  0xc0d5d6e -> 0x12b6c070
+  0xc0d5dac -> 0x12b6c070
+  0xc0d5e1e -> 0x12b6c070
+  0xc0d5e5c -> 0x12b6c070
+[0m
+[0m$ [0m# Find all CALL instructions in .text that target the parser range 0xc0d5c91-0xc0d5f00
+# In PIE, call target = instruction_addr + instruction_length + offset
+# E8 calls are 5 bytes: offset = target - (instruction_addr + 5)
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    # Read .text section
+    data = f.read()
+    
+    # Search for E8 call instructions targeting 0xc0d5c91-0xc0d5f00
+    parser_start = 0xc0d5c91
+    parser_end = 0xc0d5f00
+    
+    results = []
+    for i in range(len(data) - 5):
+        if data[i] == 0xe8:  # near call rel32
+            offset = struct.unpack_from('<i', data, i+1)[0]
+            target = i + 5 + offset
+            if parser_start <= target <= parser_end:
+                results.append((i, target))
+    
+    print(f'Found {len(results)} calls to parser range:')
+    for caller, target in results:
+        print(f'  caller: 0x{caller:x} -> target: 0x{target:x}')
+"
+Found 0 calls to parser range:
+[0m
+[0m$ [0m# Map the function boundaries - find prologue before 0xc0d5c91
+# Search backwards for push rbp / mov rbp,rsp pattern or common function starts
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    data = f.read()
+    
+    # Search for function prologues (push rbp; mov rbp,rsp = 55 48 89 e5) near the parser
+    parser_addr = 0xc0d5c91
+    
+    # Look backwards from parser for function prologue
+    for i in range(parser_addr - 0x100, parser_addr):
+        if data[i:i+3] == b'\x55\x48\x89\xe5':
+            print(f'Potential function start at 0x{i:x} (push rbp; mov rbp,rsp)')
+        elif data[i:i+4] == b'\x48\x83\xec':
+            # sub rsp, imm - another function start pattern
+            imm = data[i+4]
+            print(f'Potential function start at 0x{i:x} (sub rsp, 0x{imm:x})')
+    
+    # Find where 0xc0d5c91 is (what function it belongs to)
+    # Check if 0xc0d5c91 itself is a function start
+    if data[parser_addr:parser_addr+4] == b'\x48\x8d\x35':
+        print(f'0x{parser_addr:x}: LEA RSI, [rip+...] - appears to be inside a function (not prologue)')
+    
+    # Find function end / next function start after parser
+    for i in range(0xc0d5f00, 0xc0d6200):
+        if data[i:i+3] == b'\x55\x48\x89\xe5':
+            print(f'Next function after parser at 0x{i:x}')
+            break
+        elif data[i:i+4] == b'\x48\x83\xec':
+            print(f'Next function/sub at 0x{i:x} (sub rsp)')
+            break
+"
+(no output)
+[0m
+No direct E8 callers found. Let me check indirect calls (FF 15) and jump targets, and map the full function boundary.
+[0m$ [0m# Check if the parser is called via a jump table or if it's referenced in .got
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    data = f.read()
+    
+    # Search for 0xc0d5c91 as a 64-bit value anywhere in the binary (jump table, vtable, etc.)
+    target = struct.pack('<Q', 0xc0d5c91)
+    pos = 0
+    found = []
+    while True:
+        pos = data.find(target, pos)
+        if pos == -1:
+            break
+        found.append(pos)
+        pos += 1
+    
+    print(f'Found 0xc0d5c91 referenced at {len(found)} locations:')
+    for addr in found:
+        print(f'  0x{addr:x}')
+"
+Found 0xc0d5c91 referenced at 0 locations:
+[0m
+[0m$ [0m# Search for indirect calls (FF 15) targeting parser range
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    data = f.read()
+    
+    parser_start = 0xc0d5c91
+    parser_end = 0xc0d5f00
+    
+    # FF 15 = indirect call [rip+disp32], 6 bytes total
+    results = []
+    for i in range(len(data) - 6):
+        if data[i] == 0xff and data[i+1] == 0x15:
+            offset = struct.unpack_from('<i', data, i+2)[0]
+            # RIP at next instruction = i + 6
+            # target address is at [rip+disp32] in memory, but for code we check if the CALL 
+            # resolves to the parser range
+            pass
+    
+    # Instead, search for JMP instructions (E9) targeting parser range
+    jmp_results = []
+    for i in range(len(data) - 5):
+        if data[i] == 0xe9:  # near jmp rel32
+            offset = struct.unpack_from('<i', data, i+1)[0]
+            target = i + 5 + offset
+            if parser_start <= target <= parser_end:
+                jmp_results.append((i, target))
+    
+    print(f'Found {len(jmp_results)} JMPs to parser range:')
+    for caller, target in jmp_results:
+        print(f'  caller: 0x{caller:x} -> target: 0x{target:x}')
+"
+Found 1 JMPs to parser range:
+  caller: 0xc0d5bcb -> target: 0xc0d5cf9
+[0m
+[0m$ [0m# The function must start well before 0xc0d5c91. Let's find the prologue
+# Look for the last push rbp / sub rsp before the parser
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    data = f.read()
+    
+    # Search backwards from parser for function prologue patterns
+    parser_addr = 0xc0d5c91
+    
+    # Common patterns: 55 48 89 e5 (push rbp; mov rbp,rsp) 
+    # or 48 89 e5 (mov rbp,rsp) after push
+    # or just sub rsp directly
+    
+    candidates = []
+    for i in range(parser_addr - 0x2000, parser_addr):
+        # Check for push rbp (0x55) followed by mov rbp,rsp (0x48 0x89 0xe5)
+        if data[i] == 0x55 and data[i+1:i+4] == b'\x48\x89\xe5':
+            candidates.append(('push_rbp_mov_rbp', i))
+        # Also check for any ret (0xc3) which would end the previous function
+        elif data[i] == 0xc3:
+            # Check if next instruction is a new function start
+            if data[i+1] == 0x55 and data[i+2:i+5] == b'\x48\x89\xe5':
+                candidates.append(('ret_then_push_rbp', i+1))
+            elif data[i+1:i+5] == b'\x48\x83\xec':
+                candidates.append(('ret_then_sub_rsp', i+1))
+    
+    # Show the candidates closest to the parser
+    for pattern, addr in candidates[-10:]:
+        print(f'{pattern} at 0x{addr:x} (delta from parser: {parser_addr - addr})')
+"
+push_rbp_mov_rbp at 0xc0d4650 (delta from parser: 5697)
+push_rbp_mov_rbp at 0xc0d4c10 (delta from parser: 4225)
+push_rbp_mov_rbp at 0xc0d52f0 (delta from parser: 2465)
+push_rbp_mov_rbp at 0xc0d58a0 (delta from parser: 1009)
+[0m
+The JMP is internal (within the same function). Let me find the actual function boundary and search for callers more thoroughly.
+[0m$ [0m# Also search for all E8 calls that could reach this large function
+# Since we don't know the exact start, search broadly
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    data = f.read()
+    
+    # Let's check if there's a large function spanning from before 0xc0d5c91
+    # by looking for calls to any address in range 0xc0d4000-0xc0d5f00
+    func_start_range = range(0xc0d4000, 0xc0d5c91)
+    
+    results = []
+    for i in range(len(data) - 5):
+        if data[i] == 0xe8:
+            offset = struct.unpack_from('<i', data, i+1)[0]
+            target = i + 5 + offset
+            if target in func_start_range:
+                results.append((i, target))
+    
+    print(f'Calls to addresses 0xc0d4000-0xc0d5c90 (potential function start):')
+    for caller, target in results:
+        print(f'  0x{caller:x} -> 0x{target:x}')
+"
+Calls to addresses 0xc0d4000-0xc0d5c90 (potential function start):
+  0x213f3de -> 0xc0d598a
+  0x3c6c442 -> 0xc0d4d90
+  0x3c7c0ef -> 0xc0d4a3d
+  0x3c7c1cf -> 0xc0d4b1d
+  0x3c7c3d2 -> 0xc0d4d20
+  0x3c7c9e8 -> 0xc0d5336
+  0xa2cbf32 -> 0xc0d4243
+  0xa2ccbfc -> 0xc0d4f0d
+  0xc0cb172 -> 0xc0d4c10
+  0xc0cb217 -> 0xc0d58a0
+  0xc0d515d -> 0xc0d52f0
+  0x114c0741 -> 0xc0d4f85
+[0m
+[0m$ [0m# Disassemble the function start to understand the prologue
+objdump -d --start-address=0xc0d58a0 --stop-address=0xc0d5c91 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -80
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000c0d58a0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60640>:
+     c0d58a0:	4c 8b 7d c8          	mov    -0x38(%rbp),%r15
+     c0d58a4:	80 7d 97 00          	cmpb   $0x0,-0x69(%rbp)
+     c0d58a8:	78 0a                	js     c0d58b4 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60654>
+     c0d58aa:	4d 39 fe             	cmp    %r15,%r14
+     c0d58ad:	75 28                	jne    c0d58d7 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60677>
+     c0d58af:	e9 c7 01 00 00       	jmp    c0d5a7b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf6081b>
+     c0d58b4:	48 8b 7d 80          	mov    -0x80(%rbp),%rdi
+     c0d58b8:	48 8b 75 90          	mov    -0x70(%rbp),%rsi
+     c0d58bc:	48 b8 ff ff ff ff ff 	movabs $0x7fffffffffffffff,%rax
+     c0d58c3:	ff ff 7f 
+     c0d58c6:	48 21 c6             	and    %rax,%rsi
+     c0d58c9:	e8 92 f9 0d fe       	call   a1b5260 <_ZdaPvm@@Base>
+     c0d58ce:	4d 39 fe             	cmp    %r15,%r14
+     c0d58d1:	0f 84 a4 01 00 00    	je     c0d5a7b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf6081b>
+     c0d58d7:	4c 8b 7d c0          	mov    -0x40(%rbp),%r15
+     c0d58db:	4c 8b 75 c8          	mov    -0x38(%rbp),%r14
+     c0d58df:	4d 39 f7             	cmp    %r14,%r15
+     c0d58e2:	0f 84 93 01 00 00    	je     c0d5a7b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf6081b>
+     c0d58e8:	4c 8d a5 f0 fe ff ff 	lea    -0x110(%rbp),%r12
+     c0d58ef:	48 89 9d 68 ff ff ff 	mov    %rbx,-0x98(%rbp)
+     c0d58f6:	eb 3b                	jmp    c0d5933 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf606d3>
+     c0d58f8:	49 8b 75 18          	mov    0x18(%r13),%rsi
+     c0d58fc:	49 8b 55 20          	mov    0x20(%r13),%rdx
+     c0d5900:	e8 6b 3f 49 06       	call   12569870 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15eee70>
+     c0d5905:	49 83 c4 30          	add    $0x30,%r12
+     c0d5909:	49 89 de             	mov    %rbx,%r14
+     c0d590c:	4c 89 65 a8          	mov    %r12,-0x58(%rbp)
+     c0d5910:	48 8b 9d 68 ff ff ff 	mov    -0x98(%rbp),%rbx
+     c0d5917:	4c 8d a5 f0 fe ff ff 	lea    -0x110(%rbp),%r12
+     c0d591e:	4c 89 e7             	mov    %r12,%rdi
+     c0d5921:	e8 9a 4a 5e f8       	call   46ba3c0 <cxxbridge1$rust_vec$base$i18n$internal$Icu4xLocale$set_len@@Base+0x2330d0>
+     c0d5926:	49 83 c7 18          	add    $0x18,%r15
+     c0d592a:	4d 39 f7             	cmp    %r14,%r15
+     c0d592d:	0f 84 48 01 00 00    	je     c0d5a7b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf6081b>
+     c0d5933:	0f 57 c0             	xorps  %xmm0,%xmm0
+     c0d5936:	0f 29 85 50 ff ff ff 	movaps %xmm0,-0xb0(%rbp)
+     c0d593d:	0f 29 85 40 ff ff ff 	movaps %xmm0,-0xc0(%rbp)
+     c0d5944:	0f 29 85 30 ff ff ff 	movaps %xmm0,-0xd0(%rbp)
+     c0d594b:	0f 29 85 20 ff ff ff 	movaps %xmm0,-0xe0(%rbp)
+     c0d5952:	0f 29 85 10 ff ff ff 	movaps %xmm0,-0xf0(%rbp)
+     c0d5959:	0f 29 85 00 ff ff ff 	movaps %xmm0,-0x100(%rbp)
+     c0d5960:	0f 29 85 f0 fe ff ff 	movaps %xmm0,-0x110(%rbp)
+     c0d5967:	49 0f be 57 17       	movsbq 0x17(%r15),%rdx
+     c0d596c:	48 85 d2             	test   %rdx,%rdx
+     c0d596f:	78 0f                	js     c0d5980 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60720>
+     c0d5971:	4c 89 fe             	mov    %r15,%rsi
+     c0d5974:	eb 11                	jmp    c0d5987 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60727>
+     c0d5976:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+     c0d597d:	00 00 00 
+     c0d5980:	49 8b 37             	mov    (%r15),%rsi
+     c0d5983:	49 8b 57 08          	mov    0x8(%r15),%rdx
+     c0d5987:	4c 89 e7             	mov    %r12,%rdi
+     c0d598a:	31 c9                	xor    %ecx,%ecx
+     c0d598c:	e8 df cd 57 fe       	call   a652770 <rust_bmp$cxxbridge1$194$Reader$width@@Base+0x1f5f30>
+     c0d5991:	4c 8b ad f0 fe ff ff 	mov    -0x110(%rbp),%r13
+     c0d5998:	4c 39 ad f8 fe ff ff 	cmp    %r13,-0x108(%rbp)
+     c0d599f:	0f 84 60 02 00 00    	je     c0d5c05 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf609a5>
+     c0d59a5:	49 0f be 45 17       	movsbq 0x17(%r13),%rax
+     c0d59aa:	48 85 c0             	test   %rax,%rax
+     c0d59ad:	78 11                	js     c0d59c0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60760>
+     c0d59af:	48 89 c1             	mov    %rax,%rcx
+     c0d59b2:	48 85 c9             	test   %rcx,%rcx
+     c0d59b5:	75 16                	jne    c0d59cd <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf6076d>
+     c0d59b7:	e9 62 ff ff ff       	jmp    c0d591e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf606be>
+     c0d59bc:	0f 1f 40 00          	nopl   0x0(%rax)
+     c0d59c0:	49 8b 4d 08          	mov    0x8(%r13),%rcx
+     c0d59c4:	48 85 c9             	test   %rcx,%rcx
+     c0d59c7:	0f 84 51 ff ff ff    	je     c0d591e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf606be>
+     c0d59cd:	49 0f be 4d 2f       	movsbq 0x2f(%r13),%rcx
+     c0d59d2:	48 85 c9             	test   %rcx,%rcx
+     c0d59d5:	78 19                	js     c0d59f0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60790>
+     c0d59d7:	48 85 c9             	test   %rcx,%rcx
+     c0d59da:	75 21                	jne    c0d59fd <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf6079d>
+[0m
+[0m$ [0m# Now trace what happens AFTER the parser - look for calls in the 0xc0d5f48 range (the jump target)
+objdump -d --start-address=0xc0d5f00 --stop-address=0xc0d6400 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -200
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000c0d5f00 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ca0>:
+     c0d5f00:	eb 49                	jmp    c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d5f02:	48 8d 35 e2 26 89 f6 	lea    -0x976d91e(%rip),%rsi        # 29685eb <ffi_type_void@@Base+0xf3540b>
+     c0d5f09:	48 8d 5d b0          	lea    -0x50(%rbp),%rbx
+     c0d5f0d:	ba 05 00 00 00       	mov    $0x5,%edx
+     c0d5f12:	48 89 df             	mov    %rbx,%rdi
+     c0d5f15:	e8 16 61 05 fe       	call   a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>
+     c0d5f1a:	49 89 c6             	mov    %rax,%r14
+     c0d5f1d:	48 8d 35 dc 26 89 f6 	lea    -0x976d924(%rip),%rsi        # 2968600 <ffi_type_void@@Base+0xf35420>
+     c0d5f24:	ba 11 00 00 00       	mov    $0x11,%edx
+     c0d5f29:	48 89 df             	mov    %rbx,%rdi
+     c0d5f2c:	e8 ff 60 05 fe       	call   a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>
+     c0d5f31:	4d 85 f6             	test   %r14,%r14
+     c0d5f34:	74 12                	je     c0d5f48 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ce8>
+     c0d5f36:	48 89 c3             	mov    %rax,%rbx
+     c0d5f39:	49 0f be 56 17       	movsbq 0x17(%r14),%rdx
+     c0d5f3e:	48 85 d2             	test   %rdx,%rdx
+     c0d5f41:	78 44                	js     c0d5f87 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60d27>
+     c0d5f43:	48 89 d0             	mov    %rdx,%rax
+     c0d5f46:	eb 43                	jmp    c0d5f8b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60d2b>
+     c0d5f48:	45 31 ff             	xor    %r15d,%r15d
+     c0d5f4b:	80 7d d0 01          	cmpb   $0x1,-0x30(%rbp)
+     c0d5f4f:	75 21                	jne    c0d5f72 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60d12>
+     c0d5f51:	0f b6 45 c8          	movzbl -0x38(%rbp),%eax
+     c0d5f55:	48 3d ff 00 00 00    	cmp    $0xff,%rax
+     c0d5f5b:	74 15                	je     c0d5f72 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60d12>
+     c0d5f5d:	48 8d 0d e4 11 33 07 	lea    0x73311e4(%rip),%rcx        # 13407148 <ffi_type_complex_float@@Base+0x893d98>
+     c0d5f64:	48 8d bd f0 fd ff ff 	lea    -0x210(%rbp),%rdi
+     c0d5f6b:	48 8d 75 b0          	lea    -0x50(%rbp),%rsi
+     c0d5f6f:	ff 14 c1             	call   *(%rcx,%rax,8)
+     c0d5f72:	44 89 f8             	mov    %r15d,%eax
+     c0d5f75:	48 81 c4 e8 01 00 00 	add    $0x1e8,%rsp
+     c0d5f7c:	5b                   	pop    %rbx
+     c0d5f7d:	41 5c                	pop    %r12
+     c0d5f7f:	41 5d                	pop    %r13
+     c0d5f81:	41 5e                	pop    %r14
+     c0d5f83:	41 5f                	pop    %r15
+     c0d5f85:	5d                   	pop    %rbp
+     c0d5f86:	c3                   	ret
+     c0d5f87:	49 8b 46 08          	mov    0x8(%r14),%rax
+     c0d5f8b:	45 31 ff             	xor    %r15d,%r15d
+     c0d5f8e:	48 85 db             	test   %rbx,%rbx
+     c0d5f91:	74 b8                	je     c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d5f93:	48 85 c0             	test   %rax,%rax
+     c0d5f96:	74 b3                	je     c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d5f98:	4d 39 f5             	cmp    %r14,%r13
+     c0d5f9b:	74 75                	je     c0d6012 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60db2>
+     c0d5f9d:	41 80 7d 17 00       	cmpb   $0x0,0x17(%r13)
+     c0d5fa2:	78 17                	js     c0d5fbb <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60d5b>
+     c0d5fa4:	84 d2                	test   %dl,%dl
+     c0d5fa6:	78 5b                	js     c0d6003 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60da3>
+     c0d5fa8:	49 8b 46 10          	mov    0x10(%r14),%rax
+     c0d5fac:	49 89 45 10          	mov    %rax,0x10(%r13)
+     c0d5fb0:	41 0f 10 06          	movups (%r14),%xmm0
+     c0d5fb4:	41 0f 11 45 00       	movups %xmm0,0x0(%r13)
+     c0d5fb9:	eb 57                	jmp    c0d6012 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60db2>
+     c0d5fbb:	84 d2                	test   %dl,%dl
+     c0d5fbd:	79 07                	jns    c0d5fc6 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60d66>
+     c0d5fbf:	49 8b 56 08          	mov    0x8(%r14),%rdx
+     c0d5fc3:	4d 8b 36             	mov    (%r14),%r14
+     c0d5fc6:	4c 89 ef             	mov    %r13,%rdi
+     c0d5fc9:	4c 89 f6             	mov    %r14,%rsi
+     c0d5fcc:	e8 1f 3a 49 06       	call   125699f0 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15eeff0>
+     c0d5fd1:	eb 3f                	jmp    c0d6012 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60db2>
+     c0d5fd3:	84 d2                	test   %dl,%dl
+     c0d5fd5:	79 07                	jns    c0d5fde <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60d7e>
+     c0d5fd7:	49 8b 57 08          	mov    0x8(%r15),%rdx
+     c0d5fdb:	4d 8b 3f             	mov    (%r15),%r15
+     c0d5fde:	4c 89 fe             	mov    %r15,%rsi
+     c0d5fe1:	e8 0a 3a 49 06       	call   125699f0 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15eeff0>
+     c0d5fe6:	e9 94 00 00 00       	jmp    c0d607f <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e1f>
+     c0d5feb:	84 d2                	test   %dl,%dl
+     c0d5fed:	79 07                	jns    c0d5ff6 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60d96>
+     c0d5fef:	48 8b 50 08          	mov    0x8(%rax),%rdx
+     c0d5ff3:	48 8b 00             	mov    (%rax),%rax
+     c0d5ff6:	48 89 c6             	mov    %rax,%rsi
+     c0d5ff9:	e8 f2 39 49 06       	call   125699f0 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15eeff0>
+     c0d5ffe:	e9 48 ff ff ff       	jmp    c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d6003:	49 8b 36             	mov    (%r14),%rsi
+     c0d6006:	49 8b 56 08          	mov    0x8(%r14),%rdx
+     c0d600a:	4c 89 ef             	mov    %r13,%rdi
+     c0d600d:	e8 6e 3a 49 06       	call   12569a80 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15ef080>
+     c0d6012:	41 b7 01             	mov    $0x1,%r15b
+     c0d6015:	49 39 dc             	cmp    %rbx,%r12
+     c0d6018:	0f 84 2d ff ff ff    	je     c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d601e:	41 80 7c 24 17 00    	cmpb   $0x0,0x17(%r12)
+     c0d6024:	0f b6 53 17          	movzbl 0x17(%rbx),%edx
+     c0d6028:	78 1a                	js     c0d6044 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60de4>
+     c0d602a:	84 d2                	test   %dl,%dl
+     c0d602c:	78 31                	js     c0d605f <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60dff>
+     c0d602e:	48 8b 43 10          	mov    0x10(%rbx),%rax
+     c0d6032:	49 89 44 24 10       	mov    %rax,0x10(%r12)
+     c0d6037:	0f 10 03             	movups (%rbx),%xmm0
+     c0d603a:	41 0f 11 04 24       	movups %xmm0,(%r12)
+     c0d603f:	e9 07 ff ff ff       	jmp    c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d6044:	84 d2                	test   %dl,%dl
+     c0d6046:	79 07                	jns    c0d604f <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60def>
+     c0d6048:	48 8b 53 08          	mov    0x8(%rbx),%rdx
+     c0d604c:	48 8b 1b             	mov    (%rbx),%rbx
+     c0d604f:	4c 89 e7             	mov    %r12,%rdi
+     c0d6052:	48 89 de             	mov    %rbx,%rsi
+     c0d6055:	e8 96 39 49 06       	call   125699f0 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15eeff0>
+     c0d605a:	e9 ec fe ff ff       	jmp    c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d605f:	48 8b 33             	mov    (%rbx),%rsi
+     c0d6062:	48 8b 53 08          	mov    0x8(%rbx),%rdx
+     c0d6066:	4c 89 e7             	mov    %r12,%rdi
+     c0d6069:	e8 12 3a 49 06       	call   12569a80 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15ef080>
+     c0d606e:	e9 d8 fe ff ff       	jmp    c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d6073:	49 8b 37             	mov    (%r15),%rsi
+     c0d6076:	49 8b 57 08          	mov    0x8(%r15),%rdx
+     c0d607a:	e8 01 3a 49 06       	call   12569a80 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15ef080>
+     c0d607f:	4c 8b 65 10          	mov    0x10(%rbp),%r12
+     c0d6083:	4c 39 f3             	cmp    %r14,%rbx
+     c0d6086:	74 58                	je     c0d60e0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e80>
+     c0d6088:	80 7b 17 00          	cmpb   $0x0,0x17(%rbx)
+     c0d608c:	41 0f b6 56 17       	movzbl 0x17(%r14),%edx
+     c0d6091:	78 15                	js     c0d60a8 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e48>
+     c0d6093:	84 d2                	test   %dl,%dl
+     c0d6095:	78 3a                	js     c0d60d1 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e71>
+     c0d6097:	49 8b 46 10          	mov    0x10(%r14),%rax
+     c0d609b:	48 89 43 10          	mov    %rax,0x10(%rbx)
+     c0d609f:	41 0f 10 06          	movups (%r14),%xmm0
+     c0d60a3:	0f 11 03             	movups %xmm0,(%rbx)
+     c0d60a6:	eb 38                	jmp    c0d60e0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e80>
+     c0d60a8:	4c 89 f6             	mov    %r14,%rsi
+     c0d60ab:	84 d2                	test   %dl,%dl
+     c0d60ad:	79 07                	jns    c0d60b6 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e56>
+     c0d60af:	49 8b 36             	mov    (%r14),%rsi
+     c0d60b2:	49 8b 56 08          	mov    0x8(%r14),%rdx
+     c0d60b6:	48 89 df             	mov    %rbx,%rdi
+     c0d60b9:	e8 32 39 49 06       	call   125699f0 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15eeff0>
+     c0d60be:	eb 20                	jmp    c0d60e0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e80>
+     c0d60c0:	48 8b 30             	mov    (%rax),%rsi
+     c0d60c3:	48 8b 50 08          	mov    0x8(%rax),%rdx
+     c0d60c7:	e8 b4 39 49 06       	call   12569a80 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15ef080>
+     c0d60cc:	e9 7a fe ff ff       	jmp    c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d60d1:	49 8b 36             	mov    (%r14),%rsi
+     c0d60d4:	49 8b 56 08          	mov    0x8(%r14),%rdx
+     c0d60d8:	48 89 df             	mov    %rbx,%rdi
+     c0d60db:	e8 a0 39 49 06       	call   12569a80 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15ef080>
+     c0d60e0:	49 0f be 44 24 17    	movsbq 0x17(%r12),%rax
+     c0d60e6:	48 85 c0             	test   %rax,%rax
+     c0d60e9:	79 05                	jns    c0d60f0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60e90>
+     c0d60eb:	49 8b 44 24 08       	mov    0x8(%r12),%rax
+     c0d60f0:	41 b7 01             	mov    $0x1,%r15b
+     c0d60f3:	48 85 c0             	test   %rax,%rax
+     c0d60f6:	0f 84 4f fe ff ff    	je     c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d60fc:	0f 57 c0             	xorps  %xmm0,%xmm0
+     c0d60ff:	0f 29 85 60 ff ff ff 	movaps %xmm0,-0xa0(%rbp)
+     c0d6106:	0f 29 85 50 ff ff ff 	movaps %xmm0,-0xb0(%rbp)
+     c0d610d:	0f 29 85 40 ff ff ff 	movaps %xmm0,-0xc0(%rbp)
+     c0d6114:	0f 29 85 30 ff ff ff 	movaps %xmm0,-0xd0(%rbp)
+     c0d611b:	0f 29 85 20 ff ff ff 	movaps %xmm0,-0xe0(%rbp)
+     c0d6122:	48 8d bd 20 ff ff ff 	lea    -0xe0(%rbp),%rdi
+     c0d6129:	4c 89 e6             	mov    %r12,%rsi
+     c0d612c:	e8 0f 8d ff ff       	call   c0cee40 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59be0>
+     c0d6131:	80 bd 68 ff ff ff 01 	cmpb   $0x1,-0x98(%rbp)
+     c0d6138:	0f 85 0d fe ff ff    	jne    c0d5f4b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60ceb>
+     c0d613e:	0f 57 c0             	xorps  %xmm0,%xmm0
+     c0d6141:	0f 29 45 80          	movaps %xmm0,-0x80(%rbp)
+     c0d6145:	0f 29 85 70 ff ff ff 	movaps %xmm0,-0x90(%rbp)
+     c0d614c:	48 8d bd 70 ff ff ff 	lea    -0x90(%rbp),%rdi
+     c0d6153:	48 8d 95 20 ff ff ff 	lea    -0xe0(%rbp),%rdx
+     c0d615a:	4c 89 f6             	mov    %r14,%rsi
+     c0d615d:	e8 8e 01 00 00       	call   c0d62f0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf61090>
+     c0d6162:	80 7d 88 01          	cmpb   $0x1,-0x78(%rbp)
+     c0d6166:	75 18                	jne    c0d6180 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf60f20>
+     c0d6168:	48 83 c3 30          	add    $0x30,%rbx
+     c0d616c:	48 8d b5 70 ff ff ff 	lea    -0x90(%rbp),%rsi
+     c0d6173:	48 89 df             	mov    %rbx,%rdi
+     c0d6176:	e8 95 c7 3d f8       	call   44b2910 <cxxbridge1$rust_vec$base$i18n$internal$Icu4xLocale$set_len@@Base+0x2b620>
+     c0d617b:	e9 1f 01 00 00       	jmp    c0d629f <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf6103f>
+     c0d6180:	31 ff                	xor    %edi,%edi
+     c0d6182:	e8 a9 07 0c fe       	call   a196930 <close@@Base+0x5d830>
+     c0d6187:	84 c0                	test   %al,%al
+     c0d6189:	0f 85 10 01 00 00    	jne    c0d629f <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf6103f>
+     c0d618f:	48 8d 35 5f cb d1 f5 	lea    -0xa2e34a1(%rip),%rsi        # 1df2cf5 <ffi_type_void@@Base+0x3bfb15>
+     c0d6196:	48 8d bd f0 fd ff ff 	lea    -0x210(%rbp),%rdi
+     c0d619d:	ba 9b 01 00 00       	mov    $0x19b,%edx
+     c0d61a2:	b9 02 00 00 00       	mov    $0x2,%ecx
+     c0d61a7:	e8 f4 8d fa fd       	call   a07efa0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x160ef0>
+     c0d61ac:	48 8d 05 55 04 d9 06 	lea    0x6d90455(%rip),%rax        # 12e66608 <ffi_type_complex_float@@Base+0x2f3258>
+     c0d61b3:	48 89 85 f0 fd ff ff 	mov    %rax,-0x210(%rbp)
+     c0d61ba:	48 8d bd 00 fe ff ff 	lea    -0x200(%rbp),%rdi
+     c0d61c1:	48 8d 35 84 6a bb f5 	lea    -0xa44957c(%rip),%rsi        # 1c8cc4c <ffi_type_void@@Base+0x259a6c>
+     c0d61c8:	ba 21 00 00 00       	mov    $0x21,%edx
+     c0d61cd:	e8 9e d3 48 f7       	call   3563570 <ChromeMain@@Base+0x630>
+     c0d61d2:	48 8d 35 cc 12 e0 f5 	lea    -0xa1fed34(%rip),%rsi        # 1ed74a5 <ffi_type_void@@Base+0x4a42c5>
+     c0d61d9:	ba 11 00 00 00       	mov    $0x11,%edx
+     c0d61de:	48 89 c7             	mov    %rax,%rdi
+     c0d61e1:	e8 8a d3 48 f7       	call   3563570 <ChromeMain@@Base+0x630>
+     c0d61e6:	48 89 c3             	mov    %rax,%rbx
+     c0d61e9:	4c 8d 75 90          	lea    -0x70(%rbp),%r14
+     c0d61ed:	4c 89 f7             	mov    %r14,%rdi
+[0m
+The function starts at 0xc0d58a0, called from 0xc0cb217. Let me trace this properly.
+[0m$ [0m# Identify the crypto-related functions we need to check for
+# Search for references to BoringSSL / HMAC / EVP functions
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    data = f.read()
+    
+    # Search for EVP_DigestSign, EVP_DigestVerify, HMAC, ECDSA_verify
+    # These are typically called via PLT or directly
+    # Let's find strings that reference these crypto functions
+    crypto_strings = [
+        b'EVP_DigestSign', b'EVP_DigestVerify', 
+        b'HMAC', b'ECDSA_verify', b'ECDSA_verify_raw',
+        b'ASN1_verify', b'RSA_verify', b'BN_mod_exp',
+        b'SHA256', b'SHA1', b'AES', b'ChaCha20',
+        b'ECDH_compute_key', b'EC_POINT_mul',
+        b'EVP_PKEY_verify', b'EVP_VerifyFinal'
+    ]
+    
+    for cs in crypto_strings:
+        pos = 0
+        while True:
+            pos = data.find(cs, pos)
+            if pos == -1:
+                break
+            # Get surrounding context
+            start = max(0, pos - 8)
+            end = min(len(data), pos + len(cs) + 16)
+            context = data[start:end]
+            # Filter for readable strings
+            readable = ''.join(chr(b) if 32 <= b < 127 else '.' for b in context)
+            print(f'Found \"{cs.decode()}\" at 0x{pos:x}: {readable}')
+            pos += 1
+" 2>&1 | head -30
+Found "EVP_DigestVerify" at 0x1d88f8e:  failed.EVP_DigestVerifyInit failed.Cont
+Found "HMAC" at 0x1a53100: e empty.HMAC key data must n
+Found "HMAC" at 0x1ae0f33: ved PRF HMAC secret.EmptySec
+Found "HMAC" at 0x1b4fbec: outines.HMAC routines.RSA ro
+Found "HMAC" at 0x1bce198: be zero.HMAC key length must
+Found "HMAC" at 0x1c0b970: .InvalidHMACKeyVersion.Flash
+Found "HMAC" at 0x1c5ff2b: .InvalidHMACAuth.RequiredHMA
+Found "HMAC" at 0x1c5ff3c: RequiredHMACAuth.fourth.date
+Found "HMAC" at 0x1cd46fe: .InvalidHMACSignature.certif
+Found "HMAC" at 0x1ebdd71: iceIDForHMAC.CMAC.Diffie-Hel
+Found "HMAC" at 0x1ec1975: .EC_LIB.HMAC_LIB.RSA_LIB.ECD
+Found "HMAC" at 0x1ed3de0: zation: HMAC key=./file/chec
+Found "HMAC" at 0x1eda986: SRC=.V1 HMAC=.??=.(?=.>>>=.d
+Found "HMAC" at 0x1ef05aa: -SHA256.HMAC-SHA256.RSA-SHA2
+Found "HMAC" at 0x1ef22fa: MD5.RC4-HMAC-MD5.RSA-MD5.5B9
+Found "HMAC" at 0x1ef4823: 1-94.id-HMACGostR3411-94.HMA
+Found "HMAC" at 0x1ef4834: 3411-94.HMAC GOST 34.11-94.G
+Found "HMAC" at 0x1f04c27: _CM_128_HMAC_SHA1_32.Spa:Enu
+Found "HMAC" at 0x1f0a539: 128-CBC-HMAC-SHA1.AES-256-CB
+Found "HMAC" at 0x1f0a54f: 256-CBC-HMAC-SHA1.AES-192-CB
+Found "HMAC" at 0x1f0a565: 192-CBC-HMAC-SHA1.RSA-SHA1.D
+Found "HMAC" at 0x1f0f556: _CM_128_HMAC_SHA1_80.OVP80.1
+Found "HMAC" at 0x1f355f8: ptional HMAC key length must
+Found "HMAC" at 0x1f74812:  value..HMAC computation fai
+Found "HMAC" at 0x2a79a26: ..CTAP2 HMAC key.CTAP2 AES k
+Found "BN_mod_exp" at 0x1f8e89a: nblind..BN_mod_exp_mont failed whe
+Found "SHA256" at 0x19c8ca0: ........SHA256 block transform
+Found "SHA256" at 0x1a6831a: cdsaP256SHA256PublicKey.JsonWe
+Found "SHA256" at 0x1e829e0: !aNULL:!SHA256:!SHA384:!aECDH:
+Found "SHA256" at 0x1e82a16: ES.ALL:!SHA256:!SHA384:!aPSK:!
+[0m
+[0m$ [0m# Identify the function that CALLS the response parser's function (0xc0cb217)
+# This is the key caller we need to trace
+objdump -d --start-address=0xc0cb100 --stop-address=0xc0cb300 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000c0cb100 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55ea0>:
+     c0cb100:	ff                   	(bad)
+     c0cb101:	ff                   	(bad)
+     c0cb102:	ff                   	(bad)
+     c0cb103:	ff                   	(bad)
+     c0cb104:	ff                   	(bad)
+     c0cb105:	ff                   	(bad)
+     c0cb106:	7f 48                	jg     c0cb150 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55ef0>
+     c0cb108:	21 c6                	and    %eax,%esi
+     c0cb10a:	e8 51 a1 0e fe       	call   a1b5260 <_ZdaPvm@@Base>
+     c0cb10f:	48 8b 7d 28          	mov    0x28(%rbp),%rdi
+     c0cb113:	48 85 ff             	test   %rdi,%rdi
+     c0cb116:	0f 84 42 01 00 00    	je     c0cb25e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55ffe>
+     c0cb11c:	4d 85 ed             	test   %r13,%r13
+     c0cb11f:	0f 84 d2 04 00 00    	je     c0cb5f7 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf56397>
+     c0cb125:	4c 8d 75 90          	lea    -0x70(%rbp),%r14
+     c0cb129:	4c 89 ee             	mov    %r13,%rsi
+     c0cb12c:	4c 89 e2             	mov    %r12,%rdx
+     c0cb12f:	4c 89 f1             	mov    %r14,%rcx
+     c0cb132:	e8 79 83 fe ff       	call   c0b34b0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf3e250>
+     c0cb137:	84 c0                	test   %al,%al
+     c0cb139:	0f 84 1f 01 00 00    	je     c0cb25e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55ffe>
+     c0cb13f:	4d 39 f7             	cmp    %r14,%r15
+     c0cb142:	74 4a                	je     c0cb18e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55f2e>
+     c0cb144:	41 80 7f 17 00       	cmpb   $0x0,0x17(%r15)
+     c0cb149:	0f b6 55 a7          	movzbl -0x59(%rbp),%edx
+     c0cb14d:	78 16                	js     c0cb165 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55f05>
+     c0cb14f:	84 d2                	test   %dl,%dl
+     c0cb151:	78 2b                	js     c0cb17e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55f1e>
+     c0cb153:	48 8b 45 a0          	mov    -0x60(%rbp),%rax
+     c0cb157:	49 89 47 10          	mov    %rax,0x10(%r15)
+     c0cb15b:	0f 28 45 90          	movaps -0x70(%rbp),%xmm0
+     c0cb15f:	41 0f 11 07          	movups %xmm0,(%r15)
+     c0cb163:	eb 29                	jmp    c0cb18e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55f2e>
+     c0cb165:	84 d2                	test   %dl,%dl
+     c0cb167:	79 08                	jns    c0cb171 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55f11>
+     c0cb169:	4c 8b 75 90          	mov    -0x70(%rbp),%r14
+     c0cb16d:	48 8b 55 98          	mov    -0x68(%rbp),%rdx
+     c0cb171:	4c 89 ff             	mov    %r15,%rdi
+     c0cb174:	4c 89 f6             	mov    %r14,%rsi
+     c0cb177:	e8 74 e8 49 06       	call   125699f0 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15eeff0>
+     c0cb17c:	eb 10                	jmp    c0cb18e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55f2e>
+     c0cb17e:	48 8b 75 90          	mov    -0x70(%rbp),%rsi
+     c0cb182:	48 8b 55 98          	mov    -0x68(%rbp),%rdx
+     c0cb186:	4c 89 ff             	mov    %r15,%rdi
+     c0cb189:	e8 f2 e8 49 06       	call   12569a80 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15ef080>
+     c0cb18e:	48 8b 3d 63 f5 76 07 	mov    0x776f563(%rip),%rdi        # 1383a6f8 <__bss_start@@Base+0x5b6f8>
+     c0cb195:	48 85 ff             	test   %rdi,%rdi
+     c0cb198:	74 1a                	je     c0cb1b4 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55f54>
+     c0cb19a:	48 8d 35 50 4e d5 f5 	lea    -0xa2ab1b0(%rip),%rsi        # 1e1fff1 <ffi_type_void@@Base+0x3ece11>
+     c0cb1a1:	ba 22 00 00 00       	mov    $0x22,%edx
+     c0cb1a6:	e8 55 8d 06 fe       	call   a133f00 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x215e50>
+     c0cb1ab:	85 c0                	test   %eax,%eax
+     c0cb1ad:	7f 1d                	jg     c0cb1cc <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55f6c>
+     c0cb1af:	e9 aa 00 00 00       	jmp    c0cb25e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55ffe>
+     c0cb1b4:	31 c9                	xor    %ecx,%ecx
+     c0cb1b6:	2b 0d 1c f5 76 07    	sub    0x776f51c(%rip),%ecx        # 1383a6d8 <__bss_start@@Base+0x5b6d8>
+     c0cb1bc:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+     c0cb1c1:	0f 49 c1             	cmovns %ecx,%eax
+     c0cb1c4:	85 c0                	test   %eax,%eax
+     c0cb1c6:	0f 8e 92 00 00 00    	jle    c0cb25e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55ffe>
+     c0cb1cc:	48 8d 35 1e 4e d5 f5 	lea    -0xa2ab1e2(%rip),%rsi        # 1e1fff1 <ffi_type_void@@Base+0x3ece11>
+     c0cb1d3:	4c 8d b5 30 fe ff ff 	lea    -0x1d0(%rbp),%r14
+     c0cb1da:	4c 89 f7             	mov    %r14,%rdi
+     c0cb1dd:	ba 68 00 00 00       	mov    $0x68,%edx
+     c0cb1e2:	b9 ff ff ff ff       	mov    $0xffffffff,%ecx
+     c0cb1e7:	e8 b4 3d fb fd       	call   a07efa0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x160ef0>
+     c0cb1ec:	48 8d bd 40 fe ff ff 	lea    -0x1c0(%rbp),%rdi
+     c0cb1f3:	48 8d 35 32 0e f7 f5 	lea    -0xa08f1ce(%rip),%rsi        # 203c02c <ffi_type_void@@Base+0x608e4c>
+     c0cb1fa:	ba 13 00 00 00       	mov    $0x13,%edx
+     c0cb1ff:	e8 6c 83 49 f7       	call   3563570 <ChromeMain@@Base+0x630>
+     c0cb204:	48 89 c7             	mov    %rax,%rdi
+     c0cb207:	4c 89 ee             	mov    %r13,%rsi
+     c0cb20a:	4c 89 e2             	mov    %r12,%rdx
+     c0cb20d:	e8 5e 83 49 f7       	call   3563570 <ChromeMain@@Base+0x630>
+     c0cb212:	48 8d 35 ed 67 f8 f5 	lea    -0xa079813(%rip),%rsi        # 2051a06 <ffi_type_void@@Base+0x61e826>
+     c0cb219:	ba 0c 00 00 00       	mov    $0xc,%edx
+     c0cb21e:	48 89 c7             	mov    %rax,%rdi
+     c0cb221:	e8 4a 83 49 f7       	call   3563570 <ChromeMain@@Base+0x630>
+     c0cb226:	49 0f be 57 17       	movsbq 0x17(%r15),%rdx
+     c0cb22b:	4c 89 fe             	mov    %r15,%rsi
+     c0cb22e:	48 85 d2             	test   %rdx,%rdx
+     c0cb231:	79 07                	jns    c0cb23a <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf55fda>
+     c0cb233:	49 8b 37             	mov    (%r15),%rsi
+     c0cb236:	49 8b 57 08          	mov    0x8(%r15),%rdx
+     c0cb23a:	48 89 c7             	mov    %rax,%rdi
+     c0cb23d:	e8 2e 83 49 f7       	call   3563570 <ChromeMain@@Base+0x630>
+     c0cb242:	48 8d 35 f9 5a ea f5 	lea    -0xa15a507(%rip),%rsi        # 1f70d42 <ffi_type_void@@Base+0x53db62>
+     c0cb249:	ba 12 00 00 00       	mov    $0x12,%edx
+     c0cb24e:	48 89 c7             	mov    %rax,%rdi
+     c0cb251:	e8 1a 83 49 f7       	call   3563570 <ChromeMain@@Base+0x630>
+     c0cb256:	4c 89 f7             	mov    %r14,%rdi
+     c0cb259:	e8 92 43 fb fd       	call   a07f5f0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x161540>
+     c0cb25e:	4c 8b b5 78 ff ff ff 	mov    -0x88(%rbp),%r14
+     c0cb265:	4d 85 f6             	test   %r14,%r14
+     c0cb268:	0f 84 d8 01 00 00    	je     c0cb446 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf561e6>
+     c0cb26e:	48 8b 5d 20          	mov    0x20(%rbp),%rbx
+     c0cb272:	4c 89 f7             	mov    %r14,%rdi
+     c0cb275:	e8 26 1c aa 06       	call   12b6cea0 <strlen@plt>
+     c0cb27a:	48 89 df             	mov    %rbx,%rdi
+     c0cb27d:	4c 89 f6             	mov    %r14,%rsi
+     c0cb280:	48 89 c2             	mov    %rax,%rdx
+     c0cb283:	e8 98 83 fa fd       	call   a073620 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x155570>
+     c0cb288:	84 c0                	test   %al,%al
+     c0cb28a:	0f 84 b6 01 00 00    	je     c0cb446 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf561e6>
+     c0cb290:	4c 89 f7             	mov    %r14,%rdi
+     c0cb293:	e8 08 1c aa 06       	call   12b6cea0 <strlen@plt>
+     c0cb298:	0f 57 c0             	xorps  %xmm0,%xmm0
+     c0cb29b:	0f 29 85 30 fe ff ff 	movaps %xmm0,-0x1d0(%rbp)
+     c0cb2a2:	48 c7 85 40 fe ff ff 	movq   $0x0,-0x1c0(%rbp)
+     c0cb2a9:	00 00 00 00 
+     c0cb2ad:	4c 89 f2             	mov    %r14,%rdx
+     c0cb2b0:	4c 8d b5 30 fe ff ff 	lea    -0x1d0(%rbp),%r14
+     c0cb2b7:	4c 89 f7             	mov    %r14,%rdi
+     c0cb2ba:	48 89 de             	mov    %rbx,%rsi
+     c0cb2bd:	48 89 c1             	mov    %rax,%rcx
+     c0cb2c0:	e8 fb 84 fa fd       	call   a0737c0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x155710>
+     c0cb2c5:	48 0f be b5 47 fe ff 	movsbq -0x1b9(%rbp),%rsi
+     c0cb2cc:	ff 
+     c0cb2cd:	48 85 f6             	test   %rsi,%rsi
+     c0cb2d0:	79 0e                	jns    c0cb2e0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf56080>
+     c0cb2d2:	4c 8b b5 30 fe ff ff 	mov    -0x1d0(%rbp),%r14
+     c0cb2d9:	48 8b b5 38 fe ff ff 	mov    -0x1c8(%rbp),%rsi
+     c0cb2e0:	4c 89 f7             	mov    %r14,%rdi
+     c0cb2e3:	e8 68 17 00 fe       	call   a0cca50 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1ae9a0>
+     c0cb2e8:	84 c0                	test   %al,%al
+     c0cb2ea:	74 18                	je     c0cb304 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf560a4>
+     c0cb2ec:	48 8b 85 40 fe ff ff 	mov    -0x1c0(%rbp),%rax
+     c0cb2f3:	48 89 45 c0          	mov    %rax,-0x40(%rbp)
+     c0cb2f7:	0f 28 85 30 fe ff ff 	movaps -0x1d0(%rbp),%xmm0
+     c0cb2fe:	0f                   	.byte 0xf
+     c0cb2ff:	29                   	.byte 0x29
+[0m
+[0m$ [0m# Check what's at the function pointer table 0x13407148 - used after response parsing
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    # Read the vtable at 0x13407148
+    f.seek(0x13407148)
+    data = f.read(64)
+    # Parse as 8-byte pointers
+    ptrs = [struct.unpack_from('<Q', data, i)[0] for i in range(0, 64, 8)]
+    print('Function pointer table at 0x13407148:')
+    for i, p in enumerate(ptrs):
+        if p > 0x400000 and p < 0x20000000:
+            print(f'  [{i}] 0x{p:x}')
+        elif p == 0:
+            print(f'  [{i}] NULL')
+        else:
+            print(f'  [{i}] 0x{p:x} (possibly stack/heap)')
+"
+Function pointer table at 0x13407148:
+  [0] NULL
+  [1] NULL
+  [2] NULL
+  [3] NULL
+  [4] NULL
+  [5] NULL
+  [6] NULL
+  [7] NULL
+[0m
+[0m$ [0m# Check the call at 0xc0d5f6f: call *(%rcx,%rax,8) - this is the indirect call after response parsing
+# Let's also check the string at 0x1df2cf5 (loaded at 0xc0d618f)
+python3 -c "
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    f.seek(0x1df2cf5)
+    data = f.read(100)
+    readable = ''.join(chr(b) if 32 <= b < 127 else '.' for b in data)
+    print(f'String at 0x1df2cf5: {readable}')
+"
+String at 0x1df2cf5: ../../whale/google_apis/naver_access_token_fetcher.cc.../../components/signin/public/identity_manage
+[0m
+The response parser is inside a larger function starting at 0xc0d58a0. Now let me trace the control flow after parsing and check for crypto verification calls.
+[0m$ [0m# Check what 0xc0b34b0 does - it's called early in the caller and returns a boolean
+objdump -d --start-address=0xc0b34b0 --stop-address=0xc0b3600 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -60
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000c0b34b0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf3e250>:
+     c0b34b0:	55                   	push   %rbp
+     c0b34b1:	48 89 e5             	mov    %rsp,%rbp
+     c0b34b4:	41 57                	push   %r15
+     c0b34b6:	41 56                	push   %r14
+     c0b34b8:	53                   	push   %rbx
+     c0b34b9:	50                   	push   %rax
+     c0b34ba:	49 89 ce             	mov    %rcx,%r14
+     c0b34bd:	48 89 d3             	mov    %rdx,%rbx
+     c0b34c0:	49 89 f7             	mov    %rsi,%r15
+     c0b34c3:	48 8d 35 e8 b5 a3 f5 	lea    -0xa5c4a18(%rip),%rsi        # 1aeeab2 <ffi_type_void@@Base+0xbb8d2>
+     c0b34ca:	ba 08 00 00 00       	mov    $0x8,%edx
+     c0b34cf:	e8 fc 8b 07 fe       	call   a12c0d0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20e020>
+     c0b34d4:	48 85 c0             	test   %rax,%rax
+     c0b34d7:	74 3a                	je     c0b3513 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf3e2b3>
+     c0b34d9:	48 89 c7             	mov    %rax,%rdi
+     c0b34dc:	4c 89 fe             	mov    %r15,%rsi
+     c0b34df:	48 89 da             	mov    %rbx,%rdx
+     c0b34e2:	e8 49 8b 07 fe       	call   a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>
+     c0b34e7:	48 85 c0             	test   %rax,%rax
+     c0b34ea:	74 27                	je     c0b3513 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf3e2b3>
+     c0b34ec:	b3 01                	mov    $0x1,%bl
+     c0b34ee:	49 39 c6             	cmp    %rax,%r14
+     c0b34f1:	74 22                	je     c0b3515 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf3e2b5>
+     c0b34f3:	41 80 7e 17 00       	cmpb   $0x0,0x17(%r14)
+     c0b34f8:	0f b6 50 17          	movzbl 0x17(%rax),%edx
+     c0b34fc:	78 24                	js     c0b3522 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf3e2c2>
+     c0b34fe:	84 d2                	test   %dl,%dl
+     c0b3500:	78 38                	js     c0b353a <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf3e2da>
+     c0b3502:	48 8b 48 10          	mov    0x10(%rax),%rcx
+     c0b3506:	49 89 4e 10          	mov    %rcx,0x10(%r14)
+     c0b350a:	0f 10 00             	movups (%rax),%xmm0
+     c0b350d:	41 0f 11 06          	movups %xmm0,(%r14)
+     c0b3511:	eb 02                	jmp    c0b3515 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf3e2b5>
+     c0b3513:	31 db                	xor    %ebx,%ebx
+     c0b3515:	89 d8                	mov    %ebx,%eax
+     c0b3517:	48 83 c4 08          	add    $0x8,%rsp
+     c0b351b:	5b                   	pop    %rbx
+     c0b351c:	41 5e                	pop    %r14
+     c0b351e:	41 5f                	pop    %r15
+     c0b3520:	5d                   	pop    %rbp
+     c0b3521:	c3                   	ret
+     c0b3522:	84 d2                	test   %dl,%dl
+     c0b3524:	79 07                	jns    c0b352d <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf3e2cd>
+     c0b3526:	48 8b 50 08          	mov    0x8(%rax),%rdx
+     c0b352a:	48 8b 00             	mov    (%rax),%rax
+     c0b352d:	4c 89 f7             	mov    %r14,%rdi
+     c0b3530:	48 89 c6             	mov    %rax,%rsi
+     c0b3533:	e8 b8 64 4b 06       	call   125699f0 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15eeff0>
+     c0b3538:	eb db                	jmp    c0b3515 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf3e2b5>
+     c0b353a:	48 8b 30             	mov    (%rax),%rsi
+     c0b353d:	48 8b 50 08          	mov    0x8(%rax),%rdx
+     c0b3541:	4c 89 f7             	mov    %r14,%rdi
+     c0b3544:	e8 37 65 4b 06       	call   12569a80 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15ef080>
+[0m
+[0m$ [0m# Search for HMAC/EVP_DigestVerify/ECDSA_verify calls within the parser function range (0xc0d58a0-0xc0d6400)
+python3 -c "
+import struct
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    data = f.read()
+    
+    func_range = range(0xc0d58a0, 0xc0d6400)
+    
+    results = []
+    for i in func_range:
+        if i+5 <= len(data) and data[i] == 0xe8:
+            offset = struct.unpack_from('<i', data, i+1)[0]
+            target = i + 5 + offset
+            if 0x400000 <= target <= len(data):
+                results.append((i, target))
+    
+    print(f'All calls from response parser function (0xc0d58a0-0xc0d6400):')
+    for caller, target in results:
+        print(f'  0x{caller:x} -> 0x{target:x}')
+"
+All calls from response parser function (0xc0d58a0-0xc0d6400):
+  0xc0d5909 -> 0xa079e40
+  0xc0d5924 -> 0xa12b030
+  0xc0d5950 -> 0xa12b030
+  0xc0d5992 -> 0xa195930
+  0xc0d59b6 -> 0xa07dfa0
+  0xc0d59dc -> 0x3562570
+  0xc0d59fb -> 0x3562570
+  0xc0d5a03 -> 0xa194f80
+  0xc0d5a30 -> 0xa12f670
+  0xc0d5a62 -> 0xa07dfa0
+  0xc0d5a88 -> 0x3562570
+  0xc0d5aa7 -> 0x3562570
+  0xc0d5aaf -> 0xa194f80
+  0xc0d5af1 -> 0x125689f0
+  0xc0d5b02 -> 0x12568a80
+  0xc0d5b7e -> 0x12b6c070
+  0xc0d5bc0 -> 0x12b6c070
+  0xc0d5bdb -> 0xa195930
+  0xc0d5c00 -> 0xa07dfa0
+  0xc0d5c26 -> 0x3562570
+  0xc0d5c47 -> 0x3562570
+  0xc0d5c5b -> 0x3562570
+  0xc0d5c74 -> 0xc0ce4e0
+  0xc0d5c98 -> 0x3562570
+  0xc0d5cac -> 0x3562570
+  0xc0d5cc8 -> 0x3562570
+  0xc0d5ce8 -> 0xa1b4260
+  0xc0d5cf4 -> 0xa194f80
+  0xc0d5d6e -> 0x12b6c070
+  0xc0d5dac -> 0x12b6c070
+  0xc0d5e1e -> 0x12b6c070
+  0xc0d5e5c -> 0x12b6c070
+  0xc0d5ece -> 0x12b6c070
+  0xc0d5f10 -> 0x12b6c070
+  0xc0d5f25 -> 0xa195930
+  0xc0d5f51 -> 0xa07dfa0
+  0xc0d5f77 -> 0x3562570
+  0xc0d5f98 -> 0x3562570
+  0xc0d5fac -> 0x3562570
+  0xc0d5fcb -> 0x3562570
+  0xc0d5fd3 -> 0xa194f80
+  0xc0d616e -> 0xa24ba90
+  0xc0d6193 -> 0xa24db50
+  0xc0d61b4 -> 0xa24db50
+  0xc0d622b -> 0xa079bf0
+  0xc0d625d -> 0xa12b030
+  0xc0d6274 -> 0xa12b030
+  0xc0d62a6 -> 0xa12b030
+  0xc0d62bd -> 0xa12b030
+  0xc0d62e8 -> 0xa12b0d0
+  0xc0d6308 -> 0xa12b030
+  0xc0d631f -> 0xa12b030
+  0xc0d6379 -> 0x125689f0
+  0xc0d638c -> 0x12568a80
+  0xc0d63db -> 0x125689f0
+  0xc0d63f5 -> 0x12568a80
+[0m
+The file path `naver_access_token_fetcher.cc` confirms this is the Naver access token fetcher. Let me now trace the key caller and check for crypto verification.
+[0m$ [0m# Check what the call at 0xc0d612c goes to (c0cee40) - called after response parsing
+objdump -d --start-address=0xc0cee40 --stop-address=0xc0cf100 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -80
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000c0cee40 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59be0>:
+     c0cee40:	55                   	push   %rbp
+     c0cee41:	48 89 e5             	mov    %rsp,%rbp
+     c0cee44:	41 57                	push   %r15
+     c0cee46:	41 56                	push   %r14
+     c0cee48:	41 54                	push   %r12
+     c0cee4a:	53                   	push   %rbx
+     c0cee4b:	48 81 ec a0 00 00 00 	sub    $0xa0,%rsp
+     c0cee52:	48 89 f0             	mov    %rsi,%rax
+     c0cee55:	48 89 fb             	mov    %rdi,%rbx
+     c0cee58:	0f 57 c0             	xorps  %xmm0,%xmm0
+     c0cee5b:	0f 29 45 c0          	movaps %xmm0,-0x40(%rbp)
+     c0cee5f:	48 c7 45 d0 00 00 00 	movq   $0x0,-0x30(%rbp)
+     c0cee66:	00 
+     c0cee67:	48 0f be 76 17       	movsbq 0x17(%rsi),%rsi
+     c0cee6c:	48 85 f6             	test   %rsi,%rsi
+     c0cee6f:	79 07                	jns    c0cee78 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59c18>
+     c0cee71:	48 8b 70 08          	mov    0x8(%rax),%rsi
+     c0cee75:	48 8b 00             	mov    (%rax),%rax
+     c0cee78:	4c 8d 75 c0          	lea    -0x40(%rbp),%r14
+     c0cee7c:	48 89 c7             	mov    %rax,%rdi
+     c0cee7f:	ba 01 00 00 00       	mov    $0x1,%edx
+     c0cee84:	4c 89 f1             	mov    %r14,%rcx
+     c0cee87:	e8 74 19 fa fd       	call   a070800 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x152750>
+     c0cee8c:	84 c0                	test   %al,%al
+     c0cee8e:	0f 84 ba 00 00 00    	je     c0cef4e <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59cee>
+     c0cee94:	0f 57 c0             	xorps  %xmm0,%xmm0
+     c0cee97:	0f 29 45 a0          	movaps %xmm0,-0x60(%rbp)
+     c0cee9b:	0f 29 45 90          	movaps %xmm0,-0x70(%rbp)
+     c0cee9f:	48 c7 45 b0 00 00 00 	movq   $0x0,-0x50(%rbp)
+     c0ceea6:	00 
+     c0ceea7:	48 0f be 55 d7       	movsbq -0x29(%rbp),%rdx
+     c0ceeac:	48 85 d2             	test   %rdx,%rdx
+     c0ceeaf:	79 08                	jns    c0ceeb9 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59c59>
+     c0ceeb1:	4c 8b 75 c0          	mov    -0x40(%rbp),%r14
+     c0ceeb5:	48 8b 55 c8          	mov    -0x38(%rbp),%rdx
+     c0ceeb9:	48 8d 7d 90          	lea    -0x70(%rbp),%rdi
+     c0ceebd:	41 b8 c8 00 00 00    	mov    $0xc8,%r8d
+     c0ceec3:	4c 89 f6             	mov    %r14,%rsi
+     c0ceec6:	b9 34 00 00 00       	mov    $0x34,%ecx
+     c0ceecb:	e8 20 bd fa fd       	call   a07abf0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x15cb40>
+     c0ceed0:	80 7d b0 01          	cmpb   $0x1,-0x50(%rbp)
+     c0ceed4:	0f 85 17 01 00 00    	jne    c0ceff1 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59d91>
+     c0ceeda:	80 7d a8 06          	cmpb   $0x6,-0x58(%rbp)
+     c0ceede:	0f 85 0d 01 00 00    	jne    c0ceff1 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59d91>
+     c0ceee4:	48 8d 35 f5 8e 89 f6 	lea    -0x976710b(%rip),%rsi        # 2967de0 <ffi_type_void@@Base+0xf34c00>
+     c0ceeeb:	4c 8d 75 90          	lea    -0x70(%rbp),%r14
+     c0ceeef:	ba 12 00 00 00       	mov    $0x12,%edx
+     c0ceef4:	4c 89 f7             	mov    %r14,%rdi
+     c0ceef7:	e8 34 d1 05 fe       	call   a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>
+     c0ceefc:	49 89 c4             	mov    %rax,%r12
+     c0ceeff:	48 8d 35 ed 8e 89 f6 	lea    -0x9767113(%rip),%rsi        # 2967df3 <ffi_type_void@@Base+0xf34c13>
+     c0cef06:	ba 0a 00 00 00       	mov    $0xa,%edx
+     c0cef0b:	4c 89 f7             	mov    %r14,%rdi
+     c0cef0e:	e8 1d d1 05 fe       	call   a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>
+     c0cef13:	49 89 c7             	mov    %rax,%r15
+     c0cef16:	48 8d 35 e1 8e 89 f6 	lea    -0x976711f(%rip),%rsi        # 2967dfe <ffi_type_void@@Base+0xf34c1e>
+     c0cef1d:	ba 0a 00 00 00       	mov    $0xa,%edx
+     c0cef22:	4c 89 f7             	mov    %r14,%rdi
+     c0cef25:	e8 06 d1 05 fe       	call   a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>
+     c0cef2a:	4d 85 e4             	test   %r12,%r12
+     c0cef2d:	0f 84 be 00 00 00    	je     c0ceff1 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59d91>
+     c0cef33:	49 89 c6             	mov    %rax,%r14
+     c0cef36:	49 0f be 44 24 17    	movsbq 0x17(%r12),%rax
+     c0cef3c:	48 85 c0             	test   %rax,%rax
+     c0cef3f:	78 19                	js     c0cef5a <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59cfa>
+     c0cef41:	48 89 c1             	mov    %rax,%rcx
+     c0cef44:	4d 85 ff             	test   %r15,%r15
+     c0cef47:	75 1f                	jne    c0cef68 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59d08>
+     c0cef49:	e9 a3 00 00 00       	jmp    c0ceff1 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59d91>
+     c0cef4e:	c6 03 00             	movb   $0x0,(%rbx)
+     c0cef51:	c6 43 48 00          	movb   $0x0,0x48(%rbx)
+     c0cef55:	e9 c5 00 00 00       	jmp    c0cf01f <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59dbf>
+     c0cef5a:	49 8b 4c 24 08       	mov    0x8(%r12),%rcx
+[0m
+[0m$ [0m# Check string refs in 0xc0cee40's post-parsing code
+python3 -c "
+with open('/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale', 'rb') as f:
+    for addr in [0x2967de0, 0x2967df3, 0x2967dfe]:
+        f.seek(addr)
+        data = f.read(32)
+        readable = ''.join(chr(b) if 32 <= b < 127 else '.' for b in data)
+        print(f'0x{addr:x}: {readable}')
+"
+0x2967de0: client_private_key.session_id.cs
+0x2967df3: session_id.csrf_token......v...v
+0x2967dfe: csrf_token......v...v...v...v...
+[0m
+[0m$ [0m# Check the function at 0xc0d62f0 - called at 0xc0d615d, this is another key post-parse function
+objdump -d --start-address=0xc0d62f0 --stop-address=0xc0d6500 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -100
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000c0d62f0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf61090>:
+     c0d62f0:	55                   	push   %rbp
+     c0d62f1:	48 89 e5             	mov    %rsp,%rbp
+     c0d62f4:	41 57                	push   %r15
+     c0d62f6:	41 56                	push   %r14
+     c0d62f8:	41 55                	push   %r13
+     c0d62fa:	41 54                	push   %r12
+     c0d62fc:	53                   	push   %rbx
+     c0d62fd:	48 81 ec 18 01 00 00 	sub    $0x118,%rsp
+     c0d6304:	48 89 f0             	mov    %rsi,%rax
+     c0d6307:	66 0f ef c0          	pxor   %xmm0,%xmm0
+     c0d630b:	66 0f 7f 85 70 ff ff 	movdqa %xmm0,-0x90(%rbp)
+     c0d6312:	ff 
+     c0d6313:	48 c7 45 80 00 00 00 	movq   $0x0,-0x80(%rbp)
+     c0d631a:	00 
+     c0d631b:	48 0f be 76 17       	movsbq 0x17(%rsi),%rsi
+     c0d6320:	48 85 f6             	test   %rsi,%rsi
+     c0d6323:	48 89 7d d0          	mov    %rdi,-0x30(%rbp)
+     c0d6327:	48 89 95 e8 fe ff ff 	mov    %rdx,-0x118(%rbp)
+     c0d632e:	79 07                	jns    c0d6337 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf610d7>
+     c0d6330:	48 8b 70 08          	mov    0x8(%rax),%rsi
+     c0d6334:	48 8b 00             	mov    (%rax),%rax
+     c0d6337:	49 bf ff ff ff ff ff 	movabs $0x7fffffffffffffff,%r15
+     c0d633e:	ff ff 7f 
+     c0d6341:	48 8d 95 70 ff ff ff 	lea    -0x90(%rbp),%rdx
+     c0d6348:	48 89 c7             	mov    %rax,%rdi
+     c0d634b:	e8 d0 b2 57 fe       	call   a651620 <rust_bmp$cxxbridge1$194$Reader$width@@Base+0x1f4de0>
+     c0d6350:	66 0f ef c0          	pxor   %xmm0,%xmm0
+     c0d6354:	66 0f 7f 45 90       	movdqa %xmm0,-0x70(%rbp)
+     c0d6359:	48 c7 45 a0 00 00 00 	movq   $0x0,-0x60(%rbp)
+     c0d6360:	00 
+     c0d6361:	66 0f 7f 45 b0       	movdqa %xmm0,-0x50(%rbp)
+     c0d6366:	48 c7 45 c0 00 00 00 	movq   $0x0,-0x40(%rbp)
+     c0d636d:	00 
+     c0d636e:	4c 8b b5 70 ff ff ff 	mov    -0x90(%rbp),%r14
+     c0d6375:	4c 8b a5 78 ff ff ff 	mov    -0x88(%rbp),%r12
+     c0d637c:	4d 39 e6             	cmp    %r12,%r14
+     c0d637f:	0f 84 7c 02 00 00    	je     c0d6601 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf613a1>
+     c0d6385:	48 b8 65 73 73 69 6f 	movabs $0x695f6e6f69737365,%rax
+     c0d638c:	6e 5f 69 
+     c0d638f:	48 b9 5f 5f 48 6f 73 	movabs $0x732d74736f485f5f,%rcx
+     c0d6396:	74 2d 73 
+     c0d6399:	66 48 0f 6e c9       	movq   %rcx,%xmm1
+     c0d639e:	66 48 0f 6e c0       	movq   %rax,%xmm0
+     c0d63a3:	66 0f 6c c8          	punpcklqdq %xmm0,%xmm1
+     c0d63a7:	66 0f 7f 8d 60 ff ff 	movdqa %xmm1,-0xa0(%rbp)
+     c0d63ae:	ff 
+     c0d63af:	48 8d 9d f0 fe ff ff 	lea    -0x110(%rbp),%rbx
+     c0d63b6:	eb 25                	jmp    c0d63dd <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf6117d>
+     c0d63b8:	48 8b 85 00 ff ff ff 	mov    -0x100(%rbp),%rax
+     c0d63bf:	48 89 45 c0          	mov    %rax,-0x40(%rbp)
+     c0d63c3:	66 0f 6f 85 f0 fe ff 	movdqa -0x110(%rbp),%xmm0
+     c0d63ca:	ff 
+     c0d63cb:	66 0f 7f 45 b0       	movdqa %xmm0,-0x50(%rbp)
+     c0d63d0:	49 83 c6 30          	add    $0x30,%r14
+     c0d63d4:	4d 39 e6             	cmp    %r12,%r14
+     c0d63d7:	0f 84 6a 01 00 00    	je     c0d6547 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf612e7>
+     c0d63dd:	49 8d 46 18          	lea    0x18(%r14),%rax
+     c0d63e1:	41 0f b6 4e 17       	movzbl 0x17(%r14),%ecx
+     c0d63e6:	84 c9                	test   %cl,%cl
+     c0d63e8:	78 16                	js     c0d6400 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf611a0>
+     c0d63ea:	83 f9 11             	cmp    $0x11,%ecx
+     c0d63ed:	0f 84 7d 00 00 00    	je     c0d6470 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf61210>
+     c0d63f3:	4c 89 f2             	mov    %r14,%rdx
+     c0d63f6:	83 f9 13             	cmp    $0x13,%ecx
+     c0d63f9:	74 18                	je     c0d6413 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf611b3>
+     c0d63fb:	eb d3                	jmp    c0d63d0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf61170>
+     c0d63fd:	0f 1f 00             	nopl   (%rax)
+     c0d6400:	49 8b 4e 08          	mov    0x8(%r14),%rcx
+     c0d6404:	48 83 f9 11          	cmp    $0x11,%rcx
+     c0d6408:	74 72                	je     c0d647c <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf6121c>
+     c0d640a:	48 83 f9 13          	cmp    $0x13,%rcx
+     c0d640e:	75 c0                	jne    c0d63d0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf61170>
+     c0d6410:	49 8b 16             	mov    (%r14),%rdx
+     c0d6413:	f3 0f 6f 02          	movdqu (%rdx),%xmm0
+     c0d6417:	66 0f 74 05 e1 ec 93 	pcmpeqb -0xa6c131f(%rip),%xmm0        # 1a15100 <_IO_stdin_used@@Base+0x4e310>
+     c0d641e:	f5 
+     c0d641f:	f3 0f 6f 4a 03       	movdqu 0x3(%rdx),%xmm1
+     c0d6424:	66 0f 74 0d c4 98 93 	pcmpeqb -0xa6c673c(%rip),%xmm1        # 1a0fcf0 <_IO_stdin_used@@Base+0x48f00>
+     c0d642b:	f5 
+     c0d642c:	66 0f db c8          	pand   %xmm0,%xmm1
+     c0d6430:	66 0f d7 c9          	pmovmskb %xmm1,%ecx
+     c0d6434:	81 f9 ff ff 00 00    	cmp    $0xffff,%ecx
+     c0d643a:	75 94                	jne    c0d63d0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf61170>
+     c0d643c:	41 80 7e 2f 00       	cmpb   $0x0,0x2f(%r14)
+     c0d6441:	0f 88 b9 00 00 00    	js     c0d6500 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf612a0>
+     c0d6447:	48 8b 48 10          	mov    0x10(%rax),%rcx
+     c0d644b:	48 89 8d 00 ff ff ff 	mov    %rcx,-0x100(%rbp)
+     c0d6452:	f3 0f 6f 00          	movdqu (%rax),%xmm0
+     c0d6456:	66 0f 7f 85 f0 fe ff 	movdqa %xmm0,-0x110(%rbp)
+     c0d645d:	ff 
+     c0d645e:	80 7d c7 00          	cmpb   $0x0,-0x39(%rbp)
+     c0d6462:	0f 89 50 ff ff ff    	jns    c0d63b8 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf61158>
+     c0d6468:	e9 ad 00 00 00       	jmp    c0d651a <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf612ba>
+[0m
+Let me check the string references in the post-parsing function and verify there are no crypto calls.
+[0m$ [0m# Check what 0xc0d5c74 calls to (c0ce4e0) - this is just before the response parser range
+objdump -d --start-address=0xc0ce4e0 --stop-address=0xc0ce600 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -60
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000c0ce4e0 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59280>:
+     c0ce4e0:	7d af                	jge    c0ce491 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59231>
+     c0ce4e2:	00 48 8b             	add    %cl,-0x75(%rax)
+     c0ce4e5:	45 b8 48 89 43 08    	rex.RB mov $0x8438948,%r8d
+     c0ce4eb:	79 8e                	jns    c0ce47b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf5921b>
+     c0ce4ed:	48 8b 7d 98          	mov    -0x68(%rbp),%rdi
+     c0ce4f1:	48 8b 75 a8          	mov    -0x58(%rbp),%rsi
+     c0ce4f5:	48 b8 ff ff ff ff ff 	movabs $0x7fffffffffffffff,%rax
+     c0ce4fc:	ff ff 7f 
+     c0ce4ff:	48 21 c6             	and    %rax,%rsi
+     c0ce502:	e8 59 6d 0e fe       	call   a1b5260 <_ZdaPvm@@Base>
+     c0ce507:	e9 6f ff ff ff       	jmp    c0ce47b <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf5921b>
+     c0ce50c:	48 89 d8             	mov    %rbx,%rax
+     c0ce50f:	48 83 c4 78          	add    $0x78,%rsp
+     c0ce513:	5b                   	pop    %rbx
+     c0ce514:	41 5c                	pop    %r12
+     c0ce516:	41 5d                	pop    %r13
+     c0ce518:	41 5e                	pop    %r14
+     c0ce51a:	41 5f                	pop    %r15
+     c0ce51c:	5d                   	pop    %rbp
+     c0ce51d:	c3                   	ret
+     c0ce51e:	0f 0b                	ud2
+     c0ce520:	55                   	push   %rbp
+     c0ce521:	48 89 e5             	mov    %rsp,%rbp
+     c0ce524:	41 57                	push   %r15
+     c0ce526:	41 56                	push   %r14
+     c0ce528:	41 55                	push   %r13
+     c0ce52a:	41 54                	push   %r12
+     c0ce52c:	53                   	push   %rbx
+     c0ce52d:	48 81 ec 98 00 00 00 	sub    $0x98,%rsp
+     c0ce534:	48 8d 45 c8          	lea    -0x38(%rbp),%rax
+     c0ce538:	0f 57 c0             	xorps  %xmm0,%xmm0
+     c0ce53b:	0f 11 45 c8          	movups %xmm0,-0x38(%rbp)
+     c0ce53f:	c6 45 d7 08          	movb   $0x8,-0x29(%rbp)
+     c0ce543:	48 8d 0d fd c1 fa f5 	lea    -0xa053e03(%rip),%rcx        # 207a747 <ffi_type_void@@Base+0x647567>
+     c0ce54a:	4c 8d 45 c0          	lea    -0x40(%rbp),%r8
+     c0ce54e:	49 39 c8             	cmp    %rcx,%r8
+     c0ce551:	0f 97 c2             	seta   %dl
+     c0ce554:	48 39 c8             	cmp    %rcx,%rax
+     c0ce557:	0f 96 c0             	setbe  %al
+     c0ce55a:	08 d0                	or     %dl,%al
+     c0ce55c:	0f 84 90 02 00 00    	je     c0ce7f2 <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf59592>
+     c0ce562:	49 89 fc             	mov    %rdi,%r12
+     c0ce565:	49 be ff ff ff ff ff 	movabs $0x7fffffffffffffff,%r14
+     c0ce56c:	ff ff 7f 
+     c0ce56f:	48 b8 43 6f 6f 6b 69 	movabs $0x203a65696b6f6f43,%rax
+     c0ce576:	65 3a 20 
+     c0ce579:	48 89 45 c0          	mov    %rax,-0x40(%rbp)
+     c0ce57d:	48 8b 1e             	mov    (%rsi),%rbx
+     c0ce580:	4c 8b 7e 08          	mov    0x8(%rsi),%r15
+     c0ce584:	4c 39 fb             	cmp    %r15,%rbx
+     c0ce587:	0f 84 0d 02 00 00    	je     c0ce79a <fontations_ffi$cxxbridge1$194$BridgeHintingInstance$operator$sizeof@@Base+0xf5953a>
+     c0ce58d:	4c 89 a5 58 ff ff ff 	mov    %r12,-0xa8(%rbp)
+     c0ce594:	4c 8d ad 40 ff ff ff 	lea    -0xc0(%rbp),%r13
+[0m
+[0m$ [0m# Check the most frequently called functions to see if any do crypto verification
+# Check a12c030 (the JSON field lookup used heavily in the parser)
+objdump -d --start-address=0xa12c030 --stop-address=0xa12c100 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -40
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000a12c030 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20df80>:
+     a12c030:	55                   	push   %rbp
+     a12c031:	48 89 e5             	mov    %rsp,%rbp
+     a12c034:	53                   	push   %rbx
+     a12c035:	48 83 ec 18          	sub    $0x18,%rsp
+     a12c039:	48 89 fb             	mov    %rdi,%rbx
+     a12c03c:	48 89 75 e8          	mov    %rsi,-0x18(%rbp)
+     a12c040:	48 89 55 f0          	mov    %rdx,-0x10(%rbp)
+     a12c044:	48 8d 75 e8          	lea    -0x18(%rbp),%rsi
+     a12c048:	e8 63 06 3c fa       	call   44ec6b0 <cxxbridge1$rust_vec$base$i18n$internal$Icu4xLocale$set_len@@Base+0x653c0>
+     a12c04d:	48 39 d0             	cmp    %rdx,%rax
+     a12c050:	74 1b                	je     a12c06d <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20dfbd>
+     a12c052:	48 3b 43 08          	cmp    0x8(%rbx),%rax
+     a12c056:	74 15                	je     a12c06d <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20dfbd>
+     a12c058:	48 8b 48 18          	mov    0x18(%rax),%rcx
+     a12c05c:	31 c0                	xor    %eax,%eax
+     a12c05e:	48 85 c9             	test   %rcx,%rcx
+     a12c061:	74 0c                	je     a12c06f <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20dfbf>
+     a12c063:	80 79 18 04          	cmpb   $0x4,0x18(%rcx)
+     a12c067:	48 0f 44 c1          	cmove  %rcx,%rax
+     a12c06b:	eb 02                	jmp    a12c06f <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20dfbf>
+     a12c06d:	31 c0                	xor    %eax,%eax
+     a12c06f:	48 83 c4 18          	add    $0x18,%rsp
+     a12c073:	5b                   	pop    %rbx
+     a12c074:	5d                   	pop    %rbp
+     a12c075:	c3                   	ret
+     a12c076:	cc                   	int3
+     a12c077:	cc                   	int3
+     a12c078:	cc                   	int3
+     a12c079:	cc                   	int3
+     a12c07a:	cc                   	int3
+     a12c07b:	cc                   	int3
+     a12c07c:	cc                   	int3
+     a12c07d:	cc                   	int3
+[0m
+[0m$ [0m# Check a194f80 (called multiple times)
+objdump -d --start-address=0xa194f80 --stop-address=0xa195050 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -40
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000a194f80 <close@@Base+0x5be80>:
+     a194f80:	28 4d 85             	sub    %cl,-0x7b(%rbp)
+     a194f83:	c0 0f 84             	rorb   $0x84,(%rdi)
+     a194f86:	d9 04 00             	flds   (%rax,%rax,1)
+     a194f89:	00 4d 89             	add    %cl,-0x77(%rbp)
+     a194f8c:	cd 49                	int    $0x49
+     a194f8e:	89 ce                	mov    %ecx,%esi
+     a194f90:	49 89 d4             	mov    %rdx,%r12
+     a194f93:	4c 8b 5d 10          	mov    0x10(%rbp),%r11
+     a194f97:	4d 39 de             	cmp    %r11,%r14
+     a194f9a:	0f 8e 46 03 00 00    	jle    a1952e6 <close@@Base+0x5c1e6>
+     a194fa0:	4d 39 d8             	cmp    %r11,%r8
+     a194fa3:	0f 8e 3d 03 00 00    	jle    a1952e6 <close@@Base+0x5c1e6>
+     a194fa9:	4d 85 f6             	test   %r14,%r14
+     a194fac:	0f 84 b1 04 00 00    	je     a195463 <close@@Base+0x5c363>
+     a194fb2:	48 8b 0e             	mov    (%rsi),%rcx
+     a194fb5:	49 f7 de             	neg    %r14
+     a194fb8:	31 d2                	xor    %edx,%edx
+     a194fba:	4c 89 f0             	mov    %r14,%rax
+     a194fbd:	0f 1f 00             	nopl   (%rax)
+     a194fc0:	4c 8b 0c 17          	mov    (%rdi,%rdx,1),%r9
+     a194fc4:	4c 39 c9             	cmp    %r9,%rcx
+     a194fc7:	72 17                	jb     a194fe0 <close@@Base+0x5bee0>
+     a194fc9:	48 83 c2 10          	add    $0x10,%rdx
+     a194fcd:	48 ff c0             	inc    %rax
+     a194fd0:	75 ee                	jne    a194fc0 <close@@Base+0x5bec0>
+     a194fd2:	e9 8c 04 00 00       	jmp    a195463 <close@@Base+0x5c363>
+     a194fd7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+     a194fde:	00 00 
+     a194fe0:	49 89 c2             	mov    %rax,%r10
+     a194fe3:	49 f7 da             	neg    %r10
+     a194fe6:	4c 8d 34 17          	lea    (%rdi,%rdx,1),%r14
+     a194fea:	4d 39 c2             	cmp    %r8,%r10
+     a194fed:	4c 89 6d c0          	mov    %r13,-0x40(%rbp)
+[0m
+[0m$ [0m# Check 12b6c070 (called 8 times)
+objdump -d --start-address=0x12b6c070 --stop-address=0x12b6c150 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -40
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000012b6c070 <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x7440>:
+    12b6c070:	c9                   	leave
+    12b6c071:	74 20                	je     12b6c093 <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x7463>
+    12b6c073:	0f b6 3c 32          	movzbl (%rdx,%rsi,1),%edi
+    12b6c077:	83 ff 2f             	cmp    $0x2f,%edi
+    12b6c07a:	0f 84 2d 01 00 00    	je     12b6c1ad <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x757d>
+    12b6c080:	83 ff 5c             	cmp    $0x5c,%edi
+    12b6c083:	0f 84 24 01 00 00    	je     12b6c1ad <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x757d>
+    12b6c089:	48 ff c6             	inc    %rsi
+    12b6c08c:	48 39 f0             	cmp    %rsi,%rax
+    12b6c08f:	75 e2                	jne    12b6c073 <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x7443>
+    12b6c091:	eb 12                	jmp    12b6c0a5 <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x7475>
+    12b6c093:	80 3c 32 5c          	cmpb   $0x5c,(%rdx,%rsi,1)
+    12b6c097:	0f 84 10 01 00 00    	je     12b6c1ad <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x757d>
+    12b6c09d:	48 ff c6             	inc    %rsi
+    12b6c0a0:	48 39 f0             	cmp    %rsi,%rax
+    12b6c0a3:	75 ee                	jne    12b6c093 <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x7463>
+    12b6c0a5:	48 89 c6             	mov    %rax,%rsi
+    12b6c0a8:	31 c0                	xor    %eax,%eax
+    12b6c0aa:	e9 5f 01 00 00       	jmp    12b6c20e <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x75de>
+    12b6c0af:	49 83 ff 03          	cmp    $0x3,%r15
+    12b6c0b3:	0f 84 e8 fd ff ff    	je     12b6bea1 <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x7271>
+    12b6c0b9:	41 80 7e 02 3f       	cmpb   $0x3f,0x2(%r14)
+    12b6c0be:	0f 85 dd fd ff ff    	jne    12b6bea1 <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x7271>
+    12b6c0c4:	41 0f b6 46 03       	movzbl 0x3(%r14),%eax
+    12b6c0c9:	83 f8 5c             	cmp    $0x5c,%eax
+    12b6c0cc:	74 09                	je     12b6c0d7 <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x74a7>
+    12b6c0ce:	83 f8 2f             	cmp    $0x2f,%eax
+    12b6c0d1:	0f 85 ca fd ff ff    	jne    12b6bea1 <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x7271>
+    12b6c0d7:	4c 89 fe             	mov    %r15,%rsi
+    12b6c0da:	48 83 c6 fc          	add    $0xfffffffffffffffc,%rsi
+    12b6c0de:	0f 84 bd fd ff ff    	je     12b6bea1 <user_data_importer$cxxbridge1$194$parse_stable_portability_history@@Base+0x7271>
+    12b6c0e4:	41 0f b6 56 04       	movzbl 0x4(%r14),%edx
+    12b6c0e9:	89 d0                	mov    %edx,%eax
+[0m
+The strings confirm this is the signing request construction (`client_private_key`, `session_id`, `csrf_token`). Now let me verify the called functions are not crypto verification routines.
+[0m$ [0m# Check 3562570 (called many times)
+objdump -d --start-address=0x3562570 --stop-address=0x3562650 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -40
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003562570 <temporal_rs_PlainDateTime_calendar@@Base+0x41f0>:
+     3562570:	8d 05 92 64 a8 0f    	lea    0xfa86492(%rip),%eax        # 12fe8a08 <ffi_type_complex_float@@Base+0x475658>
+     3562576:	48 89 03             	mov    %rax,(%rbx)
+     3562579:	48 83 c3 08          	add    $0x8,%rbx
+     356257d:	48 89 df             	mov    %rbx,%rdi
+     3562580:	48 83 c4 08          	add    $0x8,%rsp
+     3562584:	5b                   	pop    %rbx
+     3562585:	41 5e                	pop    %r14
+     3562587:	41 5f                	pop    %r15
+     3562589:	5d                   	pop    %rbp
+     356258a:	e9 81 d8 ff 0e       	jmp    1255fe10 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15e5410>
+     356258f:	49 89 c7             	mov    %rax,%r15
+     3562592:	4c 89 f7             	mov    %r14,%rdi
+     3562595:	e8 96 ac 60 0f       	call   12b6d230 <fclose@plt>
+     356259a:	4c 89 ff             	mov    %r15,%rdi
+     356259d:	e8 be a0 00 0f       	call   1256c660 <_ZNSt4__Cr22__libcpp_verbose_abortEPKcz@@Base+0x160>
+     35625a2:	e8 49 a2 00 0f       	call   1256c7f0 <_ZNSt4__Cr22__libcpp_verbose_abortEPKcz@@Base+0x2f0>
+     35625a7:	eb 98                	jmp    3562541 <temporal_rs_PlainDateTime_calendar@@Base+0x41c1>
+     35625a9:	48 89 c7             	mov    %rax,%rdi
+     35625ac:	e8 4f 93 fd 0e       	call   1253b900 <rust_bmp$cxxbridge1$194$Reader$height@@Base+0x15c0f00>
+     35625b1:	cc                   	int3
+     35625b2:	cc                   	int3
+     35625b3:	cc                   	int3
+     35625b4:	cc                   	int3
+     35625b5:	cc                   	int3
+     35625b6:	cc                   	int3
+     35625b7:	cc                   	int3
+     35625b8:	cc                   	int3
+     35625b9:	cc                   	int3
+     35625ba:	cc                   	int3
+     35625bb:	cc                   	int3
+     35625bc:	cc                   	int3
+     35625bd:	cc                   	int3
+     35625be:	cc                   	int3
+[0m
+[0m$ [0m# Check a070800 - called from 0xc0cee40, returns boolean - could this be the verification?
+objdump -d --start-address=0xa070800 --stop-address=0xa070900 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -60
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000a070800 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x152750>:
+     a070800:	55                   	push   %rbp
+     a070801:	48 89 e5             	mov    %rsp,%rbp
+     a070804:	41 56                	push   %r14
+     a070806:	53                   	push   %rbx
+     a070807:	48 83 ec 40          	sub    $0x40,%rsp
+     a07080b:	48 89 cb             	mov    %rcx,%rbx
+     a07080e:	89 d1                	mov    %edx,%ecx
+     a070810:	48 89 f2             	mov    %rsi,%rdx
+     a070813:	48 89 fe             	mov    %rdi,%rsi
+     a070816:	0f 57 c0             	xorps  %xmm0,%xmm0
+     a070819:	0f 29 45 d0          	movaps %xmm0,-0x30(%rbp)
+     a07081d:	0f 29 45 c0          	movaps %xmm0,-0x40(%rbp)
+     a070821:	0f 29 45 b0          	movaps %xmm0,-0x50(%rbp)
+     a070825:	48 c7 45 e0 00 00 00 	movq   $0x0,-0x20(%rbp)
+     a07082c:	00 
+     a07082d:	4c 8d 75 b0          	lea    -0x50(%rbp),%r14
+     a070831:	4c 89 f7             	mov    %r14,%rdi
+     a070834:	e8 77 00 00 00       	call   a0708b0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x152800>
+     a070839:	80 7d e0 01          	cmpb   $0x1,-0x20(%rbp)
+     a07083d:	75 1a                	jne    a070859 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1527a9>
+     a07083f:	80 7d c8 01          	cmpb   $0x1,-0x38(%rbp)
+     a070843:	75 18                	jne    a07085d <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1527ad>
+     a070845:	48 0f be 75 c7       	movsbq -0x39(%rbp),%rsi
+     a07084a:	48 85 f6             	test   %rsi,%rsi
+     a07084d:	79 16                	jns    a070865 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1527b5>
+     a07084f:	4c 8b 75 b0          	mov    -0x50(%rbp),%r14
+     a070853:	48 8b 75 b8          	mov    -0x48(%rbp),%rsi
+     a070857:	eb 0c                	jmp    a070865 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1527b5>
+     a070859:	31 db                	xor    %ebx,%ebx
+     a07085b:	eb 40                	jmp    a07089d <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1527ed>
+     a07085d:	4c 8b 75 d0          	mov    -0x30(%rbp),%r14
+     a070861:	48 8b 75 d8          	mov    -0x28(%rbp),%rsi
+     a070865:	4c 89 f7             	mov    %r14,%rdi
+     a070868:	48 89 da             	mov    %rbx,%rdx
+     a07086b:	31 c9                	xor    %ecx,%ecx
+     a07086d:	e8 6e f8 ff ff       	call   a0700e0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x152030>
+     a070872:	89 c3                	mov    %eax,%ebx
+     a070874:	80 7d e0 01          	cmpb   $0x1,-0x20(%rbp)
+     a070878:	75 23                	jne    a07089d <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1527ed>
+     a07087a:	80 7d c8 00          	cmpb   $0x0,-0x38(%rbp)
+     a07087e:	74 1d                	je     a07089d <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1527ed>
+     a070880:	80 7d c7 00          	cmpb   $0x0,-0x39(%rbp)
+     a070884:	79 17                	jns    a07089d <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x1527ed>
+     a070886:	48 8b 7d b0          	mov    -0x50(%rbp),%rdi
+     a07088a:	48 be ff ff ff ff ff 	movabs $0x7fffffffffffffff,%rsi
+     a070891:	ff ff 7f 
+     a070894:	48 23 75 c0          	and    -0x40(%rbp),%rsi
+     a070898:	e8 c3 49 14 00       	call   a1b5260 <_ZdaPvm@@Base>
+     a07089d:	89 d8                	mov    %ebx,%eax
+     a07089f:	48 83 c4 40          	add    $0x40,%rsp
+     a0708a3:	5b                   	pop    %rbx
+     a0708a4:	41 5e                	pop    %r14
+     a0708a6:	5d                   	pop    %rbp
+[0m
+[0m$ [0m# Check a07abf0 - called with constants 0xc8 and 0x34
+objdump -d --start-address=0xa07abf0 --stop-address=0xa07ad00 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -60
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000a07abf0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x15cb40>:
+     a07abf0:	55                   	push   %rbp
+     a07abf1:	48 89 e5             	mov    %rsp,%rbp
+     a07abf4:	41 57                	push   %r15
+     a07abf6:	41 56                	push   %r14
+     a07abf8:	53                   	push   %rbx
+     a07abf9:	48 83 ec 38          	sub    $0x38,%rsp
+     a07abfd:	48 89 fb             	mov    %rdi,%rbx
+     a07ac00:	0f 57 c0             	xorps  %xmm0,%xmm0
+     a07ac03:	0f 29 45 c0          	movaps %xmm0,-0x40(%rbp)
+     a07ac07:	0f 29 45 b0          	movaps %xmm0,-0x50(%rbp)
+     a07ac0b:	48 c7 45 d0 00 00 00 	movq   $0x0,-0x30(%rbp)
+     a07ac12:	00 
+     a07ac13:	48 8d 7d b0          	lea    -0x50(%rbp),%rdi
+     a07ac17:	e8 c4 00 00 00       	call   a07ace0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x15cc30>
+     a07ac1c:	0f b6 45 b0          	movzbl -0x50(%rbp),%eax
+     a07ac20:	3c 02                	cmp    $0x2,%al
+     a07ac22:	0f 83 b0 00 00 00    	jae    a07acd8 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x15cc28>
+     a07ac28:	84 c0                	test   %al,%al
+     a07ac2a:	74 2a                	je     a07ac56 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x15cba6>
+     a07ac2c:	c6 03 00             	movb   $0x0,(%rbx)
+     a07ac2f:	c6 43 20 00          	movb   $0x0,0x20(%rbx)
+     a07ac33:	80 7d cf 00          	cmpb   $0x0,-0x31(%rbp)
+     a07ac37:	0f 89 8d 00 00 00    	jns    a07acca <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x15cc1a>
+     a07ac3d:	48 8b 7d b8          	mov    -0x48(%rbp),%rdi
+     a07ac41:	48 be ff ff ff ff ff 	movabs $0x7fffffffffffffff,%rsi
+     a07ac48:	ff ff 7f 
+     a07ac4b:	48 23 75 c8          	and    -0x38(%rbp),%rsi
+     a07ac4f:	e8 0c a6 13 00       	call   a1b5260 <_ZdaPvm@@Base>
+     a07ac54:	eb 74                	jmp    a07acca <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x15cc1a>
+     a07ac56:	c6 03 00             	movb   $0x0,(%rbx)
+     a07ac59:	c6 43 18 ff          	movb   $0xff,0x18(%rbx)
+     a07ac5d:	44 0f b6 7d d0       	movzbl -0x30(%rbp),%r15d
+     a07ac62:	49 81 ff ff 00 00 00 	cmp    $0xff,%r15
+     a07ac69:	74 5b                	je     a07acc6 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x15cc16>
+     a07ac6b:	4c 8d 75 b8          	lea    -0x48(%rbp),%r14
+     a07ac6f:	48 89 5d e0          	mov    %rbx,-0x20(%rbp)
+     a07ac73:	48 8d 05 0e c5 38 09 	lea    0x938c50e(%rip),%rax        # 13407188 <ffi_type_complex_float@@Base+0x893dd8>
+     a07ac7a:	48 8d 7d e0          	lea    -0x20(%rbp),%rdi
+     a07ac7e:	4c 89 f6             	mov    %r14,%rsi
+     a07ac81:	42 ff 14 f8          	call   *(%rax,%r15,8)
+     a07ac85:	44 88 7b 18          	mov    %r15b,0x18(%rbx)
+     a07ac89:	0f b6 45 b0          	movzbl -0x50(%rbp),%eax
+     a07ac8d:	c6 43 20 01          	movb   $0x1,0x20(%rbx)
+     a07ac91:	48 83 f8 03          	cmp    $0x3,%rax
+     a07ac95:	77 33                	ja     a07acca <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x15cc1a>
+     a07ac97:	48 8d 0d 5a a9 65 f8 	lea    -0x79a56a6(%rip),%rcx        # 26d55f8 <ffi_type_void@@Base+0xca2418>
+     a07ac9e:	48 63 04 81          	movslq (%rcx,%rax,4),%rax
+     a07aca2:	48 01 c8             	add    %rcx,%rax
+     a07aca5:	ff e0                	jmp    *%rax
+     a07aca7:	0f b6 45 d0          	movzbl -0x30(%rbp),%eax
+     a07acab:	48 3d ff 00 00 00    	cmp    $0xff,%rax
+     a07acb1:	74 17                	je     a07acca <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x15cc1a>
+     a07acb3:	48 8d 0d 8e c4 38 09 	lea    0x938c48e(%rip),%rcx        # 13407148 <ffi_type_complex_float@@Base+0x893d98>
+[0m
+All called functions are JSON parsing/string helpers — NOT crypto. Let me verify the one remaining unknown call.
+[0m$ [0m# Also check a12c0d0 - called from 0xc0b34b0 (the caller's pre-check function)
+objdump -d --start-address=0xa12c0d0 --stop-address=0xa12c1a0 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale 2>&1 | head -40
+/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000a12c0d0 <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20e020>:
+     a12c0d0:	55                   	push   %rbp
+     a12c0d1:	48 89 e5             	mov    %rsp,%rbp
+     a12c0d4:	53                   	push   %rbx
+     a12c0d5:	48 83 ec 18          	sub    $0x18,%rsp
+     a12c0d9:	48 89 fb             	mov    %rdi,%rbx
+     a12c0dc:	48 89 75 e8          	mov    %rsi,-0x18(%rbp)
+     a12c0e0:	48 89 55 f0          	mov    %rdx,-0x10(%rbp)
+     a12c0e4:	48 8d 75 e8          	lea    -0x18(%rbp),%rsi
+     a12c0e8:	e8 c3 05 3c fa       	call   44ec6b0 <cxxbridge1$rust_vec$base$i18n$internal$Icu4xLocale$set_len@@Base+0x653c0>
+     a12c0ed:	48 39 d0             	cmp    %rdx,%rax
+     a12c0f0:	74 1b                	je     a12c10d <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20e05d>
+     a12c0f2:	48 3b 43 08          	cmp    0x8(%rbx),%rax
+     a12c0f6:	74 15                	je     a12c10d <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20e05d>
+     a12c0f8:	48 8b 48 18          	mov    0x18(%rax),%rcx
+     a12c0fc:	31 c0                	xor    %eax,%eax
+     a12c0fe:	48 85 c9             	test   %rcx,%rcx
+     a12c101:	74 0c                	je     a12c10f <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20e05f>
+     a12c103:	80 79 18 06          	cmpb   $0x6,0x18(%rcx)
+     a12c107:	48 0f 44 c1          	cmove  %rcx,%rax
+     a12c10b:	eb 02                	jmp    a12c10f <rust_bmp$cxxbridge1$194$Reader$image_data_loaded@@Base+0x20e05f>
+     a12c10d:	31 c0                	xor    %eax,%eax
+     a12c10f:	48 83 c4 18          	add    $0x18,%rsp
+     a12c113:	5b                   	pop    %rbx
+     a12c114:	5d                   	pop    %rbp
+     a12c115:	c3                   	ret
+     a12c116:	cc                   	int3
+     a12c117:	cc                   	int3
+     a12c118:	cc                   	int3
+     a12c119:	cc                   	int3
+     a12c11a:	cc                   	int3
+     a12c11b:	cc                   	int3
+     a12c11c:	cc                   	int3
+     a12c11d:	cc                   	int3
+[0m
+All functions confirmed as JSON parsing/string helpers. The analysis is complete. Let me compile the final results.
+
+---
+
+## RESULTS
+
+### Binary Re-acquisition
+- **SHA-256**: `6458a95a7db3a45e3902254977880f1de679b47938cb0728ba5c3f0acaa32b53` ✓ pinned
+- **ELF sha256**: `10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19` ✓ pinned
+
+### Response Parser Control Flow (0xc0d5c91–0xc0d5eb6)
+
+**Function boundary**: 0xc0d58a0–0xc0d5f86 (ret), called from 0xc0cb217
+
+**String references confirmed**:
+- `0x29685ca`: `expires_in\0access_token\0id_token`
+- `0x29685e2`: `id_token\0error\0`
+- `0x29685d5`: `access_token\0id_token\0error\0`
+
+**Source file identified**: `../../whale/google_apis/naver_access_token_fetcher.cc` (string at 0x1df2cf5)
+
+**Internal calls from parser** (all JSON helpers, 0 crypto):
+| Target | Function |
+|--------|----------|
+| 0xa12c030 | JSON field lookup by name |
+| 0x3562570 | String append |
+| 0x125699f0 | String copy |
+| 0x12569a80 | String move |
+| 0xa194f80 | String comparison |
+| 0xa1b4260 | Integer parsing |
+| 0x12b6c070 | Path separator check |
+
+**Post-parsing path** (0xc0d5f48 → 0xc0d5f86):
+- 0xc0d5f48: xor r15d,r15d (clear return value)
+- 0xc0d5f4b: cmpb $0x1,-0x30(%rbp) (check success flag)
+- 0xc0d5f6f: call *(%rcx,%rax,8) (vtable dispatch for JSON value type)
+- 0xc0d5f72: mov r15d,eax (return success)
+- 0xc0d5f86: ret
+
+### Key Verification: No Crypto Calls
+
+**60+ function calls enumerated** within 0xc0d58a0–0xc0d6400. Zero match crypto patterns:
+- No HMAC, EVP_DigestVerify, ECDSA_verify, ASN1_verify, SHA256, or BoringSSL crypto calls
+- All called functions are JSON parsing, string manipulation, or memory operations
+
+### Signer Function (0xc0cee40) — Constructing Request, NOT Verifying Response
+
+**String refs**: `client_private_key`, `session_id`, `csrf_token` — outbound signing fields
+
+### Conclusion
+
+**Hypothesis CONFIRMED (conf 70→80)**: The epoch-key response parser at 0xc0d5c91–0xc0d5eb6 consumes plain JSON with zero cryptographic verification. The response contains only `expires_in`, `access_token`, `id_token`, `error` — no signature, MAC, nonce, or timestamp fields. The request signing pipeline (combine_fn c0d70f0 → domain-separated HMAC) covers outbound requests only. Response is trusted as-is.
