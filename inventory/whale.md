@@ -2441,3 +2441,5 @@
 - CHANGED EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign, domain-separated labels; response parser zero crypto calls)
 - CHANGED Prior "no MAC/nonce/timestamp fields in cluster rodata" falsified — `X-CSRF-Token: `/`X-Timestamp: `/`X-Nonce: ` loaded in signing fn
 - CHANGED Desktop version confirmed v4.39.410.14 (not .18) per binary + AUR + FileHorse
+
+## 2026-08-21 13:45:36 UTC
