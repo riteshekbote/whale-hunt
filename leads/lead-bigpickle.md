@@ -13672,3 +13672,5 @@ testability: AUTH_HELPED
 verify_steps: CDP-driven invocation from a low-privilege origin against a running instance; observe metrics counters
 [NEXT] SCAN: REX.W LEA rip-relative xref sweep over full `.text` for references to signer entry `0xc0d3f90`; dump the nearest referencing caller to identify where the `client_private_key` argument originates (pref read vs signin-bridge string) — this closes the last fork in EPOCH-HMAC-1.
 ## 2026-08-21 08:45:11 UTC [sync] (model bigpickle)
+## 2026-08-21 09:28:11 UTC [sync] (model bigpickle)
+[NEXT] SCAN — objdump -d --start-address=0xc0cee40 --stop-address=0xc0cf100 on the pinned build to trace where `__Host-session_id`/`__Host-session_csrf` originate (OSCrypt-encrypted pref vs trustedVault binding vs `client_private_key` derivation); resolves testability fork (HUMAN_ONLY vs AUTH_HELPED) for hypotheses 1–2.
