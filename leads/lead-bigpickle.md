@@ -13675,3 +13675,4 @@ verify_steps: CDP-driven invocation from a low-privilege origin against a runnin
 ## 2026-08-21 09:28:11 UTC [sync] (model bigpickle)
 [NEXT] SCAN — objdump -d --start-address=0xc0cee40 --stop-address=0xc0cf100 on the pinned build to trace where `__Host-session_id`/`__Host-session_csrf` originate (OSCrypt-encrypted pref vs trustedVault binding vs `client_private_key` derivation); resolves testability fork (HUMAN_ONLY vs AUTH_HELPED) for hypotheses 1–2.
 ## 2026-08-21 09:55:54 UTC [sync] (model bigpickle)
+## 2026-08-21 10:29:53 UTC [sync] (model bigpickle)
