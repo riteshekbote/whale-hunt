@@ -9917,3 +9917,6 @@
 - LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path
 - LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)
 - LEARN: REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero
+
+## RANKED HYPOTHESES 2026-08-21 12:06:20 UTC
+- NEXT(hypotheses-bigpickle.txt): SCAN: objdump windows around parser-call sites `c0cf531`, `c0d4020`, `c0d612c` (all direct-call json_parser `c0cee40`); identify each containing function; REX.W
