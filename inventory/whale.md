@@ -2429,3 +2429,15 @@
 - CHANGED Prior "derive/init bodies" at `a1d0ed0/a1d0f60/a1d0ff0` falsified — pthread_once BoringSSL ASN.1 template singletons (zero entropy/EVP calls)
 - CHANGED EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign, domain-separated labels, len-CHECKed 32B global; response parser consumes plai
 - CHANGED Desktop version confirmed v4.39.410.14 (not .18) per binary + AUR + FileHorse; same-day double release Aug 18 incl
+
+## 2026-08-21 13:06:28 UTC
+- NEW Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` NOW EXISTS (sha256=10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19)
+- NEW Epoch-key response parser at 0xc0d5c91–0xc0d5eb6 consumes plain JSON (expires_in/access_token/id_token/error) with ZERO crypto-helper calls — no HMAC/MAC/nonce/timestamp verification before epoch-key 
+- NEW 9 Whale-specific sync source files confirmed in binary string table including `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`
+- NEW WBC crypto layer (`wbc.cc` + `wbc_wrapper_apis.cc` + `encryptor.cc`) confirmed compiled — separate from Chromium `os_crypt/sync/`
+- NEW OSCrypt async/legacy coexistence: Chromium 138 async OSCrypt + legacy Whale fork both present
+- NEW utilityPrivate manifest origin-binding gaps for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`
+- NEW Binary acquisition channel `repo.whale.naver.com` confirmed HTTP 200, hash-pinned .deb (sha256=6458a95a…), byte-exact across re-acquisitions
+- CHANGED EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign, domain-separated labels; response parser zero crypto calls)
+- CHANGED Prior "no MAC/nonce/timestamp fields in cluster rodata" falsified — `X-CSRF-Token: `/`X-Timestamp: `/`X-Nonce: ` loaded in signing fn
+- CHANGED Desktop version confirmed v4.39.410.14 (not .18) per binary + AUR + FileHorse
