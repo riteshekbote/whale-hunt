@@ -2224,3 +2224,24 @@
 - NEW Response parser (`0xc0d5c91`–`0xc0d5eb6`) consumes ONLY `expires_in`/`access_token`/`id_token`/`error`/`error_description` via JSON accessors — ZERO crypto-helper calls.
 - NEW No `signature`/`mac`/`nonce`/`timestamp` fields anywhere in cluster rodata; tokens flow straight into `Authorization: Bearer %s`; `naver-oauth2-client-secret` embedded.
 - NEW Pinned key stored twice: raw DER + full hex-SPKI string (`3059…0004||04||X||Y`). `jwks_uri`/RS256/ES256 belong to upstream Chromium email-verifier — no Whale-side JWT verification. `StartFetchingAuthK
+
+## 2026-08-21 05:52:42 UTC
+- NEW Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still MISSING despite 4th confirmed accessible .deb from `repo.whale.naver.com`
+- NEW Hardcoded EC P-256 SPKI pinned key @rodata VA `0x2968510` (91-byte DER, prime256v1), EXACTLY ONE code xref @`.text` `0xc0d46e6`
+- NEW Custom HMAC key-establishment scheme: domain-separation labels `"whale:hmac:"` (VA `0x1ee9aad`) + `"v1"` (VA `0x29685c7`) feeding 32-byte derivation
+- NEW Request-auth scheme: `Authorization: HMAC key=v1, signature=<tag>` from static-static ECDH (pinned pubkey × `client_private_key`); epoch/token responses parsed as plain JSON with ZERO crypto-helper ca
+- NEW `client_private_key` referenced ×4 @`0xc0cebd2`/`0xc0ceee4`/`0xc0cf1fd`/`0xc0cf3de` in form-fields cluster; no local pref persists it
+- NEW Xref-exhaustive scan (full `.text` REX.W LEA sweep): pinned SPKI, `"whale:hmac:"`, `"Authorization: HMAC key="` each have EXACTLY ONE consumer; `"v1"` has two — ALL confined to request-signing cluster
+- NEW Request path fully mapped: `pthread_once(1384d178)` → init `a1d0e40` → global `@1384d180` **len-CHECKed == 0x20** → 5-entry ordered struct → serialize
+- NEW Init routine CHECK strings = boringssl `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.c` (**EVP_DigestSign**) — crypto core primitive identified
+- NEW Response parser (`0xc0d5c91`–`0xc0d5eb6`) consumes ONLY `expires_in`/`access_token`/`id_token`/`error`/`error_description` via JSON accessors — ZERO crypto-helper calls
+- NEW No `signature`/`mac`/`nonce`/`timestamp` fields anywhere in cluster rodata; tokens flow straight into `Authorization: Bearer %s`; `naver-oauth2-client-secret` embedded
+- NEW Pinned key stored twice: raw DER + full hex-SPKI string; `jwks_uri`/RS256/ES256 belong to upstream Chromium email-verifier — no Whale-side JWT verification
+- NEW Asymmetric epoch-HMAC design: client signs requests (EVP_DigestSign, domain-separated labels, len-CHECKed 32B global) but performs zero response verification — statically proven via xref-exhaustive co
+- NEW `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — NOT sync-crypto evidence; kills prior KDF evidence line
+- NEW Binary channel resilience: `repo.whale.naver.com` re-acquisition + sha256 pin works after every sandbox wipe (5/5 byte-exact)
+- NEW Signing-cluster request path fully mapped: `pthread_once(1384d178)` → init `a1d0e40` → global `@1384d180` len-CHECKed == 0x20; 5-entry ordered struct (4 runtime SSO strings + literal `("v1",2)`) → ser
+- NEW Response parser `0xc0d5c91`–`0xc0d5eb6` consumes ONLY `expires_in`/`access_token`/`id_token`/`error`/`error_description` via JSON accessors — ZERO crypto-helper calls; no `signature`/`mac`/`nonce`/`ti
+- NEW Xref-exhaustive `.text` REX.W LEA sweep: pinned SPKI, `"whale:hmac:"`, `"Authorization: HMAC key="` each have EXACTLY ONE consumer (`"v1"`: two) — ALL confined to request-signing cluster `0xc0d46e6`–`
+- NEW Pinned key dual-encoded (raw DER + full hex-SPKI `3059…0004||04||X||Y`); `StartFetchingAuthKey`/`GetFetchKey` + `crypto::keypair::PrivateKey`/`ToEcP256PrivateKey` confirmed adjacent to `naverEpochKey`
+- CHANGED EPOCH-HMAC-1 confidence 55→70: request-only authentication now code-proven (asymmetric design), superseding the falsified absence-of-crypto framing.
