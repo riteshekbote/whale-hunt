@@ -1844,3 +1844,9 @@
 - 2026-08-21 ACCEPTED @ utilityPrivate API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present — JS API surface for sync encryption key management
 - 2026-08-21 ACCEPTED @ Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface while upstream migrates to async
 - 2026-08-21 REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE
+- 2026-08-21 ACCEPTED class @ epoch-key exchange verification: binary confirms zero whale-specific signature-verification strings; epoch-key path lacks client-side verification
+- 2026-08-21 ACCEPTED class @ utilityPrivate origin-binding gaps: full manifest shows origin-binding gaps for setSyncEncryptionKeys/retrieveTrustedVaultKeys
+- 2026-08-21 ACCEPTED class @ authkey_fetcher fork: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` confirmed as Whale fork inside upstream identity_manager
+- 2026-08-21 REJECTED class @ KDF debug string sync evidence: `%s: kdf key len: %d` proven to be libsrtp/WebRTC debug output, NOT sync-crypto evidence
+- 2026-08-21 ACCEPTED class @ OSCrypt async variant: v4.39.410.14 uses Chromium 138 async OSCrypt (`components/os_crypt/async/browser/...`) while retaining legacy Whale OSCrypt fork — coexistence confirmed
+- 2026-08-21 REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)

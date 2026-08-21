@@ -13471,3 +13471,4 @@ testability: HUMAN_ONLY
 [NEW] Zero whale-specific signature-verification strings in entire 327MB binary (only web_package/platform verifiers present). No dedicated verifier for epoch-key path found at strings level.
 [NEW] Fork file map +1: ../../whale/components/signin/public/identity_manager/authkey_fetcher.cc (Whale fork inside upstream identity_manager).
 [NEW] Endpoint map expanded: /oauth2/v1/nid/epoch/v1, https://oauth.whale.naver.com/, https://dev-oauth.whale.naver.com/, {alpha,stage,authn}.whalespace.io, account.whalespace.io, openapi.naver.com, {dev,stg}.apis.naver.com, nid.naver.com noauth/oauthCallback.nhn, manifest key `whale-auth-server-url`.
+## 2026-08-21 01:46:27 UTC [sync] (model bigpickle)

@@ -2148,3 +2148,14 @@
 - NEW Zero whale-specific signature-verification strings in entire 327MB binary (only web_package/platform verifiers present). No dedicated verifier for epoch-key path found at strings level.
 - NEW Fork file map +1: ../../whale/components/signin/public/identity_manager/authkey_fetcher.cc (Whale fork inside upstream identity_manager).
 - NEW Endpoint map expanded: /oauth2/v1/nid/epoch/v1, https://oauth.whale.naver.com/, https://dev-oauth.whale.naver.com/, {alpha,stage,authn}.whalespace.io, account.whalespace.io, openapi.naver.com, {dev,st
+
+## 2026-08-21 01:46:41 UTC
+- NEW Binary re-acquired after sandbox loss: GET `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb` → HTTP 200, 173111388 bytes, 10.2s; sha256=6458a9
+- NEW `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — sits in cluster with `%s: srtp/srtcp/rtp salt/base key len` siblings. NOT sync-crypto evidence. Kills that evidence line for the
+- NEW whale-signin authCompleted payload schema fully reconstructed from binary (property-getter chain at ~0x11b66b80): {addToLoginList, signinType, naverAccessToken, naverAuthCode, naverEpochKey, naverStat
+- NEW Epoch exchange flow reconstructed: `naver_api_fetcher_utils.cc` CreateURLLoader() (~line 83, DCHECK refs at 0x11b68c5c) builds POST to `<env-base>/oauth2/v1/nid/epoch/v1` (URL builder fn at 0xc0d1510,
+- NEW Zero whale-specific signature-verification strings in entire 327MB binary (only web_package/platform verifiers present). No dedicated verifier for epoch-key path found at strings level.
+- NEW Fork file map +1: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` (Whale fork inside upstream identity_manager).
+- NEW Endpoint map expanded: `/oauth2/v1/nid/epoch/v1`, `https://oauth.whale.naver.com/`, `https://dev-oauth.whale.naver.com/`, `{alpha,stage,authn}.whalespace.io`, `account.whalespace.io`, `openapi.naver.c
+- CHANGED Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still NOT present in sandbox — directory missing despite confirmed accessible .deb at `repo.whale.naver.com`
+- CHANGED Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse
