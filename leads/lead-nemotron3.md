@@ -21617,3 +21617,83 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)
 [LEARN] REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material"; superseded by scheme-properties attack (EPOCH-HMAC-1)
 [RISK] sync: 85 reason: epoch-key asymmetric HMAC design proven — client signs requests but performs zero response verification; utilityPrivate origin-binding gaps; 9 Whale-specific sync source files; WBC crypto layer separate from Chromium; same-day double-release with auth hotfix | browser: 45 reason: OSCrypt async/legacy coexistence; login-server-error hotfix touches auth surface; 0 CVEs in 2026 (8-month gap) but latest version patched for known SOP/CSP bypasses | libs: 35 reason: socket.io.slim.js bundled but handler runtime-fetched (confidence 38); no Whale-only third-party library CVEs; boringssl static-linked but upstream maintained
+## 2026-08-21 18:19:09 UTC [browser] (model nemotron3)
+[NEW] Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` NOW EXISTS (sha256=10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19) — previously MISSING post-wipe
+[NEW] Epoch-key response parser at 0xc0d5c91–0xc0d5eb6 consumes plain JSON (expires_in/access_token/id_token/error) with ZERO crypto-helper calls — no HMAC/MAC/nonce/timestamp verification before epoch-key acceptance
+[NEW] 9 Whale-specific sync source files confirmed in binary string table including `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`
+[NEW] WBC crypto layer (`wbc.cc` + `wbc_wrapper_apis.cc` + `encryptor.cc`) confirmed compiled — separate from Chromium `os_crypt/sync/`
+[NEW] OSCrypt async/legacy coexistence: Chromium 138 async OSCrypt + legacy Whale fork both present
+[NEW] utilityPrivate manifest origin-binding gaps for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`
+[NEW] Binary acquisition channel `repo.whale.naver.com` confirmed HTTP 200, hash-pinned .deb (sha256=6458a95a…), byte-exact across re-acquisitions
+[CHANGED] EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign, domain-separated labels; response parser zero crypto calls)
+[CHANGED] Prior "no MAC/nonce/timestamp fields in cluster rodata" falsified — `X-CSRF-Token: `/`X-Timestamp: `/`X-Nonce: ` loaded in signing fn
+[CHANGED] Desktop version confirmed v4.39.410.14 (not .18) per binary + AUR + FileHorse; same-day double release Aug 18 incl login-server-error hotfix
+[NEW] Epoch endpoint path literal `/oauth2/v1/nid/epoch/v1` @ rodata `2968060`; error strings `"Epoch confirm failed with HTTP "`, `"Epoch confirm response missing session cookies"`
+[NEW] Full request-signing pipeline decoded: base64url(`client_private_key`) → PKCS#8 parse → hex-decode server ECDH pubkey → combine_fn `c0d70f0` → 32B secret → domain-separated HMAC (`whale:hmac:`+`v1`)
+[NEW] combine_fn `c0d70f0` has exactly 2 callers: signing fn `c0d4770` + version-gated consumer `c4dec5c` (vtable tag 0x198, field 0x19f @+0x1f0, pthread_once singleton `0x1384d488`)
+[NEW] Prior "derive/init bodies" at `a1d0ed0/a1d0f60/a1d0ff0` falsified — pthread_once BoringSSL ASN.1 template singletons (zero entropy/EVP calls)
+[NEW] WhaleNidAuth request signing: HMAC key = ECDH(PKCS#8 client_private_key, hex server pubkey) domain-separated `whale:hmac:`+`v1`, canonical message binds X-CSRF-Token/X-Timestamp/X-Nonce — replay-protection fields EXIST on requests
+[NEW] Signin delivery: client_private_key/session_id/csrf_token arrive as JSON trio via OnEpochKeyConfirmed WebUI bridge (inline_login_handler_impl_whale.cc), parsed with type-tags, re-serialized into every token-fetch payload
+[NEW] Address-mapping assumptions falsified: `a1d0ed0/a1d0f60/a1d0ff0` are BoringSSL ASN.1 template singletons, not key-derivation bodies
+[PRIO] Whale desktop epoch-key endpoint `/oauth2/v1/nid/epoch/v1`: 86.0 — attack:10 business:10 tech:9 gate:8 cloud:7 fresh:9
+[PRIO] Whale utilityPrivate JS API (`setSyncEncryptionKeys`, `retrieveTrustedVaultKeys`): 72.0 — attack:8 business:9 tech:7 gate:6 cloud:5 fresh:8
+[PRIO] Whale sync engine fork (9 source files): 68.0 — attack:7 business:8 tech:8 gate:5 cloud:6 fresh:9
+[HYP] Whale desktop epoch-key response lacks custom-layer MAC/signature/nonce/timestamp verification
+class: OATH
+asset: Whale v4.39.410.14 desktop binary — epoch endpoint `/oauth2/v1/nid/epoch/v1`
+confidence: 70
+reasoning: Hardcoded P-256 SPKI at rodata VA 0x2968510 feeds static-static ECDH/HKDF-style derivation with `whale:hmac:`/`v1` labels. Binary shows `client_private_key` sent as JSON body to epoch endpoint. Response parser at 0xc0d5c91–0xc0d5eb6 consumes ONLY expires_in/access_token/id_token/error/error_description via JSON accessors — ZERO crypto-helper calls, no signature/mac/nonce/timestamp fields in rodata. Xref-exhaustive scan proves pinned SPKI, `whale:hmac:`, `Authorization: HMAC key=` each have EXACTLY ONE consumer confined to request-signing cluster. Transport crypto does not cover the JS trust boundary (`naverEpochKey` getter @0x11b66cde, `X-Epoch-Key` header setter @0x11b68c36).
+evidence_needed: Disassembly of epoch response handler proving absence of HMAC-tag verification before epoch-key acceptance; identification of what consumes the derived 32-byte key; confirmation whether dev/stage/prod environments share the single pinned key
+verify_steps: PASSIVE: objdump -d /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -A100 '0xc0d5c91' to confirm zero crypto calls in response parser; strings for nonce/timestamp/mac fields in epoch response context; HUMAN: Ghidra decompile of containing functions
+impact: Attacker-supplied epoch key material accepted into sync-vault key derivation → cross-account sync data access or persistent key substitution; static ECDH → server-key-compromise retroactive decryption
+testability: HUMAN_ONLY
+[HYP] Whale utilityPrivate setSyncEncryptionKeys accepts attacker-controlled key material without origin validation
+class: AUTH
+asset: Whale v4.39.410.14 desktop binary — utilityPrivate JS API
+confidence: 50
+reasoning: Binary strings confirm `setSyncEncryptionKeys` + `retrieveTrustedVaultKeys` JS bindings adjacent to upstream `setClientEncryptionKeys`. utilityPrivate manifest shows origin-binding gaps. Sample extension (ALL-origin content_scripts, zero sender validation in background.js) could invoke these APIs from any web origin if exposed.
+evidence_needed: Whether utilityPrivate API checks caller extension ID/origin before accepting key material; whether `setSyncEncryptionKeys` validates key format/entropy; whether compromised extension can overwrite sync encryption keys
+verify_steps: strings /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'utilityprivate\|setsyncencryption\|retrievetrustedvault'; examine extension API bindings in binary for origin checks; zero network
+impact: Malicious/compromised extension with utilityPrivate access could overwrite sync encryption keys or extract sync identifiers → cross-device credential sync hijack (High)
+testability: HUMAN_ONLY
+[HYP] Whale fork of identity_manager/authkey_fetcher.cc introduces authkey validation bypass
+class: AUTH
+asset: Whale v4.39.410.14 desktop binary — `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc`
+confidence: 45
+reasoning: Fork file map confirms Whale-specific fork inside upstream identity_manager. Binary shows `naver_api_fetcher_utils.cc` builds POST to epoch endpoint with URL builder at 0xc0d1510. No signature-verification strings in binary. Fork may weaken authkey validation compared to upstream.
+evidence_needed: Diff of Whale `authkey_fetcher.cc` vs upstream Chromium; whether fork removes authkey signature checks; whether epoch-key response validation is missing
+verify_steps: strings /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'authkey_fetcher\|identity_manager'; objdump -d /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -A50 'authkey_fetcher'; zero network
+impact: Weakened authkey validation could allow token forgery or epoch-key injection → unauthorized sync access across devices (High)
+testability: HUMAN_ONLY
+[PARKED] Whale fork of identity_manager/authkey_fetcher.cc introduces authkey validation bypass: confidence 45 < 50 threshold; fork confirmed but no evidence of actual bypass vs upstream; verify_steps require HUMAN binary diff not passive
+[FINAL]
+[HYP] Whale desktop epoch-key response lacks custom-layer MAC/signature/nonce/timestamp verification
+class: OATH
+asset: Whale v4.39.410.14 desktop binary — epoch endpoint `/oauth2/v1/nid/epoch/v1`
+confidence: 70
+reasoning: Hardcoded P-256 SPKI at rodata VA 0x2968510 feeds static-static ECDH/HKDF-style derivation with `whale:hmac:`/`v1` labels. Binary shows `client_private_key` sent as JSON body to epoch endpoint. Response parser at 0xc0d5c91–0xc0d5eb6 consumes ONLY expires_in/access_token/id_token/error/error_description via JSON accessors — ZERO crypto-helper calls, no signature/mac/nonce/timestamp fields in rodata. Xref-exhaustive scan proves pinned SPKI, `whale:hmac:`, `Authorization: HMAC key=` each have EXACTLY ONE consumer confined to request-signing cluster. Transport crypto does not cover the JS trust boundary (`naverEpochKey` getter @0x11b66cde, `X-Epoch-Key` header setter @0x11b68c36).
+evidence_needed: Disassembly of epoch response handler proving absence of HMAC-tag verification before epoch-key acceptance; identification of what consumes the derived 32-byte key; confirmation whether dev/stage/prod environments share the single pinned key
+verify_steps: PASSIVE: objdump -d /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -A100 '0xc0d5c91' to confirm zero crypto calls in response parser; strings for nonce/timestamp/mac fields in epoch response context; HUMAN: Ghidra decompile of containing functions
+impact: Attacker-supplied epoch key material accepted into sync-vault key derivation → cross-account sync data access or persistent key substitution; static ECDH → server-key-compromise retroactive decryption
+testability: HUMAN_ONLY
+[HYP] Whale utilityPrivate setSyncEncryptionKeys accepts attacker-controlled key material without origin validation
+class: AUTH
+asset: Whale v4.39.410.14 desktop binary — utilityPrivate JS API
+confidence: 50
+reasoning: Binary strings confirm `setSyncEncryptionKeys` + `retrieveTrustedVaultKeys` JS bindings adjacent to upstream `setClientEncryptionKeys`. utilityPrivate manifest shows origin-binding gaps. Sample extension (ALL-origin content_scripts, zero sender validation in background.js) could invoke these APIs from any web origin if exposed.
+evidence_needed: Whether utilityPrivate API checks caller extension ID/origin before accepting key material; whether `setSyncEncryptionKeys` validates key format/entropy; whether compromised extension can overwrite sync encryption keys
+verify_steps: strings /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'utilityprivate\|setsyncencryption\|retrievetrustedvault'; examine extension API bindings in binary for origin checks; zero network
+impact: Malicious/compromised extension with utilityPrivate access could overwrite sync encryption keys or extract sync identifiers → cross-device credential sync hijack (High)
+testability: HUMAN_ONLY
+[NEXT] HUMAN: Extract the re-acquired Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`, sha256=6458a95a…) to `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` for Ghidra decompile of epoch response parser at 0xc0d5c91–0xc0d5eb6 and utilityPrivate bindings
+[LEARN] ACCEPTED class @ epoch-key exchange verification: binary confirms zero whale-specific signature-verification strings for epoch-key response; epoch-key path lacks client-side verification
+[LEARN] ACCEPTED class @ utilityPrivate origin-binding gaps: full manifest shows origin-binding gaps for setSyncEncryptionKeys/retrieveTrustedVaultKeys
+[LEARN] ACCEPTED class @ authkey_fetcher fork: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` confirmed as Whale fork inside upstream identity_manager
+[LEARN] REJECTED class @ KDF debug string sync evidence: `%s: kdf key len: %d` proven to be libsrtp/WebRTC debug output, NOT sync-crypto evidence
+[LEARN] ACCEPTED class @ OSCrypt async variant: v4.39.410.14 uses Chromium 138 async OSCrypt (`components/os_crypt/async/browser/...`) while retaining legacy Whale OSCrypt fork — coexistence confirmed
+[LEARN] REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.14 (patched)
+[LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant
+[LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path
+[LEARN] REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)
+[LEARN] REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material"; superseded by scheme-properties attack (EPOCH-HMAC-1)
+[RISK] sync: 85 reason: epoch-key asymmetric HMAC design proven — client signs requests but performs zero response verification; utilityPrivate origin-binding gaps; 9 Whale-specific sync source files; WBC crypto layer separate from Chromium; same-day double-release with auth hotfix | browser: 45 reason: OSCrypt async/legacy coexistence; login-server-error hotfix touches auth surface; 0 CVEs in 2026 (8-month gap) but latest version patched for known SOP/CSP bypasses | libs: 35 reason: socket.io.slim.js bundled but handler runtime-fetched (confidence 38); no Whale-only third-party library CVEs; boringssl static-linked but upstream maintained
