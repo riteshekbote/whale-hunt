@@ -2190,3 +2190,13 @@
 - NEW dynsym scan: 2975 dynamic imports, ZERO EVP_/ECDSA_/RSA_ symbols → boringssl statically linked; `EVP_DigestVerifyInit failed` error-string present
 - NEW `"Encryption settings signature missing or malformed"` string present — attributed to upstream sync cryptographer
 - CHANGED Binary re-acquired (4th time) post-sandbox-loss; extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still missing despite confirmed accessible .deb
+
+## 2026-08-21 04:23:43 UTC
+- NEW Binary re-acquired 4th time post-sandbox-loss; extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still missing despite confirmed accessible .deb from `repo.whale.naver.com`
+- NEW HARDCODED EC P-256 PUBLIC KEY at rodata VA `0x2968510` (91-byte DER SEQUENCE prime256v1) in whale-auth cluster
+- NEW Custom HMAC key-establishment scheme: domain-separation labels `"whale:hmac:"` (VA `0x1ee9aad`) + `"v1"` (VA `0x29685c7`)
+- NEW Whale-auth TU code map: `client_private_key` field ×4 @ `0xc0cebd2`/`0xc0ceee4`/`0xc0cf1fd`/`0xc0cf3de` → epoch endpoint URL builder @ `0xc0d1510`
+- NEW `naverEpochKey` JS property getter @ `0x11b66cde`; `X-Epoch-Key` header setter @ `0x11b68c36`
+- CHANGED Prior premise "zero whale-specific signature-verification material" FALSIFIED at pinned-key site; HYP-1 reframed, confidence 55→48
+- NEW dynsym scan: 2975 dynamic imports, ZERO EVP_/ECDSA_/RSA_ symbols → boringssl statically linked
+- NEW `"Encryption settings signature missing or malformed"` string present — attributed to upstream sync cryptographer

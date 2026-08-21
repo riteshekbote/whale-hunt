@@ -1,17 +1,1 @@
-## 2026-08-21 03:50:21 UTC [sync] (model bigpickle)
-asset: WhaleNidAuth epoch-key HMAC scheme (naver_access_token_fetcher.cc)
-class: OATH
-reasoning: Code-proven static-static ECDH (pinned hex pubkey × client PKCS#8 private key) derives a request-only HMAC credential sent as `Authorization: HMAC key=v1, signature=<tag>`; token responses are parsed as plain JSON with zero MAC/verification, so response authentication relies on TLS alone. If the signature does not bind request body/timestamp, the scheme collapses to replayable static proof-of-possession, and a trusted-CA MITM can inject token responses undetected by the custom layer.
-confidence: 55
-verify_steps: HUMAN Ghidra decompile of `a1d0a20`/`a8faf90` call sites (`0xc0d4e6d`, `0xc0d4edf`) to determine exact HMAC input coverage (labels-only vs body-bound vs timestamped); trace `client_private_key` origin (generated locally vs server-delivered vs JS-bridge-delivered); scan label rodata cluster `0x29685xx` for nonce/timestamp field names.
-asset: utilityPrivate setSyncEncryptionKeys/retrieveTrustedVaultKeys bindings
-class: AUTH
-reasoning: unchanged — metrics names prove JS-callable trusted-vault path; caller privilege boundary still unverified.
-confidence: 42
-verify_steps: AUTH_HELPED headless ELF run with CDP context enumeration probing bindings from data:/https origins vs whale://settings; decompress resources.pak entries and grep binding names.
-asset: client_private_key lifecycle (form-fields cluster `0xc0cebd2`–`0xc0cf3de`)
-class: OATH
-reasoning: Key is base64url/PKCS#8-transported in request form fields beside session_id/csrf_token and no local pref persists it; if it is server- or bridge-delivered, any renderer/XSS compromise during signin captures a long-lived static ECDH identity enabling permanent request forgery, and static-static design means later key compromise recovers all past derived HMAC keys (no forward secrecy).
-confidence: 40
-verify_steps: HUMAN Ghidra decompile of `0xc0cebd2`/`0xc0ceee4`/`0xc0cf1fd` sites to identify key source (response parse vs pref vs bridge object); decompress resources.pak grepping signin JS for `client_private_key`.
-[NEXT] HUMAN: Ghidra decompile of (a) `a1d0a20`/`a8faf90` call sites at `0xc0d4e6d`/`0xc0d4edf` to determine what the HMAC signature actually covers, and (b) the `0xc0cebd2`–`0xc0cf3de` cluster to find `client_private_key`'s origin. Outcome decides whether EPOCH-HMAC-1 becomes reportable (labels-only signature → replayable + MITM-undetectable despite scheme) or gets parked.
+## 2026-08-21 04:23:03 UTC [sync] (model bigpickle)

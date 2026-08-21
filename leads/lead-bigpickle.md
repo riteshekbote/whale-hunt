@@ -13505,3 +13505,4 @@ reasoning: Key is base64url/PKCS#8-transported in request form fields beside ses
 confidence: 40
 verify_steps: HUMAN Ghidra decompile of `0xc0cebd2`/`0xc0ceee4`/`0xc0cf1fd` sites to identify key source (response parse vs pref vs bridge object); decompress resources.pak grepping signin JS for `client_private_key`.
 [NEXT] HUMAN: Ghidra decompile of (a) `a1d0a20`/`a8faf90` call sites at `0xc0d4e6d`/`0xc0d4edf` to determine what the HMAC signature actually covers, and (b) the `0xc0cebd2`–`0xc0cf3de` cluster to find `client_private_key`'s origin. Outcome decides whether EPOCH-HMAC-1 becomes reportable (labels-only signature → replayable + MITM-undetectable despite scheme) or gets parked.
+## 2026-08-21 04:23:03 UTC [sync] (model bigpickle)
