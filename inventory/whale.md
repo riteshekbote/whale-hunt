@@ -2130,3 +2130,21 @@
 - CHANGED NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap static
 - CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
 - CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+
+## 2026-08-21 00:09:15 UTC
+- NEW Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still NOT present in sandbox — directory missing despite confirmed accessible .deb at `repo.whale.naver.com`
+- NEW utilityPrivate JS API full manifest dumped including `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` with origin-binding gaps
+- NEW OSCrypt variant in v4.39.410.14 is ASYNC: `components/os_crypt/async/browser/{freedesktop_secret_key_provider,secret_portal_key_provider}.cc` + `async/common/encryptor.cc` (Chromium 138 standard)
+- NEW `setSyncEncryptionKeys` + `retrieveTrustedVaultKeys` JS bindings confirmed in-binary, adjacent to upstream `setClientEncryptionKeys`; metrics `Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito` 
+- NEW Naver auth endpoint map extracted: `/oauth2/v1/nid/{login,refresh,epoch/v1}` (epoch endpoint = `naver_epoch_key_confirmer` target), `v1/appauth/authkey`, `user2/appauth/loginByAuthKey.nhn`, `getLoginS
+- NEW Prefs verified: `sync.encryption_bootstrap_token{,_per_account,_per_account_migration_done}`, `sync.whale_need_encryption_key_forced_time` (Whale-specific)
+- CHANGED Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+- CHANGED APKPure landing page consistently HTTP 404/403 — no curl-able APK path remains
+- CHANGED Binary re-acquired after sandbox loss: GET repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb -> HTTP 200, 173111388 bytes, 10.2s; sha256=6458a95
+- NEW `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — sits in cluster with `%s: srtp/srtcp/rtp salt/base key len` siblings. NOT sync-crypto evidence. Kills that evidence line for the
+- NEW whale-signin authCompleted payload schema fully reconstructed from binary (property-getter chain at ~0x11b66b80): {addToLoginList, signinType, naverAccessToken, naverAuthCode, naverEpochKey, naverStat
+- NEW Epoch exchange flow reconstructed: naver_api_fetcher_utils.cc CreateURLLoader() (~line 83, DCHECK refs at 0x11b68c5c) builds POST to <env-base>/oauth2/v1/nid/epoch/v1 (URL builder fn at 0xc0d1510, env
+- NEW Zero whale-specific signature-verification strings in entire 327MB binary (only web_package/platform verifiers present). No dedicated verifier for epoch-key path found at strings level.
+- NEW Fork file map +1: ../../whale/components/signin/public/identity_manager/authkey_fetcher.cc (Whale fork inside upstream identity_manager).
+- NEW Endpoint map expanded: /oauth2/v1/nid/epoch/v1, https://oauth.whale.naver.com/, https://dev-oauth.whale.naver.com/, {alpha,stage,authn}.whalespace.io, account.whalespace.io, openapi.naver.com, {dev,st

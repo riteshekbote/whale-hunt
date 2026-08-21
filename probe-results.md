@@ -1321,3 +1321,7 @@ https://%smyactivity.whale.naver.com/ -> ERR <urlopen error [Errno -2] Name or s
 
 ## 2026-08-20 23:44:23 UTC
 
+
+## 2026-08-21 00:09:28 UTC
+https://oauth.whale.naver.com/ -> ERR The read operation timed out
+https://dev-oauth.whale.naver.com/ -> ERR <urlopen error [Errno -2] Name or service not know
