@@ -37,3 +37,4 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED class @ KDF debug string sync evidence: `%s: kdf key len: %d` proven to be libsrtp/WebRTC debug output, not sync-crypto evidence — no longer a signal.
 [LEARN] REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material" — the verification gap is specifically in the RESPONSE path, not the request path.
 [RISK] sync: 70 reason | browser: 60 reason | libs: 25 reason
+## 2026-08-21 20:21:19 UTC [api] (model mimo)
