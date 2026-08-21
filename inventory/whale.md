@@ -2159,3 +2159,24 @@
 - NEW Endpoint map expanded: `/oauth2/v1/nid/epoch/v1`, `https://oauth.whale.naver.com/`, `https://dev-oauth.whale.naver.com/`, `{alpha,stage,authn}.whalespace.io`, `account.whalespace.io`, `openapi.naver.c
 - CHANGED Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still NOT present in sandbox — directory missing despite confirmed accessible .deb at `repo.whale.naver.com`
 - CHANGED Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse
+
+## 2026-08-21 03:02:40 UTC
+- NEW Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 173MB .deb, v4.39.410.14 (sha256=6458a95...)
+- NEW `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — NOT sync-crypto evidence; kills prior KDF evidence line
+- NEW whale-signin authCompleted payload schema fully reconstructed: {addToLoginList, signinType, naverAccessToken, naverAuthCode, naverEpochKey, naverStat...}
+- NEW Epoch exchange flow reconstructed: `naver_api_fetcher_utils.cc` CreateURLLoader() → POST to `<env-base>/oauth2/v1/nid/epoch/v1`
+- NEW Zero whale-specific signature-verification strings in entire 327MB binary (only web_package/platform verifiers)
+- NEW Fork file map +1: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` (Whale fork inside upstream identity_manager)
+- NEW Endpoint map expanded: `/oauth2/v1/nid/epoch/v1`, `https://oauth.whale.naver.com/`, `https://dev-oauth.whale.naver.com/`, `{alpha,stage,authn}.whalespace.io`, `account.whalespace.io`, `openapi.naver.c
+- CHANGED Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still NOT present in sandbox — directory missing despite confirmed accessible .deb
+- CHANGED Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse
+- CHANGED NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap static
+- CHANGED Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+- NEW Binary re-acquired (4th time) post-sandbox-loss: `/tmp/opencode/` was fully wiped; re-downloaded `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.
+- NEW HARDCODED EC P-256 PUBLIC KEY discovered in whale-auth cluster: hex SPKI literal (91-byte DER: SEQUENCE{ecPublicKey,prime256v1}, BITSTRING uncompressed point) at rodata VA `0x2968510`, X=`0c31ddb65626
+- NEW Same basic block derives a 32-byte blob then constructs domain-separation labels `"whale:hmac:"` (VA `0x1ee9aad`, len 11) + `"v1"` (VA `0x29685c7`, len 2) → custom HMAC key-establishment scheme, versi
+- NEW Whale-auth TU code map (via byte-pattern LEA-xref scan): `client_private_key` field ×4 @`0xc0cebd2`,`0xc0ceee4`,`0xc0cf1fd`,`0xc0cf3de` → `/oauth2/v1/nid/epoch/v1` @`0xc0d15bb` (inside known URL-build
+- NEW `naverEpochKey` JS property getter @`0x11b66cde`; `X-Epoch-Key` header setter @`0x11b68c36` — consistent with prior KB anchors (`0x11b66b80`/`0x11b68c5c`).
+- CHANGED Prior premise "zero whale-specific signature-verification material in 327MB ELF" is FALSIFIED at the pinned-key site. HYP-1 reframed (see below); confidence 55→48.
+- NEW dynsym scan: 2975 dynamic imports, ZERO EVP_/ECDSA_/RSA_ symbols → boringssl statically linked; import-scan method non-informative for this target. `EVP_DigestVerifyInit failed` error-string present (
+- NEW `"Encryption settings signature missing or malformed"` string present — attributed to upstream sync cryptographer, not whale-specific.

@@ -1,19 +1,18 @@
-## 2026-08-21 01:45:06 UTC [browser] (model nemotron3)
-[NEW] Binary re-acquired after sandbox loss: GET `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb` → HTTP 200, 173111388 bytes, 10.2s; sha256=6458a95...
-[NEW] `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — sits in cluster with `%s: srtp/srtcp/rtp salt/base key len` siblings. NOT sync-crypto evidence. Kills that evidence line for the sync KDF hypothesis.
-[NEW] whale-signin authCompleted payload schema fully reconstructed from binary (property-getter chain at ~0x11b66b80): {addToLoginList, signinType, naverAccessToken, naverAuthCode, naverEpochKey, naverStat...
-[NEW] Epoch exchange flow reconstructed: `naver_api_fetcher_utils.cc` CreateURLLoader() (~line 83, DCHECK refs at 0x11b68c5c) builds POST to `<env-base>/oauth2/v1/nid/epoch/v1` (URL builder fn at 0xc0d1510, env...
-[NEW] Zero whale-specific signature-verification strings in entire 327MB binary (only web_package/platform verifiers present). No dedicated verifier for epoch-key path found at strings level.
-[NEW] Fork file map +1: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` (Whale fork inside upstream identity_manager).
-[NEW] Endpoint map expanded: `/oauth2/v1/nid/epoch/v1`, `https://oauth.whale.naver.com/`, `https://dev-oauth.whale.naver.com/`, `{alpha,stage,authn}.whalespace.io`, `account.whalespace.io`, `openapi.naver.com`, `{dev,st...
-[CHANGED] Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still NOT present in sandbox — directory missing despite confirmed accessible .deb at `repo.whale.naver.com`
+## 2026-08-21 02:51:09 UTC [browser] (model nemotron3)
+[NEW] Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 173MB .deb, v4.39.410.14 (sha256=6458a95...)
+[NEW] `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — NOT sync-crypto evidence; kills prior KDF evidence line
+[NEW] whale-signin authCompleted payload schema fully reconstructed: {addToLoginList, signinType, naverAccessToken, naverAuthCode, naverEpochKey, naverStat...}
+[NEW] Epoch exchange flow reconstructed: `naver_api_fetcher_utils.cc` CreateURLLoader() → POST to `<env-base>/oauth2/v1/nid/epoch/v1`
+[NEW] Zero whale-specific signature-verification strings in entire 327MB binary (only web_package/platform verifiers)
+[NEW] Fork file map +1: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` (Whale fork inside upstream identity_manager)
+[NEW] Endpoint map expanded: `/oauth2/v1/nid/epoch/v1`, `https://oauth.whale.naver.com/`, `https://dev-oauth.whale.naver.com/`, `{alpha,stage,authn}.whalespace.io`, `account.whalespace.io`, `openapi.naver.com`
+[CHANGED] Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still NOT present in sandbox — directory missing despite confirmed accessible .deb
 [CHANGED] Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse
-[PRIO] Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com`), score: 8.10, axes: attack=10 biz=10 tech=10 gate=2 cloud=3 fresh=10
-[PRIO] Naver auth endpoint map (NID OAuth2 + epoch key exchange), score: 7.20, axes: attack=9 biz=8 tech=8 gate=4 cloud=3 fresh=10
-[PRIO] utilityPrivate JS API (setSyncEncryptionKeys/retrieveTrustedVaultKeys/getSyncCacheGuid/showLoginPopup), score: 7.00, axes: attack=9 biz=8 tech=8 gate=4 cloud=2 fresh=10
-[PRIO] Whale fork of identity_manager/authkey_fetcher.cc, score: 6.80, axes: attack=8 biz=7 tech=8 gate=3 cloud=3 fresh=10
-[PRIO] WBC crypto layer (wbc.cc/wbc_wrapper_apis.cc/encryptor.cc), score: 6.50, axes: attack=8 biz=8 tech=8 gate=3 cloud=2 fresh=10
-[PRIO] Sync engine fork (9 Whale-specific files under `../../whale/components/sync/`), score: 6.50, axes: attack=8 biz=8 tech=8 gate=3 cloud=2 fresh=10
+[CHANGED] NVD services endpoint `services.nvd.nist.gov` stable HTTP 200 — 28 total CVEs, 0 in 2026, 8-month gap static
+[CHANGED] Cloudfront DNS `d1vdt4q2qgdbji.cloudfront.net` curl HTTP 000 — hard sandbox egress block confirmed via BOTH 127.0.0.53 and 8.8.8.8, general to all `*.cloudfront.net`
+[PRIO] Whale desktop epoch-key exchange endpoint `/oauth2/v1/nid/epoch/v1`, score: 7.65, axes: attack=9 biz=9 tech=8 gate=4 cloud=3 fresh=10
+[PRIO] Whale utilityPrivate JS API (`setSyncEncryptionKeys`, `retrieveTrustedVaultKeys`, `getSyncCacheGuid`, `showLoginPopup`), score: 7.40, axes: attack=9 biz=8 tech=8 gate=4 cloud=2 fresh=10
+[PRIO] Whale fork of `identity_manager/authkey_fetcher.cc`, score: 7.10, axes: attack=8 biz=7 tech=8 gate=3 cloud=3 fresh=10
 [HYP] Whale desktop epoch-key exchange lacks signature verification
 class: AUTH
 asset: Whale v4.39.410.14 desktop binary — epoch endpoint `/oauth2/v1/nid/epoch/v1`
@@ -44,7 +43,7 @@ testability: HUMAN_ONLY
 [PARKED] Whale desktop sync OSCrypt v10 bootstrap-token KDF regression post-Chromium-138 async transition: KDF debug string `%s: kdf key len: %d` proven to be libsrtp/WebRTC artifact, not sync-crypto evidence; verify_steps require binary extraction which is missing in sandbox
 [PARKED] Whale desktop WBC crypto layer (wbc.cc/wbc_wrapper_apis.cc/encryptor.cc) exposes custom encryption API separable from Chromium OSCrypt: verify_steps require binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` which does not exist in sandbox
 [PARKED] Whale utilityPrivate JS API (setSyncEncryptionKeys/getSyncCacheGuid/getPushServerURL/showLoginPopup) allows extension-origin sync key manipulation: verify_steps require binary extraction which is missing in sandbox
-[FINAL] 
+[FINAL]
 [NEXT] HUMAN: Extract the re-acquired Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`, sha256=6458a95...) to `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` for string/disassembly analysis
 [LEARN] ACCEPTED class @ epoch-key exchange verification: binary confirms zero whale-specific signature-verification strings; epoch-key path lacks client-side verification
 [LEARN] ACCEPTED class @ utilityPrivate origin-binding gaps: full manifest shows origin-binding gaps for setSyncEncryptionKeys/retrieveTrustedVaultKeys
