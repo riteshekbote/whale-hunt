@@ -101,3 +101,4 @@ testability: HUMAN_ONLY
 [FINAL] Whale epoch-key response verifierless signing material extraction | conf=70 | class=OTHER | testability=HUMAN_ONLY
 [NEXT] HUMAN: Extract binary at /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale (sha256=10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19), objdump -d the response parser range 0xc0d5c91–0xc0d5eb6 to enumerate all callers, then trace each caller forward through OnEpochKeyConfirmed bridge to confirm zero crypto-helper calls before
 ## 2026-08-21 23:04:37 UTC [api] (model mimo)
+## 2026-08-21 23:23:05 UTC [api] (model mimo)
