@@ -13671,3 +13671,4 @@ confidence: 42
 testability: AUTH_HELPED
 verify_steps: CDP-driven invocation from a low-privilege origin against a running instance; observe metrics counters
 [NEXT] SCAN: REX.W LEA rip-relative xref sweep over full `.text` for references to signer entry `0xc0d3f90`; dump the nearest referencing caller to identify where the `client_private_key` argument originates (pref read vs signin-bridge string) — this closes the last fork in EPOCH-HMAC-1.
+## 2026-08-21 08:45:11 UTC [sync] (model bigpickle)

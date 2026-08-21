@@ -1,10 +1,7 @@
-## 2026-08-21 07:56:15 UTC [browser] (model nemotron3)
-[NEW] Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still MISSING despite 4th confirmed accessible .deb from `repo.whale.naver.com`
-[NEW] EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign with domain-separated labels, len-CHECKed 32B global; response parser consumes ONLY expires_in/access_token/id_token/error/error_description via JSON accessors — ZERO crypto-helper calls)
-[CHANGED] `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — NOT sync-crypto evidence; kills prior KDF evidence line
+## 2026-08-21 08:34:19 UTC [browser] (model nemotron3)
 [NEW] Binary acquisition channel `repo.whale.naver.com` confirmed live and resilient: HTTP 200, hash-pinned .deb (sha256=6458a95a…), byte-exact across 5/5 re-acquisitions post-sandbox-wipe
-[NEW] Full epoch-key request/response path mapped: xref-exhaustive REX.W LEA sweep proves pinned SPKI (VA 0x2968510), "whale:hmac:" (VA 0x1ee9aad), "Authorization: HMAC key=" each have EXACTLY ONE consumer
-[NEW] `client_private_key` referenced ×4 at 0xc0cebd2/0xc0ceee4/0xc0cf1fd/0xc0cf3de in form-fields cluster beside session_id/csrf_token; no local pref persists it
+[NEW] EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign with domain-separated labels, len-CHECKed 32B global; response parser consumes only JSON fields, zero crypto-helper calls)
+[NEW] Full epoch-key request/response path mapped: xref-exhaustive REX.W LEA sweep proves pinned SPKI (VA 0x2968510), "whale:hmac:" (VA 0x1ee9aad), "Authorization: HMAC key=" each have EXACTLY ONE consumer confined to signing cluster 0xc0d46e6–0xc0d4f10
 [NEW] `naverEpochKey` JS property getter @0x11b66cde; `X-Epoch-Key` header setter @0x11b68c36 — epoch key transits whale-signin authCompleted JS bridge outside crypto envelope
 [NEW] utilityPrivate manifest origin-binding gaps confirmed for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`; `authkey_fetcher.cc` Whale fork confirmed inside upstream identity_manager
 [NEW] OSCrypt async variant coexistence confirmed: v4.39.410.14 uses Chromium 138 async OSCrypt (`components/os_crypt/async/browser/...`) while retaining legacy Whale OSCrypt fork
@@ -14,9 +11,12 @@
 [NEW] "Encryption settings signature missing or malformed" string present — attributed to upstream sync cryptographer
 [CHANGED] Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse; same-day double release Aug 18 incl. login-server-error hotfix touching auth surface
 [CHANGED] Prior premise "zero whale-specific signature-verification material" FALSIFIED at pinned-key site (hardcoded P-256 SPKI + `whale:hmac:`/`v1` labels exist); top hypothesis reframed from absence-of-crypto to scheme-properties attack
-[PRIO] epoch-key endpoint `/oauth2/v1/nid/epoch/v1` (Whale v4.39.410.14 desktop binary), score: 8.85, axes: attack_surface=9 business_value=9 tech_exposure=9 gate_ease=8 cloud_surface=7 freshness=10
-[PRIO] utilityPrivate JS API `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys` (Whale v4.39.410.14 desktop binary), score: 7.55, axes: attack_surface=8 business_value=8 tech_exposure=7 gate_ease=7 cloud_surface=6 freshness=9
-[PRIO] authkey_fetcher fork `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` (Whale v4.39.410.14 desktop binary), score: 6.90, axes: attack_surface=7 business_value=8 tech_exposure=7 gate_ease=6 cloud_surface=6 freshness=8
+[CHANGED] `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — NOT sync-crypto evidence; kills prior KDF evidence line
+[PRIO] Whale v4.39.410.14 desktop binary — epoch endpoint `/oauth2/v1/nid/epoch/v1`, score: 84, attack_surface: 10, business_value: 10, tech_exposure: 9, gate_ease: 8, cloud_surface: 3, freshness: 10
+[PRIO] Whale v4.39.410.14 desktop binary — utilityPrivate JS API (`setSyncEncryptionKeys`, `retrieveTrustedVaultKeys`), score: 76, attack_surface: 9, business_value: 9, tech_exposure: 8, gate_ease: 7, cloud_surface: 2, freshness: 10
+[PRIO] Whale v4.39.410.14 desktop binary — authkey_fetcher fork in identity_manager, score: 72, attack_surface: 8, business_value: 9, tech_exposure: 8, gate_ease: 6, cloud_surface: 2, freshness: 10
+[PRIO] Whale v4.39.410.14 desktop binary — WBC crypto layer + 9 Whale-specific sync files, score: 70, attack_surface: 8, business_value: 8, tech_exposure: 9, gate_ease: 5, cloud_surface: 2, freshness: 10
+[PRIO] Whale v4.39.410.14 desktop binary — OSCrypt async/legacy coexistence boundary, score: 65, attack_surface: 7, business_value: 8, tech_exposure: 9, gate_ease: 5, cloud_surface: 2, freshness: 10
 [HYP] Whale desktop epoch-key scheme authenticates requests only — responses carry no custom-layer MAC/signature/nonce/timestamp; combined with static-static ECDH against a single hardcoded server key and JS-bridge transit of naverEpochKey, a trusted-CA MITM can inject epoch/token responses undetected
 class: OATH
 asset: Whale v4.39.410.14 desktop binary — epoch endpoint `/oauth2/v1/nid/epoch/v1`
@@ -74,14 +74,4 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant
 [LEARN] REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path
 [LEARN] REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)
-[LEARN] REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material"; superseded by scheme-properties attack
-[LEARN] ACCEPTED class @ epoch-key HMAC scheme-properties: static-static ECDH + request-only `Authorization: HMAC key=v1` credential + plain-JSON token parsing (zero MAC) confirmed at code level
-[LEARN] ACCEPTED class @ utilityPrivate trustedVault binding exposure: `Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs}` metrics + manifest origin-binding gaps
-[LEARN] ACCEPTED @ binary acquisition channel `repo.whale.naver.com`: HTTP 200 hash-pinned `.deb` — reverses "all passive channels blocked"; repeatable local static analysis now possible
-[LEARN] ACCEPTED class @ asymmetric epoch-HMAC design: client signs requests (EVP_DigestSign, domain-separated labels, len-CHECKed 32B global) but performs zero response verification — statically proven via xref-exhaustive consumer confinement + crypto-free response parser
-[LEARN] REJECTED class @ Whale-side id_token JWT verification: jwks_uri/RS256/ES256 strings owned by upstream Chromium email-verifier component, not Whale auth flow
-[LEARN] ACCEPTED @ method: REX.W LEA rip-relative byte-pattern sweep over stripped .text reliably enumerates string-consumer sets in Chromium-derived binaries without symbols
-[LEARN] ACCEPTED @ binary channel resilience: repo.whale.naver.com re-acquisition + sha256 pin works after every sandbox wipe (5/5 byte-exact); always hash-verify before analysis
-[LEARN] ACCEPTED class @ epoch-key request-path confinement: xref-exhaustive REX.W LEA sweep proves pinned SPKI/`whale:hmac:`/`Authorization: HMAC key=` each have exactly ONE consumer, all inside signing cluster `0xc0d46e6`–`0xc0d4f10`, and response parser `0xc0d5c91`–`0xc0d5eb6` makes zero crypto-helper calls
-[LEARN] ACCEPTED @ boringssl static-linkage depth: init CHECK strings = `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.c` (EVP_DigestSign) with 0 EVP_/ECDSA_/RSA_ symbols among 2975 dynamic imports — crypto core primitive identified; dynsym import-scan method confirmed non-informative for this target
-[RISK] sync: 75 reason: epoch-key exchange lacks signature verification (binary-confirmed zero verifiers), utilityPrivate setSyncEncryptionKeys origin-binding gaps, authkey_fetcher fork may weaken validation, 9 Whale-specific sync files + WBC layer + per-account bootstrap tokens + server-tweakable Multiplay exclusion + Whale-only NID OAuth all confirmed in latest binary; same-day v4.39.410.14 bump suggests active changes | browser: 82 reason: sidebar/dual-tab (6 CVEs in 2025) remain 3 minor versions past last fix with zero 2026 CVEs; CPE Linux gap resolved; sample extension manifest + background.js confirm ALL-origin content_scripts + unvalidated sidebarAction.show | libs: 40 reason: socket.io.slim.js confirmed in resources.pak but handler runtime-fetched; no version string extracted; no passive CVE link; binary required for version audit
+[LEARN] REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material";
