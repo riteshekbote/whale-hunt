@@ -1,301 +1,120 @@
 [0m
 > build · mimo-v2.5-free
 [0m
-[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/
-total 1284
-drwxr-xr-x 11 runner runner   4096 Aug 21 23:05 .
-drwxr-xr-x  3 runner runner   4096 Aug 21 23:04 ..
-drwxr-xr-x  7 runner runner   4096 Aug 21 23:05 .git
-drwxr-xr-x  3 runner runner   4096 Aug 21 23:05 .github
--rw-r--r--  1 runner runner   1057 Aug 21 23:05 README.md
--rw-r--r--  1 runner runner      0 Aug 21 23:05 cands-naver.txt
-drwxr-xr-x  2 runner runner   4096 Aug 21 23:05 inventory
-drwxr-xr-x  2 runner runner   4096 Aug 21 23:05 knowledge
-drwxr-xr-x  2 runner runner  49152 Aug 21 23:05 leads
--rw-r--r--  1 runner runner  45209 Aug 21 23:05 probe-results.md
-drwxr-xr-x  2 runner runner   4096 Aug 21 23:05 reports
--rw-r--r--  1 runner runner 597201 Aug 21 23:05 repos-naver.json
-drwxr-xr-x  3 runner runner   4096 Aug 21 23:05 reposcan-raw
--rw-r--r--  1 runner runner 527610 Aug 21 23:05 scan-prompt.txt
--rw-r--r--  1 runner runner   1292 Aug 21 23:05 scope.yml
-drwxr-xr-x  2 runner runner   4096 Aug 21 23:05 scripts
--rw-r--r--  1 runner runner     34 Aug 21 23:05 state_bigpickle.json
--rw-r--r--  1 runner runner     37 Aug 21 23:05 state_laguna.json
--rw-r--r--  1 runner runner     34 Aug 21 23:05 state_ling3.json
--rw-r--r--  1 runner runner     34 Aug 21 23:05 state_longcat.json
--rw-r--r--  1 runner runner     37 Aug 21 23:05 state_nemotron3.json
-drwxr-xr-x  2 runner runner  24576 Aug 21 23:05 triage
-[0m
-Let me start by understanding the workspace and then scanning the `gladiaio/` GitHub org and npm package metadata.
-[0m✱ [0mGlob "**/*"[90m in . · 100 matches[0m
+[0m→ [0mRead .
+[0m✱ [0mGlob "**/*gladia*"[90m 0 matches[0m
+[0m✱ [0mGlob "**/*sdk*"[90m 0 matches[0m
 ## Objective
-- Triage public-source static scan of Naver Whale browser for reportable vulnerabilities, with primary focus on sync KDF/crypto surface via binary static analysis
-- Produce reportable bug candidates from binary string/rodata analysis of Whale v4.39.410.14 `.deb` from `repo.whale.naver.com`
+- Triage static scan of Naver Whale browser (public GitHub repos + binary analysis) to find reportable vulnerabilities in the sync KDF/encryption layer, third-party libraries, and browser-specific code
+- Scope: `gladiaio/` GitHub org scan for public repo secrets + Whale browser binary static analysis as primary vulnerability surface
 
 ## Important Details
-- **Target**: Naver Whale browser (desktop Linux `.deb`, Android APK) — Chromium-based, Whale-only fork with custom sync, crypto, and extension API surfaces
-- **Current latest version**: v4.39.410.14 (corrected from v4.39.410.18; AUR + FileHorse confirm .410.14); same-day double release Aug 18 (v4.38.386.14 → v4.39.410.14 → v4.39.410.18) with Chromium 137→138 + login-server-error hotfix
-- **Binary acquisition**: `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb` — HTTP 200, 166MB, sha256-pinned, works after sandbox wipe (5/5 byte-exact)
-- **Binary is ephemeral**: extracted ELF absent after sandbox wipe; every disassembly cycle must re-download, verify hash, re-extract
-- **Public repo** (`naver/whale-browser-developers`): documentation-only (pushed 2019-09-23, 0 releases, 4 branches = 131 total blobs); **zero sync/crypto/OSCrypt source files** in any public branch
-- **Excluded from scope**: all `*.naver.com` web services, XSS Auditor bypass, status-bar URL spoofing, SafeBrowsing FP/FN, IETab extension
-- **NVD endpoint**: `services.nvd.nist.gov/rest/json/cves/2.0` (HTTP 200, primary); `nvd.nist.gov/rest` blocked by Cloudflare; keyword `whale` (28 total, `naver+whale` quirk returns 0)
-- **NVD gap**: 0 Whale CVEs published in 2026; 28 total; latest CVE-2025-69235 @2025-12-30 (8-month disclosure gap confirmed static)
-- **Scope.yml rules**: client-side software only (static source analysis + repro-first); secrets sha256 only
+- **Program scope**: MEDIUM-priority SDK repos; Whale browser bugs must reproduce on latest version; `*.naver.com` web services explicitly OUT OF SCOPE per `scope.yml`
+- **Excluded classes**: XSS Auditor bypass, status-bar URL preview spoofing, SafeBrowsing FP/FN, IETab extension
+- **Current latest version**: v4.39.410.14 (Aug 18, 2026) — Chromium 138.0.7204.92 engine; same-day double release v4.39.410.14→v4.39.410.18 with login-server-error hotfix
+- **NVD gap**: 28 total whale CVEs, 0 published in 2026 — 8-month disclosure gap (latest CVE-2025-69235 @2025-12-30); NVD keywordSearch=whale is correct query (naver+whale quirk returns 0)
+- **Binary acquisition channel**: `repo.whale.naver.com` confirmed accessible (HTTP 200, 166MB .deb); all other channels dead (cloudfront DNS No-answer, APKMirror 403, Uptodown 410, APKPure CDN 403, pstatic 404)
+- **Public repo status**: `naver/whale-browser-developers` is documentation-only (pushed 2019-09-23, 0 releases, 4 branches = 131 total blobs); 0 Whale-specific sync/crypto source files exist
+- **Sample extension (translate branch)**: 5 files HTTP 200 — ALL-origin `content_scripts` + zero `sender.origin`/`sender.url`/`sender.tab` validation; class REJECTED as duplicate of fixed CVE-2025-69234/69235
+- **CVE-2025-69234/69235 CPE**: `cpe:2.3:a:navercorp:whale:*:*:*:*:*:*:*` is platform-agnostic (covers Linux)
+- **Sandbox constraints**: `*.cloudfront.net` DNS No-answer (hard network block), `nvd.nist.gov/rest` Cloudflare-blocked, `services.nvd.nist.gov/rest` fluctuating (HTTP 200/404)
+- **Binary is ephemeral**: `/tmp/opencode/whale_binary/` lost on every sandbox wipe; must re-download + hash-verify each cycle
+- **Key binary findings** (from v4.39.410.14 string/rodata analysis):
+  - WBC crypto layer: `wbc.cc` + `wbc_wrapper_apis.cc` + `encryptor.cc` (Whale custom, separate from Chromium os_crypt)
+  - 9 Whale-specific sync source files confirmed in binary
+  - `utilityPrivate` API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup`
+  - Chromium upstream `os_crypt/sync/` marked "legacy interface which should not be used in new code" — Whale still uses it
+  - `authkey_fetcher.cc` confirmed as Whale fork inside upstream identity_manager
+  - BoringSSL static-linked (0 EVP_/ECDSA_/RSA_ symbols among 2975 dynamic imports)
 
 ## Work State
-
 ### Completed
-- Full repo enumeration: all 4 branches (master 3/v2 2/translate 57/jdkim 39 blobs) + 5 wiki pages + README.ko.md — confirmed 0 Whale-specific source/sync/crypto files
-- NVD gap monitor established: `keywordSearch=whale` totalResults=28, 0 in 2026, 0 sync-class keyword hits across all 28 descriptions (sync|kdf|pbkdf|scrypt|oscrypt|bootstrap|master.key|keyring|crypto all 0)
-- Binary acquisition channel discovered and confirmed: `repo.whale.naver.com` bypasses all cloudfront/APKMirror/Uptodown blocks
-- Binary sha256 pin verified (5/5 byte-exact after sandbox wipes)
-- **Binary static analysis findings** (v4.39.410.14):
-  - **WBC crypto layer**: `../../whale/crypto/wbc/wbc.cc` + `wbc_wrapper_apis.cc` + `../../whale/crypto/encryptor.cc` — Whale's custom encryption layer separate from Chromium's `os_crypt/sync/`
-  - **Sync engine fork**: 9 Whale-specific sync source files: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `data_type_worker_whale.cc`, `sync_server_connection_manager_whale.cc`, `whale_sync_util.cc`, plus 2 more under `../../whale/components/sync/`
-  - **Asymmetric epoch-HMAC design**: client signs outbound requests (EVP_DigestSign, domain-separated `whale:hmac:`+`v1`, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs **zero response verification** — code-proven via xref-exhaustive consumer confinement (conf 70)
-  - **Epoch-key request-path confinement**: pinned SPKI `@0x2968510`, `whale:hmac:`, `Authorization: HMAC key=` each have exactly ONE consumer, all inside signing cluster `0xc0d46e6`–`0xc0d4f10`; response parser `0xc0d5c91`–`0xc0d5eb6` makes zero crypto-helper calls
-  - **Signin delivery**: `client_private_key`/`session_id`/`csrf_token` arrive as JSON trio via `OnEpochKeyConfirmed` WebUI bridge (`inline_login_handler_impl_whale.cc`), re-serialized into every token-fetch payload; endpoint `/oauth2/v1/nid/epoch/v1`
-  - **authkey_fetcher fork**: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` confirmed as Whale fork inside upstream `identity_manager`
-  - **OSCrypt async coexistence**: v4.39.410.14 uses Chromium 138 async OSCrypt (`components/os_crypt/async/browser/...`) while retaining legacy Whale OSCrypt fork
-  - **utilityPrivate API**: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` — JS API surface for sync encryption key management
-  - **KDF debug string** `%s: kdf key len: %d` proven to be **libsrtp/WebRTC** output, NOT sync-crypto evidence (REJECTED as signal)
-  - **Boringssl static-linkage**: init CHECK strings = `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.cc.inc` (EVP_DigestSign) with 0 EVP_/ECDSA_/RSA_ symbols among 2975 dynamic imports
-- **Method validated**: REX.W LEA rip-relative byte-pattern sweep over stripped `.text` reliably enumerates string-consumer sets without symbols; reusable for remaining clusters
-- Sample extension surface confirmed live (5 files HTTP 200) but REJECTED as duplicate of fixed CVEs
-- All rejected classes documented: sidebar SOP (conf 32, duplicate CVE-2025-69234/69235), socket.io (conf 38, handler runtime-fetched), installer DLL (conf 50, no proof path), KDF debug string (libsrtp not sync)
+- Full repo enumeration: all 4 branches (master 3, v2 2, translate 57, jdkim 39 blobs) + 5 wiki pages + README.ko.md — 0 sync/crypto source files
+- Binary acquisition from `repo.whale.naver.com` confirmed accessible; sha256 pinning verified (5/5 byte-exact across wipes)
+- Binary string/rodata analysis: WBC crypto layer, sync engine fork, utilityPrivate API, KDF debug string (proven libsrtp/WebRTC, not sync), boringssl static-linkage confirmed
+- NVD gap monitor established: `keywordSearch=whale` (28 total, 0 in 2026, 0 sync-class keyword hits)
+- Sample extension + wiki surface fully characterized: 6 artifacts HTTP 200, 0 sender.* grep matches, REJECTED as duplicate of fixed CVEs
+- **ALIVE CLASSES with code-proven evidence**:
+  - **Epoch-key HMAC scheme-properties (conf 70)**: `static-static ECDH` + `Authorization: HMAC key=v1` credential + plain-JSON token parsing (zero MAC on response) — confirmed via xref-exhaustive consumer confinement
+  - **Request-response asymmetry**: Client signs outbound requests (EVP_DigestSign, domain-separated `whale:hmac:`+`v1`, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs zero response verification — code-proven
+  - **Epoch-key response parser verification absence**: Binary at 0xc0d5c91–0xc0d5eb6 consumes plain JSON with zero crypto-helper calls
+  - **WhaleNidAuth request signing**: HMAC key = ECDH(PKCS#8 client_private_key, hex server pubkey), domain-separated `whale:hmac:`+`v1`, canonical message binds X-CSRF-Token/X-Timestamp/X-Nonce
+  - **Signin delivery**: client_private_key/session_id/csrf_token arrive as JSON trio via OnEpochKeyConfirmed WebUI bridge, parsed with type-tags, re-serialized into every token-fetch payload; endpoint `/oauth2/v1/nid/epoch/v1`
+  - **utilityPrivate trustedVault binding exposure**: `Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs}` metrics + manifest origin-binding gaps
+  - **OSCrypt async variant**: v4.39.410.14 uses Chromium 138 async OSCrypt while retaining legacy Whale OSCrypt fork — coexistence confirmed
+  - **authkey_fetcher fork**: Whale fork inside upstream identity_manager
+  - **Epoch-key exchange verification absence**: zero whale-specific signature-verification strings for epoch-key response; epoch-key path lacks client-side verification
+- **REJECTED classes** (parked permanently):
+  - sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40, duplicate of CVE-2025-69234/69235/53600/62583/62584/62585, platform-agnostic CPE covers latest version
+  - socket.io.slim.js event-handler injection: confidence 38 < 40, handler runtime-fetched
+  - installer DLL search-order regression: confidence 50 < 60, no passive proof path
+  - KDF debug string: proven libsrtp/WebRTC, not sync-crypto
+  - push notification socket.io: confidence 45 < 50
+- **NVD keyword research**: "sync", "encrypt", "bootstrap", "kdf", "crypto", "key", "token", "session", "authentication", "password" — zero hits across 28 CVEs
+- REX.W LEA rip-relative byte-pattern sweep method confirmed for string-consumer enumeration in stripped binaries
 
 ### Active
-- **Epoch-key HMAC scheme-properties class** (conf 70): strongest live hypothesis — asymmetric request-only authentication; response parsed with zero crypto verification
-- **Epoch-key exchange verification**: client lacks response verification for epoch-key endpoint; falsifiable at pinned-key site
-- **UtilityPrivate origin-binding gaps**: manifest shows gaps for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`; `Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs}` metrics confirmed — pending caller-context proof
-- **Binary re-acquisition cycle**: must re-download + verify sha256 + re-extract before each disassembly session
-- **NVD gap monitor**: services.nvd.nist.gov HTTP 200, `keywordSearch=whale`, 28 total, 0 in 2026
+- Epoch-key HMAC scheme-properties class (conf 70) — strongest alive surface; needs caller-context proof for utilityPrivate binding exposure
+- Request-response asymmetry code-proven — needs exploitation framing for report
+- Binary re-acquisition + deeper disassembly of epoch-key signing cluster (`0xc0d46e6`–`0xc0d4f10`) and response parser (`0xc0d5c91`–`0xc0d5eb6`)
 
 ### Blocked
-- **Binary extraction persistence**: ELF absent after sandbox wipe — must re-download from `repo.whale.naver.com` each cycle (works reliably)
-- **All other binary acquisition channels 100% dead in-sandbox**: cloudfront DNS No-answer (both 127.0.0.53 and 8.8.8.8, curl HTTP 000), APKMirror 403, Uptodown Android 410 Gone, APKPure CDN 403, `static-whale.pstatic.net` 404 (scope-excluded)
-- **UtilityPrivate caller-context proof**: need to confirm which web origins can call `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`
-- **Binary disassembly depth**: need to trace epoch-key response parser path more deeply (RIP-relative xref of JSON field accesses to confirm zero crypto dispatch)
+- All passive binary acquisition channels 100% blocked except `repo.whale.naver.com` (ephemeral, lost on sandbox wipe)
+- `services.nvd.nist.gov` endpoint fluctuating (HTTP 200/404/000) — CVE verification sometimes unavailable
+- Binary must be re-downloaded + sha256-verified every scan cycle due to sandbox wipes
 
 ## Next Move
-1. Re-download `.deb` from `repo.whale.naver.com`, verify sha256, re-extract ELF binary to `/tmp/opencode/whale_binary/`
-2. Deepen epoch-key response parser analysis: xref JSON field accesses at `0xc0d5c91`–`0xc0d5eb6` to confirm zero crypto-helper dispatch (seal response-side verification absence as code-proven)
-3. Trace `utilityPrivate` origin-binding: enumerate all call-sites of `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys` to confirm which web origins can invoke these sync-critical APIs
-4. Investigate `OnEpochKeyConfirmed` WebUI bridge context: confirm whether `client_private_key`/`session_id`/`csrf_token` JSON trio leaks to renderer or is confined to trusted UI
-5. Evaluate reportability: determine whether epoch-HMAC response-verification absence constitutes a vuln class reportable under scope.yml (requires reproduction path or concrete attack scenario)
+1. Re-download binary from `repo.whale.naver.com` (166MB .deb), verify sha256 pin, extract and disassemble epoch-key signing cluster + response parser for exploitation framing
+2. Trace `client_private_key` storage path and `showLoginPopup` call chain for privilege-escalation vector
+3. Investigate utilityPrivate `setSyncEncryptionKeys` / `retrieveTrustedVaultKeys` origin-binding gaps in manifest for cross-origin abuse potential
+4. Frame request-response asymmetry as MitM/key-substitution reportable finding (server sends forged epoch-key → client trusts response without MAC verification → attacker controls sync encryption keys)
+5. Continue NVD gap monitoring for new 2026 Whale CVEs
 
 ## Relevant Files
-- `/tmp/opencode/whale_binary/`: ephemeral binary extraction dir (must re-create each cycle)
-- `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`: canonical binary source (166MB, sha256-pinned)
-- `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json`: sample extension (ALL-origin content_scripts, REJECTED class)
-- `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js`: sample extension onMessage handler (0 sender.* validation, REJECTED class)
-- `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js`: dispatches sidebarAction from non-sidebar branch
-- `raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md`: wiki API docs (show({url}) arbitrary-URL loading)
+- `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`: Binary acquisition channel (166MB, HTTP 200)
+- `/tmp/opencode/whale_binary/`: Ephemeral extraction directory (lost on sandbox wipe)
+- `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/`: Sample extension (5 files, HTTP 200, REJECTED class)
+- `raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md`: Wiki docs (HTTP 200)
 - `services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=whale&resultsPerPage=200`: NVD gap monitor endpoint
+- Binary offsets: epoch-key signing cluster `0xc0d46e6`–`0xc0d4f10`, response parser `0xc0d5c91`–`0xc0d5eb6`, pinned P-256 SPKI `0x2968510`
 Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
 [0m→ [0mRead README.md
 [0m→ [0mRead scope.yml
-[0m→ [0mRead state_bigpickle.json
-Let me check the current state and understand what's been done and what's next.
-[0m
-[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/leads/ | head -20
-total 13336
-drwxr-xr-x  2 runner runner   49152 Aug 21 23:05 .
-drwxr-xr-x 11 runner runner    4096 Aug 21 23:05 ..
--rw-r--r--  1 runner runner 1847001 Aug 21 23:05 lead-bigpickle.md
--rw-r--r--  1 runner runner 3305599 Aug 21 23:05 lead-laguna.md
--rw-r--r--  1 runner runner   36866 Aug 21 23:05 lead-ling3.md
--rw-r--r--  1 runner runner  248858 Aug 21 23:05 lead-longcat.md
--rw-r--r--  1 runner runner   16623 Aug 21 23:05 lead-mimo.md
--rw-r--r--  1 runner runner 3718610 Aug 21 23:05 lead-nemotron3.md
--rw-r--r--  1 runner runner    2883 Aug 21 23:05 reposcan-2026-08-07-18-44.md
--rw-r--r--  1 runner runner    1240 Aug 21 23:05 reposcan-2026-08-07-18-59.md
--rw-r--r--  1 runner runner    6783 Aug 21 23:05 reposcan-2026-08-07-19-19.md
--rw-r--r--  1 runner runner    2370 Aug 21 23:05 reposcan-2026-08-07-19-22.md
--rw-r--r--  1 runner runner     366 Aug 21 23:05 reposcan-2026-08-07-19-28.md
--rw-r--r--  1 runner runner     466 Aug 21 23:05 reposcan-2026-08-07-20-06.md
--rw-r--r--  1 runner runner     617 Aug 21 23:05 reposcan-2026-08-07-20-11.md
--rw-r--r--  1 runner runner     948 Aug 21 23:05 reposcan-2026-08-07-20-59.md
--rw-r--r--  1 runner runner    5763 Aug 21 23:05 reposcan-2026-08-07-21-09.md
--rw-r--r--  1 runner runner    4346 Aug 21 23:05 reposcan-2026-08-07-21-58.md
--rw-r--r--  1 runner runner    3025 Aug 21 23:05 reposcan-2026-08-07-22-05.md
-[0m
-[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/reports/
-total 32588
-drwxr-xr-x  2 runner runner     4096 Aug 21 23:05 .
-drwxr-xr-x 11 runner runner     4096 Aug 21 23:05 ..
--rw-r--r--  1 runner runner 14639071 Aug 21 23:05 analyst-bigpickle.log
--rw-r--r--  1 runner runner 11927004 Aug 21 23:05 analyst-laguna.log
--rw-r--r--  1 runner runner   118185 Aug 21 23:05 analyst-ling3.log
--rw-r--r--  1 runner runner   412250 Aug 21 23:05 analyst-longcat.log
--rw-r--r--  1 runner runner   840578 Aug 21 23:05 analyst-mimo.log
--rw-r--r--  1 runner runner  4131979 Aug 21 23:05 analyst-nemotron3.log
--rw-r--r--  1 runner runner       52 Aug 21 23:05 hypotheses-bigpickle.txt
--rw-r--r--  1 runner runner       52 Aug 21 23:05 hypotheses-laguna.txt
--rw-r--r--  1 runner runner       48 Aug 21 23:05 hypotheses-ling3.txt
--rw-r--r--  1 runner runner       50 Aug 21 23:05 hypotheses-longcat.txt
--rw-r--r--  1 runner runner       46 Aug 21 23:05 hypotheses-mimo.txt
--rw-r--r--  1 runner runner    13315 Aug 21 23:05 hypotheses-nemotron3.txt
--rw-r--r--  1 runner runner  1569080 Aug 21 23:05 hypotheses.md
--rw-r--r--  1 runner runner    31648 Aug 21 23:05 valid-bugs.md
-[0m
-[0m$ [0mls -la /home/runner/work/whale-hunt/whale-hunt/triage/ | head -20
-total 3380
-drwxr-xr-x  2 runner runner 24576 Aug 21 23:05 .
-drwxr-xr-x 11 runner runner  4096 Aug 21 23:05 ..
--rw-r--r--  1 runner runner  8463 Aug 21 23:05 run-2026-08-07-19-23.md
--rw-r--r--  1 runner runner 14983 Aug 21 23:05 run-2026-08-07-21-01.md
--rw-r--r--  1 runner runner  7882 Aug 21 23:05 run-2026-08-07-21-04.md
--rw-r--r--  1 runner runner 20203 Aug 21 23:05 run-2026-08-07-21-57.md
--rw-r--r--  1 runner runner 14629 Aug 21 23:05 run-2026-08-07-22-02.md
--rw-r--r--  1 runner runner 21701 Aug 21 23:05 run-2026-08-07-22-57.md
--rw-r--r--  1 runner runner 25767 Aug 21 23:05 run-2026-08-07-23-03.md
--rw-r--r--  1 runner runner 23210 Aug 21 23:05 run-2026-08-07-23-53.md
--rw-r--r--  1 runner runner   596 Aug 21 23:05 run-2026-08-08-02-34.md
--rw-r--r--  1 runner runner 23521 Aug 21 23:05 run-2026-08-08-04-30.md
--rw-r--r--  1 runner runner 23484 Aug 21 23:05 run-2026-08-08-04-39.md
--rw-r--r--  1 runner runner 14903 Aug 21 23:05 run-2026-08-08-06-09.md
--rw-r--r--  1 runner runner   838 Aug 21 23:05 run-2026-08-08-07-30.md
--rw-r--r--  1 runner runner 19293 Aug 21 23:05 run-2026-08-08-09-06.md
--rw-r--r--  1 runner runner 16293 Aug 21 23:05 run-2026-08-08-10-02.md
--rw-r--r--  1 runner runner 11886 Aug 21 23:05 run-2026-08-08-10-56.md
--rw-r--r--  1 runner runner 18726 Aug 21 23:05 run-2026-08-08-11-50.md
-[0m
-[0m→ [0mRead reports/valid-bugs.md[90m [limit=100][0m
-[0m
-[0m$ [0mhead -100 /home/runner/work/whale-hunt/whale-hunt/leads/lead-mimo.md
-## 2026-08-21 19:33:58 UTC [api] (model mimo)
-[PRIO] whale desktop binary epoch-key response parser | score=6.1 | attack_surface=8 | business_value=7 | tech_exposure=6 | gate_ease=7 | cloud_surface=4 | freshness=5
-[HYP] Whale epoch-key response verifierless signing material extraction
-class: OTHER
-asset: whale binary epoch-key response parser (0xc0d5c91–0xc0d5eb6)
-confidence: 70
-reasoning: The response parser at 0xc0d5c91–0xc0d5eb6 consumes plain JSON (expires_in/access_token/id_token/error) with ZERO crypto-helper calls — no HMAC verification, no signature check, no nonce/timestamp validation before the epoch-key material is passed downstream to sync encryption setup. The signing pipeline (combine_fn c0d70f0 → domain-separated HMAC whale:hmac:+v1) only covers requests OUTBOUND; the response is trusted as-is. An attacker who can inject or modify the epoch-key HTTP response (via MITM, extension, or compromised proxy) could supply arbitrary access_token/id_token values that feed directly into the sync encryption key derivation chain.
-evidence_needed: Full control-flow trace from response parser 0xc0d5c91 through OnEpochKeyConfirmed bridge to sync encryption setup; confirmation that no intermediate verification layer exists between response parse and key usage.
-verify_steps: HUMAN_ONLY: Re-acquire binary from repo.whale.naver.com, extract, objdump/ghidra trace the response parser 0xc0d5c91–0xc0d5eb6 forward through all callers to confirm zero verification before key material is consumed.
-impact: Attacker-controlled epoch-key response could inject arbitrary sync encryption keys, enabling full data exfiltration or sync session hijack. Severity: HIGH (CVSS 7.5+ if MITM achievable; MEDIUM if extension-gated).
-testability: HUMAN_ONLY
-[FINAL] Whale epoch-key response verifierless signing material extraction | conf=70 | class=OTHER | asset=binary epoch-key response parser | testability=HUMAN_ONLY
-[LEARN] ACCEPTED class @ epoch-key response parser verification absence: binary code at 0xc0d5c91–0xc0d5eb6 consumes plain JSON with zero crypto-helper calls — asymmetric response-trust design confirmed via xref-exhaustive consumer confinement
-[LEARN] ACCEPTED class @ request-response asymmetry: client signs outbound requests (EVP_DigestSign, domain-separated whale:hmac:+v1, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs zero response verification — code-proven, not hypothesis
-[LEARN] REJECTED class @ KDF debug string sync evidence: %s: kdf key len: %d proven to be libsrtp/WebRTC debug output, not sync-crypto evidence — no longer a signal
-[LEARN] REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + whale:hmac:/v1 labels falsify "zero client-side verification material" — the verification gap is specifically in the RESPONSE path, not the request path
-[RISK] sync: 70 reason | epoch-key response lacks cryptographic verification; combined with Whale's custom signing layer (WBC + authkey_fetcher fork), a MITM or extension-gated attacker could inject arbitrary sync encryption keys. Binary acquisition channel (repo.whale.naver.com) is live and hash-pinned, making this a reproducible finding for a HUMAN analyst.
-## 2026-08-21 19:53:39 UTC [api] (model mimo)
-[PRIO] whale binary epoch-key response parser | score=6.1 | attack=8 | business=7 | tech=6 | gate=7 | cloud=4 | fresh=5
-[PRIO] utilityPrivate origin-binding gaps (setSyncEncryptionKeys/retrieveTrustedVaultKeys) | score=5.0 | attack=6 | business=5 | tech=7 | gate=3 | cloud=3 | fresh=4
-[PRIO] authkey_fetcher.cc Whale fork (identity_manager) | score=4.5 | attack=5 | business=5 | tech=6 | gate=4 | cloud=3 | fresh=4
-[HYP] Whale epoch-key response verifierless signing material extraction
-class: OTHER
-asset: whale binary epoch-key response parser (0xc0d5c91–0xc0d5eb6)
-confidence: 70
-reasoning: The response parser at 0xc0d5c91–0xc0d5eb6 consumes plain JSON (expires_in/access_token/id_token/error) with ZERO crypto-helper calls — no HMAC verification, no signature check, no nonce/timestamp validation before epoch-key material passes downstream to sync encryption setup. The signing pipeline (combine_fn c0d70f0 → domain-separated HMAC whale:hmac:+v1) only covers requests OUTBOUND; the response is trusted as-is. An attacker who can inject or modify the epoch-key HTTP response (via MITM, extension, or compromised proxy) could supply arbitrary access_token/id_token values feeding directly into the sync encryption key derivation chain.
-evidence_needed: Full control-flow trace from response parser 0xc0d5c91 through OnEpochKeyConfirmed bridge to sync encryption setup; confirmation that no intermediate verification layer exists between response parse and key usage.
-verify_steps: HUMAN_ONLY: Re-acquire binary from repo.whale.naver.com, extract, objdump/ghidra trace the response parser 0xc0d5c91–0xc0d5eb6 forward through all callers to confirm zero verification before key material is consumed.
-impact: Attacker-controlled epoch-key response could inject arbitrary sync encryption keys, enabling full data exfiltration or sync session hijack. Severity: HIGH (CVSS 7.5+ if MITM achievable; MEDIUM if extension-gated).
-testability: HUMAN_ONLY
-[PARKED] utilityPrivate origin-binding gaps: confidence not assigned, no concrete verify_steps beyond manifest inspection; needs HUMAN binary tracing.
-[PARKED] authkey_fetcher.cc Whale fork: confidence not assigned, no concrete exploit path without full callgraph trace.
-[FINAL] Whale epoch-key response verifierless signing material extraction | conf=70 | class=OTHER | testability=HUMAN_ONLY
-[NEXT] HUMAN: Extract binary at /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale (sha256=10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19), objdump -d the response parser range 0xc0d5c91–0xc0d5eb6 to enumerate all callers, then trace each caller forward through OnEpochKeyConfirmed bridge to confirm zero crypto-helper calls before key material is consumed by sync encryption setup. Report: (a) all caller addresses, (b) whether any caller invokes HMAC/EVP_DigestVerify/ECDSA_verify/ASN1_verify, (c) the first downstream consumer of the parsed id_token/access_token.
-[LEARN] ACCEPTED class @ epoch-key response parser verification absence: binary code at 0xc0d5c91–0xc0d5eb6 consumes plain JSON with zero crypto-helper calls — asymmetric response-trust design confirmed via xref-exhaustive consumer confinement.
-[LEARN] ACCEPTED class @ request-response asymmetry: client signs outbound requests (EVP_DigestSign, domain-separated whale:hmac:+v1, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs zero response verification — code-proven, not hypothesis.
-[LEARN] REJECTED class @ KDF debug string sync evidence: `%s: kdf key len: %d` proven to be libsrtp/WebRTC debug output, not sync-crypto evidence — no longer a signal.
-[LEARN] REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material" — the verification gap is specifically in the RESPONSE path, not the request path.
-[RISK] sync: 70 reason | browser: 60 reason | libs: 25 reason
-## 2026-08-21 20:21:19 UTC [api] (model mimo)
-## 2026-08-21 20:54:08 UTC [api] (model mimo)
-## 2026-08-21 21:17:34 UTC [api] (model mimo)
-## 2026-08-21 21:53:01 UTC [api] (model mimo)
-## 2026-08-21 22:07:47 UTC [api] (model mimo)
-[PRIO] whale desktop binary epoch-key response parser | score=6.1 | attack_surface=8 | business_value=7 | tech_exposure=6 | gate_ease=7 | cloud_surface=4 | freshness=5
-[PRIO] utilityPrivate origin-binding gaps (setSyncEncryptionKeys/retrieveTrustedVaultKeys) | score=5.0 | attack_surface=6 | business_value=5 | tech_exposure=7 | gate_ease=3 | cloud_surface=3 | freshness=4
-[PRIO] authkey_fetcher.cc Whale fork (identity_manager) | score=4.5 | attack_surface=5 | business_value=5 | tech_exposure=6 | gate_ease=4 | cloud_surface=3 | freshness=4
-[HYP] Whale epoch-key response verifierless signing material extraction
-class: OTHER
-asset: whale binary epoch-key response parser (0xc0d5c91–0xc0d5eb6)
-confidence: 70
-reasoning: The response parser at 0xc0d5c91–0xc0d5eb6 consumes plain JSON (expires_in/access_token/id_token/error) with ZERO crypto-helper calls — no HMAC verification, no signature check, no nonce/timestamp validation before epoch-key material passes downstream to sync encryption setup. The signing pipeline (combine_fn c0d70f0 → domain-separated HMAC whale:hmac:+v1) only covers requests OUTBOUND; the response is trusted as-is. An attacker who can inject or modify the epoch-key HTTP response (via MITM, extension, or compromised proxy) could supply arbitrary access_token/id_token values feeding directly into the sync encryption key derivation chain.
-evidence_needed: Full control-flow trace from response parser 0xc0d5c91 through OnEpochKeyConfirmed bridge to sync encryption setup; confirmation that no intermediate verification layer exists between response parse and key usage.
-verify_steps: HUMAN_ONLY: Re-acquire binary from repo.whale.naver.com, extract, objdump/ghidra trace the response parser 0xc0d5c91–0xc0d5eb6 forward through all callers to confirm zero verification before key material is consumed.
-impact: Attacker-controlled epoch-key response could inject arbitrary sync encryption keys, enabling full data exfiltration or sync session hijack. Severity: HIGH (CVSS 7.5+ if MITM achievable; MEDIUM if extension-gated).
-testability: HUMAN_ONLY
-[PARKED] utilityPrivate origin-binding gaps: confidence not assigned, no concrete verify_steps beyond manifest inspection; needs HUMAN binary tracing.
-[PARKED] authkey_fetcher.cc Whale fork: confidence not assigned, no concrete exploit path without full callgraph trace.
-[FINAL] Whale epoch-key response verifierless signing material extraction | conf=70 | class=OTHER | asset=binary epoch-key response parser | testability=HUMAN_ONLY
-[NEXT] HUMAN: Extract binary at /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale (sha256=10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19), objdump -d the response parser range 0xc0d5c91–0xc0d5eb6 to enumerate all callers, then trace each caller forward through OnEpochKeyConfirmed bridge to confirm zero crypto-helper calls before key material is consumed by sync encryption setup. Report: (a) all caller addresses, (b) whether any caller invokes HMAC/EVP_DigestVerify/ECDSA_verify/ASN1_verify, (c) the first downstream consumer of the parsed id_token/access_token.
-[LEARN] ACCEPTED class @ epoch-key response parser verification absence: binary code at 0xc0d5c91–0xc0d5eb6 consumes plain JSON with zero crypto-helper calls — asymmetric response-trust design confirmed via xref-exhaustive consumer confinement.
-[LEARN] ACCEPTED class @ request-response asymmetry: client signs outbound requests (EVP_DigestSign, domain-separated whale:hmac:+v1, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs zero response verification — code-proven, not hypothesis.
-[LEARN] REJECTED class @ KDF debug string sync evidence: `%s: kdf key len: %d` proven to be libsrtp/WebRTC debug output, not sync-crypto evidence — no longer a signal.
-[LEARN] REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material" — the verification gap is specifically in the RESPONSE path, not the request path.
-[RISK] sync: 70 reason | epoch-key response lacks cryptographic verification; combined with Whale's custom signing layer (WBC + authkey_fetcher fork), a MITM or extension-gated attacker could inject arbitrary sync encryption keys. Binary acquisition channel (repo.whale.naver.com) is live and hash-pinned, making this a reproducible finding for a HUMAN analyst.
-[RISK] browser: 60 reason | sidebar SOP bypass surface exists but maps to fixed CVEs; Chromium 138 upgrade may have introduced new attack surface but binary diff not yet performed.
-[RISK] libs: 25 reason | socket.io.slim.js present in resources.pak but handler runtime-fetched; no version string; low confidence without binary extraction.
-## 2026-08-21 22:30:37 UTC [api] (model mimo)
-[PRIO] whale desktop binary epoch-key response parser | score=6.1 | attack=8 | business=7 | tech=6 | gate=7 | cloud=4 | fresh=5
-[PRIO] utilityPrivate origin-binding gaps (setSyncEncryptionKeys/retrieveTrustedVaultKeys) | score=5.0 | attack=6 | business=5 | tech=7 | gate=3 | cloud=3 | fresh=4
-[PRIO] authkey_fetcher.cc Whale fork (identity_manager) | score=4.5 | attack=5 | business=5 | tech=6 | gate=4 | cloud=3 | fresh=4
-[HYP] Whale epoch-key response verifierless signing material extraction
-class: OTHER
-asset: whale binary epoch-key response parser (0xc0d5c91–0xc0d5eb6)
-confidence: 70
-reasoning: The response parser consumes plain JSON (expires_in/access_token/id_token/error) with ZERO crypto-helper calls. The signing pipeline (combine_fn c0d70f0 → domain-separated HMAC whale:hmac:+v1) covers requests OUTBOUND only; the response is trusted as-is. Xref-exhaustive consumer confinement proves pinned SPKI/labels each have exactly ONE consumer inside signing cluster c0d46e6–c0d4f10, and response parser makes zero crypto-helper calls.
-evidence_needed: Full control-flow trace from response parser 0xc0d5c91 through OnEpochKeyConfirmed bridge to sync encryption setup; confirmation that no intermediate verification layer exists between response parse and key usage.
-verify_steps: HUMAN_ONLY: Re-acquire binary from repo.whale.naver.com, extract, objdump/ghidra trace the response parser 0xc0d5c91–0xc0d5eb6 forward through all callers to confirm zero verification before key material is consumed. Report: (a) all caller addresses, (b) whether any caller invokes HMAC/EVP_DigestVerify/ECDSA_verify/ASN1_verify, (c) the first downstream consumer of the parsed id_token/access_token.
-impact: Attacker-controlled epoch-key response could inject arbitrary sync encryption keys, enabling full data exfiltration or sync session hijack. Severity: HIGH (CVSS 7.5+ if MITM achievable; MEDIUM if extension-gated).
-testability: HUMAN_ONLY
-[HYP] utilityPrivate origin-binding gaps (setSyncEncryptionKeys/retrieveTrustedVaultKeys)
-class: OTHER
-asset: whale extension API manifest
-confidence: 35
-reasoning: Manifest shows origin-binding gaps for setSyncEncryptionKeys and retrieveTrustedVaultKeys functions. However, no concrete exploit path exists without full binary callgraph trace showing how these APIs are invoked and what validation exists at the call site.
-evidence_needed: Binary trace of utilityPrivate API callgraph from JS binding through to crypto layer; confirmation that no origin validation exists at the native binding layer.
-verify_steps: HUMAN_ONLY: Ghidra trace of utilityPrivate JS binding functions in whale binary; map origin validation at each call site.
-impact: Potential for extension-gated key injection if origin validation is missing. Severity depends on caller context.
-testability: HUMAN_ONLY
-[HYP] authkey_fetcher.cc Whale fork (identity_manager)
-class: OTHER
-asset: whale binary authkey_fetcher fork
-confidence: 30
-reasoning: authkey_fetcher.cc confirmed as Whale fork inside upstream identity_manager, but no concrete exploit path exists without full callgraph trace showing how the forked code differs from upstream and whether the differences introduce vulnerabilities.
-evidence_needed: Full callgraph trace of authkey_fetcher fork; comparison with upstream Chromium identity_manager code to identify behavioral differences.
-verify_steps: HUMAN_ONLY: Ghidra disassembly of authkey_fetcher fork; diff against upstream Chromium source to identify divergent behavior.
-impact: Unknown without callgraph analysis; could expose auth flow vulnerabilities.
-testability: HUMAN_ONLY
-[PARKED] utilityPrivate origin-binding gaps: confidence 35 < 40 threshold; no concrete verify_steps beyond manifest inspection; needs HUMAN binary tracing. Parked.
-[PARKED] authkey_fetcher.cc Whale fork: confidence 30 < 40 threshold; no concrete exploit path without full callgraph trace. Parked.
-[0m
-Based on the project state, here's what we've accomplished so far:
+[0m→ [0mRead probe-results.md
+Let me examine the current workspace to understand what's been done.
+[0m→ [0mRead inventory
+[0m→ [0mRead knowledge
+[0m→ [0mRead leads
+[0m→ [0mRead reports
+[0m→ [0mRead triage
+[0m→ [0mRead scripts
+[0m→ [0mRead reports/valid-bugs.md
+[0m→ [0mRead knowledge/index.md
+[0m→ [0mRead inventory/whale.md
+[0m→ [0mRead scan-prompt.txt
+[0m→ [0mRead reports/hypotheses.md
+Let me check the key summary files.
+Here's a summary of the whale-hunt project status:
 
-## Summary of Progress
+## What we've built
+A multi-model automated vulnerability research pipeline for **Naver Whale browser**, with 5 AI models running parallel hunts every 10 minutes. 880+ reposcan runs and 431+ triage runs completed since Aug 7.
 
-**Project**: Multi-model bug-hunting automation for Naver Whale Browser
+## What we know
+- **Public repo is dead**: `naver/whale-browser-developers` is documentation-only (last code commit 2019-09-23); zero browser source, sync code, or library manifests available
+- **NVD gap confirmed**: 28 total Whale CVEs, **0 published in 2026** — 8-month disclosure gap since CVE-2025-69235/69234 (Dec 2025)
+- **Current version**: v4.39.410.14 (Linux binary from `repo.whale.naver.com` confirmed accessible; SHA256 pinned)
+- **Binary analysis reveals**: WBC custom crypto layer (`wbc.cc`, `wbc_wrapper_apis.cc`), forked sync engine (`authkey_fetcher.cc`), `utilityPrivate` API surface (`setSyncEncryptionKeys`, `getSyncCacheGuid`), Epoch-key HMAC scheme with `Authorization: HMAC key=v1` credential, and request-response asymmetry (client signs requests but performs zero response MAC verification)
+- **Sample extension attack surface**: ALL-origin `content_scripts` + zero `sender.*` validation — REJECTED as duplicate of fixed CVEs
 
-**Models Running**: 5 parallel models (Big Pickle, Nemotron 3 Ultra, Longcat, Ling 3.0, Laguna)
+## What's blocked
+- **All passive binary channels dead** except `repo.whale.naver.com` (ephemeral, lost on sandbox wipe)
+- **0 VALID bugs** — every lead fails Q4 (no passive proof) or Q7 (speculative); top leads are HOLD (sync KDF, bootstrap-token, utilityPrivate binding, request-response asymmetry) all requiring binary artifact
+- **Repo scan pipeline regressed**: scanning `gladiaio/` instead of `whale/` since ~Aug 8
 
-**Key Findings**:
-- **0 validated bugs** to date - all leads are recon-level hypotheses without proof
-- **Strongest lead**: "Whale epoch-key response verifierless signing material extraction" (confidence 70)
-  - Binary analysis confirmed asymmetric request-only authentication
-  - Response parser at `0xc0d5c91–0xc0d5eb6` consumes plain JSON with ZERO crypto-helper calls
-  - Client signs outbound requests (EVP_DigestSign, domain-separated `whale:hmac:+v1`) but performs zero response verification
-  - Testability: HUMAN_ONLY (requires binary re-acquisition)
+## Most promising surfaces (all HOLD on binary)
+1. Epoch-key HMAC scheme-properties (conf 70) — static-static ECDH + plain-JSON response parsing
+2. Request-response asymmetry — client signs requests, never verifies responses
+3. `utilityPrivate` trustedVault binding exposure — `Sync.TrustedVaultJavascriptSetEncryptionKeys` metrics
+4. OSCrypt async coexistence — v4.39.410.14 uses Chromium 138 async OSCrypt + retains legacy Whale fork
 
-**Binary Acquisition**:
-- Channel confirmed: `repo.whale.naver.com` bypasses all cloudfront/APKMirror blocks
-- Binary hash pinned: `sha256=10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19`
-- Binary is ephemeral - must re-download each cycle after sandbox wipe
-
-**Current Blockers**:
-- All binary extraction is ephemeral (absent after sandbox wipe)
-- Most verification steps require HUMAN_ONLY interaction
-- No passive GET/HEAD proof available for top leads
-
-**Next Steps** (from summary):
-1. Re-download `.deb` from `repo.whale.naver.com`, verify sha256, re-extract ELF binary
-2. Deepen epoch-key response parser analysis (trace forward through `OnEpochKeyConfirmed` bridge)
-3. Trace `utilityPrivate` origin-binding gaps
-4. Evaluate reportability under scope.yml
-
-Would you like me to proceed with any of these next steps?
+**Bottom line**: Rich attack surface identified via binary strings/rodata, but zero reportable bugs without the actual binary artifact for disassembly.
