@@ -1,4 +1,4 @@
-## 2026-08-21 15:01:04 UTC [browser] (model nemotron3)
+## 2026-08-21 15:42:58 UTC [browser] (model nemotron3)
 [NEW] Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` NOW EXISTS (sha256=10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19) — previously MISSING post-wipe
 [NEW] Epoch-key response parser at 0xc0d5c91–0xc0d5eb6 consumes plain JSON (expires_in/access_token/id_token/error) with ZERO crypto-helper calls — no HMAC/MAC/nonce/timestamp verification before epoch-key acceptance
 [NEW] 9 Whale-specific sync source files confirmed in binary string table including `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`
@@ -48,6 +48,24 @@ impact: Weakened authkey validation could allow token forgery or epoch-key injec
 testability: HUMAN_ONLY
 [PARKED] Whale fork of identity_manager/authkey_fetcher.cc introduces authkey validation bypass: confidence 45 < 50 threshold; fork confirmed but no evidence of actual bypass vs upstream; verify_steps require HUMAN binary diff not passive
 [FINAL]
+[HYP] Whale desktop epoch-key response lacks custom-layer MAC/signature/nonce/timestamp verification
+class: OATH
+asset: Whale v4.39.410.14 desktop binary — epoch endpoint `/oauth2/v1/nid/epoch/v1`
+confidence: 70
+reasoning: Hardcoded P-256 SPKI at rodata VA 0x2968510 feeds static-static ECDH/HKDF-style derivation with `whale:hmac:`/`v1` labels. Binary shows `client_private_key` sent as JSON body to epoch endpoint. Response parser at 0xc0d5c91–0xc0d5eb6 consumes ONLY expires_in/access_token/id_token/error/error_description via JSON accessors — ZERO crypto-helper calls, no signature/mac/nonce/timestamp fields in rodata. Xref-exhaustive scan proves pinned SPKI, `whale:hmac:`, `Authorization: HMAC key=` each have EXACTLY ONE consumer confined to request-signing cluster. Transport crypto does not cover the JS trust boundary (`naverEpochKey` getter @0x11b66cde, `X-Epoch-Key` header setter @0x11b68c36).
+evidence_needed: Disassembly of epoch response handler proving absence of HMAC-tag verification before epoch-key acceptance; identification of what consumes the derived 32-byte key; confirmation whether dev/stage/prod environments share the single pinned key
+verify_steps: PASSIVE: objdump -d /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -A100 '0xc0d5c91' to confirm zero crypto calls in response parser; strings for nonce/timestamp/mac fields in epoch response context; HUMAN: Ghidra decompile of containing functions
+impact: Attacker-supplied epoch key material accepted into sync-vault key derivation → cross-account sync data access or persistent key substitution; static ECDH → server-key-compromise retroactive decryption
+testability: HUMAN_ONLY
+[HYP] Whale utilityPrivate setSyncEncryptionKeys accepts attacker-controlled key material without origin validation
+class: AUTH
+asset: Whale v4.39.410.14 desktop binary — utilityPrivate JS API
+confidence: 50
+reasoning: Binary strings confirm `setSyncEncryptionKeys` + `retrieveTrustedVaultKeys` JS bindings adjacent to upstream `setClientEncryptionKeys`. utilityPrivate manifest shows origin-binding gaps. Sample extension (ALL-origin content_scripts, zero sender validation in background.js) could invoke these APIs from any web origin if exposed.
+evidence_needed: Whether utilityPrivate API checks caller extension ID/origin before accepting key material; whether `setSyncEncryptionKeys` validates key format/entropy; whether compromised extension can overwrite sync encryption keys
+verify_steps: strings /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'utilityprivate\|setsyncencryption\|retrievetrustedvault'; examine extension API bindings in binary for origin checks; zero network
+impact: Malicious/compromised extension with utilityPrivate access could overwrite sync encryption keys or extract sync identifiers → cross-device credential sync hijack (High)
+testability: HUMAN_ONLY
 [NEXT] HUMAN: Extract the re-acquired Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`, sha256=6458a95a…) to `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` for Ghidra decompile of epoch response parser at 0xc0d5c91–0xc0d5eb6 and utilityPrivate bindings
 [LEARN] ACCEPTED class @ epoch-key exchange verification: binary confirms zero whale-specific signature-verification strings for epoch-key response; epoch-key path lacks client-side verification
 [LEARN] ACCEPTED class @ utilityPrivate origin-binding gaps: full manifest shows origin-binding gaps for setSyncEncryptionKeys/retrieveTrustedVaultKeys
