@@ -10006,3 +10006,5 @@
 - LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path
 - LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)
 - LEARN: REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material"; s
+
+## RANKED HYPOTHESES 2026-08-21 17:33:44 UTC

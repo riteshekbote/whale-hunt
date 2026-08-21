@@ -2521,3 +2521,5 @@
 - NEW WhaleNidAuth request signing: HMAC key = ECDH(PKCS#8 client_private_key, hex server pubkey) domain-separated `whale:hmac:`+`v1`, canonical message binds X-CSRF-Token/X-Timestamp/X-Nonce — replay-prote
 - NEW Signin delivery: client_private_key/session_id/csrf_token arrive as JSON trio via OnEpochKeyConfirmed WebUI bridge (inline_login_handler_impl_whale.cc), parsed with type-tags, re-serialized into every
 - NEW Address-mapping assumptions falsified: `a1d0ed0/a1d0f60/a1d0ff0` are BoringSSL ASN.1 template singletons, not key-derivation bodies
+
+## 2026-08-21 17:33:44 UTC
