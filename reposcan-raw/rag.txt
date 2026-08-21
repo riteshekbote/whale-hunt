@@ -1829,6 +1829,22 @@
 - 2026-08-20 REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE.
 - 2026-08-20 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.14; permanently parked.
 - 2026-08-20 ACCEPTED @ sync engine fork: 9 Whale-specific sync source files confirmed: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `data_type_worker_whale.cc`, `sync_server_connection_manager_whale.cc`, `whale_sync_util.cc`, plus 2 more under `../../whale/components/sync/`
+- 2026-08-21 ACCEPTED class @ sync KDF: full repo enumeration (4 branches + 5 wiki + README.ko.md = 0 sync/crypto source files in any public branch) confirms binary extraction is the ONLY vector; confidence 65 retained, HUMAN-gated
+- 2026-08-21 ACCEPTED @ desktop version bump: v4.38.386.14 → v4.39.410.14 → v4.39.410.18 (Aug 18 same-day double release); Chromium 137→138; binary re-acquisition required
+- 2026-08-21 ACCEPTED @ login-server-error hotfix: v4.39.410.14 fixed "Unknown: Server error" during browser login — confirms active auth/login code changes in sync KDF surface
+- 2026-08-21 ACCEPTED @ Chromium 138 engine upgrade: v4.39.410.14/18 aligns with latest Chromium stable 138.0.7204.92 (Aug 17); may have changed OSCrypt fork boundaries, KDF parameters, or sync protocol
+- 2026-08-21 ACCEPTED @ NVD gap monitor: services.nvd.nist.gov HTTP 200 stable — 28 total, 0 in 2026, 8-month gap confirmed; only live zero-auth passive surface
+- 2026-08-21 REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE covers v4.39.410.14 (patched); sample extension proves API surface only, not current-binary exploitability — permanently parked
+- 2026-08-21 REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-35780 confirmed irrelevant (WordPress plugin CSRF, not socket.io); permanently parked
+- 2026-08-21 REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path — permanently parked
+- 2026-08-21 REJECTED @ binary acquisition channels: all 100% blocked in-sandbox (cloudfront DNS No-answer via both resolvers, APKMirror 403, Uptodown 410 Gone, APKPure CDN 403, pstatic 404 scope-excluded)
+- 2026-08-21 ACCEPTED: Binary acquisition from `repo.whale.naver.com` confirmed accessible — HTTP 200, 166MB .deb, source URL `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`
+- 2026-08-21 ACCEPTED @ WBC crypto layer: `../../whale/crypto/wbc/wbc.cc` + `wbc_wrapper_apis.cc` + `../../whale/crypto/encryptor.cc` confirmed compiled into binary; WBC is Whale's custom encryption layer separate from Chromium's `os_crypt/sync/`
+- 2026-08-21 ACCEPTED @ sync engine fork: 9 Whale-specific sync source files confirmed: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `sync_stopped_reporter_whale.cc`, `data_type_worker_whale.cc`, `sync_server_connection_manager_whale.cc`, `whale_sync_util.cc`, plus 2 more under `../../whale/components/sync/`
+- 2026-08-21 ACCEPTED @ KDF debug string: `%s: kdf key len: %d` present in binary — Whale-specific KDF logging that needs disassembly to trace
+- 2026-08-21 ACCEPTED @ utilityPrivate API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` functions present — JS API surface for sync encryption key management
+- 2026-08-21 ACCEPTED @ Chromium upstream: `os_crypt/sync/` directory README states "legacy interface which should not be used in new code" — Whale still uses sync interface while upstream migrates to async
+- 2026-08-21 REJECTED class @ CVE-2026-8148: MYBOX Explorer privilege escalation (registry manipulation), not Whale browser; OUT OF SCOPE
 === INVENTORY gladia ===
 # Inventory: whale
 
