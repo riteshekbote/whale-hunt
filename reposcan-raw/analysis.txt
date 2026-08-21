@@ -1,18 +1,124 @@
 [0m
 > build · nemotron-3-ultra-free
 [0m
-There's a clear mismatch: the knowledge base and inventory provided are entirely about **Naver Whale Browser** (naver/whale-browser-developers), but you're asking me to triage a scan of **gladiaio/** GitHub org and **@gladiaio/sdk** npm package.
+The knowledge base you provided is entirely about **Naver Whale browser** (naver/whale-browser-developers), not **gladiaio**. There's zero gladiaio content in it.
 
-The knowledge base contains:
-- Whale browser CVEs, repo analysis, binary acquisition paths
-- Sync KDF, OSCrypt, sidebar SOP bypass surfaces
-- Cloudfront/APKMirror/Uptodown acquisition blocks
-- 28 total Whale CVEs, 0 in 2026, 8-month disclosure gap
-
-But **zero information about Gladia**, their SDK repos, or npm package.
-
-**What I need from you:**
-1. The correct knowledge base / RAG for `gladiaio/` org and `@gladiaio/sdk`
-2. Or the actual scan results/hits to triage (the prompt mentions "FULL GREP HITS" but shows 0 files scanned, 0 hits)
-
-Please provide the Gladia-specific scan data or knowledge base, and I'll triage per your classification rules (REAL_SECRET, TEST_OR_EXAMPLE, ENDPOINT_LEAK, INTERESTING).
+I'll search for the actual gladiaio repos and npm package to triage.
+[0m$ [0mnpm view @gladiaio/sdk --json 2>/dev/null | jq -r '{name: .name, version: .version, description: .description, repository: .repository, license: .license, dependencies: .dependencies, devDependencies: .devDependencies, scripts: .scripts, engines: .engines, dist: .dist}'
+{
+  "name": "@gladiaio/sdk",
+  "version": "1.1.0",
+  "description": "Gladia JavaScript/TypeScript SDK",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gladiaio/sdk.git"
+  },
+  "license": "MIT",
+  "dependencies": null,
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.6",
+    "@types/node": "^20.19.19",
+    "@types/ws": "^8.18.1",
+    "tsdown": "^0.15.6"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dist": {
+    "integrity": "sha512-iKrYT+lAQ0WiqEk+g4kj0pjOuxPLS9Lc95RixljmpXwmISn6U+32OnvSomrhCMwlv+fiweC3AqxyFmn7Imvfog==",
+    "shasum": "af89149b9469135fbf7fffd9f3b415e483d30bbc",
+    "tarball": "https://registry.npmjs.org/@gladiaio/sdk/-/sdk-1.1.0.tgz",
+    "fileCount": 135,
+    "unpackedSize": 805972,
+    "signatures": [
+      {
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+        "sig": "MEUCIBYI3yK7/0qjO4j4k9LQXlPfMAsfq7ehX3KFDXOsa4rTAiEAkk54Op2/CuopNh70YthEAa1XF9eRfuaTvFmGtadBr7I="
+      }
+    ]
+  }
+}
+[0m
+[0m$ [0mgh api /orgs/gladiaio/repos --paginate 2>/dev/null | jq -r '.[] | "\(.name)\t\(.description // "")\t\(.language // "")\t\(.pushed_at)\t\(.size)"' | head -40
+(no output)
+[0m
+[0m$ [0mgh api /orgs/gladiaio/repos --paginate 2>/dev/null | jq -r '.[] | "\(.name)\t\(.description // "")\t\(.language // "")\t\(.pushed_at)\t\(.size)\t\(.archived)\t\(.fork)"' | head -50
+(no output)
+[0m
+[0m◈ [0mExa Web Search "gladiaio GitHub repositories"
+[0m
+[0m$ [0mcurl -sL https://github.com/gladiaio/sdk/archive/refs/heads/main.tar.gz | tar -xz -C /tmp 2>/dev/null && find /tmp/sdk-main -type f \( -name "*.ts" -o -name "*.js" -o -name "*.json" -o -name "*.py" \) | head -60
+/tmp/sdk-main/.vscode/settings.json
+/tmp/sdk-main/.vscode/mcp.json
+/tmp/sdk-main/package.json
+/tmp/sdk-main/nx.json
+/tmp/sdk-main/packages/generator/src/schema-fetcher.ts
+/tmp/sdk-main/packages/generator/src/generators/python.ts
+/tmp/sdk-main/packages/generator/src/generators/typescript.ts
+/tmp/sdk-main/packages/generator/src/generators/base.ts
+/tmp/sdk-main/packages/generator/src/cli.ts
+/tmp/sdk-main/packages/generator/src/types.ts
+/tmp/sdk-main/packages/generator/src/helpers.ts
+/tmp/sdk-main/packages/generator/src/generator.ts
+/tmp/sdk-main/packages/generator/package.json
+/tmp/sdk-main/packages/generator/project.json
+/tmp/sdk-main/packages/generator/tsconfig.json
+/tmp/sdk-main/packages/sdk-js/src/index.ts
+/tmp/sdk-main/packages/sdk-js/src/client.test.ts
+/tmp/sdk-main/packages/sdk-js/src/v2/live/index.ts
+/tmp/sdk-main/packages/sdk-js/src/v2/live/session.ts
+/tmp/sdk-main/packages/sdk-js/src/v2/live/client.ts
+/tmp/sdk-main/packages/sdk-js/src/v2/live/types.ts
+/tmp/sdk-main/packages/sdk-js/src/v2/live/generated-types.ts
+/tmp/sdk-main/packages/sdk-js/src/v2/live/session.test.ts
+/tmp/sdk-main/packages/sdk-js/src/v2/prerecorded/index.ts
+/tmp/sdk-main/packages/sdk-js/src/v2/prerecorded/client.ts
+/tmp/sdk-main/packages/sdk-js/src/v2/prerecorded/generated-types.ts
+/tmp/sdk-main/packages/sdk-js/src/client.ts
+/tmp/sdk-main/packages/sdk-js/src/types.ts
+/tmp/sdk-main/packages/sdk-js/src/network/wsClient.test.ts
+/tmp/sdk-main/packages/sdk-js/src/network/iso-fetch.ts
+/tmp/sdk-main/packages/sdk-js/src/network/httpClient.ts
+/tmp/sdk-main/packages/sdk-js/src/network/iso-ws.ts
+/tmp/sdk-main/packages/sdk-js/src/network/types.ts
+/tmp/sdk-main/packages/sdk-js/src/network/httpClient.test.ts
+/tmp/sdk-main/packages/sdk-js/src/network/wsClient.ts
+/tmp/sdk-main/packages/sdk-js/src/internal_types.ts
+/tmp/sdk-main/packages/sdk-js/src/helpers.ts
+/tmp/sdk-main/packages/sdk-js/src/version.ts
+/tmp/sdk-main/packages/sdk-js/package.json
+/tmp/sdk-main/packages/sdk-js/project.json
+/tmp/sdk-main/packages/sdk-js/vitest.config.ts
+/tmp/sdk-main/packages/sdk-js/tsconfig.json
+/tmp/sdk-main/packages/sdk-js/tsdown.config.ts
+/tmp/sdk-main/packages/sdk-js/tsconfig.spec.json
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/__init__.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/version.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/live/async_session.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/live/session.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/live/types.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/live/_helpers.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/live/generated_types.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/live/async_client.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/live/client.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/prerecorded/__init__.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/prerecorded/generated_types.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/prerecorded/core.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/prerecorded/async_client.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/prerecorded/client.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/v2/core.py
+/tmp/sdk-main/packages/sdk-python/src/gladiaio_sdk/network/__init__.py
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/sdk-main/packages/sdk-js/src/*); auto-rejecting
+[0m✗ [0mRead /tmp/sdk-main/packages/sdk-js/src/client.ts failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+[93m[1m! [0mpermission requested: external_directory (/tmp/sdk-main/packages/sdk-js/src/*); auto-rejecting
+[0m✗ [0mRead /tmp/sdk-main/packages/sdk-js/src/types.ts failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+[93m[1m! [0mpermission requested: external_directory (/tmp/sdk-main/packages/sdk-js/src/network/*); auto-rejecting
+[0m✗ [0mRead /tmp/sdk-main/packages/sdk-js/src/network/httpClient.ts failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
