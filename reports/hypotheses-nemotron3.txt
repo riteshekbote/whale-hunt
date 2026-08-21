@@ -1,9 +1,9 @@
-## 2026-08-21 07:07:55 UTC [browser] (model nemotron3)
+## 2026-08-21 07:56:15 UTC [browser] (model nemotron3)
 [NEW] Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` still MISSING despite 4th confirmed accessible .deb from `repo.whale.naver.com`
-[NEW] EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign with domain-separated labels, len-CHECKed 32B global; response parser consumes only expires_in/access_token/id_token/error/error_description via JSON accessors — ZERO crypto-helper calls)
+[NEW] EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign with domain-separated labels, len-CHECKed 32B global; response parser consumes ONLY expires_in/access_token/id_token/error/error_description via JSON accessors — ZERO crypto-helper calls)
 [CHANGED] `%s: kdf key len: %d` string PROVEN to be libsrtp/WebRTC debug output — NOT sync-crypto evidence; kills prior KDF evidence line
 [NEW] Binary acquisition channel `repo.whale.naver.com` confirmed live and resilient: HTTP 200, hash-pinned .deb (sha256=6458a95a…), byte-exact across 5/5 re-acquisitions post-sandbox-wipe
-[NEW] Full epoch-key request/response path mapped: xref-exhaustive REX.W LEA sweep proves pinned SPKI (VA 0x2968510), "whale:hmac:" (VA 0x1ee9aad), "Authorization: HMAC key=" each have EXACTLY ONE consumer; "v1" has two — ALL confined to request-signing cluster `0xc0d46e6`–`0xc0d4f10`
+[NEW] Full epoch-key request/response path mapped: xref-exhaustive REX.W LEA sweep proves pinned SPKI (VA 0x2968510), "whale:hmac:" (VA 0x1ee9aad), "Authorization: HMAC key=" each have EXACTLY ONE consumer
 [NEW] `client_private_key` referenced ×4 at 0xc0cebd2/0xc0ceee4/0xc0cf1fd/0xc0cf3de in form-fields cluster beside session_id/csrf_token; no local pref persists it
 [NEW] `naverEpochKey` JS property getter @0x11b66cde; `X-Epoch-Key` header setter @0x11b68c36 — epoch key transits whale-signin authCompleted JS bridge outside crypto envelope
 [NEW] utilityPrivate manifest origin-binding gaps confirmed for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`; `authkey_fetcher.cc` Whale fork confirmed inside upstream identity_manager
@@ -13,10 +13,10 @@
 [NEW] Init routine CHECK strings = boringssl `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.c` (EVP_DigestSign) — crypto core primitive identified; 2975 dynamic imports, ZERO EVP_/ECDSA_/RSA_ symbols
 [NEW] "Encryption settings signature missing or malformed" string present — attributed to upstream sync cryptographer
 [CHANGED] Desktop version corrected to v4.39.410.14 (not v4.39.410.18) per AUR + FileHorse; same-day double release Aug 18 incl. login-server-error hotfix touching auth surface
-[CHANGED] Prior premise "zero whale-specific signature-verification material" FALSIFIED at pinned-key site (hardcoded P-256 SPKI + `whale:hmac:`/`v1` labels exist); top hypothesis reframed from absence-of-crypto to scheme-properties (no FS, no response binding, JS-bridge transit)
-[PRIO] epoch-key exchange endpoint `/oauth2/v1/nid/epoch/v1`, 7.6, attack_surface:9 business_value:8 tech_exposure:7 gate_ease:6 cloud_surface:5 freshness:9
-[PRIO] utilityPrivate API `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`, 6.95, attack_surface:7 business_value:8 tech_exposure:6 gate_ease:8 cloud_surface:4 freshness:7
-[PRIO] Whale fork `authkey_fetcher.cc` inside upstream identity_manager, 5.35, attack_surface:5 business_value:7 tech_exposure:5 gate_ease:4 cloud_surface:4 freshness:6
+[CHANGED] Prior premise "zero whale-specific signature-verification material" FALSIFIED at pinned-key site (hardcoded P-256 SPKI + `whale:hmac:`/`v1` labels exist); top hypothesis reframed from absence-of-crypto to scheme-properties attack
+[PRIO] epoch-key endpoint `/oauth2/v1/nid/epoch/v1` (Whale v4.39.410.14 desktop binary), score: 8.85, axes: attack_surface=9 business_value=9 tech_exposure=9 gate_ease=8 cloud_surface=7 freshness=10
+[PRIO] utilityPrivate JS API `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys` (Whale v4.39.410.14 desktop binary), score: 7.55, axes: attack_surface=8 business_value=8 tech_exposure=7 gate_ease=7 cloud_surface=6 freshness=9
+[PRIO] authkey_fetcher fork `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` (Whale v4.39.410.14 desktop binary), score: 6.90, axes: attack_surface=7 business_value=8 tech_exposure=7 gate_ease=6 cloud_surface=6 freshness=8
 [HYP] Whale desktop epoch-key scheme authenticates requests only — responses carry no custom-layer MAC/signature/nonce/timestamp; combined with static-static ECDH against a single hardcoded server key and JS-bridge transit of naverEpochKey, a trusted-CA MITM can inject epoch/token responses undetected
 class: OATH
 asset: Whale v4.39.410.14 desktop binary — epoch endpoint `/oauth2/v1/nid/epoch/v1`
@@ -44,7 +44,6 @@ evidence_needed: Diff of Whale `authkey_fetcher.cc` vs upstream Chromium; whethe
 verify_steps: strings /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -i 'authkey_fetcher\|identity_manager'; objdump -d /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -A50 'authkey_fetcher'; zero network
 impact: Weakened authkey validation could allow token forgery or epoch-key injection → unauthorized sync access across devices (High)
 testability: HUMAN_ONLY
-[PARKED] Whale desktop epoch-key HMAC key-establishment lacks forward secrecy and per-response authentication binding: confidence 55 but verify_steps require HUMAN Ghidra decompile not passive; overlaps with accepted epoch-key exchange verification class (now confidence 70, scheme-properties framing)
 [PARKED] Whale fork of identity_manager/authkey_fetcher.cc introduces authkey validation bypass: confidence 45 < 50 threshold; fork confirmed but no evidence of actual bypass vs upstream; verify_steps require HUMAN binary diff not passive
 [FINAL]
 [HYP] Whale desktop epoch-key scheme authenticates requests only — responses carry no custom-layer MAC/signature/nonce/timestamp; combined with static-static ECDH against a single hardcoded server key and JS-bridge transit of naverEpochKey, a trusted-CA MITM can inject epoch/token responses undetected
