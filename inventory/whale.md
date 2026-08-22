@@ -3265,3 +3265,22 @@
 - NEW WhaleNidAuth request signing: HMAC key = ECDH(PKCS#8 client_private_key, hex server pubkey) domain-separated `whale:hmac:`+`v1`, canonical message binds X-CSRF-Token/X-Timestamp/X-Nonce — replay-prote
 - NEW Signin delivery: client_private_key/session_id/csrf_token arrive as JSON trio via OnEpochKeyConfirmed WebUI bridge (inline_login_handler_impl_whale.cc), parsed with type-tags, re-serialized into every
 - NEW Address-mapping assumptions falsified: `a1d0ed0/a1d0f60/a1d0ff0` are BoringSSL ASN.1 template singletons, not key-derivation bodies
+
+## 2026-08-22 14:50:11 UTC
+- NEW Binary extraction at `/tmp/opencode/whale_binary/extracted/opt/naver/whale/whale` NOW EXISTS (sha256=10de323e6f89a5195f7e558259e849be75792e021decc2be8e61848b6653ce19) — previously MISSING post-wipe
+- NEW Epoch-key response parser at 0xc0d5c91–0xc0d5eb6 consumes plain JSON (expires_in/access_token/id_token/error) with ZERO crypto-helper calls — no HMAC/MAC/nonce/timestamp verification before epoch-key 
+- NEW 9 Whale-specific sync source files confirmed in binary string table including `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`
+- NEW WBC crypto layer (`wbc.cc` + `wbc_wrapper_apis.cc` + `encryptor.cc`) confirmed compiled — separate from Chromium `os_crypt/sync/`
+- NEW OSCrypt async/legacy coexistence: Chromium 138 async OSCrypt + legacy Whale fork both present
+- NEW utilityPrivate manifest origin-binding gaps for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`
+- NEW Binary acquisition channel `repo.whale.naver.com` confirmed HTTP 200, hash-pinned .deb (sha256=6458a95a…), byte-exact across re-acquisitions
+- CHANGED EPOCH-HMAC-1 confidence raised 55→70: asymmetric epoch-HMAC design code-proven (client signs requests via EVP_DigestSign, domain-separated labels; response parser zero crypto calls)
+- CHANGED Prior "no MAC/nonce/timestamp fields in cluster rodata" falsified — `X-CSRF-Token: `/`X-Timestamp: `/`X-Nonce: ` loaded in signing fn
+- CHANGED Desktop version confirmed v4.39.410.14 (not .18) per binary + AUR + FileHorse; same-day double release Aug 18 incl login-server-error hotfix
+- NEW Epoch endpoint path literal `/oauth2/v1/nid/epoch/v1` @ rodata `2968060`; error strings `"Epoch confirm failed with HTTP "`, `"Epoch confirm response missing session cookies"`
+- NEW Full request-signing pipeline decoded: base64url(`client_private_key`) → PKCS#8 parse → hex-decode server ECDH pubkey → combine_fn `c0d70f0` → 32B secret → domain-separated HMAC (`whale:hmac:`+`v1`)
+- NEW combine_fn `c0d70f0` has exactly 2 callers: signing fn `c0d4770` + version-gated consumer `c4dec5c` (vtable tag 0x198, field 0x19f @+0x1f0, pthread_once singleton `0x1384d488`)
+- NEW Prior "derive/init bodies" at `a1d0ed0/a1d0f60/a1d0ff0` falsified — pthread_once BoringSSL ASN.1 template singletons (zero entropy/EVP calls)
+- NEW WhaleNidAuth request signing: HMAC key = ECDH(PKCS#8 client_private_key, hex server pubkey) domain-separated `whale:hmac:`+`v1`, canonical message binds X-CSRF-Token/X-Timestamp/X-Nonce — replay-prote
+- NEW Signin delivery: client_private_key/session_id/csrf_token arrive as JSON trio via OnEpochKeyConfirmed WebUI bridge (inline_login_handler_impl_whale.cc), parsed with type-tags, re-serialized into every
+- NEW Address-mapping assumptions falsified: `a1d0ed0/a1d0f60/a1d0ff0` are BoringSSL ASN.1 template singletons, not key-derivation bodies
