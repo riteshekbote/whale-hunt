@@ -1884,3 +1884,11 @@
 - 2026-08-22 REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path
 - 2026-08-22 REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)
 - 2026-08-22 REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material"; superseded by scheme-properties attack (EPOCH-HMAC-1)
+- 2026-08-22 ACCEPTED class @ epoch-key exchange verification: binary confirms zero whale-specific signature-verification strings for epoch-key response; epoch-key path lacks client-side verification (falsified at pinned-key site).
+- 2026-08-22 ACCEPTED class @ request-response asymmetry: client signs outbound requests (EVP_DigestSign, domain-separated whale:hmac:+v1, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs zero response verification — code-proven, not hypothesis.
+- 2026-08-22 REJECTED class @ KDF debug string sync evidence: `%s: kdf key len: %d` proven to be libsrtp/WebRTC debug output, not sync-crypto evidence — no longer a signal.
+- 2026-08-22 REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material" — the verification gap is specifically in the RESPONSE path, not the request path.
+- 2026-08-22 ACCEPTED class @ epoch-key exchange verification: Binary confirms zero crypto-helper calls in response parser (0xc0d5c10) and caller (0xc0cbf60) — code-proven, not hypothesis.
+- 2026-08-22 ACCEPTED class @ request-response asymmetry: Client signs outbound requests (EVP_DigestSign, `whale:hmac:`+`v1`, X-CSRF-Token/X-Timestamp/X-Nonce) but performs zero response verification — code-proven via objdump analysis.
+- 2026-08-22 ACCEPTED class @ HMAC domain separation: `whale:hmac:` string at offset 0x1ee9aad referenced at 0xc0d47e0 — confirms request signing pipeline exists but is not applied to responses.
+- 2026-08-22 ACCEPTED class @ response fields: JSON fields `expires_in`, `access_token`, `id_token`, `error`, `error_description` at rodata 0x29685ca–0x296861f — confirms epoch-key response structure.
