@@ -1,125 +1,126 @@
 [0m
 > build · mimo-v2.5-free
 [0m
-[0m→ [0mRead .
-[0m✱ [0mGlob "**/*gladia*"[90m 0 matches[0m
-[0m✱ [0mGrep "gladia"[90m 100 matches[0m
+[0m$ [0mls /home/runner/work/whale-hunt/whale-hunt/
+README.md
+cands-naver.txt
+inventory
+knowledge
+leads
+probe-results.md
+reports
+repos-naver.json
+reposcan-raw
+scan-prompt.txt
+scope.yml
+scripts
+state_bigpickle.json
+state_laguna.json
+state_ling3.json
+state_longcat.json
+state_nemotron3.json
+triage
+[0m
+[0m$ [0mcurl -s "https://api.github.com/orgs/gladiaio/repos?per_page=100" 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); [print(f'{r[\"name\"]} | {r.get(\"description\",\"\")} | {r.get(\"language\",\"\")} | {r.get(\"updated_at\",\"\")}') for r in data]" 2>/dev/null || echo "GitHub API failed"
+gladia-cli | None | Go | 2026-07-27T03:25:24Z
+gladia-samples | None | Python | 2026-07-28T14:02:30Z
+triton-inference-memory-allocation | None | Python | 2026-05-04T10:31:55Z
+gunicorn-fix-sigabort | gunicorn 'Green Unicorn' is a WSGI HTTP Server for UNIX, fast clients and sleepy applications. | Python | 2025-08-12T07:11:26Z
+uvicorn-fix-sigabort | An ASGI web server, for Python. 🦄 | Python | 2025-09-03T19:38:24Z
+docs | None | MDX | 2026-08-13T14:54:04Z
+1password-scim | 1Password SCIM Bridge deployment examples | HCL | 2024-02-01T14:16:13Z
+sdk | None | Python | 2026-07-23T20:34:01Z
+gladia-quiz-app | None | TypeScript | 2025-11-28T16:04:27Z
+normalization | A lightweight library for normalizing speech transcripts before computing WER | Python | 2026-08-20T20:55:45Z
+vllm_backend | None | Python | 2026-03-04T13:15:26Z
+transformers | 🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training.  | None | 2026-03-11T14:38:15Z
+compare-stt | Blind comparison of speech-to-text providers. | TypeScript | 2026-08-04T12:20:14Z
+n8n-nodes-gladia | None | TypeScript | 2026-07-23T15:57:27Z
+cloudnative-pg | CloudNativePG is a comprehensive platform designed to seamlessly manage PostgreSQL databases within Kubernetes environments, covering the entire operational lifecycle from initial deployment to ongoing maintenance | None | 2026-04-23T15:06:27Z
+skills | Official AI agent skills from Gladia for integrating speech-to-text transcription into your applications | None | 2026-08-07T06:45:59Z
+realtime-multilingual-asr-router | None | Python | 2026-07-29T22:42:30Z
+vercel-ai | The AI Toolkit for TypeScript. From the creators of Next.js, the AI SDK is a free open-source library for building AI-powered applications and agents  | None | 2026-06-12T06:46:36Z
+gladiaflow | A desktop app for real-time voice dictation powered by Gladia's realtime transcription | Rust | 2026-08-17T12:34:23Z
+[0m
+I'll scan the gladiaio/ GitHub org and @gladiaio/sdk npm package for secrets, endpoints, and interesting findings. Let me start by exploring the workspace and fetching the org data.
+[0m$ [0mcurl -s "https://registry.npmjs.org/@gladiaio/sdk" 2>/dev/null | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+latest=d.get('dist-tags',{}).get('latest','?')
+print(f'Package: {d.get(\"name\",\"?\")}')
+print(f'Latest: {latest}')
+desc=d.get('description','')
+print(f'Description: {desc}')
+versions=list(d.get('versions',{}).keys())
+print(f'All versions: {versions}')
+repo=d.get('repository',{})
+print(f'Repository: {repo}')
+maintainers=d.get('maintainers',[])
+print(f'Maintainers: {maintainers}')
+time_data=d.get('time',{})
+print(f'Created: {time_data.get(\"created\",\"?\")}')
+print(f'Modified: {time_data.get(\"modified\",\"?\")}')
+latest_ver=d.get('versions',{}).get(latest,{})
+print(f'License: {latest_ver.get(\"license\",\"?\")}')
+print(f'Keywords: {latest_ver.get(\"keywords\",\"?\")}')
+print(f'Homepage: {latest_ver.get(\"homepage\",\"?\")}')
+print(f'Bugs: {latest_ver.get(\"bugs\",\"?\")}')
+" 2>/dev/null || echo "npm registry failed"
+Package: @gladiaio/sdk
+Latest: 1.1.0
+Description: Gladia JavaScript/TypeScript SDK
+All versions: ['0.1.0', '0.1.1', '0.1.2', '0.2.0', '0.2.1', '0.3.0', '0.3.1', '0.4.0', '0.4.1', '0.4.2', '0.4.3', '0.5.0', '0.5.1', '0.5.2', '0.5.3', '0.6.0', '0.6.1', '1.0.0', '1.0.4', '1.0.5', '1.0.7', '1.1.0']
+Repository: {'type': 'git', 'url': 'git+https://github.com/gladiaio/sdk.git'}
+Maintainers: [{'name': 'clement-gladia', 'email': 'ccharmet@gladia.io'}, {'name': 'gladia-admin', 'email': 'tech-certified@gladia.io'}, {'name': 'commarla', 'email': 'lcommarieu@gladia.io'}, {'name': 'hugo_gladia', 'email': 'himbert@gladia.io'}, {'name': 'tnesztler', 'email': 'picobuntu@gmail.com'}, {'name': 'amorin_gladia', 'email': 'amorin@gladia.io'}, {'name': 'thibautlb', 'email': 'ecouprie@gladia.io'}, {'name': 'remigladia', 'email': 'rlejeune@gladia.io'}, {'name': 'acorbeau-gladia', 'email': 'acorbeau@gladia.io'}, {'name': 'jqueguiner', 'email': 'jlqueguiner@gladia.io'}, {'name': 'hpapier.ext.gladia', 'email': 'hpapier.ext@gladia.io'}, {'name': 'clafaye', 'email': 'clafaye@gladia.io'}, {'name': 'opopops', 'email': 'ggueutier@gladia.io'}, {'name': 'bot-npmjs-gladiaio', 'email': 'bot-npmjs@gladia.io'}, {'name': 'rpiotaix', 'email': 'rpiotaix@gladia.io'}, {'name': 'yoannkygladia', 'email': 'ykeoxay@gladia.io'}, {'name': 'cpire', 'email': 'cpire@gladia.io'}]
+Created: 2025-09-09T15:01:20.684Z
+Modified: 2026-07-23T20:48:35.899Z
+License: MIT
+Keywords: ['gladia', 'sdk', 'typescript', 'javascript']
+Homepage: https://github.com/gladiaio/sdk#readme
+Bugs: {'url': 'https://github.com/gladiaio/sdk/issues'}
+[0m
 ## Objective
-- Triage a static scan of public repos from the gladiaio/ GitHub org plus npm package metadata for @gladiaio/sdk, within the context of a Naver Whale browser security bug bounty program targeting Whale-only vulnerabilities.
-
-## Important Details
-- Program scope: latest-version Whale browser bugs; third-party libs used ONLY by Whale (not Chromium); synchronization bugs
-- NOT eligible: all Naver web services (*.naver.com, *.navercorp.com), web servers of built-in extensions, URL preview spoofing, XSS Auditor bypass, IETab, SafeBrowsing FP/FN
-- Client-side software only: static source analysis + repro-first validation; no server probing
-- Secrets: sha256 only, never raw
-- Secrets scan target: 0 code/config files scanned, 0 hits — no secrets found
-- NVD CVE gap: 0 Whale CVEs published in 2026 (28 total via `keywordSearch=whale`); latest CVE-2025-69235 @2025-12-30; 8+ month disclosure gap confirmed static
-- NVD API: use `services.nvd.nist.gov` (primary `nvd.nist.gov/rest` Cloudflare-blocked in-sandbox); `keywordSearch=whale` (not `naver+whale` which returns 0 due to keyword quirk); date-filtered queries return 404
-- GitHub repo `naver/whale-browser-developers`: documentation-only, pushed_at=2019-09-23, updated_at=2025-10-22, size=5043, 0 releases, 4 branches (master 3 blobs, v2 2, translate 57, jdkim 39), has_wiki=true
-- Binary acquisition: `repo.whale.naver.com` confirmed accessible (HTTP 200, 166MB .deb, v4.39.410.14); all other channels 100% blocked (cloudfront DNS No-answer via both 127.0.0.53 and 8.8.8.8, APKMirror 403, Uptodown 410 Gone, APKPure CDN 403, pstatic 404 scope-excluded)
-- Latest desktop version: v4.39.410.14 (corrected from v4.39.410.18); v4.39.410.18 is same-day double-release on Aug 18; Chromium 137→138 engine upgrade; login-server-error hotfix
-- `/tmp/opencode/whale_binary/` is ephemeral — must re-download + sha256 verify every cycle after sandbox wipe
-- Sample extension source (translate branch): 5 files HTTP 200 — manifest.json content_scripts match ALL origins, background.js 0 sender.* grep matches, contentscript.js dispatches sidebarAction from any web page; class REJECTED as duplicate of fixed CVE-2025-69234/69235 (platform-agnostic CPE covers v4.39.410.14=patched)
-- Wiki docs: `whale.sidebarAction.md` + 4 other pages all HTTP 200; `sync.md`/`whale.sync.md` both HTTP 404 — no sync design docs exist publicly
-- Android APK: v3.9.14.9 is latest; all acquisition channels dead (Uptodown 410, APKPure CDN 403)
-
-## Work State
-### Completed
-- Full repo enumeration: all 4 branches (recursive tree API) + 5 wiki pages + README.ko.md — 0 Whale-specific source/sync/crypto/OSCrypt files in any public branch; static analysis path permanently dead
-- NVD gap monitor: 28 total whale CVEs, 0 published in 2026, 0 sync-class keyword hits across all 28 descriptions; 8+ month disclosure gap confirmed static
-- Sample extension surface fully mapped: 5 files + 1 wiki doc HTTP 200; background.js zero origin validation confirmed via python grep (0 matches for sender.origin/sender.url/sender.tab/sender.id/sender.frameId/sender.tls)
-- Binary acquisition channel established: `repo.whale.naver.com` HTTP 200, hash-pinned `.deb` v4.39.410.14 (sha256 7b06e6e9...), 5/5 byte-exact re-acquisitions confirmed
-- Binary string/rodata analysis of v4.39.410.14: WBC crypto layer (`wbc.cc`, `wbc_wrapper_apis.cc`, `encryptor.cc`), 7+ Whale-specific sync source files, `utilityPrivate` API (`setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup`), Chromium 138 async OSCrypt coexistence with legacy Whale OSCrypt fork confirmed
-- Epoch-key response parser verification absence confirmed: binary code at 0xc0d5c91–0xc0d5eb6 consumes plain JSON with zero crypto-helper calls — asymmetric response-trust design code-proven
-- Request-response asymmetry class alive (conf 70): client signs outbound requests (EVP_DigestSign, domain-separated `whale:hmac:`+`v1`, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs zero response verification
-- Epoch-key HMAC scheme-properties class alive (conf 55): static-static ECDH + request-only `Authorization: HMAC key=v1` credential + plain-JSON token parsing (zero MAC)
-- UtilityPrivate trustedVault binding exposure class alive: `Sync.TrustedVaultJavascriptSetEncryptionKeys{IsIncognito,ValidArgs}` metrics + manifest origin-binding gaps
-- Authkey fetcher fork confirmed: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` as Whale fork inside upstream identity_manager
-- OSCrypt async variant confirmed: v4.39.410.14 uses Chromium 138 async OSCrypt (`components/os_crypt/async/browser/...`) while retaining legacy Whale OSCrypt fork
-- REX.W LEA rip-relative byte-pattern sweep method validated for stripped .text string-consumer enumeration
-- Boringssl static-linkage depth identified: init CHECK strings = `crypto/evp/evp_ctx.cc` + `crypto/fipsmodule/digestsign/digestsign.c` (EVP_DigestSign) with 0 EVP_/ECDSA_/RSA_ symbols among 2975 dynamic imports
-
-### Active
-- Epoch-key request-response asymmetry attack class (EPOCH-HMAC-1, conf 70): code-proven asymmetric design where client signs requests but performs zero response verification — strongest open surface
-- UtilityPrivate trustedVault binding exposure class: alive pending caller-context proof
-- Epoch-key HMAC scheme-properties class (conf 55): alive, needs caller-context escalation proof
-- Authkey fetcher fork class: alive, within upstream identity_manager
-- OSCrypt async/legacy coexistence class: alive, potential regression vector
-
-### Blocked
-- Binary analysis requires re-download + sha256 verification after every sandbox wipe (ephemeral `/tmp/opencode/whale_binary/`)
-- KDF constants/iteration counts/master-key storage location remain unextracted from binary
-- No public sync design docs exist (sync.md/whale.sync.md both HTTP 404)
-
-## Next Move
-1. Continue epoch-key response verification absence analysis — trace consumers of response payload to determine if any downstream component performs signature verification before trust decisions
-2. Trace `utilityPrivate` bindings through V8/blink bridge to identify origin-binding gaps and caller-context escalation paths
-3. Re-acquire binary from `repo.whale.naver.com` and verify sha256 before any new disassembly cycle
-
-## Relevant Files
-- `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`: latest binary, 166MB, hash-pinned acquisition channel
-- `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/manifest.json`: ALL-origin content_scripts + permissions ["tabs"]
-- `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/background.js`: zero sender.* validation in onMessage handler (1772 bytes)
-- `raw.githubusercontent.com/naver/whale-browser-developers/translate/src/sidebar-sample/js/contentscript.js`: sidebarAction dispatch from any web page context
-- `raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md`: documents show({url}) arbitrary-URL loading
-- `services.nvd.nist.gov/rest/json/cves/2.0`: NVD gap monitor endpoint (keywordSearch=whale, totalResults=28, 0 in 2026)
-- `/tmp/opencode/whale_binary/`: ephemeral binary extraction directory — must re-verify hash after every sandbox wipe
-- Binary rodata addresses: 0x2968510 (pinned P-256 SPKI), 0xc0d46e6–0xc0d4f10 (signing cluster), 0xc0d5c91–0xc0d5eb6 (response parser)
+- Triage and static analysis of Naver Whale browser (`com.naver.whale`) for a Whale-focused bug bounty program, scanning public repos (`gladiaio/` org), npm metadata (`@gladiaio/sdk`), and Whale binary for sync KDF/OSCrypt/epoch-key vulnerabilities
+- Currently focused on binary-level analysis of Whale v4.39.410.14 sync encryption surface after acquiring
 Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
-[0m→ [0mRead state_longcat.json
-[0m→ [0mRead README.md
+[0m• [0mExplore whale-hunt workspace state[90m Explore Agent[0m
+[0m• [0mScan gladiaio repos for secrets[90m General Agent[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mScan gladiaio repos for secrets failed[90m General Agent[0m
+[91m[1mError: [0mSubagent failed (task_id: ses_fd938dd1cffeWQuGB7iMlgDHIT): The user rejected permission to use this specific tool call.
+[0m✓ [0mExplore whale-hunt workspace state[90m Explore Agent[0m
+[0m→ [0mRead .github/workflows/reposcan.yml
+[0m→ [0mRead triage
+[0m→ [0mRead reports
+[0m→ [0mRead knowledge
+[0m→ [0mRead leads
+[0m→ [0mRead knowledge/index.md
 [0m→ [0mRead reports/valid-bugs.md
+[0m→ [0mRead reports/hypotheses.md
 [0m→ [0mRead scope.yml
-[0m→ [0mRead probe-results.md
-## Summary of Whale-Hunt Project (as of 2026-08-21)
+[0m→ [0mRead README.md
+Here's a summary of what's been done so far:
 
-### What We've Done
+## Project: whale-hunt — Naver Whale Browser Bug Bounty
 
-**1. Binary Analysis (Completed)**
-- Successfully acquired whale binary v4.39.410.14 from `repo.whale.naver.com` (166MB .deb)
-- Confirmed hash-pinned acquisition: sha256 `7b06e6e9...`
-- Identified key components:
-  - WBC crypto layer (`wbc.cc`, `wbc_wrapper_apis.cc`, `encryptor.cc`)
-  - 7+ Whale-specific sync source files
-  - `utilityPrivate` API (`setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup`)
-  - Async OSCrypt coexistence with legacy Whale OSCrypt fork
-  - Authkey fetcher fork confirmed
+**Goal:** Automated passive security research on Naver Whale browser (v4.38.386.14) to find reportable vulnerabilities.
 
-**2. Epoch-Key HMAC Scheme (Code-Proven)**
-- **EPOCH-HMAC-1 (confidence 70)**: Client signs outbound requests (EVP_DigestSign, domain-separated `whale:hmac:`+`v1`, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs **zero response verification**
-- Response parser at 0xc0d5c91–0xc0d5eb6 consumes plain JSON with zero crypto-helper calls
-- Request-response asymmetry confirmed: strongest open surface
+**Infrastructure:**
+- 5-model ensemble (mimo-v2.5-free) running in parallel, triaging every ~15 min via GitHub Actions
+- 432 triage runs completed (Aug 7–21, 2026)
+- 884 reposcan lead snapshots accumulated
 
-**3. Public Repo Analysis (Completed)**
-- Enumerated all 4 branches of `naver/whale-browser-developers` (recursive tree API)
-- 5 wiki pages HTTP 200, sync.md/whale.sync.md both HTTP 404 (no sync design docs exist)
-- Sample extension source (translate branch): manifest.json content_scripts match ALL origins, background.js 0 sender.* validation, contentscript.js dispatches sidebarAction from any web page
+**What was accomplished:**
+- **Recon:** Identified all in-scope assets and excluded classes per `scope.yml`
+- **Knowledge base:** Built `knowledge/index.md` (~500+ entries) tracking every confirmed/rejected finding across runs
+- **CVE gap confirmed:** 0 Whale CVEs published in 2026 (8-month gap since CVE-2025-69235)
+- **Sample extension attack surface documented:** `naver/whale-browser-developers` translate branch — manifest allows ALL-origin content_scripts, `background.js` dispatches `sidebarAction.show` without sender origin validation
+- **Hypothesis ranking:** Sync KDF/bootstrap-token envelope (confidence 65) is the #1 lead, followed by sidebar SOP bypass regression (60)
 
-**4. NVD Gap Monitoring (Ongoing)**
-- 28 total whale CVEs, 0 published in 2026
-- Latest: CVE-2025-69235 @2025-12-30
-- 8+ month disclosure gap confirmed static
+**What's stuck:**
+- **0 valid bugs found** — all leads fail Q4 (no passive proof) because binary acquisition is 100% blocked in-sandbox (cloudfront DNS blocked, APKMirror 403, Uptodown 404, pstatic 404)
+- **Reposcan pipeline is REGRESSED** since ~Aug 8 — `.github/workflows/reposcan.yml` lines 206-208 contain a **gladiaio template** instead of whale target, so it scans the wrong org (gladiaio/) and returns 0 hits every cycle
+- **Knowledge base is bloated** — ~1,950 lines of massive duplication (same CONFIRMED/REJECTED entries repeated dozens of times)
+- **Public code surface exhausted** — `naver/whale-browser-developers` is documentation-only (last code commit 2019-09-23)
 
-### Current Blockers
-
-1. **Binary Acquisition**: Must re-download + sha256 verify after every sandbox wipe (ephemeral `/tmp/opencode/whale_binary/`)
-2. **KDF Constants**: Iteration counts/master-key storage location remain unextracted
-3. **No Sync Design Docs**: public sync.md/whale.sync.md both HTTP 404
-
-### Active Lead Classes (Alive, Pending Proof)
-
-| Class | Confidence | Status |
-|-------|------------|--------|
-| Epoch-key response verification absence | 70 | Code-proven; trace consumers |
-| Epoch-key HMAC scheme properties | 55 | Alive; needs caller-context proof |
-| UtilityPrivate trustedVault binding | Alive | Needs caller-context escalation proof |
-| Authkey fetcher fork | Alive | Within upstream identity_manager |
-| OSCrypt async/legacy coexistence | Alive | Potential regression vector |
-
-### Next Moves
-
-1. Trace epoch-key response consumers to determine if any downstream component performs signature verification before trust decisions
-2. Trace `utilityPrivate` bindings through V8/blink bridge to identify origin-binding gaps
-3. Re-acquire binary from `repo.whale.naver.com` and verify sha256 before any new disassembly cycle
-
-**Valid Bugs Count: 0** — no reportable vulnerability found despite 14+ days of automated research.
+**Critical next step:** Fix the reposcan workflow to target `naver` org again (lines 206-208, 107-109, 197, 231 in `.github/workflows/reposcan.yml`). This requires operator action since I'm in plan mode.
