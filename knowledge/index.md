@@ -1892,3 +1892,6 @@
 - 2026-08-22 ACCEPTED class @ request-response asymmetry: Client signs outbound requests (EVP_DigestSign, `whale:hmac:`+`v1`, X-CSRF-Token/X-Timestamp/X-Nonce) but performs zero response verification — code-proven via objdump analysis.
 - 2026-08-22 ACCEPTED class @ HMAC domain separation: `whale:hmac:` string at offset 0x1ee9aad referenced at 0xc0d47e0 — confirms request signing pipeline exists but is not applied to responses.
 - 2026-08-22 ACCEPTED class @ response fields: JSON fields `expires_in`, `access_token`, `id_token`, `error`, `error_description` at rodata 0x29685ca–0x296861f — confirms epoch-key response structure.
+- 2026-08-22 ACCEPTED class @ epoch-key response parser: Binary at 0xc0d5c91–0xc0d5eb6 consumes plain JSON (expires_in/access_token/id_token/error) with zero crypto-helper calls — response verification absent, code-proven via objdump.
+- 2026-08-22 ACCEPTED class @ request-response asymmetry: Client signs outbound requests (EVP_DigestSign, `whale:hmac:`+`v1`, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs zero response verification — code-proven.
+- 2026-08-22 ACCEPTED class @ HMAC domain separation: `whale:hmac:` at rodata 0x1ee9aad referenced at 0xc0d47e0 in signing cluster — confirms request signing pipeline exists but is not applied to responses.

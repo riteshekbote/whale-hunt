@@ -10287,3 +10287,21 @@
 - LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path
 - LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)
 - LEARN: REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material"; s
+
+## RANKED HYPOTHESES 2026-08-22 04:57:06 UTC
+- [70] Whale: Whale desktop epoch-key response lacks custom-layer MAC/signature/nonce/timestamp verification (from reports/hypotheses-nemotron3.txt)
+- NEXT(hypotheses-mimo.txt): HUMAN: objdump -d --start-address=0xc0d5c91 --stop-address=0xc0d5eb6 /tmp/opencode/whale_binary/extracted/opt/naver/whale/whale | grep -E 'call|jmp|je|jne' to e
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Extract the re-acquired Whale desktop binary v4.39.410.14 (.deb from `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4
+- LEARN: ACCEPTED class @ epoch-key response parser: Binary at 0xc0d5c91–0xc0d5eb6 consumes plain JSON (expires_in/access_token/id_token/error) with zero crypto-helper c
+- LEARN: ACCEPTED class @ request-response asymmetry: Client signs outbound requests (EVP_DigestSign, `whale:hmac:`+`v1`, X-CSRF-Token/X-Timestamp/X-Nonce binding) but p
+- LEARN: ACCEPTED class @ HMAC domain separation: `whale:hmac:` at rodata 0x1ee9aad referenced at 0xc0d47e0 in signing cluster — confirms request signing pipeline exists
+- LEARN: ACCEPTED class @ epoch-key exchange verification: binary confirms zero whale-specific signature-verification strings for epoch-key response; epoch-key path lack
+- LEARN: ACCEPTED class @ utilityPrivate origin-binding gaps: full manifest shows origin-binding gaps for setSyncEncryptionKeys/retrieveTrustedVaultKeys
+- LEARN: ACCEPTED class @ authkey_fetcher fork: `../../whale/components/signin/public/identity_manager/authkey_fetcher.cc` confirmed as Whale fork inside upstream identi
+- LEARN: REJECTED class @ KDF debug string sync evidence: `%s: kdf key len: %d` proven to be libsrtp/WebRTC debug output, NOT sync-crypto evidence
+- LEARN: ACCEPTED class @ OSCrypt async variant: v4.39.410.14 uses Chromium 138 async OSCrypt (`components/os_crypt/async/browser/...`) while retaining legacy Whale OSCr
+- LEARN: REJECTED class @ sidebar/dual-tab/web-panel SOP-CSP bypass: confidence 32 < 40; duplicate of CVE-2025-69234/69235/53600/62583/62584/62585; platform-agnostic CPE
+- LEARN: REJECTED class @ socket.io.slim.js event-handler injection: confidence 38 < 40; handler runtime-fetched; binary absent; no passive version string; CVE-2023-3578
+- LEARN: REJECTED class @ installer DLL search-order regression: confidence 50 < 60; all passive binary channels dead; no passive proof path
+- LEARN: REJECTED @ binary acquisition channels: all 100% blocked in-sandbox except `repo.whale.naver.com` (now confirmed accessible HTTP 200)
+- LEARN: REJECTED class @ epoch-key absence-of-crypto claim: pinned P-256 SPKI @0x2968510 + `whale:hmac:`/`v1` labels falsify "zero client-side verification material"; s
