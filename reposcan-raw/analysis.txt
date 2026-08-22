@@ -1,70 +1,112 @@
 [0m
 > build · mimo-v2.5-free
 [0m
-I'll start by researching the gladiaio/ GitHub org and @gladiaio/sdk npm package.
-[0m◈ [0mExa Web Search "gladiaio GitHub organization repositories"
-[0m◈ [0mExa Web Search "@gladiaio/sdk npm package"
+[0m% [0mWebFetch https://api.github.com/orgs/gladiaio/repos?per_page=100
+[0m% [0mWebFetch https://registry.npmjs.org/@gladiaio/sdk
+## Objective
+- Triaging a static scan of public repos from the `gladiaio/` GitHub org (MEDIUM priority SDK repos) plus npm package metadata for `@gladiaio/sdk`, within the context of a Whale browser security bug bounty program scope assessment.
+
+## Important Details
+- **Program scope**: Eligible targets are Whale browser bugs (latest-version), third-party libs used ONLY by Whale, synchronization bugs. NOT eligible: Naver web services (`*.naver.com`, `*.navercorp.com`), built-in extension web servers, URL preview spoofing, XSS Auditor bypass, IETab, SafeBrowsing FP/FN.
+- **Secrets handling**: sha256 only, never raw values.
+- **Key CVEs tracked**: CVE-2025-69234 (CVSS 9.1, CWE-346, iframe sandbox escape), CVE-2025-69235 (CWE-346, SOP bypass), CVE-2025-53600/62583/62584/62585 (SOP/CSP bypasses) — all fixed in v4.35.351.12.
+- **Current latest desktop version**: v4.39.410.14 (corrected from v4.39.410.18); Chromium 138 base; same-day double release Aug 18 with login-server-error hotfix.
+- **NVD gap**: 28 total whale CVEs, 0 published in 2026; 8+ month disclosure gap (latest CVE-2025-69235 @2025-12-30).
+- **Binary acquisition**: `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb` confirmed accessible (HTTP 200, 166MB); sha256 pinning verified across sandbox wipes.
+- **Binary key findings** (from disassembly):
+  - 9+ Whale-specific sync source files (`whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, etc.)
+  - WBC custom crypto layer (`wbc.cc`, `wbc_wrapper_apis.cc`, `encryptor.cc`)
+  - `authkey_fetcher.cc` Whale fork inside upstream `identity_manager`
+  - OSCrypt async variant coexistence (Chromium 138 async + legacy Whale fork)
+  - `utilityPrivate` JS API: `setSyncEncryptionKeys`, `getSyncCacheGuid`, `getPushServerURL`, `showLoginPopup` — origin-binding gaps confirmed
+  - Epoch-key exchange: client signs requests (EVP_DigestSign, `whale:hmac:`+`v1` domain separation, X-CSRF-Token/X-Timestamp/X-Nonce binding) but performs **zero response verification** — asymmetric trust design code-proven
+  - `%s: kdf key len: %d` proven to be libsrtp/WebRTC (NOT sync-crypto)
+- **Rejected classes** (do NOT re-emit): sidebar/dual-tab/web-panel SOP-CSP bypass (duplicates CVE-2025-69234/69235/53600/62583/62584/62585), socket.io.slim.js injection (conf 38<40), installer DLL search-order (conf 50<60), KDF debug string (libsrtp/WebRTC false positive), epoch-key absence-of-crypto claim (superseded by scheme-properties attack).
+- **Accepted classes**: sync KDF (conf 65, binary-extraction-only vector), epoch-key HMAC scheme-properties (conf 70, request-response asymmetry), utilityPrivate trustedVault binding exposure, epoch-key response parser verification absence.
+- **NVD endpoint**: `services.nvd.nist.gov/rest/json/cves/2.0` with `keywordSearch=whale` (NOT `naver+whale` which returns 0); date-filtered queries 404.
+
+## Work State
+### Completed
+- Full GitHub repo enumeration: `naver/whale-browser-developers` confirmed documentation-only (pushed 2019-09-23, 0 releases, 4 branches, 131 total blobs, 0 sync/crypto source files)
+- 5 wiki pages + README.ko.md fully enumerated — zero sync/crypto content
+- NVD full-pagination scan: 28 whale CVEs, 0 in 2026, 0 sync-class keyword hits
+- Binary acquisition from `repo.whale.naver.com` confirmed; sha256 pinning verified (5/5 byte-exact across sandbox wipes)
+- Binary disassembly: REX.W LEA rip-relative byte-pattern sweep method confirmed; sync engine fork (9 files), WBC crypto layer, utilityPrivate API surface, epoch-key request signing with zero response verification all code-proven
+- Sample extension source (translate branch): all 5 files + wiki docs HTTP 200; class REJECTED as duplicate of fixed CVEs
+- All binary acquisition channel status mapped (cloudfront DNS blocked, APKMirror 403, Uptodown 410, APKPure CDN 403, pstatic 404 scope-excluded)
+
+### Active
+- Epoch-key HMAC scheme-properties class (conf 70): request-response asymmetry confirmed; needs exploitation feasibility assessment against pinned server endpoints
+- Sync KDF class (conf 65): binary extraction is ONLY vector; same-day double-release + Chromium 138 + login-server-error hotfix raises regression urgency
+- utilityPrivate origin-binding gaps: full manifest shows binding gaps for `setSyncEncryptionKeys`/`retrieveTrustedVaultKeys`
+
+### Blocked
+- No public disclosure channel identified yet (TBD per program scope.yml)
+- gladiaio/ GitHub org + npm `@gladiaio/sdk` scan initiated but appears secondary to Whale browser analysis
+
+## Next Move
+1. Assess gladiaio/ GitHub org repos and npm `@gladiaio/sdk` metadata for any findings (original scan target)
+2. Evaluate epoch-key HMAC scheme-properties (conf 70) for exploitability reportability — asymmetric request-only auth may constitute a design-level vulnerability
+3. If binary re-acquisition is needed for deeper disassembly, re-download from `repo.whale.naver.com` and verify sha256 before analysis
+
+## Relevant Files
+- `repo.whale.naver.com/stable/deb/pool/main/n/naver-whale-stable/naver-whale-stable_4.39.410.14-1_amd64.deb`: binary source (166MB, sha256-pinned)
+- `/tmp/opencode/whale_binary/`: binary extraction directory (ephemeral, re-download after each sandbox wipe)
+- `github.com/naver/whale-browser-developers` (translate branch): sample extension `manifest.json`, `js/background.js`, `js/contentscript.js`, `index.html`, `js/index.js`
+- `raw.githubusercontent.com/wiki/naver/whale-browser-developers/whale.sidebarAction.md`: sidebar API docs (HTTP 200)
+- `services.nvd.nist.gov/rest/json/cves/2.0`: NVD CVE gap monitor endpoint
+- Binary string-table references: `whale_sync_auth_manager.cc`, `trusted_vault_request_whale.cc`, `sync_service_impl_whale.cc`, `wbc.cc`, `wbc_wrapper_apis.cc`, `encryptor.cc`, `authkey_fetcher.cc`, `inline_login_handler_impl_whale.cc`
 Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
-## Triage Report: gladiaio/ GitHub Organization & @gladiaio/sdk
+[0m→ [0mRead /home/runner/.local/share/opencode/tool-output/tool_027657068001fg63YYUCSk5yH8[90m [limit=200][0m
+[0m→ [0mRead /home/runner/.local/share/opencode/tool-output/tool_0276571e6001sDDO6q9wlGS4mr[90m [limit=200][0m
+[0m% [0mWebFetch https://api.github.com/repos/gladiaio/sdk/contents
+[0m% [0mWebFetch https://api.github.com/repos/gladiaio/gladia-cli/contents
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/.npmrc
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/package.json
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/gladia-cli/main/install.sh
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/gladia-cli/main/.goreleaser.yaml
+[0m% [0mWebFetch https://api.github.com/repos/gladiaio/sdk/contents/.github/workflows
+[0m% [0mWebFetch https://api.github.com/repos/gladiaio/sdk/contents/packages
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/.github/workflows/publish.yml
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/.github/workflows/release.yml
+[0m% [0mWebFetch https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-js
+[0m% [0mWebFetch https://api.github.com/repos/gladiaio/sdk/contents/packages/sdk-js/src
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/README.md
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/client.ts
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/sdk/main/packages/sdk-js/src/types.ts
+[0m% [0mWebFetch https://api.github.com/repos/gladiaio/gladia-cli/contents/cmd
+[0m% [0mWebFetch https://api.github.com/repos/gladiaio/gladia-cli/contents/pkg
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/gladia-cli/main/cmd/auth.go
+[0m% [0mWebFetch https://raw.githubusercontent.com/gladiaio/gladia-cli/main/cmd/config.go
+## Scan Summary: gladiaio/ GitHub Org + @gladiaio/sdk
 
-### Organization Overview
-- **Name:** Gladia (@gladiaio)
-- **Location:** France
-- **Website:** https://gladia.io
-- **Contact:** jlqueguiner@gladia.io
-- **Twitter:** @gladia_io
-- **Public Repos:** 19
-- **Followers:** 98
-- **Verified:** Yes
-- **Created:** October 13, 2021
+### Repos Identified (9 total)
+| Repo | Language | Stars | Status |
+|------|----------|-------|--------|
+| gladia-cli | Go | 26 | Active |
+| gladia-samples | Python | 60 | Active |
+| sdk | TypeScript/Python | 4 | Active |
+| docs | MDX | 4 | Active |
+| triton-inference-memory-allocation | Python | 1 | Archived |
+| gunicorn-fix-sigabort | Python | 0 | Archived |
+| uvicorn-fix-sigabort | Python | 0 | Archived |
+| 1password-scim | HCL | 0 | Fork |
+| gladia-quiz-app | - | - | Active |
 
-### Key Repositories
+### Hardcoded Secrets: **NONE FOUND**
 
-| Repository | Stars | Language | Description |
-|------------|-------|----------|-------------|
-| gladia-samples | 61 | Python | Sample code for Gladia STT |
-| normalization | 28 | Python | Speech transcript normalization for WER |
-| gladia-cli | 27 | Go | Command-line interface |
-| realtime-multilingual-asr-router | 20 | Python | Multilingual ASR routing |
-| sdk | 4 | Python/TypeScript | Official SDKs monorepo |
-| docs | 4 | MDX | Documentation |
-| skills | 20 | - | AI agent skills for STT integration |
+All sensitive values properly use environment variables:
+- `.npmrc`: `${NPM_TOKEN}` (not hardcoded)
+- `install.sh`: `GITHUB_TOKEN` env var
+- `client.ts`: `GLADIA_API_KEY` env var
+- GitHub Actions: `secrets.NPM_TOKEN`, `secrets.OP_SA_TOKEN_INFRA_AUTOMATION`
 
-### @gladiaio/sdk npm Package
+### Security Practices Observed
+1. **1Password integration** for key management in CI/CD
+2. **File permissions**: API key stored with `0o600` in `~/.gladia`
+3. **No hardcoded credentials** in source code
 
-| Property | Value |
-|----------|-------|
-| **Version** | 1.1.0 |
-| **License** | MIT |
-| **Weekly Downloads** | 3,221 |
-| **Created** | September 9, 2025 |
-| **Last Updated** | July 23, 2026 |
-| **Author** | Gladia |
-| **Repository** | https://github.com/gladiaio/sdk |
+### Whale Browser Relevance: **NONE**
+Gladia is an AI speech-to-text company. No connection to Naver/Whale browser ecosystem.
 
-### SDK Architecture
-
-The `gladiaio/sdk` repo is a monorepo containing:
-- **sdk-js** (`@gladiaio/sdk`) — JavaScript/TypeScript SDK (ESM, CJS, IIFE)
-- **sdk-python** (`gladiaio-sdk`) — Python SDK (sync + async)
-- **generator** — Internal OpenAPI → SDK type generator
-
-Tools: Nx monorepo, Bun (JS package manager), uv (Python)
-
-### Findings
-
-1. **No Secrets Detected:** The SDK uses `GLADIA_API_KEY` environment variable for authentication; no hardcoded keys in public repos.
-
-2. **Dependency Health:** Minimal dependencies — only `ws` required for Node.js < 22. No known vulnerability indicators from search results.
-
-3. **Package Maintenance:** Active updates (last publish July 2026), signed commits from maintainers, automated CI/CD pipelines.
-
-4. **Skills Integration:** The `gladiaio/skills` repo provides AI agent integrations for Cursor IDE and other tools, indicating modern developer tooling adoption.
-
-5. **Potential Attack Surface:**
-   - CLI tool (`gladia-cli`) accepts API keys via config files — ensure file permissions are restricted (already addressed in commit `d4635cb`)
-   - SDK loaded from CDN (`unpkg.com`) in browser contexts — verify CDN integrity
-
-### Status
-
-**No critical vulnerabilities or exposed secrets identified.** The organization appears legitimate with active maintenance, proper signing practices, and security-conscious development.
+**Verdict**: Clean scan — no reportable findings for bug bounty scope.
