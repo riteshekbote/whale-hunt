@@ -166,3 +166,4 @@ testability: HUMAN_ONLY
 [RISK] sync: 70 reason | Epoch-key response lacks cryptographic verification; combined with Whale's custom signing layer (WBC + authkey_fetcher fork), attacker-controlled response could inject arbitrary sync encryption keys enabling full data exfiltration. Binary acquisition channel live and hash-pinned makes this reproducible. | browser: 55 reason | Sidebar SOP bypass surface maps to fixed CVEs (CVE-2025-69234/69235); Chromium 138 upgrade may have introduced new attack surface but binary diff not yet performed. | libs: 25 reason | socket.io.slim.js present in resources.pak but handler runtime-fetched; no version string; low confidence without further binary extraction.
 ## 2026-08-22 05:13:02 UTC [api] (model mimo)
 ## 2026-08-22 05:44:20 UTC [api] (model mimo)
+## 2026-08-22 06:02:22 UTC [api] (model mimo)
